@@ -27,10 +27,6 @@ export class InicioPage implements OnInit {
       dni: new FormControl('',[Validators.required, Validators.minLength(8), Validators.maxLength(8)]),
       usuario: new FormControl('', [Validators.required, Validators.minLength(6)]),
       password: new FormControl('', [Validators.required, Validators.minLength(6)])
-
-      // referencia: new FormControl(''),
-      // latitude: new FormControl(''),
-      // longitude: new FormControl(''),
     });
   }
 
@@ -41,21 +37,13 @@ export class InicioPage implements OnInit {
   get password() { return this.usuarioForm.get('password'); }
 
   ngOnInit() {
-    // this.usuarioForm.valueChanges.subscribe(x => {
-    //   console.log(x);
-    // });
-    // this.usuarioForm.get("apellidos").valueChanges.subscribe(x => {
-    //   console.log(x);
-    // });
-
-    //this.usuarioForm.get("usuario").setValue(this.usuarioForm.get("usuario").value.toUpperCase());
   }
 
   async presentAlertConfirm() {
     const alert = await this.alertController.create({
       cssClass: 'my-custom-class',
       header: 'Confirme!',
-      message: `Son los datos Correctos !!!`+this.getDatos(),
+      message: `Son los datos Correctos !!!`,
       buttons: [
         {
           text: 'Cancelar',
@@ -77,25 +65,13 @@ export class InicioPage implements OnInit {
     await alert.present();
   }
 
-  getDatos():String{
-    let datos: String = "";
-    datos = datos + this.usuarioForm.get('nombre').value;
-    datos = datos + this.usuarioForm.get('appellidos').value;
-    datos = datos + this.usuarioForm.get('dni').value;
-    datos = datos + this.usuarioForm.get('usuario').value;
-    datos = datos + this.usuarioForm.get('password').value;
-    return datos;
-  }
-
-
   guardarUsuario(){
     console.log("Formulario", this.usuarioForm.value);
     console.log("SE GUARDARÁ UN USUARIO");
 
-    //this.registroService.guardarNuevoUsuario(this.usuarioForm.value).then(()=>console.log("Se ingreso Correctamente"));
+    this.registroService.guardarNuevoUsuario(this.usuarioForm.value).then(()=>console.log("Se ingreso Correctamente"));
 
   }
-
 
 
   numberOnlyValidation(event: any) {
@@ -106,9 +82,9 @@ export class InicioPage implements OnInit {
       // invalid character, prevent input
       event.preventDefault();
     }
-    console.log("sssssssssssssssssssssssss");
-
   }
+
+
 
   public cambiaUpper(event: any) {
     let inputChar = String.fromCharCode(event.charCode);
@@ -124,6 +100,7 @@ export class InicioPage implements OnInit {
     event.preventDefault();
     console.log(this.usuarioForm.value);
   }
+
 
   public pruebaForm(event:any){
     console.log(this.usuarioForm.get('usuario').value);

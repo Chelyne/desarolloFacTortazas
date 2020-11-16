@@ -30,7 +30,7 @@
     </ion-item>
     <div class="alertDanger" *ngIf="apellidos.invalid && (apellidos.dirty || apellidos.touched)">
       <div class="mensajeError" *ngIf="apellidos.errors.required">
-        *Complete su apellidos
+        *Ingrese su apellido
       </div>
       <div class="mensajeError" *ngIf="!apellidos.errors.required && !apellidos.errors.minLength">
         *Ingrese mínimo 3 caracteres
@@ -57,7 +57,7 @@
     </div>
 
     <ion-item>
-      <ion-label>Usuario: </ion-label>
+      <ion-label>Usuario:* </ion-label>
       <ion-input type="text" formControlName="usuario" placeholder="Usuario"></ion-input>
     </ion-item>
     <div class="alertDanger" *ngIf="usuario.invalid && (usuario.dirty || usuario.touched)">
@@ -67,11 +67,16 @@
       <div class="mensajeError" *ngIf="!usuario.errors.required && !usuario.errors.min">
         *Ingrese mínimo 6 caracteres
       </div>
+      <!-- <div class="mensajeError" *ngIf="!usuario.errors.required && !usuario.errors.min">
+        *Usuario Incorrecto
+      </div> -->
+
     </div>
+
 
     <ion-item>
       <ion-label>Contraseña: </ion-label>
-      <ion-input [type]="passwordTypeInput" formControlName="password" placeholder="Contraseña" #passwordEyeRegister></ion-input>
+      <ion-input type="password" formControlName="password" placeholder="Contraseña"></ion-input>
       <button  item-end  class="btn_eye_icon"  (click)="togglePasswordMode()">
         <ion-icon  [name]="(passwordTypeInput === 'text')?'eye-off':'eye'"></ion-icon>
       </button>
