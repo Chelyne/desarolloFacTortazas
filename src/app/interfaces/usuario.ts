@@ -3,5 +3,6 @@ export interface Usuario {
     apellidos: String,
     dni: String,
     usuario: String,
-    password: String
+    password: String,
+    rol: String
 }

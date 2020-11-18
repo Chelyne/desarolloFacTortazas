@@ -4,23 +4,19 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 
 import { IonicModule } from '@ionic/angular';
 
-import { InicioPageRoutingModule } from './inicio-routing.module';
+import { RegistrarUsuarioPageRoutingModule } from './registrar-usuario-routing.module';
 
-import { InicioPage } from './inicio.page';
-//import { NumberDirective } from 'src/app/directive/number-only.directive';
+import { RegistrarUsuarioPage } from './registrar-usuario.page';
 
 @NgModule({
   imports: [
     CommonModule,
     FormsModule,
     IonicModule,
-    InicioPageRoutingModule,
+    RegistrarUsuarioPageRoutingModule,
 
     ReactiveFormsModule
-
   ],
-  declarations: [
-    InicioPage//, NumberDirective
-  ]
+  declarations: [RegistrarUsuarioPage]
 })
-export class InicioPageModule {}
+export class RegistrarUsuarioPageModule {}

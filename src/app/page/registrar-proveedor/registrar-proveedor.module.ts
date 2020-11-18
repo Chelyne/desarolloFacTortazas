@@ -4,23 +4,19 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 
 import { IonicModule } from '@ionic/angular';
 
-import { InicioPageRoutingModule } from './inicio-routing.module';
+import { RegistrarProveedorPageRoutingModule } from './registrar-proveedor-routing.module';
 
-import { InicioPage } from './inicio.page';
-//import { NumberDirective } from 'src/app/directive/number-only.directive';
+import { RegistrarProveedorPage } from './registrar-proveedor.page';
 
 @NgModule({
   imports: [
     CommonModule,
     FormsModule,
     IonicModule,
-    InicioPageRoutingModule,
+    RegistrarProveedorPageRoutingModule,
 
     ReactiveFormsModule
-
   ],
-  declarations: [
-    InicioPage//, NumberDirective
-  ]
+  declarations: [RegistrarProveedorPage]
 })
-export class InicioPageModule {}
+export class RegistrarProveedorPageModule {}

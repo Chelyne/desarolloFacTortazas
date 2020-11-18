@@ -6,94 +6,12 @@
 
 <ion-content>
 
-  <form [formGroup]="usuarioForm" autocomplete="off">
+<ion-button routerLink="/registrar-proveedor">
+  registrar-proveedor
+</ion-button>
 
-    <ion-item>
-      <ion-label>Nombres:* </ion-label>
-      <ion-input type="text" formControlName="nombre" placeholder="nombres" class="capital"></ion-input>
-    </ion-item>
-    <div class="alertDanger" *ngIf="nombre.invalid && (nombre.dirty || nombre.touched)">
-      <div class="mensajeError" *ngIf="nombre.errors.required">
-        *Complete su nombre
-      </div>
-      <div class="mensajeError" *ngIf="nombre.errors.pattern">
-        *No puede ingresar números en su nombre
-      </div>
-      <div #elseBlock class="mensajeError" *ngIf="!nombre.errors.required && !nombre.errors.minLength">
-        *Ingrese mínimo 3 caracteres
-      </div>loo
-    </div>
+<ion-button routerLink="/registrar-usuario">
+  registrar-usuario
+</ion-button>
 
-    <ion-item>
-      <ion-label>Apellidos:* </ion-label>
-      <ion-input type="text" formControlName="apellidos" placeholder="Apellidos" (keypress)="changeLower()"></ion-input>
-    </ion-item>
-    <div class="alertDanger" *ngIf="apellidos.invalid && (apellidos.dirty || apellidos.touched)">
-      <div class="mensajeError" *ngIf="apellidos.errors.required">
-        *Ingrese su apellido
-      </div>
-      <div class="mensajeError" *ngIf="!apellidos.errors.required && !apellidos.errors.minLength">
-        *Ingrese mínimo 3 caracteres
-      </div>
-      <div class="mensajeError" *ngIf="apellidos.errors.pattern">
-        *No puede ingresar números en su Apellido
-      </div>
-    </div>
-
-    <ion-item>
-      <ion-label>DNI: </ion-label>
-      <ion-input type="text" (keypress)="numberOnlyValidation($event)" formControlName="dni" placeholder="DNI"></ion-input>
-    </ion-item>
-    <div class="alertDanger" *ngIf="dni.invalid && (dni.dirty || dni.touched)">
-      <div class="mensajeError" *ngIf="dni.errors.required">
-        *Complete su DNI
-      </div>
-      <div class="mensajeError" *ngIf="!dni.errors.required && !dni.errors.min">
-        *Ingrese 8 dígitos
-      </div>
-      <div class="mensajeError" *ngIf="dni.errors.max">
-        *Ingrese solo 8 dígitos
-      </div>
-    </div>
-
-    <ion-item>
-      <ion-label>Usuario:* </ion-label>
-      <ion-input type="text" formControlName="usuario" placeholder="Usuario"></ion-input>
-    </ion-item>
-    <div class="alertDanger" *ngIf="usuario.invalid && (usuario.dirty || usuario.touched)">
-      <div class="mensajeError" *ngIf="usuario.errors.required">
-        *Complete su usuario
-      </div>
-      <div class="mensajeError" *ngIf="!usuario.errors.required && !usuario.errors.min">
-        *Ingrese mínimo 6 caracteres
-      </div>
-      <!-- <div class="mensajeError" *ngIf="!usuario.errors.required && !usuario.errors.min">
-        *Usuario Incorrecto
-      </div> -->
-
-    </div>
-
-
-    <ion-item>
-      <ion-label>Contraseña: </ion-label>
-      <ion-input type="password" formControlName="password" placeholder="Contraseña"></ion-input>
-      <button  item-end  class="btn_eye_icon"  (click)="togglePasswordMode()">
-        <ion-icon  [name]="(passwordTypeInput === 'text')?'eye-off':'eye'"></ion-icon>
-      </button>
-    </ion-item>
-    <div class="alertDanger" *ngIf="password.invalid && (password.dirty || password.touched)">
-      <div class="mensajeError" *ngIf="password.errors.required">
-        *Complete su contraseña
-      </div>
-      <div class="mensajeError" *ngIf="!password.errors.required && !password.errors.min">
-        *Ingrese mínimo 6 caracteres
-      </div>
-    </div>
-
-    <ion-button (click)="presentAlertConfirm()" [disabled]="usuarioForm.invalid">
-      Guardar
-    </ion-button>
-
-
-  </form>
 </ion-content>
