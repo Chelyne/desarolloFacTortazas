@@ -1,7 +1,7 @@
 export interface Proveedor {
-    nombre : String,
-    ruc : String,
-    telefono : String,
-    direccion : String,
-    email : String
+    nombre ?: string;
+    ruc ?: string;
+    telefono ?: string;
+    direccion ?: string;
+    email ?: string;
 }

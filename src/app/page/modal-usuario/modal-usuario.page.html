@@ -1,0 +1,117 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title>modalUsuario {{eventoInvoker}}</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+
+  <form [formGroup]="usuarioModalForm" autocomplete="off">
+
+    <ion-item>
+      <ion-label>Nombres:* </ion-label>
+      <ion-input type="text" formControlName="nombre_modal" placeholder="nombres" class="capital" (keypress)="stringOnlyValidation($event)"></ion-input>
+    </ion-item>
+    <div class="alertDanger" *ngIf="nombre_modal.invalid && (nombre_modal.dirty || nombre_modal.touched)">
+      <div class="mensajeError" *ngIf="nombre_modal.errors.required">
+        *Complete su nombre
+      </div>
+      <div class="mensajeError" *ngIf="nombre_modal.errors.pattern">
+        *No puede ingresar números en su nombre
+      </div>
+      <div #elseBlock class="mensajeError" *ngIf="nombre_modal.errors.minlength">
+        *Ingrese mínimo 3 caracteres
+      </div>
+    </div>
+
+    <ion-item>
+      <ion-label>Apellidos:* </ion-label>
+      <ion-input type="text" formControlName="apellidos_modal" placeholder="Apellidos" (keypress)="stringOnlyValidation($event)"></ion-input>
+    </ion-item>
+    <div class="alertDanger" *ngIf="apellidos_modal.invalid && (apellidos_modal.dirty || apellidos_modal.touched)">
+      <div class="mensajeError" *ngIf="apellidos_modal.errors.required">
+        *Complete sus apellidos
+      </div>
+      <div class="mensajeError" *ngIf="apellidos_modal.errors.minlength">
+        *Ingrese mínimo 3 caracteres
+      </div>
+      <div class="mensajeError" *ngIf="apellidos_modal.errors.pattern">
+        *No puede ingresar números en sus Apellidos
+      </div>
+    </div>
+
+    <ion-item>
+      <ion-label>DNI:* </ion-label>
+      <ion-input type="text" (keypress)="numberOnlyValidation($event)" formControlName="dni_modal" placeholder="DNI"></ion-input>
+    </ion-item>
+    <div class="alertDanger" *ngIf="dni_modal.invalid && (dni_modal.dirty || dni_modal.touched)">
+      <div class="mensajeError" *ngIf="dni_modal.errors.required">
+        *Complete su DNI
+      </div>
+      <div class="mensajeError" *ngIf="dni_modal.errors.minlength">
+        *Ingrese 8 dígitos
+      </div>
+      <div class="mensajeError" *ngIf="dni_modal.errors.maxlength">
+        *Ingrese más de 8 dígitos
+      </div>
+    </div>
+
+    <ion-item>
+      <ion-label>Usuario:* </ion-label>
+      <ion-input type="text" formControlName="usuario_modal" placeholder="Usuario"></ion-input>
+    </ion-item>
+    <div class="alertDanger" *ngIf="usuario_modal.invalid && (usuario_modal.dirty || usuario_modal.touched)">
+      <div class="mensajeError" *ngIf="usuario_modal.errors.required">
+        *Complete su usuario
+      </div>
+      <div class="mensajeError" *ngIf="usuario_modal.errors.minlength">
+        *Ingrese mínimo 6 caracteres
+      </div>
+      <!-- <div class="mensajeError" *ngIf="!usuario.errors.required && !usuario.errors.min">
+        *Usuario Incorrecto
+      </div> -->
+    </div>
+
+
+    <ion-item>
+      <ion-label>Contraseña:* </ion-label>
+      <ion-input #passwordEyeRegister  [type]="passwordTypeInput" formControlName="password_modal"
+       placeholder="Contraseña" clearOnEdit="false">
+      </ion-input>
+      <button  item-end  class="btn_eye_icon"  (click)="togglePasswordMode()">
+        <ion-icon  [name]="(passwordTypeInput === 'text')?'eye-off':'eye'"></ion-icon>
+      </button>
+    </ion-item>
+    <div class="alertDanger" *ngIf="password_modal.invalid && (password_modal.dirty || password_modal.touched)">
+      <div class="mensajeError" *ngIf="password_modal.errors.required">
+        *Complete su contraseña
+      </div>
+      <div class="mensajeError" *ngIf="password_modal.errors.minlength">
+        *Ingrese mínimo 6 caracteres
+      </div>
+    </div>
+
+    <ion-item>
+      <ion-label>Rol:* </ion-label>
+      <ion-select formControlName="rol_modal" value="admin" interface="popover">
+        <ion-select-option value="admin">Administrador</ion-select-option>
+        <ion-select-option value="vendedor">Vendedor</ion-select-option>
+      </ion-select>
+    </ion-item>
+    <div class="alertDanger" *ngIf="rol_modal.invalid && (rol_modal.dirty || rol_modal.touched)">
+      <div class="mensajeError" *ngIf="rol_modal.errors.required">
+        *Debe seleccionar un rol
+      </div>
+    </div>
+
+    <ion-button (click)="salirDeModal()"  >
+      cerrar
+    </ion-button>
+    <ion-button (click)="execFun()" [disabled]="usuarioModalForm.invalid">
+      {{tagInvoker}}
+    </ion-button>
+
+
+  </form>
+
+</ion-content>

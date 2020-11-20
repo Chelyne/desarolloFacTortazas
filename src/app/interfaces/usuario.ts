@@ -1,8 +1,9 @@
 export interface Usuario {
-    nombre: String,
-    apellidos: String,
-    dni: String,
-    usuario: String,
-    password: String,
-    rol: String
+    id?: string;
+    nombre?: string;
+    apellidos?: string;
+    dni?: string;
+    usuario?: string;
+    password?: string;
+    rol?: string;
 }

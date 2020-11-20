@@ -1,20 +1,20 @@
 import { Injectable } from '@angular/core';
 import { AngularFirestore } from '@angular/fire/firestore';
 
-import { Proveedor } from '../interfaces/proveedor';
+import { ClienteInterface } from '../interfaces/cliente-interface';
 
 @Injectable({
   providedIn: 'root'
 })
-export class ProveedorRegistroService {
+export class RegistrarClienteService {
 
   constructor(private afs: AngularFirestore) { }
 
 
-  guardarNuevoProveedor(newProveedor: Proveedor) {
+  guardarNuevoCliente(newCliente: ClienteInterface) {
     // const celular = newUsuario.celular;
     const promesa =  new Promise( (resolve, reject) => {
-      this.afs.collection('proveedores').add(newProveedor); // .get().set(newcajaChina) //si es  que quieres asignar una id
+      this.afs.collection('clientes').add(newCliente); // .get().set(newcajaChina) //si es  que quieres asignar una id
       resolve();
     });
     return promesa;

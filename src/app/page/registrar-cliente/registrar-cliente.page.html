@@ -1,12 +1,12 @@
 <ion-header>
   <ion-toolbar>
-    <ion-title>registrarProveedor</ion-title>
+    <ion-title>registrar-cliente</ion-title>
   </ion-toolbar>
 </ion-header>
 
 <ion-content>
 
-  <ion-grid fixed>
+  <ion-grid>
     <ion-row>
       <ion-col *ngFor="let c of [1,1,1,1,1,1,1,1,1,1,1,1]; let i = index" class="testRows">
         {{i+1}}
@@ -19,39 +19,58 @@
       </ion-col>
       <ion-col></ion-col>
     </ion-row>
+
     <ion-row>
       <ion-col></ion-col>
-      <ion-col size="12" size-lg="6" size-md="8" size-sm="10" size-xs="12">
 
-        <form [formGroup]="proveedorForm" autocomplete="off">
+      <ion-col size="12" size-lg="6" size-md="8" size-sm="10" size-xs="12">
+        <form [formGroup]="clienteForm" autocomplete="off">
 
           <ion-item>
-            <ion-label>Nombre:* </ion-label>
-            <ion-input type="text" formControlName="nombre" placeholder="(Persona o Empresa):"></ion-input>
+            <ion-label>Nombres:* </ion-label>
+            <ion-input type="text" formControlName="nombre" placeholder="nombres" class="capital" (keypress)="stringOnlyValidation($event)"></ion-input>
           </ion-item>
           <div class="alertDanger" *ngIf="nombre.invalid && (nombre.dirty || nombre.touched)">
             <div class="mensajeError" *ngIf="nombre.errors.required">
-              *Complete el nombre del proveedor
+              *Complete el nombre del cliente
             </div>
-            <div class="mensajeError" *ngIf="!nombre.errors.required && !nombre.errors.minLength">
+            <div class="mensajeError" *ngIf="nombre.errors.pattern">
+              *No puede ingresar números en el nombre del cliente
+            </div>
+            <div #elseBlock class="mensajeError" *ngIf="nombre.errors.minlength">
               *Ingrese mínimo 3 caracteres
             </div>
           </div>
 
+          <ion-item>
+            <ion-label>Apellidos:* </ion-label>
+            <ion-input type="text" formControlName="apellidos" placeholder="Apellidos" (keypress)="stringOnlyValidation($event)"></ion-input>
+          </ion-item>
+          <div class="alertDanger" *ngIf="apellidos.invalid && (apellidos.dirty || apellidos.touched)">
+            <div class="mensajeError" *ngIf="apellidos.errors.required">
+              *Complete el apellido del cliente
+            </div>
+            <div class="mensajeError" *ngIf="apellidos.errors.minlength">
+              *Ingrese mínimo 3 caracteres
+            </div>
+            <div class="mensajeError" *ngIf="apellidos.errors.pattern">
+              *No puede ingresar números en el apellido del cliente
+            </div>
+          </div>
 
           <ion-item>
-            <ion-label>RUC:* </ion-label>
-            <ion-input type="text" formControlName="ruc" placeholder="RUC" (keypress)="numberOnlyValidation($event)"></ion-input>
+            <ion-label>DNI:* </ion-label>
+            <ion-input type="text" (keypress)="numberOnlyValidation($event)" formControlName="dni" placeholder="DNI"></ion-input>
           </ion-item>
-          <div class="alertDanger" *ngIf="ruc.invalid && (ruc.dirty || ruc.touched)">
-            <div class="mensajeError" *ngIf="ruc.errors.required">
-              *Ingrese el RUC del proveedor
+          <div class="alertDanger" *ngIf="dni.invalid && (dni.dirty || dni.touched)">
+            <div class="mensajeError" *ngIf="dni.errors.required">
+              *Complete su DNI
             </div>
-            <div class="alertDanger" *ngIf="ruc.errors.minlength">
-              *Ingrese 13 caracteres
+            <div class="mensajeError" *ngIf="dni.errors.minlength">
+              *Ingrese 8 dígitos
             </div>
-            <div class="alertDanger" *ngIf="ruc.errors.maxlength">
-              *Ingrese más de 13 caracteres
+            <div class="mensajeError" *ngIf="dni.errors.maxlength">
+              *Ingresó más de 8 dígitos
             </div>
           </div>
 
@@ -98,20 +117,18 @@
             </div>
           </div>
 
-            <ion-button (click)="guardarProveedor()" [disabled]="proveedorForm.invalid">
-              Guardar
-            </ion-button>
+
+
+          <ion-button (click)="guardarCliente()" [disabled]="clienteForm.invalid">
+            Guardar
+          </ion-button>
 
         </form>
-
       </ion-col>
+
       <ion-col></ion-col>
     </ion-row>
+
   </ion-grid>
-
-
-
-
-
 
 </ion-content>
