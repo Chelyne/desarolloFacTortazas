@@ -1,5 +1,7 @@
 import { Injectable } from '@angular/core';
-import { AngularFirestore } from '@angular/fire/firestore';
+import { AngularFirestore, AngularFirestoreCollection } from '@angular/fire/firestore';
+import { Observable} from 'rxjs';
+import { map } from 'rxjs/operators';
 
 import { Proveedor } from '../interfaces/proveedor';
 
@@ -8,16 +10,52 @@ import { Proveedor } from '../interfaces/proveedor';
 })
 export class ProveedorRegistroService {
 
+  coleccion : string = 'proveedores';
+
+  private proveedoresCollection: AngularFirestoreCollection<Proveedor>;
+  private proveedores: Observable<Proveedor[]>;
+
   constructor(private afs: AngularFirestore) { }
 
 
-  guardarNuevoProveedor(newProveedor: Proveedor) {
-    // const celular = newUsuario.celular;
+  guardarProveedor(newProveedor: Proveedor) {
+
     const promesa =  new Promise( (resolve, reject) => {
-      this.afs.collection('proveedores').add(newProveedor); // .get().set(newcajaChina) //si es  que quieres asignar una id
+      this.afs.collection('proveedores').add(newProveedor);
       resolve();
     });
+
     return promesa;
-    // this.afs.collection<ProductoInterface>(categoria).add(newProducto);
   }
+
+
+  actualizarProveedor(idProveedor: string, newProveedor: Proveedor) {
+    //console.log( idProveedor, newProveedor);
+
+    const promesa =  new Promise( (resolve, reject) => {
+      this.afs.collection(this.coleccion).doc(idProveedor).update(newProveedor);
+      resolve();
+    });
+
+    return promesa;
+  }
+
+
+  ObtenerListaProveedors() {
+
+    this.proveedoresCollection = this.afs.collection(this.coleccion);
+
+    return this.proveedores = this.proveedoresCollection.snapshotChanges()
+      .pipe(map(
+        changes => {
+          return changes.map(action => {
+            const data = action.payload.doc.data() as Proveedor;
+            data.id = action.payload.doc.id;
+            return data;
+            });
+          }
+      ));
+
+  }
+
 }

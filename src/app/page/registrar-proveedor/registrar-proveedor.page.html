@@ -6,7 +6,7 @@
 
 <ion-content>
 
-  <ion-grid fixed>
+  <ion-grid>
     <ion-row>
       <ion-col *ngFor="let c of [1,1,1,1,1,1,1,1,1,1,1,1]; let i = index" class="testRows">
         {{i+1}}
@@ -19,96 +19,37 @@
       </ion-col>
       <ion-col></ion-col>
     </ion-row>
+
     <ion-row>
       <ion-col></ion-col>
-      <ion-col size="12" size-lg="6" size-md="8" size-sm="10" size-xs="12">
 
-        <form [formGroup]="proveedorForm" autocomplete="off">
-
-          <ion-item>
-            <ion-label>Nombre:* </ion-label>
-            <ion-input type="text" formControlName="nombre" placeholder="(Persona o Empresa):"></ion-input>
+      <ion-col size="12" size-lg="8" size-md="10" size-sm="10" size-xs="12">
+        <ion-list>
+          <ion-item *ngFor="let providerItem of proveedoresList">
+            <ion-label>{{providerItem.nombre}}</ion-label>
+            <ion-label>{{providerItem.ruc}}</ion-label>
+            <ion-label>{{providerItem.telefono}}</ion-label>
+            <ion-label>{{providerItem.direccion}}</ion-label>
+            <ion-label>{{providerItem.email}}</ion-label>
+            <ion-label>
+              <ion-button (click)="updateProveedorData(providerItem)">
+                Actualizar
+              </ion-button>
+            </ion-label>
           </ion-item>
-          <div class="alertDanger" *ngIf="nombre.invalid && (nombre.dirty || nombre.touched)">
-            <div class="mensajeError" *ngIf="nombre.errors.required">
-              *Complete el nombre del proveedor
-            </div>
-            <div class="mensajeError" *ngIf="!nombre.errors.required && !nombre.errors.minLength">
-              *Ingrese mínimo 3 caracteres
-            </div>
-          </div>
-
-
-          <ion-item>
-            <ion-label>RUC:* </ion-label>
-            <ion-input type="text" formControlName="ruc" placeholder="RUC" (keypress)="numberOnlyValidation($event)"></ion-input>
-          </ion-item>
-          <div class="alertDanger" *ngIf="ruc.invalid && (ruc.dirty || ruc.touched)">
-            <div class="mensajeError" *ngIf="ruc.errors.required">
-              *Ingrese el RUC del proveedor
-            </div>
-            <div class="alertDanger" *ngIf="ruc.errors.minlength">
-              *Ingrese 13 caracteres
-            </div>
-            <div class="alertDanger" *ngIf="ruc.errors.maxlength">
-              *Ingrese más de 13 caracteres
-            </div>
-          </div>
-
-          <ion-item>
-            <ion-label>Teléfono: </ion-label>
-            <ion-input type="text" (keypress)="numberOnlyValidation($event)" formControlName="telefono" placeholder="Teléfono o Cel"></ion-input>
-          </ion-item>
-          <div class="alertDanger" *ngIf="telefono.invalid && (telefono.dirty || telefono.touched)">
-            <div class="mensajeError" *ngIf="telefono.errors.required">
-              *Ingrese el número de teléfono o celular del proveedor
-            </div>
-            <div class="alertDanger" *ngIf="telefono.errors.minlength">
-              *Ingrese mínimo 6 caracteres
-            </div>
-            <div class="alertDanger" *ngIf="telefono.errors.maxlength">
-              *Teléfono invalido más de 9 caracteres
-            </div>
-          </div>
-
-          <ion-item>
-            <ion-label>Dirección:* </ion-label>
-            <ion-input type="text" formControlName="direccion" placeholder="Direccion:"></ion-input>
-          </ion-item>
-          <div class="alertDanger" *ngIf="direccion.invalid && (direccion.dirty || direccion.touched)">
-            <div class="mensajeError" *ngIf="direccion.errors.required">
-              *Ingrese la dirección del proveedor
-            </div>
-            <div class="alertDanger" *ngIf="direccion.errors.minlength">
-              *Ingrese mínimo 3 caracteres
-            </div>
-          </div>
-
-
-          <ion-item>
-            <ion-label>E-mail:* </ion-label>
-            <ion-input type="text" formControlName="email" placeholder="email@company.com"></ion-input>
-          </ion-item>
-          <div class="alertDanger" *ngIf="email.invalid && (email.dirty || email.touched)">
-            <div class="mensajeError" *ngIf="email.errors.required">
-              *Ingrese el correo electrónico del proveedor
-            </div>
-            <div class="alertDanger" *ngIf="email.errors.pattern">
-              *email invalido: email@company.com
-            </div>
-          </div>
-
-            <ion-button (click)="guardarProveedor()" [disabled]="proveedorForm.invalid">
-              Guardar
-            </ion-button>
-
-        </form>
-
+        </ion-list>
       </ion-col>
+
       <ion-col></ion-col>
     </ion-row>
+
   </ion-grid>
 
+  <ion-fab vertical="bottom" horizontal="end" slot="fixed">
+    <ion-button (click)="newProveedorModal()">
+      Agregar Usuario
+    </ion-button>
+  </ion-fab>
 
 
 

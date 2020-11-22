@@ -7,15 +7,22 @@ import { IonicModule } from '@ionic/angular';
 import { RegistrarProveedorPageRoutingModule } from './registrar-proveedor-routing.module';
 
 import { RegistrarProveedorPage } from './registrar-proveedor.page';
+import { ModalProveedorPage } from '../modal-proveedor/modal-proveedor.page';
+import { ModalProveedorPageModule } from '../modal-proveedor/modal-proveedor.module';
 
 @NgModule({
+  entryComponents:[
+    ModalProveedorPage
+  ],
   imports: [
     CommonModule,
     FormsModule,
     IonicModule,
     RegistrarProveedorPageRoutingModule,
 
-    ReactiveFormsModule
+    ReactiveFormsModule,
+
+    ModalProveedorPageModule
   ],
   declarations: [RegistrarProveedorPage]
 })

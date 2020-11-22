@@ -1,0 +1,93 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title>modal-proveedor</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <form [formGroup]="proveedorModalForm" autocomplete="off">
+
+    <ion-item>
+      <ion-label>Nombre:* </ion-label>
+      <ion-input type="text" formControlName="nombre" placeholder="(Persona o Empresa):"></ion-input>
+    </ion-item>
+    <div class="alertDanger" *ngIf="nombre.invalid && (nombre.dirty || nombre.touched)">
+      <div class="mensajeError" *ngIf="nombre.errors.required">
+        *Complete el nombre del proveedor
+      </div>
+      <div class="mensajeError" *ngIf="!nombre.errors.required && !nombre.errors.minLength">
+        *Ingrese mínimo 3 caracteres
+      </div>
+    </div>
+
+
+    <ion-item>
+      <ion-label>RUC:* </ion-label>
+      <ion-input type="text" formControlName="ruc" placeholder="RUC" (keypress)="numberOnlyValidation($event)"></ion-input>
+    </ion-item>
+    <div class="alertDanger" *ngIf="ruc.invalid && (ruc.dirty || ruc.touched)">
+      <div class="mensajeError" *ngIf="ruc.errors.required">
+        *Ingrese el RUC del proveedor
+      </div>
+      <div class="alertDanger" *ngIf="ruc.errors.minlength">
+        *Ingrese 13 caracteres
+      </div>
+      <div class="alertDanger" *ngIf="ruc.errors.maxlength">
+        *Ingrese más de 13 caracteres
+      </div>
+    </div>
+
+    <ion-item>
+      <ion-label>Teléfono: </ion-label>
+      <ion-input type="text" (keypress)="numberOnlyValidation($event)" formControlName="telefono" placeholder="Teléfono o Cel"></ion-input>
+    </ion-item>
+    <div class="alertDanger" *ngIf="telefono.invalid && (telefono.dirty || telefono.touched)">
+      <div class="mensajeError" *ngIf="telefono.errors.required">
+        *Ingrese el número de teléfono o celular del proveedor
+      </div>
+      <div class="alertDanger" *ngIf="telefono.errors.minlength">
+        *Ingrese mínimo 6 caracteres
+      </div>
+      <div class="alertDanger" *ngIf="telefono.errors.maxlength">
+        *Teléfono invalido más de 9 caracteres
+      </div>
+    </div>
+
+    <ion-item>
+      <ion-label>Dirección:* </ion-label>
+      <ion-input type="text" formControlName="direccion" placeholder="Direccion:"></ion-input>
+    </ion-item>
+    <div class="alertDanger" *ngIf="direccion.invalid && (direccion.dirty || direccion.touched)">
+      <div class="mensajeError" *ngIf="direccion.errors.required">
+        *Ingrese la dirección del proveedor
+      </div>
+      <div class="alertDanger" *ngIf="direccion.errors.minlength">
+        *Ingrese mínimo 3 caracteres
+      </div>
+    </div>
+
+
+    <ion-item>
+      <ion-label>E-mail:* </ion-label>
+      <ion-input type="text" formControlName="email" placeholder="email@company.com"></ion-input>
+    </ion-item>
+    <div class="alertDanger" *ngIf="email.invalid && (email.dirty || email.touched)">
+      <div class="mensajeError" *ngIf="email.errors.required">
+        *Ingrese el correo electrónico del proveedor
+      </div>
+      <div class="alertDanger" *ngIf="email.errors.pattern">
+        *email invalido: email@company.com
+      </div>
+    </div>
+
+    <ion-button (click)="salirDeModal()"  >
+      cerrar
+    </ion-button>
+    <ion-button (click)="execFun()" [disabled]="proveedorModalForm.invalid">
+      {{tagInvoker}}
+    </ion-button>
+
+  </form>
+
+
+</ion-content>

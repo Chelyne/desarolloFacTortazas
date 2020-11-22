@@ -13,11 +13,9 @@ import { ModalUsuarioPage } from '../modal-usuario/modal-usuario.page';
 })
 export class RegistrarUsuarioPage implements OnInit {
 
-  // usuarioForm: FormGroup;
-  usuariosList: Usuario[];
-  usuario: Usuario;
 
-  codid: string = '';
+  usuariosList: Usuario[];
+  usuarioItem: Usuario;
 
   eventToSendModel: string;
   tagToSendModel: string;
@@ -26,7 +24,7 @@ export class RegistrarUsuarioPage implements OnInit {
 
   constructor(private dataApi: UserRegistroService, private modalCtlr: ModalController) {
     //this.usuarioForm = this.createFormGroupUsuario();
-    this.getUsuarios();
+    this.ObtenerUsuarios();
   }
 
   ngOnInit() {
@@ -130,17 +128,15 @@ export class RegistrarUsuarioPage implements OnInit {
 
 
 
-  getUsuarios(){
+  ObtenerUsuarios(){
     console.log("getUsuarios");
 
-     this.dataApi.ObtenerListaUsuarios().subscribe(data => {
-       console.log(data);
-       this.usuariosList = data;
-       console.log(this.usuariosList.length);
+    this.dataApi.ObtenerListaUsuarios().subscribe(data => {
+      console.log(data);
+      this.usuariosList = data;
+      //console.log(this.usuariosList.length);
+    });
 
-     })
-
-    //console.log(this.dataApi.ObtenerListaUsuarios());
   }
 
   async abrirModal(){
@@ -150,25 +146,26 @@ export class RegistrarUsuarioPage implements OnInit {
       componentProps: {
         eventoInvoker: this.eventToSendModel,
         tagInvoker: this.tagToSendModel,
-        dataFromInvoker: this.dataToModel
+        dataInvoker: this.dataToModel
       }
     });
+
     await modal.present()
   }
 
+  //Modal for new user
   newUserModal(){
     this.eventToSendModel = 'guardarUsuario';
     this.tagToSendModel = 'Guardar';
     this.abrirModal();
   }
 
-  //TODO - como conseguir el dni del campo
+
   updateUserData(usuario: Usuario){
 
-    console.log('xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx');
-    console.log(usuario);
-    console.log('xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx');
-    const idUser = usuario.id;
+    // console.log('xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx');
+    // console.log(usuario);
+    // console.log('xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx');
 
     // this.dataApi.ObtenerUnUsuario(idUser).subscribe(data => {
     //   this.usuario = data[0];
@@ -178,10 +175,10 @@ export class RegistrarUsuarioPage implements OnInit {
     this.eventToSendModel = 'actualizarUsuario';
     this.tagToSendModel = 'Actualizar';
     this.dataToModel = usuario;
-    // this.dat
+
     setTimeout(() => {
       this.abrirModal();
-    }, 1000);
+    }, 500);
 
   }
 
