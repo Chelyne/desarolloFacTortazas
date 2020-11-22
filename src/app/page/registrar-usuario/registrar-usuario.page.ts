@@ -4,7 +4,7 @@ import {  ModalController } from '@ionic/angular';
 import { UserRegistroService } from 'src/app/services/user-registro.service';
 
 import { Usuario } from 'src/app/interfaces/usuario';
-import { ModalUsuarioPage } from '../modal-usuario/modal-usuario.page';
+import { ModalUsuarioPage } from '../modals/usuario/modal-usuario/modal-usuario.page';
 
 @Component({
   selector: 'app-registrar-usuario',
