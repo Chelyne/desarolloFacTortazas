@@ -7,8 +7,8 @@ import { IonicModule } from '@ionic/angular';
 import { RegistrarUsuarioPageRoutingModule } from './registrar-usuario-routing.module';
 
 import { RegistrarUsuarioPage } from './registrar-usuario.page';
-import { ModalUsuarioPage } from '../modals/usuario/modal-usuario/modal-usuario.page';
-import { ModalUsuarioPageModule } from '../modals/usuario/modal-usuario/modal-usuario.module';
+import { ModalUsuarioPage } from '../../modals/usuario/modal-usuario/modal-usuario.page';
+import { ModalUsuarioPageModule } from '../../modals/usuario/modal-usuario/modal-usuario.module';
 
 @NgModule({
   entryComponents:[

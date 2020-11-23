@@ -7,8 +7,8 @@ import { IonicModule } from '@ionic/angular';
 import { RegistrarProveedorPageRoutingModule } from './registrar-proveedor-routing.module';
 
 import { RegistrarProveedorPage } from './registrar-proveedor.page';
-import { ModalProveedorPage } from '../modals/proveedor/modal-proveedor/modal-proveedor.page';
-import { ModalProveedorPageModule } from '../modals/proveedor/modal-proveedor/modal-proveedor.module';
+import { ModalProveedorPage } from '../../modals/proveedor/modal-proveedor/modal-proveedor.page';
+import { ModalProveedorPageModule } from '../../modals/proveedor/modal-proveedor/modal-proveedor.module';
 
 @NgModule({
   entryComponents:[

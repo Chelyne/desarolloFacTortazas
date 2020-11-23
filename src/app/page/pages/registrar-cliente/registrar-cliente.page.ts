@@ -4,7 +4,7 @@ import { RegistrarClienteService } from 'src/app/services/registrar-cliente.serv
 
 import { ClienteInterface } from 'src/app/interfaces/cliente-interface';
 import { ModalController } from '@ionic/angular';
-import { ModalClientePage } from '../modals/cliente/modal-cliente/modal-cliente.page';
+import { ModalClientePage } from '../../modals/cliente/modal-cliente/modal-cliente.page';
 
 @Component({
   selector: 'app-registrar-cliente',

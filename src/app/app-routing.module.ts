@@ -13,11 +13,11 @@ const routes: Routes = [
   },
   {
     path: 'registrar-proveedor',
-    loadChildren: () => import('./page/registrar-proveedor/registrar-proveedor.module').then( m => m.RegistrarProveedorPageModule)
+    loadChildren: () => import('./page/pages/registrar-proveedor/registrar-proveedor.module').then( m => m.RegistrarProveedorPageModule)
   },
   {
     path: 'registrar-usuario',
-    loadChildren: () => import('./page/registrar-usuario/registrar-usuario.module').then( m => m.RegistrarUsuarioPageModule)
+    loadChildren: () => import('./page/pages/registrar-usuario/registrar-usuario.module').then( m => m.RegistrarUsuarioPageModule)
   },
   {
     path: 'venta',
@@ -25,7 +25,7 @@ const routes: Routes = [
   },
   {
     path: 'registrar-cliente',
-    loadChildren: () => import('./page/registrar-cliente/registrar-cliente.module').then( m => m.RegistrarClientePageModule)
+    loadChildren: () => import('./page/pages/registrar-cliente/registrar-cliente.module').then( m => m.RegistrarClientePageModule)
   }
 
 

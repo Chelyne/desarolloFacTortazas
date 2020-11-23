@@ -3,7 +3,7 @@ import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { ModalController } from '@ionic/angular';
 import { Proveedor } from 'src/app/interfaces/proveedor';
 import { ProveedorRegistroService } from 'src/app/services/proveedor-registro.service';
-import { ModalProveedorPage } from '../modals/proveedor/modal-proveedor/modal-proveedor.page';
+import { ModalProveedorPage } from '../../modals/proveedor/modal-proveedor/modal-proveedor.page';
 
 @Component({
   selector: 'app-registrar-proveedor',

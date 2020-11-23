@@ -7,8 +7,8 @@ import { IonicModule } from '@ionic/angular';
 import { RegistrarClientePageRoutingModule } from './registrar-cliente-routing.module';
 
 import { RegistrarClientePage } from './registrar-cliente.page';
-import { ModalClientePage } from '../modals/cliente/modal-cliente/modal-cliente.page';
-import { ModalClientePageModule } from '../modals/cliente/modal-cliente/modal-cliente.module';
+import { ModalClientePage } from '../../modals/cliente/modal-cliente/modal-cliente.page';
+import { ModalClientePageModule } from '../../modals/cliente/modal-cliente/modal-cliente.module';
 
 @NgModule({
   entryComponents:[
