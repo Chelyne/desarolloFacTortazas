@@ -137,7 +137,7 @@ export class ModalProveedorPage implements OnInit {
     }
 
 
-  
+
   }
 
   salirDeModal(){

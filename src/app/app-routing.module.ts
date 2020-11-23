@@ -26,9 +26,11 @@ const routes: Routes = [
   {
     path: 'registrar-cliente',
     loadChildren: () => import('./page/pages/registrar-cliente/registrar-cliente.module').then( m => m.RegistrarClientePageModule)
+  },
+  {
+    path: 'ingreso-egreso',
+    loadChildren: () => import('./page/pages/ingreso-egreso/ingreso-egreso.module').then( m => m.IngresoEgresoPageModule)
   }
-
-
 
 ];
 

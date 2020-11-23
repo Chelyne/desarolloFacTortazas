@@ -19,7 +19,7 @@ export class ModalUsuarioPage implements OnInit {
   @Input() dataInvoker: Usuario;
 
 
-  constructor( 
+  constructor(
     private registroService: UserRegistroService,
     private modalCtlr: ModalController,
     private toastCtrl: ToastController
