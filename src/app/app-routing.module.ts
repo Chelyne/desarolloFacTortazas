@@ -30,7 +30,12 @@ const routes: Routes = [
   {
     path: 'ingreso-egreso',
     loadChildren: () => import('./page/pages/ingreso-egreso/ingreso-egreso.module').then( m => m.IngresoEgresoPageModule)
+  },
+  {
+    path: 'pushpop-products',
+    loadChildren: () => import('./page/pages/pushpop-products/pushpop-products.module').then( m => m.PushpopProductsPageModule)
   }
+
 
 ];
 

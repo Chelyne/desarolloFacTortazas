@@ -1,0 +1,138 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title>pushpop_products beto</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+
+  <ion-grid>
+
+    <ion-row>
+      <ion-col *ngFor="let c of [1,1,1,1,1,1,1,1,1,1,1,1]; let i = index" class="testRows">
+        {{i+1}}
+      </ion-col>
+    </ion-row>
+
+    <ion-row>
+      <ion-col></ion-col>
+      <ion-col size="12" size-lg="6" size-md="8" size-sm="10" size-xs="12">
+        <div class="divtest">texto</div>
+      </ion-col>
+      <ion-col></ion-col>
+    </ion-row>
+
+    <ion-row>
+      <ion-col size="12" size-lg="6" size-md="6" size-sm="10" size-xs="12">
+        <ion-list>
+          <ion-list-header lines="inset">
+            <ion-label color="primary">Lista de productos</ion-label>
+          </ion-list-header>
+          <ion-list-header lines="inset">
+            <ion-label>nombre</ion-label>
+            <ion-label>marca</ion-label>
+            <ion-label>prec_unit</ion-label>
+            <ion-label>unidad</ion-label>
+            <ion-label></ion-label>
+          </ion-list-header>
+          <ion-item *ngFor="let prodItem of productosList">
+            <ion-label>{{prodItem.nombre}}</ion-label>
+            <ion-label>{{prodItem.marca}}</ion-label>
+            <ion-label>{{prodItem.prec_unit}}</ion-label>
+            <ion-label>{{prodItem.unidad}}</ion-label>
+            <ion-label>
+              <ion-button (click)="AgregarProducto(prodItem)">
+                Añadir
+              </ion-button>
+            </ion-label>
+          </ion-item>
+        </ion-list>
+      </ion-col>
+
+      <ion-col size="12" size-lg="6" size-md="6" size-sm="10" size-xs="12">
+        <ion-list>
+          <ion-list-header lines="inset">
+            <ion-label color="primary">Lista de venta</ion-label>
+          </ion-list-header>
+          <ion-list-header lines="inset">
+            <ion-label>cantidad</ion-label>
+            <ion-label>nombre</ion-label>
+            <ion-label>prec_unit</ion-label>
+            <ion-label>totalxproducto</ion-label>
+            <ion-label>opciones</ion-label>
+            <ion-label></ion-label>
+          </ion-list-header>
+
+
+          <ion-item *ngFor="let prodItem of listaProductos">
+
+              <!-- <ion-label>
+                <input type="number" placeholder="cantidad" [value]="prodItem.cantidad" (keypress)="inputModief($event, prodItem)" (keypress)="logForm(this.value)">
+              </ion-label>
+
+              <ion-label>{{prodItem.producto.nombre}}</ion-label>
+              <ion-label>{{prodItem.producto.prec_unit}}</ion-label>
+              <ion-label>{{prodItem.tatalxprod}}</ion-label>
+              <ion-label>
+                <ion-button (click)="quitarProducto(prodItem)">
+                  quitar
+                </ion-button>
+              </ion-label> -->
+              <app-item-venta class="ancho-item" title="Hola Beto" saludo="HIIIIIIIIIIIIIIIIIII" [prod]="prodItem"
+              (cambiarCantidadProd)="inputModief($event)"></app-item-venta>
+
+              <ion-button (click)="quitarProducto(prodItem)">
+                quitar
+              </ion-button>
+
+          </ion-item>
+
+
+          <ion-list-header >
+            <ion-label >Total a pagar: {{totalxPagar}} </ion-label>
+          </ion-list-header>
+        </ion-list>
+      </ion-col>
+
+     </ion-row>
+
+
+    <!-- <ion-row>
+      <ion-col size="12">
+
+          <ion-list>
+            <ion-item *ngFor="let prodItem of usuariosList">
+              <ion-label>{{prodItem | json}}</ion-label>
+            </ion-item>
+          </ion-list>
+
+      </ion-col>
+    </ion-row>
+
+
+    <ion-row>
+      <ion-col size="12">
+        <ion-button (click)="getUsuarios()">
+          Usuarios
+        </ion-button>
+      </ion-col>
+    </ion-row> -->
+
+  </ion-grid>
+
+  <!-- <form (ngSubmit)="logForm()">
+    <ion-item>
+      <ion-label>Todo</ion-label>
+      <ion-input type="text" [(ngModel)]="todo.title" name="title"></ion-input>
+    </ion-item>
+    <ion-item>
+      <ion-label>Description</ion-label>
+      <ion-textarea [(ngModel)]="todo.description" name="description"></ion-textarea>
+    </ion-item>
+    <button ion-button type="submit" block>Add Todo</button>
+  </form> -->
+
+  <!-- <app-item-venta title="Hola Beto" saludo="HIIIIIIIIIIIIIIIIIII"></app-item-venta> -->
+
+
+</ion-content>
