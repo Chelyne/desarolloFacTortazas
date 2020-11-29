@@ -3,7 +3,7 @@ import { AngularFirestore, AngularFirestoreCollection } from '@angular/fire/fire
 import { Observable} from 'rxjs';
 import { map } from 'rxjs/operators';
 
-import { Proveedor } from '../interfaces/proveedor';
+import { ProveedorInterface } from '../interfaces/proveedor';
 
 @Injectable({
   providedIn: 'root'
@@ -12,13 +12,13 @@ export class ProveedorRegistroService {
 
   coleccion : string = 'proveedores';
 
-  private proveedoresCollection: AngularFirestoreCollection<Proveedor>;
-  private proveedores: Observable<Proveedor[]>;
+  private proveedoresCollection: AngularFirestoreCollection<ProveedorInterface>;
+  private proveedores: Observable<ProveedorInterface[]>;
 
   constructor(private afs: AngularFirestore) { }
 
 
-  guardarProveedor(newProveedor: Proveedor) {
+  guardarProveedor(newProveedor: ProveedorInterface) {
 
     const promesa =  new Promise( (resolve, reject) => {
       this.afs.collection('proveedores').add(newProveedor);
@@ -29,7 +29,7 @@ export class ProveedorRegistroService {
   }
 
 
-  actualizarProveedor(idProveedor: string, newProveedor: Proveedor) {
+  actualizarProveedor(idProveedor: string, newProveedor: ProveedorInterface) {
     //console.log( idProveedor, newProveedor);
 
     const promesa =  new Promise( (resolve, reject) => {
@@ -41,7 +41,7 @@ export class ProveedorRegistroService {
   }
 
 
-  ObtenerListaProveedors() {
+  ObtenerListaDeProveedores() {
 
     this.proveedoresCollection = this.afs.collection(this.coleccion);
 
@@ -49,7 +49,7 @@ export class ProveedorRegistroService {
       .pipe(map(
         changes => {
           return changes.map(action => {
-            const data = action.payload.doc.data() as Proveedor;
+            const data = action.payload.doc.data() as ProveedorInterface;
             data.id = action.payload.doc.id;
             return data;
             });

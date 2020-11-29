@@ -3,7 +3,7 @@ import { ProductoInterface } from 'src/app/interfaces/producto';
 
 import { ProductoService } from 'src/app/services/producto/producto.service';
 import { VentaInterface } from 'src/app/interfaces/venta/venta-interface';
-import { ObjetoVenta } from 'src/app/interfaces/venta/objeto-venta';
+import { ItemDeVentaInterface } from 'src/app/interfaces/venta/objeto-venta';
 
 @Component({
   selector: 'app-pushpop-products',
@@ -12,14 +12,23 @@ import { ObjetoVenta } from 'src/app/interfaces/venta/objeto-venta';
 })
 export class PushpopProductsPage implements OnInit {
 
-  productosList: ProductoInterface[];
-  productoItem: ProductoInterface;
+  //Ventas
+    listaDeVentas:VentaInterface[] = [];
 
-  listaVenta: VentaInterface;
+    venta: VentaInterface;
 
-  avalue:number = 4;
-  //TODO - darle un tipo a listaDeVenta
-  listaDeVenta:any[] = [];
+    totalxPagar:number;
+
+
+  //ObjetoVentas o ItemsDeVenta
+    itemsDeVenta:ItemDeVentaInterface[] = [];
+
+
+
+  //Productos
+    listaDeProductos: ProductoInterface[];
+    productoItem: ProductoInterface;
+
 
   constructor(private dataApi: ProductoService) {
     this.ObtenerProductos();
@@ -28,49 +37,45 @@ export class PushpopProductsPage implements OnInit {
   ngOnInit() {
   }
 
+
+
   ObtenerProductos(){
-    console.log("getProductos");
+    //console.log("getProductos");
 
     this.dataApi.ObtenerListaProductos().subscribe(data => {
-      console.log(data);
-      this.productosList = data;
+      //console.log(data);
+      this.listaDeProductos = data;
       //console.log(this.usuariosList.length);
     });
-
   }
 
-  listaProductos:ObjetoVenta[] = [];
 
-  AgregarProducto(prodItem: ProductoInterface){
 
+  AgregarItemDeVenta(prodItem: ProductoInterface){
 
     let producExist: boolean = false;
     const idProdItem: string = prodItem.id;
 
-    if (this.listaProductos.length > 0) {
-        this.listaProductos.forEach(item =>{
-          console.log('ssssssssssssssssss')
-          if (idProdItem === item.idProducto){
-              producExist = true;
-              item.cantidad += 1;
-              item.tatalxprod = item.cantidad * item.producto.prec_unit;
-              return;
-          }
-        });
+    if (this.itemsDeVenta.length > 0) {
+      for (const item of this.itemsDeVenta) {
+        if (idProdItem === item.idProducto){
+            producExist = true;
+            item.cantidad += 1;
+            item.tatalxprod = item.cantidad * item.producto.prec_unit;
+            break;
+        }
+      }
     }
 
     if(!producExist){
-
-      this.listaProductos.push( this.CreateObjetoVenta(prodItem));
-      console.log('ListaProductosVenta', this.listaProductos);
+      this.itemsDeVenta.push( this.CrearItemDeVenta(prodItem));
+      //console.log('ListaProductosVenta', this.itemsDeVenta);
     }
 
     this.calcularTotalaPagar();
   }
 
-
-
-  CreateObjetoVenta(prodItem: ProductoInterface):ObjetoVenta{
+  CrearItemDeVenta(prodItem: ProductoInterface):ItemDeVentaInterface{
     return {
       producto: prodItem,
       idProducto: prodItem.id,
@@ -79,71 +84,58 @@ export class PushpopProductsPage implements OnInit {
     };
   }
 
-  inputModief(evento:{id :string, cantidad: number}){
-    console.log(evento);
+  inputModificado(evento:{id :string, cantidad: number}){
+    //console.log(evento);
     this.ActualizarMonto(evento.id, evento.cantidad);
   }
 
   ActualizarMonto(idProdItem: string, cantidad: number){
 
-    if (this.listaProductos.length > 0) {
-        this.listaProductos.forEach(item =>{
-          console.log('ssssssssssssssssss')
-          if (idProdItem === item.idProducto){
-              item.cantidad = cantidad;
-              item.tatalxprod = item.cantidad * item.producto.prec_unit;
-              return;
-          }
-        });
+    if (this.itemsDeVenta.length > 0) {
+      for (const item of this.itemsDeVenta) {
+        //console.log('ssssssssssssssssss')
+        if (idProdItem === item.idProducto){
+            item.cantidad = cantidad;
+            item.tatalxprod = item.cantidad * item.producto.prec_unit;
+            break;
+        }
+      }
     }
+
     this.calcularTotalaPagar();
   }
 
 
-  quitarProducto(prodItem: ObjetoVenta){
+  quitarProducto(evento:{id:string}){
 
     let index: number= 0;
-    const idProdItem: string = prodItem.idProducto;
+    const idProdItem: string = evento.id;
 
-    if (this.listaProductos.length > 0) {
-        this.listaProductos.forEach(item =>{
-          console.log('dddddddd')
+    if (this.itemsDeVenta.length > 0) {
 
-          if (idProdItem === item.idProducto){
-              console.log("quitar producto", index);
-              this.listaProductos.splice(index,1);
-              return;
-          }
-          index++;
-        });
+      for (const itemDeVenta of this.itemsDeVenta) {
+        if (idProdItem === itemDeVenta.idProducto){
+            console.log("quitar producto", index);
+            this.itemsDeVenta.splice(index,1);
+            break;
+        }
+        index++;
+      }
     }
 
     this.calcularTotalaPagar();
-
   }
-
-  totalxPagar:number;
 
   calcularTotalaPagar(){
     let totalxpagar: number = 0;
-    this.listaProductos.forEach(item => {
+
+    for (const item of this.itemsDeVenta) {
       totalxpagar += item.tatalxprod;
-    });
-    console.log(totalxpagar);
+    }
+    //console.log(totalxpagar);
 
     this.totalxPagar = totalxpagar;
   }
-
-
-
-
-
-
-  unMonto = {};
-  logForm(valor: any) {
-    console.log(valor);
-  }
-
 
 
 }

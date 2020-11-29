@@ -14,6 +14,7 @@ export class IngresoEgresoModalPage implements OnInit {
 
   @Input() eventoInvoker : string;
   @Input() tagInvoker : string;
+  @Input() buttonTagInvoer:string;
   @Input() saldoInvoker : number;
 
 
@@ -38,19 +39,6 @@ export class IngresoEgresoModalPage implements OnInit {
   get monto() { return this.ingresoEgresoForm.get('monto'); }
 
 
-  numberOnlyValidation(event: any) {
-    const pattern = /[0-9.]/;
-    let inputChar = String.fromCharCode(event.charCode);
-
-    if (!pattern.test(inputChar)) {
-      // invalid character, prevent input
-      event.preventDefault();
-    }
-  }
-
-  salirDeModal(){
-    this.modalCtlr.dismiss();
-  }
 
   execTransaction(){
     console.log(this.eventoInvoker);
@@ -70,8 +58,8 @@ export class IngresoEgresoModalPage implements OnInit {
   IngresarMonto () {
 
     const monto : number = parseFloat(this.ingresoEgresoForm.value.monto);
-    console.log(this.ingresoEgresoForm.value);
-    console.log(monto, this.saldoInvoker);
+    //console.log(this.ingresoEgresoForm.value);
+    //console.log(monto, this.saldoInvoker);
     this.modalCtlr.dismiss({
       newMonto: this.saldoInvoker + monto
     });
@@ -93,6 +81,7 @@ export class IngresoEgresoModalPage implements OnInit {
     }
   }
 
+
   async presentToast(message: string){
     const toast = await this.toastCtrl.create({
       message,
@@ -101,6 +90,23 @@ export class IngresoEgresoModalPage implements OnInit {
 
     toast.present();
   }
+
+  salirDeModal(){
+    this.modalCtlr.dismiss();
+  }
+
+
+  numberOnlyValidation(event: any) {
+    const pattern = /[0-9.]/;
+    let inputChar = String.fromCharCode(event.charCode);
+
+    if (!pattern.test(inputChar)) {
+      // invalid character, prevent input
+      event.preventDefault();
+    }
+  }
+
+
 
 
 }

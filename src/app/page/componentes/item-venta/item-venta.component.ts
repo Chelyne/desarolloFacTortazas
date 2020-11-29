@@ -2,7 +2,7 @@ import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { ProductoInterface } from 'src/app/interfaces/producto';
 
-import { ObjetoVenta } from 'src/app/interfaces/venta/objeto-venta';
+import { ItemDeVentaInterface } from 'src/app/interfaces/venta/objeto-venta';
 
 @Component({
   selector: 'app-item-venta',
@@ -11,12 +11,45 @@ import { ObjetoVenta } from 'src/app/interfaces/venta/objeto-venta';
 })
 export class ItemVentaComponent implements OnInit {
 
-  @Input() title: string;
-  @Input() saludo: string;
-  @Input() prod: ObjetoVenta;
+  @Input() prod: ItemDeVentaInterface;
 
   @Output()  cambiarCantidadProd = new EventEmitter<{id :string, cantidad: number}>();
+  @Output()  quitarItemDeVenta = new EventEmitter<{id:string}>();
 
+  formVenta : FormGroup;
+
+  //TODO Quitar comentarios
+  constructor() {
+    //this.formVenta = this.createFormVenta();
+    console.log("se creo el modulo venta");
+  }
+
+  ngOnInit() {
+    //console.log(this.prod);
+    //console.log(this.prod.idProducto);
+    //console.log('cantidadEnVentaModule  ', this.prod.cantidad);
+    this.formVenta = this.updateFormVenta();
+  }
+
+
+  createFormVenta() {
+    return new FormGroup({
+      cantidad: new FormControl('', [Validators.required])
+    });
+  }
+
+  updateFormVenta() {
+    return new FormGroup({
+      cantidad: new FormControl(this.prod.cantidad, [Validators.required])
+    });
+  }
+
+  get cantidad() { return this.formVenta.get('cantidad'); }
+
+
+
+
+  //event Emitters
   cambioCantidad(){
 
     console.log(this.formVenta.value.cantidad);
@@ -26,40 +59,17 @@ export class ItemVentaComponent implements OnInit {
         id : this.prod.idProducto,
         cantidad: parseInt(this.formVenta.value.cantidad)
       }
+
       this.cambiarCantidadProd.emit(obj);
     }
   }
 
-  formVenta : FormGroup;
+  eventoEliminarItem(){
+    const obj = {
+      id : this.prod.idProducto,
+    }
 
-
-  constructor() {
-    this.formVenta = this.createFormVenta();
-    console.log("se creo el modulo venta");
+    this.quitarItemDeVenta.emit(obj);
   }
-
-  ngOnInit() {
-    console.log(this.prod);
-    console.log(this.prod.idProducto);
-    console.log('cantidadEnVentaModule  ', this.prod.cantidad);
-    this.formVenta = this.updateFormVenta();
-  }
-
-  createFormVenta() {
-    return new FormGroup({
-      cantidad: new FormControl('', [Validators.required])
-    });
-  }
-  updateFormVenta() {
-    return new FormGroup({
-      cantidad: new FormControl(this.prod.cantidad, [Validators.required])
-    });
-  }
-
-  putValor(algo){
-
-  }
-
-  get cantidad() { return this.formVenta.get('cantidad'); }
 
 }

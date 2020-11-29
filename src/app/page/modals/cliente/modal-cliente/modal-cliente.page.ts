@@ -14,9 +14,10 @@ import { RegistrarClienteService } from 'src/app/services/registrar-cliente.serv
 export class ModalClientePage implements OnInit {
 
   clienteModalForm: FormGroup;
-  passwordTypeInput  =  'password';
+  //passwordTypeInput  =  'password';
 
   @Input() eventoInvoker: string;
+  @Input() titleInvoker: string;
   @Input() tagInvoker: string;
   @Input() dataInvoker: ClienteInterface;
 
@@ -36,7 +37,6 @@ export class ModalClientePage implements OnInit {
     }
     console.log(this.eventoInvoker, this.tagInvoker, this.dataInvoker);
   }
-
 
 
   createFormCliente(){
@@ -68,20 +68,29 @@ export class ModalClientePage implements OnInit {
     })
   }
 
+
+
+  execFun(){
+    if(this.eventoInvoker === 'guardarCliente'){
+      this.guardarCliente();
+
+    }
+    else if(this.eventoInvoker === 'actualizarCliente'){
+      this.actualizarCliente();
+
+    } else {
+      console.log("La función no existe");
+
+    }
+  }
+
   guardarCliente(){
-    //console.log("sssssssssssGUARDA EL USUARIO");
-    const auxCliente = {
-      nombre : this.clienteModalForm.value.nombre.toLocaleLowerCase(),
-      apellidos : this.clienteModalForm.value.apellidos.toLocaleLowerCase(),
-      dni :this.clienteModalForm.value.dni,
-      telefono :this.clienteModalForm.value.telefono,
-      direccion :this.clienteModalForm.value.direccion,
-      email :this.clienteModalForm.value.email
-    };
+    this.clienteModalForm.value.nombre = this.nombre.value.toLowerCase();
+    this.clienteModalForm.value.apellidos = this.apellidos.value.toLowerCase();
 
-
-    this.registroService.guardarCliente(auxCliente).then(
-      () => {console.log('Se ingreso Correctamente');
+    this.registroService.guardarCliente(this.clienteModalForm.value).then(
+      () => {
+        console.log('Se ingreso Correctamente');
         this.presentToast("Se ingreso correctamente");
         this.clienteModalForm.reset()
         //this.modalCtlr.dismiss();
@@ -91,23 +100,16 @@ export class ModalClientePage implements OnInit {
   }
 
 
-  actualizarUsuario(){
+  actualizarCliente(){
 
-    const auxCliente = {
-      nombre : this.clienteModalForm.value.nombre.toLocaleLowerCase(),
-      apellidos : this.clienteModalForm.value.apellidos.toLocaleLowerCase(),
-      dni :this.clienteModalForm.value.dni,
-      telefono :this.clienteModalForm.value.telefono,
-      direccion :this.clienteModalForm.value.direccion,
-      email :this.clienteModalForm.value.email
-    };
+    this.clienteModalForm.value.nombre = this.nombre.value.toLowerCase();
+    this.clienteModalForm.value.apellidos = this.apellidos.value.toLowerCase();
 
-    //console.log("cccccccccccccccccccccccccccccc", auxUser);
-
-    this.registroService.actualizarCliente(this.dataInvoker.id, auxCliente).then(
-      () => {console.log('Se ingreso Correctamente');
-      this.presentToast("Datos actualizados correctamente");
-      this.modalCtlr.dismiss();
+    this.registroService.actualizarCliente(this.dataInvoker.id, this.clienteModalForm.value).then(
+      () => {
+        console.log('Se ingreso Correctamente');
+        this.presentToast("Datos actualizados correctamente");
+        this.modalCtlr.dismiss();
       }
     );
 
@@ -115,6 +117,16 @@ export class ModalClientePage implements OnInit {
 
   salirDeModal(){
     this.modalCtlr.dismiss();
+  }
+
+
+  async presentToast(message: string){
+    const toast = await this.toastCtrl.create({
+      message,
+      duration: 2000
+    });
+
+    toast.present();
   }
 
   numberOnlyValidation(event: any) {
@@ -137,29 +149,5 @@ export class ModalClientePage implements OnInit {
     }
   }
 
-
-  async presentToast(message: string){
-    const toast = await this.toastCtrl.create({
-      message,
-      duration: 2000
-    });
-
-    toast.present();
-  }
-
-
-  execFun(){
-    if(this.eventoInvoker === 'guardarCliente'){
-      this.guardarCliente();
-
-    }
-    else if(this.eventoInvoker === 'actualizarCliente'){
-      this.actualizarUsuario();
-
-    } else {
-      console.log("La función no existe");
-
-    }
-  }
 
 }

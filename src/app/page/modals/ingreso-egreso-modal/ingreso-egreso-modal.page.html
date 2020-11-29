@@ -5,10 +5,13 @@
 </ion-header>
 
 <ion-content>
+  <ion-item>
+    <ion-label>Saldo Actual: {{saldoInvoker}}</ion-label>
+  </ion-item>
   <form [formGroup]="ingresoEgresoForm" autocomplete="off">
 
     <ion-item>
-      <ion-label>Monto:* </ion-label>
+      <ion-label>{{tagInvoker}}:* </ion-label>
       <ion-input type="text" formControlName="monto" placeholder="00.00" (keypress)="numberOnlyValidation($event)"></ion-input>
     </ion-item>
     <div class="alertDanger" *ngIf="monto.invalid && (monto.dirty || monto.touched)">
@@ -25,7 +28,7 @@
     </ion-button>
 
     <ion-button (click)="execTransaction()" [disabled]="ingresoEgresoForm.invalid">
-      {{tagInvoker}}
+      {{buttonTagInvoer}}
     </ion-button>
 
   </form>

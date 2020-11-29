@@ -1,6 +1,6 @@
 <ion-header>
   <ion-toolbar>
-    <ion-title>pushpop_products beto</ion-title>
+    <ion-title>pushpop_products</ion-title>
   </ion-toolbar>
 </ion-header>
 
@@ -23,6 +23,7 @@
     </ion-row>
 
     <ion-row>
+
       <ion-col size="12" size-lg="6" size-md="6" size-sm="10" size-xs="12">
         <ion-list>
           <ion-list-header lines="inset">
@@ -35,13 +36,14 @@
             <ion-label>unidad</ion-label>
             <ion-label></ion-label>
           </ion-list-header>
-          <ion-item *ngFor="let prodItem of productosList">
+
+          <ion-item *ngFor="let prodItem of listaDeProductos">
             <ion-label>{{prodItem.nombre}}</ion-label>
             <ion-label>{{prodItem.marca}}</ion-label>
             <ion-label>{{prodItem.prec_unit}}</ion-label>
             <ion-label>{{prodItem.unidad}}</ion-label>
             <ion-label>
-              <ion-button (click)="AgregarProducto(prodItem)">
+              <ion-button (click)="AgregarItemDeVenta(prodItem)">
                 Añadir
               </ion-button>
             </ion-label>
@@ -64,26 +66,13 @@
           </ion-list-header>
 
 
-          <ion-item *ngFor="let prodItem of listaProductos">
+          <ion-item *ngFor="let prodItem of itemsDeVenta" class="itemVenta">
 
-              <!-- <ion-label>
-                <input type="number" placeholder="cantidad" [value]="prodItem.cantidad" (keypress)="inputModief($event, prodItem)" (keypress)="logForm(this.value)">
-              </ion-label>
-
-              <ion-label>{{prodItem.producto.nombre}}</ion-label>
-              <ion-label>{{prodItem.producto.prec_unit}}</ion-label>
-              <ion-label>{{prodItem.tatalxprod}}</ion-label>
-              <ion-label>
-                <ion-button (click)="quitarProducto(prodItem)">
-                  quitar
-                </ion-button>
-              </ion-label> -->
-              <app-item-venta class="ancho-item" title="Hola Beto" saludo="HIIIIIIIIIIIIIIIIIII" [prod]="prodItem"
-              (cambiarCantidadProd)="inputModief($event)"></app-item-venta>
-
-              <ion-button (click)="quitarProducto(prodItem)">
-                quitar
-              </ion-button>
+            <app-item-venta class="ventaObject"
+              [prod]="prodItem"
+              (cambiarCantidadProd)="inputModificado($event)"
+              (quitarItemDeVenta)="quitarProducto($event)"
+            ></app-item-venta>
 
           </ion-item>
 
@@ -96,43 +85,6 @@
 
      </ion-row>
 
-
-    <!-- <ion-row>
-      <ion-col size="12">
-
-          <ion-list>
-            <ion-item *ngFor="let prodItem of usuariosList">
-              <ion-label>{{prodItem | json}}</ion-label>
-            </ion-item>
-          </ion-list>
-
-      </ion-col>
-    </ion-row>
-
-
-    <ion-row>
-      <ion-col size="12">
-        <ion-button (click)="getUsuarios()">
-          Usuarios
-        </ion-button>
-      </ion-col>
-    </ion-row> -->
-
   </ion-grid>
-
-  <!-- <form (ngSubmit)="logForm()">
-    <ion-item>
-      <ion-label>Todo</ion-label>
-      <ion-input type="text" [(ngModel)]="todo.title" name="title"></ion-input>
-    </ion-item>
-    <ion-item>
-      <ion-label>Description</ion-label>
-      <ion-textarea [(ngModel)]="todo.description" name="description"></ion-textarea>
-    </ion-item>
-    <button ion-button type="submit" block>Add Todo</button>
-  </form> -->
-
-  <!-- <app-item-venta title="Hola Beto" saludo="HIIIIIIIIIIIIIIIIIII"></app-item-venta> -->
-
 
 </ion-content>

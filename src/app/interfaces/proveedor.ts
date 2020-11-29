@@ -1,4 +1,4 @@
-export interface Proveedor {
+export interface ProveedorInterface {
     id?: string;
     nombre ?: string;
     ruc ?: string;

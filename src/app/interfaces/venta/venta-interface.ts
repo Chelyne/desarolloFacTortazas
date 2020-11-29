@@ -1,6 +1,6 @@
-import { ObjetoVenta } from './objeto-venta';
+import { ItemDeVentaInterface } from './objeto-venta';
 
 export interface VentaInterface {
-    objetosVenta?: ObjetoVenta[];
+    objetosVenta?: ItemDeVentaInterface[];
     totalaPagar?: number;
 }

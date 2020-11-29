@@ -1,6 +1,7 @@
 import { ProductoInterface } from '../producto';
 
-export interface ObjetoVenta {
+//TODO CAMBIAR NOMBRE A ItemDeVentaInterface
+export interface ItemDeVentaInterface {
     producto?: ProductoInterface;
     idProducto?: string;
     cantidad?: number;

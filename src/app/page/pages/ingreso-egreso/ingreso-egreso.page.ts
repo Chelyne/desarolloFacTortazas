@@ -9,31 +9,36 @@ import { IngresoEgresoModalPage } from '../../modals/ingreso-egreso-modal/ingres
 })
 export class IngresoEgresoPage implements OnInit {
 
-  private saldo : number = 0;
+  saldo : number = 0;
 
-  eventToSendModel: string;
-  tagToSendModel: string;
-  saldoToSendModel: number;
+  modalEvento: string;
+  modalTag: string;
+  modalButtonTag:string;
+  modalSaldo: number;
 
 
   constructor( private modalCtlr: ModalController) {
     //this.usuarioForm = this.createFormGroupUsuario();
     //this.ObtenerUsuarios();
   }
+
   ngOnInit() {
   }
 
+  //TODO -Cambiar nombre
   exec(accion : string){
     console.log(accion);
     if (accion == 'Ingreso') {
-      this.eventToSendModel = 'Ingreso';
-      this.tagToSendModel = 'Ingresar monto';
-      this.saldoToSendModel = this.saldo;
+      this.modalEvento = 'Ingreso';
+      this.modalTag = 'Monto a Ingresar';
+      this.modalButtonTag = 'Ingresar monto';
+      this.modalSaldo = this.saldo;
 
     } else if (accion == 'Egreso') {
-      this.eventToSendModel = 'Egreso';
-      this.tagToSendModel = 'Retirar monto';
-      this.saldoToSendModel = this.saldo;
+      this.modalEvento = 'Egreso';
+      this.modalTag = 'Monto a Retirar';
+      this.modalButtonTag = 'Retirar monto';
+      this.modalSaldo = this.saldo;
 
     } else{
       console.log('La funcion no es valida');
@@ -48,9 +53,10 @@ export class IngresoEgresoPage implements OnInit {
     const modal =  await this.modalCtlr.create({
       component: IngresoEgresoModalPage,
       componentProps: {
-        eventoInvoker: this.eventToSendModel,
-        tagInvoker: this.tagToSendModel,
-        saldoInvoker: this.saldoToSendModel
+        eventoInvoker: this.modalEvento,
+        buttonTagInvoer: this.modalButtonTag,
+        tagInvoker: this.modalTag,
+        saldoInvoker: this.modalSaldo
       }
     });
 

@@ -25,15 +25,15 @@
 
       <ion-col size="12" size-lg="8" size-md="10" size-sm="10" size-xs="12">
         <ion-list>
-          <ion-item *ngFor="let clientItem of clientesList">
-            <ion-label>{{clientItem.nombre}}</ion-label>
-            <ion-label>{{clientItem.apellidos}}</ion-label>
-            <ion-label>{{clientItem.dni}}</ion-label>
-            <ion-label>{{clientItem.telefono}}</ion-label>
-            <ion-label>{{clientItem.direccion}}</ion-label>
-            <ion-label>{{clientItem.email}}</ion-label>
+          <ion-item *ngFor="let cliente of listaDeclientes">
+            <ion-label>{{cliente.nombre}}</ion-label>
+            <ion-label>{{cliente.apellidos}}</ion-label>
+            <ion-label>{{cliente.dni}}</ion-label>
+            <ion-label>{{cliente.telefono}}</ion-label>
+            <ion-label>{{cliente.direccion}}</ion-label>
+            <ion-label>{{cliente.email}}</ion-label>
             <ion-label>
-              <ion-button (click)="updateClienteData(clientItem)">
+              <ion-button (click)="ActualizarDataCliente(cliente)">
                 Actualizar
               </ion-button>
             </ion-label>
@@ -47,7 +47,7 @@
   </ion-grid>
 
   <ion-fab vertical="bottom" horizontal="end" slot="fixed">
-    <ion-button (click)="newClienteModal()">
+    <ion-button (click)="AgregarNuevoCliente()">
       Agregar Cliente
     </ion-button>
   </ion-fab>

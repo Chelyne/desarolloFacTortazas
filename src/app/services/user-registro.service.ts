@@ -3,7 +3,7 @@ import { AngularFirestore, AngularFirestoreCollection, AngularFirestoreDocument 
 import { Observable} from 'rxjs';
 import { map } from 'rxjs/operators';
 
-import { Usuario } from '../interfaces/usuario';
+import { UsuarioInterface } from '../interfaces/usuario';
 
 
 @Injectable({
@@ -11,16 +11,16 @@ import { Usuario } from '../interfaces/usuario';
 })
 export class UserRegistroService {
 
-  private usuariosCollection: AngularFirestoreCollection<Usuario>;
-  private usuarios: Observable<Usuario[]>;
+  private usuariosCollection: AngularFirestoreCollection<UsuarioInterface>;
+  private usuarios: Observable<UsuarioInterface[]>;
 
-  private usuarioDoc: AngularFirestoreDocument<Usuario>;
-  private usuario: Observable<Usuario>;
+  private usuarioDoc: AngularFirestoreDocument<UsuarioInterface>;
+  private usuario: Observable<UsuarioInterface>;
 
   constructor(private afs: AngularFirestore) { }
 
 
-  guardarUsuario(newUser: Usuario) {
+  guardarUsuario(newUser: UsuarioInterface) {
     const promesa =  new Promise( (resolve, reject) => {
       this.afs.collection('usuarios').add(newUser);
       resolve();
@@ -30,7 +30,7 @@ export class UserRegistroService {
   }
 
 
-  actualizarUsuario(idUser: string, newUser: Usuario) {
+  actualizarUsuario(idUser: string, newUser: UsuarioInterface) {
     //console.log( idUser, newUser);
 
     const promesa =  new Promise( (resolve, reject) => {
@@ -51,7 +51,7 @@ export class UserRegistroService {
     .pipe(map(
       changes => {
         return changes.map(action => {
-          const data = action.payload.doc.data() as Usuario;
+          const data = action.payload.doc.data() as UsuarioInterface;
           data.id = action.payload.doc.id;
           return data;
           });
@@ -61,7 +61,7 @@ export class UserRegistroService {
   }
 
 
-  ObtenerListaUsuarios() {
+  ObtenerListaDeUsuarios() {
 
     this.usuariosCollection = this.afs.collection('usuarios');
 
@@ -69,7 +69,7 @@ export class UserRegistroService {
       .pipe(map(
         changes => {
           return changes.map(action => {
-            const data = action.payload.doc.data() as Usuario;
+            const data = action.payload.doc.data() as UsuarioInterface;
             data.id = action.payload.doc.id;
             return data;
             });

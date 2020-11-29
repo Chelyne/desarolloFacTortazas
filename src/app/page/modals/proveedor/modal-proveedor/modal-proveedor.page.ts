@@ -1,7 +1,7 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { ModalController, ToastController } from '@ionic/angular';
-import { Proveedor } from 'src/app/interfaces/proveedor';
+import { ProveedorInterface } from 'src/app/interfaces/proveedor';
 import { ProveedorRegistroService } from 'src/app/services/proveedor-registro.service';
 
 @Component({
@@ -15,7 +15,8 @@ export class ModalProveedorPage implements OnInit {
 
   @Input() eventoInvoker: string;
   @Input() tagInvoker: string;
-  @Input() dataInvoker: Proveedor;
+  @Input() titleInvoker: string;
+  @Input() dataInvoker: ProveedorInterface;
 
 
   constructor(
@@ -23,7 +24,6 @@ export class ModalProveedorPage implements OnInit {
     private modalCtlr: ModalController,
     private toastCtrl: ToastController
   ) {
-
     this.proveedorModalForm = this.createFormProveedor();
     //console.log(this.eventoInvoker, this.tagInvoker, this.dataInvoker);
   }
@@ -62,27 +62,30 @@ export class ModalProveedorPage implements OnInit {
   }
 
 
+  execFun(){
+    if(this.eventoInvoker === 'guardarProveedor'){
+      this.guardarProveedor();
+
+    }
+    else if(this.eventoInvoker === 'actualizarProveedor'){
+      this.actualizarProveedor();
+
+    } else {
+      console.log("La función no existe");
+    }
+
+  }
+
   guardarProveedor(){
-    console.log(this.proveedorModalForm.value);
+    // console.log(this.proveedorModalForm.value);
     this.registroService.guardarProveedor(this.proveedorModalForm.value).then(()=>{
-      console.log("Se ingreso Correctamente")
+      //console.log("Se ingreso Correctamente")
       this.presentToast("Datos guardados correctamente");
       //this.modalCtlr.dismiss();
     });
   }
 
   actualizarProveedor(){
-
-    // const auxUser = {
-    //   nombre : this.usuarioModalForm.value.nombre.toLocaleLowerCase(),
-    //   apellidos : this.usuarioModalForm.value.apellidos.toLocaleLowerCase(),
-    //   dni :this.usuarioModalForm.value.dni,
-    //   usuario :this.usuarioModalForm.value.usuario,
-    //   password :this.usuarioModalForm.value.password,
-    //   rol :this.usuarioModalForm.value.rol
-    // };
-
-    //console.log("cccccccccccccccccccccccccccccc", auxUser);
 
     this.registroService.actualizarProveedor(this.dataInvoker.id, this.proveedorModalForm.value).then(
       () => {console.log('Se ingreso Correctamente');
@@ -91,6 +94,21 @@ export class ModalProveedorPage implements OnInit {
       }
     );
 
+  }
+
+
+  salirDeModal(){
+    this.modalCtlr.dismiss();
+  }
+
+
+  async presentToast(message: string){
+    const toast = await this.toastCtrl.create({
+      message,
+      duration: 2000
+    });
+
+    toast.present();
   }
 
 
@@ -113,40 +131,5 @@ export class ModalProveedorPage implements OnInit {
       event.preventDefault();
     }
   }
-
-  async presentToast(message: string){
-    const toast = await this.toastCtrl.create({
-      message,
-      duration: 2000
-    });
-
-    toast.present();
-  }
-
-  execFun(){
-    if(this.eventoInvoker === 'guardarProveedor'){
-      this.guardarProveedor();
-
-    }
-    else if(this.eventoInvoker === 'actualizarProveedor'){
-      this.actualizarProveedor();
-
-    } else {
-      console.log("La función no existe");
-
-    }
-
-
-
-  }
-
-  salirDeModal(){
-    this.modalCtlr.dismiss();
-  }
-
-
-
-
-
 
 }

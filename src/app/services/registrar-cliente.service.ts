@@ -43,7 +43,7 @@ export class RegistrarClienteService {
   }
 
 
-  ObtenerListaClientes() {
+  ObtenerListaDeClientes() {
 
     this.clientesCollection = this.afs.collection(this.coleccion);
 

@@ -1,6 +1,6 @@
 <ion-header>
   <ion-toolbar>
-    <ion-title>registrar-usuario</ion-title>
+    <ion-title>Usuarios</ion-title>
   </ion-toolbar>
 </ion-header>
 
@@ -24,14 +24,14 @@
 
       <ion-col size="12" size-lg="8" size-md="10" size-sm="10" size-xs="12">
         <ion-list>
-          <ion-item *ngFor="let userItem of usuariosList">
-            <ion-label>{{userItem.nombre}}</ion-label>
-            <ion-label>{{userItem.apellidos}}</ion-label>
-            <ion-label>{{userItem.dni}}</ion-label>
-            <ion-label>{{userItem.usuario}}</ion-label>
-            <ion-label>{{userItem.rol}}</ion-label>
+          <ion-item *ngFor="let usuario of listaDeUsuarios">
+            <ion-label>{{usuario.nombre}}</ion-label>
+            <ion-label>{{usuario.apellidos}}</ion-label>
+            <ion-label>{{usuario.dni}}</ion-label>
+            <ion-label>{{usuario.usuario}}</ion-label>
+            <ion-label>{{usuario.rol}}</ion-label>
             <ion-label>
-              <ion-button (click)="updateUserData(userItem)">
+              <ion-button (click)="ActualizarDataUsuario(usuario)">
                 Actualizar
               </ion-button>
             </ion-label>
@@ -45,7 +45,7 @@
   </ion-grid>
 
   <ion-fab vertical="bottom" horizontal="end" slot="fixed">
-    <ion-button (click)="newUserModal()">
+    <ion-button (click)="AgregarNuevoUsuario()">
       Agregar Usuario
     </ion-button>
   </ion-fab>
