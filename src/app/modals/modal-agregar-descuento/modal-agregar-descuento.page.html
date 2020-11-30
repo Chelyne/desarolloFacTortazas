@@ -1,0 +1,82 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons slot="end">
+      <ion-button (click)="cerrarModal()">
+        <ion-icon slot="icon-only" name="close-outline" color="primary"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+    <ion-title color="primary">Agregar Descuento</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <ion-card>
+    <ion-card-header color="primary">
+      <ion-card-title color="light" class="ion-text-center">Nuevo descuento</ion-card-title>
+    </ion-card-header>
+    <ion-card-content>
+      <ion-item lines="none">
+        <ion-label color="primary">Categoria</ion-label>
+        <ion-select [(ngModel)]="categoria" okText="Aceptar" cancelText="Cancelar" mode="ios" placeholder="Seleccionar">
+          <ion-select-option *ngFor="let categoria of listaCategorias"  value="{{categoria.categoria}}">{{categoria.categoria |titlecase}}</ion-select-option>
+        </ion-select>
+      </ion-item>
+      <ion-item lines="none" class="ion-text-right">
+        <ion-label color="primary">Descuento:</ion-label>
+        <ion-input [(ngModel)]="descuento" type="number" placeholder="Porcentaje"></ion-input>
+      </ion-item>
+    </ion-card-content>
+  </ion-card>
+  <ion-item lines="none" *ngIf="categoria && descuento">
+    <ion-icon color="primary" slot="start" name="apps-outline"></ion-icon>
+    <ion-label>{{categoria | titlecase}}</ion-label>
+    <ion-icon color="primary" slot="end" name="pricetags-outline"></ion-icon>
+    <ion-label slot="end">{{descuento}} <b>%</b></ion-label>
+  </ion-item>
+  <ion-button *ngIf="categoria && descuento" (click)="validarDescuento()" fill="clear" expand="block">Validar Descuento</ion-button>
+  <div class="listaProductos" *ngIf="listaProductos.length>0">
+    <ion-list>
+      <ion-list-header color="primary">
+        <ion-label color="light">Lista de productos</ion-label>
+      </ion-list-header>
+        <!-- <ion-item *ngFor="let producto of listaProductos">
+              <ion-thumbnail slot="start">
+                <img *ngIf="producto.img" src="{{producto.img}}">
+                <img *ngIf="!producto.img" src="../../../assets/img/pet chop.png">
+              </ion-thumbnail>
+              <ion-label>
+                <h2>{{producto.nombre | titlecase}}</h2>
+                <p>
+                  <del>S/. {{producto.precio | number: '1.2'}}</del>
+                  <b>S/. {{producto.precio - (producto.precio * descuento/100) | number: '1.2'}}</b>
+                </p>
+              </ion-label>
+        </ion-item> -->
+      <ion-card *ngFor="let producto of listaProductos">
+        <ion-card-content>
+          <ion-row class="ion-justify-content-center ion-align-items-center">
+            <ion-col size-xs="2">
+              <ion-thumbnail>
+                <img *ngIf="producto.img" src="{{producto.img}}">
+                <img *ngIf="!producto.img" src="../../../assets/img/pet chop.png">
+              </ion-thumbnail>
+            </ion-col>
+            <ion-col size-xs="6" class="ion-text-left">
+              <ion-label>{{producto.nombre | titlecase}}</ion-label>
+            </ion-col>
+            <ion-col size-xs="4" class="ion-text-center">
+              <del>S/. {{producto.precio | number: '1.2'}}</del><br>
+              <b><ion-label>S/. {{producto.precio - (producto.precio * descuento/100) | number: '1.2'}}</ion-label></b>
+            </ion-col>
+          </ion-row>
+        </ion-card-content>
+      </ion-card>
+    </ion-list>
+  </div>
+</ion-content>
+
+<ion-footer *ngIf="listaProductos.length>0">
+  <ion-button expand="block" style="margin: 10px;" (click)="agregarDescuento()">
+    <ion-label color="light">Agregar descuento</ion-label>
+  </ion-button>
+</ion-footer>

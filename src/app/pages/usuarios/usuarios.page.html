@@ -1,0 +1,146 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="/home" color="primary"></ion-back-button>
+    </ion-buttons>
+    <ion-title color="primary">Agregar Usuario</ion-title>
+  </ion-toolbar>
+</ion-header>
+<ion-content>
+  <ion-grid>
+    <ion-row>
+      <ion-col *ngFor="let c of [1,1,1,1,1,1,1,1,1,1,1,1]; let i = index" class="testRows">
+        {{i+1}}
+      </ion-col>
+    </ion-row>
+    <ion-row>
+      <ion-col></ion-col>
+      <ion-col size="12" size-lg="6" size-md="8" size-sm="10" size-xs="12">
+        <div class="divtest">texto</div>
+      </ion-col>
+      <ion-col></ion-col>
+    </ion-row>
+
+    <ion-row>
+      <ion-col></ion-col>
+
+      <ion-col size="12" size-lg="6" size-md="8" size-sm="10" size-xs="12">
+        <form [formGroup]="usuarioForm" autocomplete="off">
+
+          <ion-item>
+            <ion-label>Nombres:* </ion-label>
+            <ion-input type="text" formControlName="nombre" placeholder="nombres" class="capital" (keypress)="stringOnlyValidation($event)"></ion-input>
+          </ion-item>
+          <div class="alertDanger" *ngIf="nombre.invalid && (nombre.dirty || nombre.touched)">
+            <div class="mensajeError" *ngIf="nombre.errors.required">
+              *Complete su nombre
+            </div>
+            <div class="mensajeError" *ngIf="nombre.errors.pattern">
+              *No puede ingresar números en su nombre
+            </div>
+            <div #elseBlock class="mensajeError" *ngIf="nombre.errors.minlength">
+              *Ingrese mínimo 3 caracteres
+            </div>
+          </div>
+
+
+          <ion-item>
+            <ion-label>Apellidos:* </ion-label>
+            <ion-input type="text" formControlName="apellidos" placeholder="Apellidos" (keypress)="stringOnlyValidation($event)"></ion-input>
+          </ion-item>
+          <div class="alertDanger" *ngIf="apellidos.invalid && (apellidos.dirty || apellidos.touched)">
+            <div class="mensajeError" *ngIf="apellidos.errors.required">
+              *Complete sus apellidos
+            </div>
+            <div class="mensajeError" *ngIf="apellidos.errors.minlength">
+              *Ingrese mínimo 3 caracteres
+            </div>
+            <div class="mensajeError" *ngIf="apellidos.errors.pattern">
+              *No puede ingresar números en sus Apellidos
+            </div>
+          </div>
+
+          <ion-item>
+            <ion-label>DNI:* </ion-label>
+            <ion-input type="text" (keypress)="numberOnlyValidation($event)" formControlName="dni" placeholder="DNI"></ion-input>
+          </ion-item>
+          <div class="alertDanger" *ngIf="dni.invalid && (dni.dirty || dni.touched)">
+            <div class="mensajeError" *ngIf="dni.errors.required">
+              *Complete su DNI
+            </div>
+            <div class="mensajeError" *ngIf="dni.errors.minlength">
+              *Ingrese 8 dígitos
+            </div>
+            <div class="mensajeError" *ngIf="dni.errors.maxlength">
+              *Ingrese más de 8 dígitos
+            </div>
+          </div>
+
+          <ion-item>
+            <ion-label>Usuario:* </ion-label>
+            <ion-input type="text" formControlName="usuario" placeholder="Usuario"></ion-input>
+          </ion-item>
+          <div class="alertDanger" *ngIf="usuario.invalid && (usuario.dirty || usuario.touched)">
+            <div class="mensajeError" *ngIf="usuario.errors.required">
+              *Complete su usuario
+            </div>
+            <div class="mensajeError" *ngIf="usuario.errors.minlength">
+              *Ingrese mínimo 6 caracteres
+            </div>
+            <!-- <div class="mensajeError" *ngIf="!usuario.errors.required && !usuario.errors.min">
+              *Usuario Incorrecto
+            </div> -->
+          </div>
+
+
+          <ion-item>
+            <ion-label>Contraseña:* </ion-label>
+            <ion-input #passwordEyeRegister  [type]="passwordTypeInput" formControlName="password"
+             placeholder="Contraseña" clearOnEdit="false">
+            </ion-input>
+            <ion-buttons>
+              <ion-button (click)="togglePasswordMode()">
+                <ion-icon  [name]="(passwordTypeInput === 'text')?'eye-off':'eye'"></ion-icon>
+              </ion-button>
+            </ion-buttons>
+            <!-- <button  item-end  class="btn_eye_icon"  (click)="togglePasswordMode()">
+              <ion-icon  [name]="(passwordTypeInput === 'text')?'eye-off':'eye'"></ion-icon>
+            </button> -->
+          </ion-item>
+          <div class="alertDanger" *ngIf="password.invalid && (password.dirty || password.touched)">
+            <div class="mensajeError" *ngIf="password.errors.required">
+              *Complete su contraseña
+            </div>
+            <div class="mensajeError" *ngIf="password.errors.minlength">
+              *Ingrese mínimo 6 caracteres
+            </div>
+          </div>
+
+          <ion-item>
+            <ion-label>Rol:* </ion-label>
+            <ion-select formControlName="rol" value="admin" interface="popover">
+              <ion-select-option value="admin">Administrador</ion-select-option>
+              <ion-select-option value="vendedor">Vendedor</ion-select-option>
+            </ion-select>
+          </ion-item>
+          <div class="alertDanger" *ngIf="rol.invalid && (rol.dirty || rol.touched)">
+            <div class="mensajeError" *ngIf="rol.errors.required">
+              *Debe seleccionar un rol
+            </div>
+          </div>
+
+          <ion-button (click)="guardarUsuario()" [disabled]="usuarioForm.invalid">
+            Guardar
+          </ion-button>
+
+        </form>
+      </ion-col>
+
+      <ion-col></ion-col>
+    </ion-row>
+
+  </ion-grid>
+
+
+
+</ion-content>

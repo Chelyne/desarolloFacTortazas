@@ -1,0 +1,65 @@
+.gridPrincipal {
+    height: 100%;
+    ion-row {
+        height: 50%;
+        ion-col {
+            height: 100%;
+        }
+    }
+}
+
+.categoriasContent {
+    height: 100%;
+    .categorias {
+        height: 100%;
+    }
+}
+
+.productos {
+    padding: 2px;
+    margin: 0px;
+    ion-row {
+      padding: 0px;
+      margin-left: 5%;
+      margin-right: 5%;
+      margin-bottom: 5%;
+      ion-col{
+      margin-bottom: 5%;
+        ion-card {
+          height: 100%;
+          margin: 5%;
+          text-align: center;
+          img{
+            height: 70px;
+            width: 100%;
+            object-fit: contain;
+            object-position: center center;
+          }
+          ion-card-title{
+            font-weight: bold;
+            font-size: 2vh;
+          }
+          .precio {
+            background-color: #00AFEF;
+            margin-bottom: 0px;
+            padding: 3px;
+            color: white;
+            margin: 2px;
+          }
+        }
+      }
+    }
+  }
+
+  .touchpad {
+      height: 100%;
+      ion-row {
+          height: 25%;
+          ion-col {
+              ion-button {
+                  height: 100%;
+                  width: 100%;
+              }
+          }
+      }
+  }

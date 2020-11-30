@@ -1,0 +1,32 @@
+ion-header {
+  ion-toolbar {
+    .logoApp {
+      height: 25px;
+      vertical-align: middle;
+    }
+  }
+}
+
+ion-grid {
+  ion-row {
+    ion-col {
+      ion-card {
+        border-radius: 15px;
+        margin-left: 10%;
+        margin-right: 10%;
+        // si queremos volver a la normalidad
+        ion-card-header {
+          text-align: center;
+          ion-card-title {
+            font-size: 2.4vh;
+          }
+          img{
+            height: 11.5vh;
+            object-fit: cover;
+            zoom: 1.11;
+          }
+        }
+      }
+    }
+  }
+}
