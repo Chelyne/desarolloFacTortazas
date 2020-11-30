@@ -3,15 +3,18 @@ import { CommonModule } from '@angular/common';
 import { ItemVentaComponent } from './item-venta/item-venta.component';
 import { IonicModule } from '@ionic/angular';
 import { ReactiveFormsModule } from '@angular/forms';
+import { VentasEnEsperaComponent } from './ventas-en-espera/ventas-en-espera.component';
 
 
 
 @NgModule({
   declarations: [
-    ItemVentaComponent
+    ItemVentaComponent,
+    VentasEnEsperaComponent
   ],
   exports:[
-    ItemVentaComponent
+    ItemVentaComponent,
+    VentasEnEsperaComponent
   ],
   imports: [
     CommonModule,

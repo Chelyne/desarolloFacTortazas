@@ -1,6 +1,7 @@
 import { ItemDeVentaInterface } from './objeto-venta';
 
 export interface VentaInterface {
-    objetosVenta?: ItemDeVentaInterface[];
+    idVenta?:string;
+    itemsDeVenta?: ItemDeVentaInterface[];
     totalaPagar?: number;
 }

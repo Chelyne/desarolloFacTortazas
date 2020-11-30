@@ -137,5 +137,65 @@ export class PushpopProductsPage implements OnInit {
     this.totalxPagar = totalxpagar;
   }
 
+  //......................................
+  //nuevas funcionalidades
+
+  AgregaraListaDeEspera(){
+    //poner la venta en la lista de espera
+    //anadir el array de itemsDeVenta a listaDeVentas
+    // +totalapagar
+    //NOTE - quizas necesitas; crearVenta
+    this.listaDeVentas.push(this.CrearItemDeVentas());
+    this.itemsDeVenta = [];
+    this.totalxPagar = 0;
+    console.log(this.listaDeVentas);
+
+  }
+
+  CrearItemDeVentas():VentaInterface{
+    return {
+      itemsDeVenta: this.itemsDeVenta,
+      totalaPagar: this.totalxPagar,
+      idVenta: this.CrearVentaId()
+    };
+  }
+
+  //sacar de espera
+  //moverAListaPrincipal
+  moverAListaPrincipal(venta:VentaInterface){
+
+    this.itemsDeVenta = venta.itemsDeVenta;
+
+    const idVenta = venta.idVenta;
+    let index = 0;
+    for (const ventaItem of this.listaDeVentas) {
+      if (idVenta== ventaItem.idVenta) {
+        this.listaDeVentas.splice(index,1);
+        break;
+      }
+      index++;
+    }
+
+    this.calcularTotalaPagar();
+  }
+
+  QuitarListaDeVenta(){
+    this.itemsDeVenta = [];
+    this.totalxPagar = 0;
+  }
+
+  CrearVentaId():string{
+    const hoy = new Date();
+    const hora = ''+hoy.getHours()+''+hoy.getMinutes()+''+hoy.getSeconds()+''+hoy.getMilliseconds();
+    //console.log(typeof hora);
+    //console.log('la hora: ', hora);
+
+    return hora;
+  }
+
+  LimpiarListaDeVentas(){
+    this.listaDeVentas = [];
+  }
+
 
 }
