@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { ModalController } from '@ionic/angular';
-import { ProveedorInterface } from 'src/app/interfaces/proveedor';
 import { AgregarEditarProveedorPage } from 'src/app/modals/agregar-editar-proveedor/agregar-editar-proveedor.page';
+import { ProveedorInterface } from 'src/app/models/proveedor';
 import { ProveedorRegistroService } from 'src/app/services/proveedor-registro.service';
 
 @Component({

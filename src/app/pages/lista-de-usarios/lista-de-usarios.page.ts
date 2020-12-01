@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { ModalController } from '@ionic/angular';
-import { UsuarioInterface } from 'src/app/interfaces/usuario';
 import { AgregarEditarUsuarioPage } from 'src/app/modals/agregar-editar-usuario/agregar-editar-usuario.page';
+import { UsuarioInterface } from 'src/app/models/usuario';
 import { UserRegistroService } from 'src/app/services/user-registro.service';
 
 @Component({

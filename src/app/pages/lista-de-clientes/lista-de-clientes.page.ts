@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { ModalController } from '@ionic/angular';
-import { ClienteInterface } from 'src/app/interfaces/cliente-interface';
 import { AgregarEditarClientePage } from 'src/app/modals/agregar-editar-cliente/agregar-editar-cliente.page';
+import { ClienteInterface } from 'src/app/models/cliente-interface';
 import { RegistrarClienteService } from 'src/app/services/registrar-cliente.service';
 
 @Component({

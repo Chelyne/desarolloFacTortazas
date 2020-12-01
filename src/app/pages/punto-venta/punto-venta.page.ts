@@ -1,7 +1,8 @@
 import { Component, OnInit } from '@angular/core';
-import { ProductoInterface } from 'src/app/interfaces/producto';
-import { ItemDeVentaInterface } from 'src/app/interfaces/venta/objeto-venta';
-import { VentaInterface } from 'src/app/interfaces/venta/venta-interface';
+import { ProductoInterface } from 'src/app/models/producto';
+import { ItemDeVentaInterface } from 'src/app/models/venta/item-de-venta';
+import { VentaInterface } from 'src/app/models/venta/venta';
+
 import { ProductoService } from 'src/app/services/producto/producto.service';
 
 @Component({
