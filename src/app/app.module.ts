@@ -19,12 +19,10 @@ import { AngularFireStorageModule } from '@angular/fire/storage';
 import {AngularFireDatabaseModule} from '@angular/fire/database';
 import { AngularFireAuthModule } from '@angular/fire/auth';
 import { environment } from '../environments/environment';
-import { NumberDirective } from './directive/number-only.directive';
-import { UpperCaseDirective } from './directive/upper-case.directive';
 
 
 @NgModule({
-  declarations: [AppComponent, NumberDirective, UpperCaseDirective],
+  declarations: [AppComponent],
   entryComponents: [],
   imports: [
     BrowserModule,
