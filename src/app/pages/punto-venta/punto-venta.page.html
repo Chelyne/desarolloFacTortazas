@@ -1,0 +1,121 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title>Punto de venta</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+
+  <ion-grid>
+
+    <ion-row>
+      <ion-col *ngFor="let c of [1,1,1,1,1,1,1,1,1,1,1,1]; let i = index" class="testRows">
+        {{i+1}}
+      </ion-col>
+    </ion-row>
+
+    <ion-row>
+      <ion-col></ion-col>
+      <ion-col size="12" size-lg="6" size-md="8" size-sm="10" size-xs="12">
+        <div class="divtest">texto</div>
+      </ion-col>
+      <ion-col></ion-col>
+    </ion-row>
+
+    <ion-row>
+
+      <ion-col size="12" size-lg="6" size-md="6" size-sm="10" size-xs="12">
+        <ion-list>
+          <ion-list-header lines="inset">
+            <ion-label color="primary">Lista de productos</ion-label>
+          </ion-list-header>
+          <ion-list-header lines="inset">
+            <ion-label>nombre</ion-label>
+            <ion-label>marca</ion-label>
+            <ion-label>prec_unit</ion-label>
+            <ion-label>unidad</ion-label>
+            <ion-label></ion-label>
+          </ion-list-header>
+
+          <ion-item *ngFor="let prodItem of listaDeProductos">
+            <ion-label>{{prodItem.nombre}}</ion-label>
+            <ion-label>{{prodItem.marca}}</ion-label>
+            <ion-label>{{prodItem.prec_unit}}</ion-label>
+            <ion-label>{{prodItem.unidad}}</ion-label>
+            <ion-label>
+              <ion-button (click)="AgregarItemDeVenta(prodItem)">
+                Añadir
+              </ion-button>
+            </ion-label>
+          </ion-item>
+        </ion-list>
+      </ion-col>
+
+      <ion-col size="12" size-lg="6" size-md="6" size-sm="10" size-xs="12">
+        <ion-list>
+          <ion-list-header lines="inset">
+            <ion-label color="primary">Lista de venta</ion-label>
+          </ion-list-header>
+          <ion-list-header lines="inset">
+            <ion-label>cantidad</ion-label>
+            <ion-label>nombre</ion-label>
+            <ion-label>prec_unit</ion-label>
+            <ion-label>totalxproducto</ion-label>
+            <ion-label>opciones</ion-label>
+            <ion-label></ion-label>
+          </ion-list-header>
+
+
+          <ion-item *ngFor="let prodItem of itemsDeVenta" class="itemVenta">
+
+            <app-producto-venta class="ventaObject"
+              [prod]="prodItem"
+              (cambiarCantidadProd)="inputModificado($event)"
+              (quitarItemDeVenta)="quitarProducto($event)"
+            ></app-producto-venta>
+
+          </ion-item>
+
+
+          <ion-list-header >
+            <ion-label >Total a pagar: {{totalxPagar}} </ion-label>
+            <ion-button (click)="AgregaraListaDeEspera()" expand="block" fill="clear" shape="round">
+              Agregar a lista de espera
+            </ion-button>
+            <ion-button (click)="QuitarListaDeVenta()" expand="block" fill="clear" shape="round">
+              Quitar lista
+            </ion-button>
+          </ion-list-header>
+        </ion-list>
+      </ion-col>
+
+     </ion-row>
+
+     <ion-row>
+       <ion-col size="6">
+        <ion-list>
+          <ion-list-header lines="inset">
+            <ion-label color="primary">Lista Ventas en espera</ion-label>
+          </ion-list-header>
+
+          <ion-item *ngFor="let venta of listaDeVentas">
+            {{venta.itemsDeVenta | json}}
+            {{venta.totalaPagar}}
+            <ion-button (click)="moverAListaPrincipal(venta)" expand="block" fill="clear" shape="round">
+              Recuperar
+            </ion-button>
+          </ion-item>
+          <ion-button (click)="LimpiarListaDeVentas()" expand="block" fill="clear" shape="round"
+          [disabled]="listaDeVentas.length == 0">
+            Limpiar listas de venta
+          </ion-button>
+        </ion-list>
+
+
+
+       </ion-col>
+     </ion-row>
+
+  </ion-grid>
+
+</ion-content>
