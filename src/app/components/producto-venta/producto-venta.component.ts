@@ -1,6 +1,6 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
-import { ItemDeVentaInterface } from 'src/app/interfaces/venta/objeto-venta';
+import { ItemDeVentaInterface } from 'src/app/models/venta/item-de-venta';
 
 @Component({
   selector: 'app-producto-venta',

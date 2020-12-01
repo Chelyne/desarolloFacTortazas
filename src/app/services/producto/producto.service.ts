@@ -3,8 +3,7 @@ import { AngularFirestore, AngularFirestoreCollection } from '@angular/fire/fire
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 
-
-import { ProductoInterface } from 'src/app/interfaces/producto';
+import { ProductoInterface } from 'src/app/models/producto';
 
 @Injectable({
   providedIn: 'root'

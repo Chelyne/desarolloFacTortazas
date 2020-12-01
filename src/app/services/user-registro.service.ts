@@ -3,7 +3,7 @@ import { AngularFirestore, AngularFirestoreCollection, AngularFirestoreDocument 
 import { Observable} from 'rxjs';
 import { map } from 'rxjs/operators';
 
-import { UsuarioInterface } from '../interfaces/usuario';
+import { UsuarioInterface } from '../models/usuario';
 
 
 @Injectable({

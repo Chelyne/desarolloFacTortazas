@@ -9,7 +9,7 @@ const routes: Routes = [
   },
   {
     path: 'inicio',
-    loadChildren: () => import('./page/inicio/inicio.module').then( m => m.InicioPageModule)
+    loadChildren: () => import('./pages/inicio/inicio.module').then( m => m.InicioPageModule)
   },
   {
     path: 'registrar-proveedor',
@@ -34,7 +34,34 @@ const routes: Routes = [
   {
     path: 'pushpop-products',
     loadChildren: () => import('./page/pages/pushpop-products/pushpop-products.module').then( m => m.PushpopProductsPageModule)
+  },
+
+
+
+
+  {
+    path: 'lista-de-usarios',
+    loadChildren: () => import('./pages/lista-de-usarios/lista-de-usarios.module').then( m => m.ListaDeUsariosPageModule)
+  },
+  {
+    path: 'lista-de-clientes',
+    loadChildren: () => import('./pages/lista-de-clientes/lista-de-clientes.module').then( m => m.ListaDeClientesPageModule)
+  },
+  {
+    path: 'lista-de-proveedores',
+    loadChildren: () => import('./pages/lista-de-proveedores/lista-de-proveedores.module').then( m => m.ListaDeProveedoresPageModule)
+  },
+  {
+    path: 'punto-venta',
+    loadChildren: () => import('./pages/punto-venta/punto-venta.module').then( m => m.PuntoVentaPageModule)
+  },
+  {
+    path: 'ingreso-egreso-gestor',
+    loadChildren: () => import('./pages/ingreso-egreso-gestor/ingreso-egreso-gestor.module').then( m => m.IngresoEgresoGestorPageModule)
   }
+
+
+
 
 
 ];
