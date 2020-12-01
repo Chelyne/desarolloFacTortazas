@@ -1,7 +1,7 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { ModalController, ToastController } from '@ionic/angular';
-import { ProveedorInterface } from 'src/app/interfaces/proveedor';
+import { ProveedorInterface } from 'src/app/models/proveedor';
 import { ProveedorRegistroService } from 'src/app/services/proveedor-registro.service';
 
 @Component({

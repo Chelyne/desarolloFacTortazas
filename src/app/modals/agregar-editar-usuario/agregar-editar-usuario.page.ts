@@ -1,7 +1,7 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { ModalController, ToastController } from '@ionic/angular';
-import { UsuarioInterface } from 'src/app/interfaces/usuario';
+import { UsuarioInterface } from 'src/app/models/usuario';
 import { UserRegistroService } from 'src/app/services/user-registro.service';
 
 @Component({
