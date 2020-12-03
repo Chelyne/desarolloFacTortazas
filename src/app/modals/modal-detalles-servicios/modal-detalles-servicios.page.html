@@ -1,0 +1,31 @@
+<ion-header>
+  <ion-toolbar>
+      <ion-title color="primary">{{ datos.titulo | titlecase}}</ion-title>
+      <ion-buttons slot="start">
+          <ion-button (click)="salirModal()">
+            <ion-icon slot="icon-only" color="primary" name="arrow-back-outline"></ion-icon>
+          </ion-button>
+      </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+<ion-content>
+  <div class="imagen">
+    <img src="{{ datos.img }}">
+  </div>
+  <div class="datos">
+    <ion-label color="dark">{{ datos.titulo | titlecase}}</ion-label>
+    <ion-card style="border-radius: 15px;">
+        <ion-card-content style="text-align: justify;">
+            {{ datos.descripcion }}
+            <!-- <img src="{{ datos.descripcionn }}"> -->
+        </ion-card-content>
+    </ion-card>
+    <img *ngIf="datos.titulo==='desparacitaciones'" src="https://firebasestorage.googleapis.com/v0/b/tooby-app.appspot.com/o/servicios%2Fclinica%2Fdesparacitacion.jpg?alt=media&token=07102a22-3460-4d3f-b5a8-eebc5db6a56e" alt="">
+  </div>
+  <!-- <ion-fab vertical="bottom" horizontal="end" slot="fixed">
+      <ion-button shape="round" color="primary">
+        <ion-icon color="light" slot="start" name="call-outline"></ion-icon>
+        <ion-label color="light">Consultar</ion-label>
+      </ion-button>
+  </ion-fab> -->
+</ion-content>

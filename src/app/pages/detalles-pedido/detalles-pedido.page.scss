@@ -1,0 +1,80 @@
+form {
+    text-align: center;
+    // margin: 5%;
+    img{
+        height: 50px;
+        object-fit: contain;
+    }
+
+    .datosTienda{
+        margin: 5px;
+        font-size: 18px;
+        color: var(--ion-color-primary);
+    }
+    .tituloTienda {
+        img {
+            height: 20px;
+        }
+    }
+
+    .estadoEnvio {
+        margin-right: 15px;
+        margin-left: 15px;
+        ion-label {
+            span{
+                font-weight: bold;
+            }
+        }
+        ion-progress-bar {
+            margin-top: 5px;
+        }
+    }
+
+    .envio {
+        padding: 0px;
+        text-align: center;
+        ion-col{
+            text-align: center;
+            margin: 0 auto;
+            ion-item {
+                text-align: center;
+                margin: 0 auto;
+            }
+        }
+    }
+
+    ion-card {
+        height: 100%;
+        margin-right: 15px;
+        margin-left: 15px;
+        .img {
+            display: flex;
+            justify-content: center;
+        }
+        .descripcion {
+            ion-label{
+                font-weight: bold;
+            }
+            height: 100%;
+            text-align: left;
+        }
+        .precio {
+            font-weight: bold;
+            color: black;
+        }
+    }
+
+}
+
+.cargando {
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    align-content: center;
+}
+
+.tienda {
+    height: 20px;
+    width: 40px;
+}

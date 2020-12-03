@@ -1,0 +1,64 @@
+@font-face{
+    font-family: Sniglet;
+    src : url('../assets/fonts/Sniglet.woff2')
+}
+
+* {
+    ion-item{
+        ion-label {
+            font-family: Sniglet;
+        }
+    } 
+ }
+ 
+ ion-header {
+    // height: 25%;
+    background: linear-gradient(to bottom right, #00E2EE, #00AFEF); 
+     // url('https://image.freepik.com/vector-gratis/ilustracion-vegetales-frutas-patrones-fisuras_123207-212.jpg')!important;
+     object-fit: cover;
+ }
+ 
+ .menuHeader {
+     display:table;
+     height:100%; 
+     width:100%; 
+     text-align: center;
+     padding: 5%;
+    //  background-image:   linear-gradient(rgba(0,0,0,0.1),rgba(0,0,0,0.3));
+     img {
+         margin-top: 5%;
+         height: 14%;
+         object-fit: contain;
+         object-position: center center;
+         border-radius: 50%;
+         border: solid 3px #474747;
+     }
+     .datosNegocio {
+         display: table-cell;
+         vertical-align:middle;
+         hr {
+             height:  2px;
+             width: 70%;
+             background-color: #201e1e;
+         }
+         .tienda {
+             font-size: 18px;
+             color: white;
+             font-weight: bold;
+         }
+         
+     }
+ }
+ 
+ 
+ .NOseleccionado {
+    //  color:black;
+     font-size: 16px;
+     transition: color 2s, font-size 0.4s;
+ }
+ .seleccionado {
+     // color: var(--ion-color-primary);
+     font-size: 16px;
+     transition: color 2ms, font-size 0.2s;
+     --ion-item-background: var(--ion-color-light);;
+ }

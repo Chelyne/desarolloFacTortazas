@@ -1,0 +1,74 @@
+.gris {
+    border: solid 1px var(--ion-color-medium);
+}
+.rojo {
+    border: solid 1px var(--ion-color-danger);
+}
+.amarillo {
+    border: solid 1px var(--ion-color-warning);
+}
+.verde {
+    border: solid 1px var(--ion-color-success);
+}
+
+.grisItem {
+    --border-color: var(--ion-color-medium);
+}
+.rojoItem {
+    --border-color: var(--ion-color-danger);
+}
+.amarilloItem {
+    --border-color: var(--ion-color-warning);
+}
+.verdeItem {
+    --border-color: var(--ion-color-success);
+}
+.pedidos { 
+    width: 100%;
+    ion-card {
+        ion-card-header {
+            padding: 0px;
+        }
+        ion-card-content {
+            ion-row{
+                text-align: center;
+                ion-col{
+                    img {
+                        height: 60px;
+                        width: 100%;
+                        object-fit: contain;
+                        object-position: center center;
+                        border-radius: 50%;
+                    }
+                }
+            }
+        }
+    }
+}
+
+.sinDatos {
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    align-content: center;
+    .textoSindatos {
+        text-align: center;
+        // border: solid 2px var(--ion-color-danger);
+        padding: 10%;
+        margin: 10%;
+        border-radius: 10px;
+        font-weight: bold;
+        .icono {
+            zoom: 4;
+        }
+    }
+}
+
+.cargando {
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    align-content: center;
+}

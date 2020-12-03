@@ -1,0 +1,47 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="/home" color="primary"></ion-back-button>
+    </ion-buttons>
+    <ion-title color="primary">{{categoria | titlecase}}</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <div class="cargando" *ngIf="(sinDatos===null || sinDatos===undefined)">
+    <div class="textoCargando">
+      <ion-spinner name="crescent" color="primary"></ion-spinner>
+    </div>
+  </div>
+  <div class="sinDatos" *ngIf="sinDatos===true && listaProductos.length===0">
+    <div class="textoSindatos">
+      <ion-icon class="icono" name="alert-circle-outline" color="medium"></ion-icon> <br><br>
+      <ion-label color="medium">No se encontró ningún producto</ion-label> <br> <br>
+      <ion-button [routerLink]="[ '/home']" fill="outline" shape="round">Seguir comprando
+        <ion-icon name="chevron-forward-outline"></ion-icon>
+      </ion-button>
+    </div>
+  </div>
+  <ion-grid>
+    <ion-row>
+      <ion-col size-lg="3" size-md="4" size-sm="6" size-xs="6" *ngFor="let producto of listaProductos">
+        <!-- (click)="presentModalDetalles('frutas', fruta.id)" -->
+        <ion-card (click)="verDetallesProducto(producto.id)"> 
+          <img *ngIf="producto.img" src="{{producto.img}}" alt="">
+          <img *ngIf="!producto.img" src="../../../assets/img/pet chop.png" alt="">
+          <ion-card-title>{{producto.nombre | titlecase}}
+          </ion-card-title>
+          <ion-card-subtitle>{{producto.cantidad}} {{producto.medida}}</ion-card-subtitle>
+          <ion-card-subtitle *ngIf="producto.precio" class="precio">S/. {{producto.precio  | number: '1.2'}}</ion-card-subtitle>
+        </ion-card>
+      </ion-col>
+    </ion-row>
+  </ion-grid>
+  <!-- <ion-button expand="full" (click)="siguiente()" *ngIf="!sinDatos">cargar siguiente</ion-button> -->
+  <ion-infinite-scroll threshold="100px" (ionInfinite)="loadData($event)">
+    <ion-infinite-scroll-content
+      loadingSpinner="crescent"
+      loadingText="Cargando datos...">
+    </ion-infinite-scroll-content>  
+  </ion-infinite-scroll>
+</ion-content>

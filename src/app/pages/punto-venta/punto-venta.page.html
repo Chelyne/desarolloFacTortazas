@@ -1,0 +1,98 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-menu-button menu="primerMenu">
+      </ion-menu-button>
+    </ion-buttons>
+    <ion-title color="primary">Punto de Venta</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <ion-grid class="gridPrincipal">
+    <ion-row>
+      <ion-col size-lg="6">
+        <ion-content>
+          <ion-grid>
+            <ion-row>
+              <ion-col size="12" *ngFor="let item of listaVenta; let i = index">
+                <ion-item>
+                  <span slot="start">{{i+1}}</span>
+                  <ion-label>{{item.nombre | titlecase}}</ion-label>
+                  <ion-label>S/ {{item.precio | number: '1.2'}}</ion-label>
+                  <ion-buttons slot="end">
+                    <ion-button>
+                      <ion-icon slot="icon-only" color="danger" name="trash"></ion-icon>
+                    </ion-button>
+                  </ion-buttons>
+                </ion-item>
+              </ion-col>
+            </ion-row>
+          </ion-grid>
+        </ion-content>
+      </ion-col>
+      <ion-col size-lg="6">
+        <ion-grid class="touchpad">
+          <ion-row>
+            <ion-col size-lg="4" *ngFor="let numero of numeros">
+              <ion-button color="light">
+                <ion-label>{{numero}}</ion-label>
+              </ion-button>
+            </ion-col>
+            <ion-col size-lg="4">
+              <ion-button color="light">
+                <ion-icon name="backspace-outline"></ion-icon>
+              </ion-button>
+            </ion-col>
+          </ion-row>
+        </ion-grid>
+      </ion-col>
+    </ion-row>
+    <ion-row>
+      <ion-col size-lg="6">
+        <ion-content class="categoriasContent">
+          <ion-grid class="categorias">
+            <ion-row>
+              <ion-col size-lg="3" size-md="3" size-sm="6" size-xs="6" *ngFor="let categoria of categorias">
+                <ion-card (click)="listaProductosCategoria(categoria.categoria)">
+                  <ion-card-header [style.background-color]="categoria.color">
+                    <img [src]="categoria.img" alt="">
+                  </ion-card-header>
+                  <ion-card-content color="light">
+                    <ion-label [style.color]="categoria.color">{{categoria.categoria | titlecase}}</ion-label>
+                  </ion-card-content>
+                </ion-card>
+              </ion-col>
+            </ion-row>
+          </ion-grid>
+        </ion-content>
+      </ion-col>
+      <ion-col size-lg="6">
+        <ion-content class="productosContent">
+          <ion-grid class="productos">
+            <ion-row>
+              <ion-col size-lg="4" size-md="4" size-sm="4" size-xs="4" *ngFor="let producto of listaProductos">
+                <!-- (click)="presentModalDetalles('frutas', fruta.id)" -->
+                <ion-card (click)="addListaVenta(producto)"> 
+                  <img *ngIf="producto.img" src="{{producto.img}}" alt="">
+                  <img *ngIf="!producto.img" src="../../../assets/img/pet chop.png" alt="">
+                  <ion-card-title>{{producto.nombre | titlecase}}
+                  </ion-card-title>
+                  <ion-card-subtitle>{{producto.cantidad}} {{producto.medida}}</ion-card-subtitle>
+                  <ion-card-subtitle *ngIf="producto.precio" class="precio">S/. {{producto.precio  | number: '1.2'}}</ion-card-subtitle>
+                </ion-card>
+              </ion-col>
+            </ion-row>
+          </ion-grid>
+          <!-- <ion-button expand="full" (click)="siguiente()" *ngIf="!sinDatos">cargar siguiente</ion-button> -->
+          <ion-infinite-scroll threshold="100px" (ionInfinite)="loadData($event)">
+            <ion-infinite-scroll-content
+              loadingSpinner="crescent"
+              loadingText="Cargando datos...">
+            </ion-infinite-scroll-content>  
+          </ion-infinite-scroll>
+        </ion-content>
+      </ion-col>
+    </ion-row>
+  </ion-grid>
+</ion-content>
