@@ -4,6 +4,9 @@ import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { ProductoInterface } from '../models/ProductoInterface';
 import { AdmiInterface } from '../models/AdmiInterface';
+import { UsuarioInterface } from '../models/usuario';
+import { ClienteInterface } from '../models/cliente-interface';
+import { ProveedorInterface } from '../models/proveedor';
 import { UsuarioInterfce } from '../models/User';
 
 @Injectable({
@@ -20,8 +23,21 @@ export class DbDataService {
   private clienteCollection: AngularFirestoreCollection<AdmiInterface>;
   private clientes: Observable<AdmiInterface[]>;
 
+  private clientesCollection: AngularFirestoreCollection<ClienteInterface>;
+  //private clientes: Observable<ClienteInterface[]>;
+
   private administradorDoc: AngularFirestoreDocument<AdmiInterface>;
   private administrador: Observable<AdmiInterface>;
+
+  private usuariosCollection: AngularFirestoreCollection<UsuarioInterface>;
+  private usuarios: Observable<UsuarioInterface[]>;
+
+  private usuarioDoc: AngularFirestoreDocument<UsuarioInterface>;
+  private usuario: Observable<UsuarioInterface>;
+
+  private proveedoresCollection: AngularFirestoreCollection<ProveedorInterface>;
+  private proveedores: Observable<ProveedorInterface[]>;
+
 
   constructor(private afs: AngularFirestore) { }
 
@@ -363,12 +379,160 @@ export class DbDataService {
 
 
   // Guardar Nuevo USURARIO / VENDEDOR
-
   guardarNuevoUsuario(newUser: UsuarioInterfce) {
+    //TODO-QUITAR ESTA FUNCION
     const promesa =  new Promise( (resolve, reject) => {
       this.afs.collection('usuarios').add(newUser);
       resolve();
     });
+
     return promesa;
   }
+
+  guardarUsuario(newUser: UsuarioInterface) {
+    const promesa =  new Promise( (resolve, reject) => {
+      this.afs.collection('usuarios').add(newUser);
+      resolve();
+    });
+
+    return promesa;
+  }
+
+
+  actualizarUsuario(idUser: string, newUser: UsuarioInterface) {
+    //console.log( idUser, newUser);
+
+    const promesa =  new Promise( (resolve, reject) => {
+      this.afs.collection('usuarios').doc(idUser).update(newUser);
+      resolve();
+    });
+
+    return promesa;
+  }
+
+
+  ObtenerUsuario(dni: string) {
+
+    this.usuariosCollection = this.afs.collection('usuarios', ref=>ref.where('dni', '==', dni ));
+
+    return this.usuarios = this.usuariosCollection.snapshotChanges()
+    .pipe(map(
+      changes => {
+        return changes.map(action => {
+          const data = action.payload.doc.data() as UsuarioInterface;
+          data.id = action.payload.doc.id;
+          return data;
+          });
+        }
+    ));
+
+  }
+
+
+  ObtenerListaDeUsuarios() {
+
+    this.usuariosCollection = this.afs.collection('usuarios');
+
+    return this.usuarios = this.usuariosCollection.snapshotChanges()
+      .pipe(map(
+        changes => {
+          return changes.map(action => {
+            const data = action.payload.doc.data() as UsuarioInterface;
+            data.id = action.payload.doc.id;
+            return data;
+            });
+          }
+      ));
+
+  }
+
+
+  // Guardar Nuevo CLIENTE
+  //TODO -  Refactorizar en los lugares donde se usa
+  guardarCliente(newCliente: ClienteInterface) {
+
+    const promesa =  new Promise( (resolve, reject) => {
+      this.afs.collection('clientes').add(newCliente);
+      resolve();
+    });
+
+    return promesa;
+  }
+
+
+  actualizarCliente(idCliente: string, newCliente: ClienteInterface) {
+    //console.log( idCliente, newCliente);
+
+    const promesa =  new Promise( (resolve, reject) => {
+      this.afs.collection('clientes').doc(idCliente).update(newCliente);
+      resolve();
+    });
+
+    return promesa;
+  }
+
+  //NOTE - Esta función es identica a la que se encuentro más arriba
+  //TODO - Refactorizar
+  ObtenerListaDeClientes() {
+
+    this.clientesCollection = this.afs.collection('clientes');
+
+    return this.clientes = this.clientesCollection.snapshotChanges()
+      .pipe(map(
+        changes => {
+          return changes.map(action => {
+            const data = action.payload.doc.data() as ClienteInterface;
+            data.id = action.payload.doc.id;
+            return data;
+            });
+          }
+      ));
+
+  }
+
+
+
+  // Guardar Nuevo Proveedor
+
+  guardarProveedor(newProveedor: ProveedorInterface) {
+
+    const promesa =  new Promise( (resolve, reject) => {
+      this.afs.collection('proveedores').add(newProveedor);
+      resolve();
+    });
+
+    return promesa;
+  }
+
+
+  actualizarProveedor(idProveedor: string, newProveedor: ProveedorInterface) {
+    //console.log( idProveedor, newProveedor);
+
+    const promesa =  new Promise( (resolve, reject) => {
+      this.afs.collection('proveedores').doc(idProveedor).update(newProveedor);
+      resolve();
+    });
+
+    return promesa;
+  }
+
+
+  ObtenerListaDeProveedores() {
+
+    this.proveedoresCollection = this.afs.collection('proveedores');
+
+    return this.proveedores = this.proveedoresCollection.snapshotChanges()
+      .pipe(map(
+        changes => {
+          return changes.map(action => {
+            const data = action.payload.doc.data() as ProveedorInterface;
+            data.id = action.payload.doc.id;
+            return data;
+            });
+          }
+      ));
+
+  }
+
+
 }

@@ -15,19 +15,49 @@
         <ion-content>
           <ion-grid>
             <ion-row>
-              <ion-col size="12" *ngFor="let item of listaVenta; let i = index">
+              <ion-col size="12" *ngFor="let item of listaItemsDeVenta; let i = index">
                 <ion-item>
                   <span slot="start">{{i+1}}</span>
-                  <ion-label>{{item.nombre | titlecase}}</ion-label>
-                  <ion-label>S/ {{item.precio | number: '1.2'}}</ion-label>
-                  <ion-buttons slot="end">
-                    <ion-button>
-                      <ion-icon slot="icon-only" color="danger" name="trash"></ion-icon>
-                    </ion-button>
-                  </ion-buttons>
+                  <app-producto-venta
+                  [itemDeVenta]="item"
+                  (cambiarCantidadProd)="inputModificado($event)"
+                  (quitarItemDeVenta)="quitarProducto($event)"
+                  ></app-producto-venta>
                 </ion-item>
               </ion-col>
+              <ion-col size="12">
+                <ion-list-header >
+                  <ion-label >Total a pagar: {{totalxPagar}} </ion-label>
+                  <ion-button (click)="AgregaraListaDeEspera()" expand="block" fill="clear" shape="round">
+                    Agregar a lista de espera
+                  </ion-button>
+                  <ion-button (click)="QuitarListaDeVenta()" expand="block" fill="clear" shape="round">
+                    Quitar lista
+                  </ion-button>
+                </ion-list-header>
+              </ion-col>
             </ion-row>
+            <ion-row *ngIf="listaDeVentas.length">
+              <ion-col size="12">
+                <ion-list>
+                  <ion-list-header lines="inset">
+                    <ion-label color="primary">Lista Ventas en espera</ion-label>
+                  </ion-list-header>
+                  <ion-item *ngFor="let venta of listaDeVentas">
+                    {{venta.listaItemsDeVenta | json}}
+                    {{venta.totalaPagar}}
+                    <ion-button (click)="moverAListaPrincipal(venta)" expand="block" fill="clear" shape="round">
+                      Recuperar
+                    </ion-button>
+                  </ion-item>
+                  <ion-button (click)="LimpiarListaDeVentas()" expand="block" fill="clear" shape="round"
+                    [disabled]="listaDeVentas.length == 0">
+                    Limpiar listas de venta
+                  </ion-button>
+                </ion-list>
+              </ion-col>
+            </ion-row>
+
           </ion-grid>
         </ion-content>
       </ion-col>
@@ -73,7 +103,7 @@
             <ion-row>
               <ion-col size-lg="4" size-md="4" size-sm="4" size-xs="4" *ngFor="let producto of listaProductos">
                 <!-- (click)="presentModalDetalles('frutas', fruta.id)" -->
-                <ion-card (click)="addListaVenta(producto)"> 
+                <ion-card (click)="AgregarItemDeVenta(producto)">
                   <img *ngIf="producto.img" src="{{producto.img}}" alt="">
                   <img *ngIf="!producto.img" src="../../../assets/img/pet chop.png" alt="">
                   <ion-card-title>{{producto.nombre | titlecase}}
@@ -89,7 +119,7 @@
             <ion-infinite-scroll-content
               loadingSpinner="crescent"
               loadingText="Cargando datos...">
-            </ion-infinite-scroll-content>  
+            </ion-infinite-scroll-content>
           </ion-infinite-scroll>
         </ion-content>
       </ion-col>

@@ -1,0 +1,40 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title>{{eventoInvoker}}</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <ion-item>
+    <ion-label>Saldo Actual: {{saldoInvoker}}</ion-label>
+  </ion-item>
+  <form [formGroup]="ingresoEgresoForm" autocomplete="off">
+
+    <ion-item>
+      <ion-label>{{tagInvoker}}:* </ion-label>
+      <ion-input type="text" formControlName="monto" placeholder="00.00" (keypress)="numberOnlyValidation($event)"></ion-input>
+    </ion-item>
+    <div class="alertDanger" *ngIf="monto.invalid && (monto.dirty || monto.touched)">
+      <div class="mensajeError" *ngIf="monto.errors.required">
+        *Debe ingresar el monto para hacer la transacción
+      </div>
+      <div class="mensajeError" *ngIf="monto.errors.pattern">
+        *Solo puede ingresar números y un punto decimal
+      </div>
+    </div>
+
+    <ion-button (click)="salirDeModal()">
+      Cerrar
+    </ion-button>
+
+    <ion-button (click)="execTransaction()" [disabled]="ingresoEgresoForm.invalid">
+      {{buttonTagInvoer}}
+    </ion-button>
+
+  </form>
+
+  <div class="error" *ngIf="eventoInvoker == 'Egreso' && saldoInsuficiente">
+    Saldo insuficiente para retirar
+  </div>
+
+</ion-content>

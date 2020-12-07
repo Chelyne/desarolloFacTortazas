@@ -127,6 +127,28 @@ const routes: Routes = [
     path: 'punto-venta',
     loadChildren: () => import('./pages/punto-venta/punto-venta.module').then( m => m.PuntoVentaPageModule)
   },
+
+
+
+  {
+    path: 'lista-de-usarios',
+    loadChildren: () => import('./pages/lista-de-usarios/lista-de-usarios.module').then( m => m.ListaDeUsariosPageModule)
+  },
+  {
+    path: 'lista-de-clientes',
+    loadChildren: () => import('./pages/lista-de-clientes/lista-de-clientes.module').then( m => m.ListaDeClientesPageModule)
+  },
+  {
+    path: 'lista-de-proveedores',
+    loadChildren: () => import('./pages/lista-de-proveedores/lista-de-proveedores.module').then( m => m.ListaDeProveedoresPageModule)
+  },
+
+  {
+    path: 'ingreso-egreso-gestor',
+    loadChildren: () => import('./pages/ingreso-egreso-gestor/ingreso-egreso-gestor.module').then( m => m.IngresoEgresoGestorPageModule)
+  }
+
+
 ];
 
 @NgModule({
