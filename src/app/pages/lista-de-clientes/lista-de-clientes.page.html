@@ -5,7 +5,6 @@
 </ion-header>
 
 <ion-content>
-
   <ion-grid>
     <ion-row>
       <ion-col *ngFor="let c of [1,1,1,1,1,1,1,1,1,1,1,1]; let i = index" class="testRows">
@@ -14,17 +13,17 @@
     </ion-row>
     <ion-row>
       <ion-col></ion-col>
-      <ion-col size="12" size-lg="6" size-md="8" size-sm="10" size-xs="12">
-        <div class="divtest">texto</div>
-      </ion-col>
-      <ion-col></ion-col>
-    </ion-row>
-
-    <ion-row>
-      <ion-col></ion-col>
-
       <ion-col size="12" size-lg="8" size-md="10" size-sm="10" size-xs="12">
         <ion-list>
+          <ion-list-header lines="inset" color="primary">
+            <ion-label>Nombre</ion-label>
+            <ion-label>Apellidos</ion-label>
+            <ion-label>DNI</ion-label>
+            <ion-label>Telefono</ion-label>
+            <ion-label>Direccion</ion-label>
+            <ion-label>Email</ion-label>
+            <ion-label></ion-label>
+          </ion-list-header>
           <ion-item *ngFor="let cliente of listaDeclientes">
             <ion-label>{{cliente.nombre}}</ion-label>
             <ion-label>{{cliente.apellidos}}</ion-label>
@@ -40,16 +39,12 @@
           </ion-item>
         </ion-list>
       </ion-col>
-
       <ion-col></ion-col>
     </ion-row>
-
   </ion-grid>
-
   <ion-fab vertical="bottom" horizontal="end" slot="fixed">
     <ion-button (click)="AgregarNuevoCliente()">
       Agregar Cliente
     </ion-button>
   </ion-fab>
-
 </ion-content>

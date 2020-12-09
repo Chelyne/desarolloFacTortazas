@@ -13,15 +13,34 @@
     </ion-row>
     <ion-row>
       <ion-col></ion-col>
-      <ion-col size="12" size-lg="6" size-md="8" size-sm="10" size-xs="12">
-        <div class="divtest">texto</div>
+      <ion-col size="12" size-lg="8" size-md="10" size-sm="10" size-xs="12">
+        <ion-list>
+          <ion-list-header lines="inset" color="primary">
+            <ion-label>Nombre</ion-label>
+            <ion-label>Apellidos</ion-label>
+            <ion-label>DNI</ion-label>
+            <ion-label>Usuario</ion-label>
+            <ion-label>Rol</ion-label>
+            <ion-label></ion-label>
+          </ion-list-header>
+          <ion-item *ngFor="let usuario of listaDeUsuarios">
+            <ion-label>{{usuario.nombre}}</ion-label>
+            <ion-label>{{usuario.apellidos}}</ion-label>
+            <ion-label>{{usuario.dni}}</ion-label>
+            <ion-label>{{usuario.usuario}}</ion-label>
+            <ion-label>{{usuario.rol}}</ion-label>
+            <ion-label>
+              <ion-button (click)="ActualizarDataUsuario(usuario)">
+                Actualizar
+              </ion-button>
+            </ion-label>
+          </ion-item>
+        </ion-list>
       </ion-col>
       <ion-col></ion-col>
     </ion-row>
-
     <ion-row>
       <ion-col></ion-col>
-
       <ion-col size="12" size-lg="8" size-md="10" size-sm="10" size-xs="12">
         <ion-list>
           <ion-item *ngFor="let usuario of listaDeUsuarios">
@@ -38,17 +57,12 @@
           </ion-item>
         </ion-list>
       </ion-col>
-
       <ion-col></ion-col>
     </ion-row>
-
   </ion-grid>
-
   <ion-fab vertical="bottom" horizontal="end" slot="fixed">
     <ion-button (click)="AgregarNuevoUsuario()">
       Agregar Usuario
     </ion-button>
   </ion-fab>
-
-
 </ion-content>

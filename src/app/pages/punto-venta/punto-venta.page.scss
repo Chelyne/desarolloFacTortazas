@@ -1,19 +1,19 @@
 .gridPrincipal {
     height: 100%;
     ion-row {
-        height: 50%;
+        height: 70%; //se cambio a 100
         ion-col {
             height: 100%;
         }
     }
 }
 
-.categoriasContent {
-    height: 100%;
-    .categorias {
-        height: 100%;
-    }
-}
+// .categoriasContent {   //se comento
+//     height: 100%;
+//     .categorias {
+//         height: 100%;
+//     }
+// }
 
 .productos {
     padding: 2px;

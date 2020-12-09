@@ -379,16 +379,6 @@ export class DbDataService {
 
 
   // Guardar Nuevo USURARIO / VENDEDOR
-  guardarNuevoUsuario(newUser: UsuarioInterfce) {
-    //TODO-QUITAR ESTA FUNCION
-    const promesa =  new Promise( (resolve, reject) => {
-      this.afs.collection('usuarios').add(newUser);
-      resolve();
-    });
-
-    return promesa;
-  }
-
   guardarUsuario(newUser: UsuarioInterface) {
     const promesa =  new Promise( (resolve, reject) => {
       this.afs.collection('usuarios').add(newUser);
@@ -471,8 +461,9 @@ export class DbDataService {
     return promesa;
   }
 
-  //NOTE - Esta función es identica a la que se encuentro más arriba
+  //NOTE - Esta función es identica a la que se encuentro más arriba ObtenerListaClientes
   //TODO - Refactorizar
+
   ObtenerListaDeClientes() {
 
     this.clientesCollection = this.afs.collection('clientes');
