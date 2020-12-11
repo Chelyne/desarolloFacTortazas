@@ -1,0 +1,61 @@
+ion-grid {
+    padding: 2px;
+    margin: 0px;
+    ion-row {
+      padding: 0px;
+      margin-left: 5%;
+      margin-right: 5%;
+      margin-bottom: 5%;
+      ion-col{
+      margin-bottom: 5%;
+        ion-card {
+          height: 100%;
+          margin: 5%;
+          text-align: center;
+          img{
+            height: 150px;
+            width: 100%;
+            object-fit: contain;
+            object-position: center center;
+          }
+          ion-card-title{
+            font-weight: bold;
+            font-size: 2vh;
+          }
+          .precio {
+            background-color: #00AFEF;
+            margin-bottom: 0px;
+            padding: 3px;
+            color: white;
+            margin: 2px;
+          }
+        }
+      }
+    }
+  }
+
+  .cargando {
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    align-content: center;
+}
+.sinDatos {
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  align-content: center;
+  .textoSindatos {
+      text-align: center;
+      // border: solid 2px var(--ion-color-danger);
+      padding: 10%;
+      margin: 10%;
+      border-radius: 10px;
+      font-weight: bold;
+      .icono {
+          zoom: 4;
+      }
+  }
+}

@@ -1,0 +1,47 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-menu-button color="primary" menu="primerMenu">
+      </ion-menu-button>
+    </ion-buttons>
+    <ion-title color="primary">Mi Perfil</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <div class="dataPrincipal"  *ngIf="datosAdmi">
+    <form>
+      <div class="foto">
+        <!-- <img *ngIf="datosUser.foto && !image" [src]="datosUser.foto" (click)="SubirFoto()" alt=""> -->
+        <img src="https://image.freepik.com/vector-gratis/doctor-icono-o-avatar-blanco_136162-58.jpg" alt="">
+        <!-- <img *ngIf="image" [src]="image" alt="" (click)="SubirFoto()"> -->
+      </div>
+      <div class="datos">
+        <ion-label class="nombre" color="light">{{datosAdmi.nombre}} {{datosAdmi.apellidos}}</ion-label><br>
+        <ion-label color="light">{{datosAdmi.rol}}</ion-label>
+      </div>
+    </form>
+  </div>
+  <ion-card  *ngIf="datosAdmi">
+    <ion-card-header style="background: linear-gradient(to bottom right, #00E2EE, #00AFEF); ">
+      <ion-card-title style="color: white;">Mis datos</ion-card-title>
+    </ion-card-header>
+    <ion-item>
+      <ion-icon name="person-outline" color="primary" slot="start"></ion-icon>
+      <ion-label>{{datosAdmi.nombre}} {{datosAdmi.apellidos}}</ion-label>
+    </ion-item>
+    <ion-item>
+      <ion-icon name="call-outline" color="primary" slot="start"></ion-icon>
+      <ion-label>{{datosAdmi.celular}}</ion-label>
+    </ion-item>
+    <ion-item>
+      <ion-icon name="body-outline" color="primary" slot="start"></ion-icon>
+      <ion-label>{{datosAdmi.rol}}</ion-label>
+    </ion-item>
+  </ion-card>
+  <div class="cargando" *ngIf="(datosAdmi===null || datosAdmi===undefined)">
+    <div class="textoCargando">
+      <ion-spinner name="crescent" color="primary"></ion-spinner>
+    </div>
+  </div>
+</ion-content>

@@ -1,0 +1,43 @@
+ion-header {
+    ion-searchbar{
+        margin-top: 15px;
+    }
+}
+
+ion-content {
+    .sinBuscar {
+        text-align: center;
+        height: 100%;
+        display: flex;
+        justify-content: center;
+        align-content: center;
+        align-items: center;
+        ion-icon{
+            zoom: 5;
+        }
+    }
+    .sinResultado {
+        text-align: center;
+        margin: 10px;
+        ion-icon{
+            zoom: 4;
+        }
+        ion-label{
+            font-size: 17px;
+        }
+    }
+
+    ion-card{
+        padding: 10px;
+        border-radius: 20px;
+        ion-row {
+            .colImg{
+                text-align: center;
+            }
+            .colDatos{
+                display: table-cell;
+                vertical-align: middle;
+            }
+        }
+    }
+}

@@ -1,0 +1,31 @@
+ion-card {
+    border-radius: 10px;
+    ion-card-header {
+        img {
+            height: 80px;
+            width: 80px;
+            object-fit: cover;
+            object-position: center center;
+            border-radius: 50%;
+        }
+    }
+}
+
+.sinDatos {
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    align-content: center;
+    .textoSindatos {
+        text-align: center;
+        // border: solid 2px var(--ion-color-danger);
+        padding: 10%;
+        margin: 10%;
+        border-radius: 10px;
+        font-weight: bold;
+        .icono {
+            zoom: 4;
+        }
+    }
+}

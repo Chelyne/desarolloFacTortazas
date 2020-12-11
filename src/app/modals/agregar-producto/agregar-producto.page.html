@@ -1,0 +1,159 @@
+<ion-header class="ion-no-border">
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-button (click)="cerrarModal()">
+        <ion-icon color="primary" slot="icon-only" name="arrow-back-outline"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+    <ion-title>Agregar a {{categoria | titlecase}}</ion-title>
+    <!-- <ion-toggle slot="end" color="primary"></ion-toggle>  GUARDADO PARA SUBIR IMAGENES PNG CON COLOR DE FONDO DINAMICO-->
+  </ion-toolbar>
+</ion-header>
+
+<ion-content fullscreen>
+  <form [formGroup] ="productoForm">
+    <!-- [style.background-color]="colorFondo" -->
+    <div class="datos">
+      <!-- <ion-slides *ngIf="listaImgenes.length>0">
+        <ion-slide class="fotoProducto" (click)="SubirFoto()"  *ngFor="let imagen of listaImgenes">
+          <img [src]="imagen" alt="producto">
+        </ion-slide>
+      </ion-slides> -->
+      <div class="fotoProducto">
+        <img (click)="SubirFoto()" *ngIf="!image" src="https://image.freepik.com/vector-gratis/ilustracion-icono-galeria_53876-27002.jpg" alt="">
+        <img (click)="SubirFoto()" *ngIf="image" src="{{image}}" alt="foto">
+      </div>
+      <div class="alertDanger" *ngIf="sinFoto">
+        <div class="mensajeError" >
+          {{sinFoto}}
+        </div>
+      </div>
+      <div class="datosProducto">
+        <ion-item lines="none">
+          <ion-input maxLength="35" formControlName="nombre" class="nombre" placeholder="Nombre del producto o servicio"></ion-input>
+          <!-- <ion-buttons slot="end">
+            <ion-button>
+              <ion-icon slot="icon-only" name="arrow-redo-outline" color="medium"></ion-icon>
+            </ion-button>
+          </ion-buttons> -->
+        </ion-item>
+        <div class="alertDanger" *ngIf="nombre.invalid && (nombre.dirty || nombre.touched)">
+          <div class="mensajeError" *ngIf="!!nombre.errors.required">
+            Complete el nombre
+          </div>
+          <div class="mensajeError" *ngIf="!!nombre.errors.minlength">
+            El nombre debe tener al menos 3 caracteres.
+          </div>
+          <div class="mensajeError" *ngIf="!!nombre.errors.maxlength">
+            El nombre debe tener máximo 35 caracteres.
+          </div>
+        </div>
+        <div class="cantidad">
+          <ion-item>
+            <ion-input formControlName="cantidad" type="number" placeholder="Cantidad"></ion-input>
+            <ion-select formControlName="medida" placeholder="medida" cancelText="Cancelar" okText="Aceptar" mode="ios">
+              <ion-select-option value="Gramos">Gramos</ion-select-option>
+              <ion-select-option value="Kilogramo">Kilogramo</ion-select-option>
+              <ion-select-option value="Litro">Litro</ion-select-option>
+              <ion-select-option value="Unidad">Unidad</ion-select-option>
+              <ion-select-option value="Caja">Caja</ion-select-option>
+              <ion-select-option value="Paquete">Paquete</ion-select-option>
+              <ion-select-option value="Hora">Hora</ion-select-option>
+            </ion-select>
+          </ion-item>
+          <!-- <span>{{dataProducto.cantidad}} {{dataProducto.medida}}</span> -->
+        </div>
+        <div class="alertDanger" *ngIf="cantidad.invalid && (cantidad.dirty || cantidad.touched)">
+          <div class="mensajeError" *ngIf="!!cantidad.errors.required">
+            Complete la cantidad
+          </div>
+          <div class="mensajeError" *ngIf="!!cantidad.errors.min">
+            La cantidad minima es 1
+          </div>
+        </div>
+        <div class="alertDanger" *ngIf="medida.invalid && (medida.dirty || medida.touched)">
+          <div class="mensajeError" *ngIf="!!medida.errors.required">
+            Complete la medida
+          </div>
+        </div>
+        <ion-item class="precio" lines="none">
+          <ion-label>S/.</ion-label>
+          <ion-input formControlName="precio" type="number" placeholder="Precio"></ion-input>
+          <!-- <ion-label class="precio"><span>S/.</span> {{dataProducto.precio | number: '1.2'}}</ion-label> -->
+        </ion-item>
+        <div class="alertDanger" *ngIf="precio.invalid && (precio.dirty || precio.touched)">
+          <div class="mensajeError" *ngIf="!!precio.errors.required">
+            Complete el precio
+          </div>
+        </div>
+        <ion-item>
+          <ion-label>Categoria</ion-label>
+          <ion-select formControlName="subCategoria" placeholder="Seleccionar" cancelText="Cancelar" okText="Aceptar" mode="ios">
+            <ion-select-option value="collares">Collares</ion-select-option>
+            <ion-select-option value="casitas">Casitas</ion-select-option>
+            <ion-select-option value="correas">Correas</ion-select-option>
+            <ion-select-option value="medicinas">Medicinas</ion-select-option>
+          </ion-select>
+        </ion-item>
+        <!-- *ngIf="!datosCarrito" -->
+        <ion-item>
+          <ion-label>Cantidad de stock: </ion-label>
+          <ion-input formControlName="cantStock" type="number" placeholder="Stock"></ion-input>
+        </ion-item>
+        <div class="alertDanger" *ngIf="cantStock.invalid && (cantStock.dirty || cantStock.touched)">
+          <div class="mensajeError" *ngIf="!!cantStock.errors.required">
+            Ingrese la cantidad de stock
+          </div>
+          <div class="mensajeError" *ngIf="!!cantStock.errors.min">
+            La cantidad minima en stock es 1
+          </div>
+        </div>
+        <ion-button (click)="agregarDescripcion()" *ngIf="!descripcion" shape="round" fill="outline" expand="block">Agregar descripcion</ion-button>
+        <ion-item *ngIf="descripcion">
+          <ion-label position="floating">Descripción</ion-label>
+          <ion-textarea formControlName="descripcionProducto" autoGrow="true" placeholder="Ingrese una descripción del producto..."></ion-textarea>
+        </ion-item>
+        <ion-button (click)="agregarTallas()" *ngIf="tallas===undefined" fill="clear">Agregar tallas, colores, etc.</ion-button>
+        <ion-item *ngIf="tallas!==undefined">
+          <ion-label color="primary">Que desea agregar?</ion-label>
+          <ion-input [readonly]="tallas.length>0" formControlName="nombreTalla" type="text" placeholder="talla, color, etc."></ion-input>
+        </ion-item>
+        <div class="tallas" *ngIf="tallas!==undefined && this.productoForm.value.nombreTalla">
+          <ion-row class="ion-margin">
+            <div *ngFor="let talla of tallas">
+              <ion-badge>{{talla}}
+                <ion-icon name="close" (click)="quitarTalla(talla)"></ion-icon>
+              </ion-badge> &nbsp;
+            </div>
+          </ion-row>
+          <ion-item *ngIf="tallas.length<10">
+            <ion-input type="text" placeholder="Agregue {{this.productoForm.value.nombreTalla |titlecase}} " #inputTalla ></ion-input>
+            <ion-button (click)="agregarTallas()">Agregar</ion-button>
+          </ion-item>
+        </div>
+      </div> 
+    </div>
+  </form>
+  <!-- <div class="sinDatos" *ngIf="sinDatos===true">
+    <div class="textoSindatos">
+      <ion-icon name="thumbs-down-outline" color="danger"></ion-icon> <br>
+      <ion-label>No encontramos los datos de este producto</ion-label>
+    </div>
+  </div>
+  <div class="cargando" *ngIf="sinDatos===null || sinDatos===undefined">
+    <div class="textoCargando">
+      <ion-spinner name="crescent" color="primary"></ion-spinner>
+    </div>
+  </div> -->
+</ion-content>
+<ion-footer class="ion-no-border footer">
+  <div class="alertDanger" *ngIf="mensaje">
+    <div class="mensajeError">
+      {{mensaje}}
+    </div>
+  </div>
+  <ion-button (click)="guardarProducto()" shape="round" expand="block">
+    <ion-icon slot="icon-only" color="light" name="add-circle-outline"></ion-icon> &nbsp;
+    <ion-label color="light">Agregar Producto</ion-label>
+  </ion-button>
+</ion-footer>

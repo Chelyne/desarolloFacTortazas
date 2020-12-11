@@ -1,0 +1,76 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-menu-button color="primary" menu="primerMenu">
+      </ion-menu-button>
+    </ion-buttons>
+    <ion-title color="primary">Clientes</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <div class="sinDatos" *ngIf="sinDatos===true">
+    <div class="textoSindatos">
+      <ion-icon class="icono" name="people-outline" color="medium"></ion-icon> <br><br>
+      <ion-label color="medium">No existe ningun cliente registrado</ion-label> <br> <br>
+      <!-- <ion-button [routerLink]="[ '/home']" fill="outline" shape="round">Seguir comprando
+        <ion-icon name="chevron-forward-outline"></ion-icon>
+      </ion-button> -->
+    </div>
+  </div>
+  <div *ngIf="sinDatos===null || sinDatos===undefined">
+    <ion-card *ngFor="let number of [0,1,2,3,4,5]">
+      <ion-row class="ion-justify-content-center ion-align-items-center">
+        <ion-col size-xs="4">
+          <ion-card-header>
+            <ion-skeleton-text animated style="width: 80px; height: 80px; border-radius: 50%;"></ion-skeleton-text>
+          </ion-card-header>
+        </ion-col>
+        <ion-col size-xs="8">
+          <ion-card-content>
+            <ion-card-title>
+              <ion-skeleton-text animated style="width: 100%; height: 20px;"></ion-skeleton-text>
+            </ion-card-title>
+            <ion-card-subtitle>
+              <ion-skeleton-text animated style="width: 80%;"></ion-skeleton-text>
+            </ion-card-subtitle>
+            <ion-card-subtitle>
+              <ion-skeleton-text animated style="width: 100%;"></ion-skeleton-text>
+            </ion-card-subtitle>
+            <ion-card-subtitle>
+              <ion-skeleton-text animated style="width: 70%;"></ion-skeleton-text>
+            </ion-card-subtitle>
+          </ion-card-content>
+        </ion-col>
+      </ion-row>
+    </ion-card>
+  </div>
+  <ion-card *ngFor="let cliente of clientes" style="background: linear-gradient(to bottom right, #00E2EE, #00AFEF); ">
+    <ion-row class="ion-justify-content-center ion-align-items-center">
+      <ion-col size-xs="4">
+        <ion-card-header>
+          <img *ngIf="!cliente.foto" src="https://coquitlamshof.com/wp-content/uploads/2020/01/user.png" alt="">
+          <img *ngIf="cliente.foto" [src]=" cliente.foto"  alt="">
+        </ion-card-header>
+      </ion-col>
+      <ion-col size-xs="8">
+        <ion-card-content>
+          <ion-card-title>{{cliente.nombre | titlecase}} {{cliente.apellidos | titlecase}}</ion-card-title>
+          <ion-card-subtitle (click)="presentAlertConfirm(cliente.celular)">
+            <ion-icon color="dark" name="phone-portrait-outline"></ion-icon> &nbsp;
+            <ion-label color="light">{{cliente.celular}}</ion-label>
+            <!-- <ion-label color="light"> llamar</ion-label> -->
+          </ion-card-subtitle>
+          <ion-card-subtitle>
+            <ion-icon color="dark" name="location-outline"></ion-icon> &nbsp;
+            <ion-label color="light">{{cliente.ubicacion.direccion.split(',', 1)}}</ion-label>
+          </ion-card-subtitle>
+          <ion-card-subtitle>
+            <ion-icon color="dark" name="map-outline"></ion-icon> &nbsp;
+            <ion-label color="light">{{cliente.ubicacion.provincia}}</ion-label>
+          </ion-card-subtitle>
+        </ion-card-content>
+      </ion-col>
+    </ion-row>
+  </ion-card>
+</ion-content>
