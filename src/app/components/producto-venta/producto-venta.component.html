@@ -1,0 +1,24 @@
+
+<ion-item>
+  <form [formGroup]="formVenta" autocomplete="off">
+    <ion-input type="text" formControlName="cantidad" placeholder="nombres" [value]="itemDeVenta.cantidad==0?'':itemDeVenta.cantidad" maxlength="5"
+      (keyup)="cambioCantidad()" ></ion-input>
+    <div class="alertDanger" *ngIf="cantidad.invalid && (cantidad.dirty || cantidad.touched)">
+      <div class="mensajeError" *ngIf="cantidad.errors.required">
+        *Complete la cantidad
+      </div>
+      <div class="mensajeError" *ngIf="cantidad.errors.pattern">
+        *solo ingresar enteros positivos
+      </div>
+    </div>
+  </form>
+  <ion-label> {{itemDeVenta.producto.nombre | titlecase}} </ion-label>
+  <ion-label> S/ {{itemDeVenta.producto.precio | number: '1.2'}} </ion-label>
+  <ion-label> S/ {{itemDeVenta.tatalxprod | number: '1.2'}}</ion-label>
+
+  <ion-buttons slot="end">
+    <ion-button (click)="eventoEliminarItem()">
+      <ion-icon slot="icon-only" color="danger" name="trash"></ion-icon>
+    </ion-button>
+  </ion-buttons>
+</ion-item>

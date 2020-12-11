@@ -1,0 +1,128 @@
+#container {
+  text-align: center;
+
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  .textoSinDatos {
+    ion-label {
+      font-weight: bold;
+    }
+    ion-button{
+      margin-top: 10px;
+    }
+  }
+  img {
+    height: 100px;
+    margin: 20px;
+  }
+}
+
+#container strong {
+  font-size: 20px;
+  line-height: 26px;
+}
+
+#container p {
+  font-size: 16px;
+  line-height: 22px;
+
+  color: #8c8c8c;
+
+  margin: 0;
+}
+
+#container a {
+  text-decoration: none;
+}
+
+ion-content ion-toolbar {
+  --background: translucent;
+}
+
+.cardVerMas {
+  height: 200px;
+  text-align: center;
+  vertical-align: middle;
+  ion-card-header{
+    height: 70%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    align-content: center;
+  }
+  ion-card-content{
+    height: 30%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    align-content: center;
+    padding: 0px;
+    background-color: #2dd36fb6;
+  }
+  ion-icon {
+    zoom: 4;
+  }
+}
+.categoria {
+  background-image: linear-gradient(rgba(0,0,0,0.2),rgba(0,0,0,0.5));
+  width: 100%;
+  // height: 50px;
+  object-fit: none;
+  // background-color: #2dd36fb6;
+  display: flex;
+  justify-content: left;
+  align-content: center;
+  align-items: center;
+  ion-label {
+    color: white;
+    font-size: 20px;
+    font-weight: bold;
+    padding: 0px;
+    margin: 0px;
+    font-family: Sniglet;
+  }
+}
+
+.cargando {
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  align-content: center;
+  text-align: center;
+
+  ion-spinner {
+    zoom: 2;
+  }
+}
+
+ion-card {
+  text-align: center;
+  height: 200px;
+  ion-card-header {
+      border-bottom-left-radius: 20%;
+      height: 150px;
+      img {
+          height: 100%;
+          object-fit: cover;
+          border-radius: 10px;
+      }
+  }
+  ion-card-content{
+      height: 50px;
+      width: 100%;
+      background: linear-gradient(to bottom right, #00E2EE, #00AFEF);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      align-content: center;
+      // border-top-right-radius: 40px;
+      ion-label{
+          font-size: 18px;
+          color: white;
+      }
+  }
+}

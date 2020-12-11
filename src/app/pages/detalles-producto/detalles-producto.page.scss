@@ -1,0 +1,115 @@
+*{
+    font-family: Sniglet;
+}
+.datos {
+    .fotoProducto {
+        height: 37%;
+        display: flex;
+        justify-content: center;
+        align-content: center;
+        align-items: center;
+        img {
+            height: 70%;
+            width: 70%;
+            max-height: 250px;
+            object-fit: contain;
+            object-position: center center;
+            margin: 5px;
+        }
+    }
+    .badge{
+        text-align: right;
+        margin-left: 5%;
+        margin-right: 5%;
+        margin-bottom: 2%;
+        ion-badge {
+            // color: black;
+            // background-color: white;
+            border-radius: 10px;
+            letter-spacing: 2px;
+            margin: 3px;
+            // span{
+            //     color: grey;
+            // }
+        }        
+    }
+    .datosProducto {
+        height: 50%;
+        // background-color: white;
+        // border-top-left-radius: 15%;
+        // border-top-right-radius: 15%;
+        padding: 5%;
+        box-shadow: 2px -2px 2px 2px var(--ion-color-light);
+        // border-top: solid 2px var(--ion-color-light);
+        ion-item {
+            ion-label {
+                font-family: Sniglet;
+            }
+        }
+        .cantidad {
+            color: gray;
+            margin-left: 5%;
+            margin-right: 5%;
+        }
+        .nombre {
+            font-size: 3vh;
+            font-weight: bold;
+        }
+        .precio{
+            color: var(--ion-color-primary);
+            font-size: 3vh;
+            font-weight: bold;
+            span {
+                font-size: 18px;
+            }
+        }
+        .tienda {
+            border-radius: 10px;
+        }
+    }
+}
+
+.prohibido {
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    align-content: center;
+    .tetxoProhibido {
+        text-align: center;
+        border: solid 2px var(--ion-color-danger);
+        padding: 10%;
+        border-radius: 10px;
+        color: var(--ion-color-danger);
+        font-weight: bold;
+        ion-icon {
+            zoom: 2;
+        }
+    }
+}
+
+.sinDatos {
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    align-content: center;
+    .textoSindatos {
+        text-align: center;
+        padding: 10%;
+        border-radius: 10px;
+        color: var(--ion-color-danger);
+        font-weight: bold;
+        ion-icon {
+            zoom: 2;
+        }
+    }
+}
+
+.cargando {
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    align-content: center;
+}

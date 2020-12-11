@@ -29,3 +29,7 @@ npm-debug.log*
 /platforms
 /plugins
 /www
+<<<<<<< HEAD
+=======
+/src1
+>>>>>>> a48e01f7fc583018000f03b49330d3235c20fe5c

@@ -1,0 +1,43 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title *ngIf="!editar" color="primary">Subir Nueva Oferta</ion-title>
+    <ion-title *ngIf="editar" color="primary">Editar Oferta</ion-title>
+    <ion-buttons slot="end">
+      <ion-button (click)="cerrarModal()">
+        <ion-icon slot="icon-only" color="primary" name="close-outline"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding">
+  <ion-card>
+    <img *ngIf="!image && !datos" (click)="SubirFoto()" src="../../../assets/fondoImg.jpg" alt="">
+    <img *ngIf="image" (click)="SubirFoto()" [src]="image" alt="">
+    <img *ngIf="datos && datos.img && !image" (click)="SubirFoto()" [src]="datos.img" alt="">
+    <ion-card-content>
+      <ion-item>
+        <ion-label>Finaliza</ion-label>
+        <ion-datetime *ngIf="!datos" [(ngModel)]="fechaFinal" value="{{empieza}}" [min]="minDate" max="2030"
+            locale="es-PE"
+            displayFormat="D MMM H:mm"
+            monthShortNames="Ene, Feb, Mar, Abr, May, Jun, Jul, Ago, Sep, Oct, Nov, Dic"
+            doneText="Aceptar" cancelText="Cancelar"></ion-datetime>
+        <ion-datetime *ngIf="datos && datos.fecha" [(ngModel)]="datos.fecha" value="{{empieza}}" [min]="minDate" max="2030"
+            locale="es-PE"
+            displayFormat="D MMM H:mm"
+            monthShortNames="Ene, Feb, Mar, Abr, May, Jun, Jul, Ago, Sep, Oct, Nov, Dic"
+            doneText="Aceptar" cancelText="Cancelar"></ion-datetime>
+      </ion-item>
+    </ion-card-content>
+  </ion-card>
+</ion-content>
+
+<ion-footer class="ion-no-border">
+  <ion-button *ngIf="!editar" style="margin-bottom: 15px;" color="primary" expand="block" shape="round" (click)="agregarOferta()">
+    <ion-label color="light">Agregar Oferta</ion-label>
+  </ion-button>
+  <ion-button *ngIf="editar" style="margin-bottom: 15px;" color="primary" expand="block" shape="round" (click)="actualizarOferta()">
+    <ion-label color="light">Actualizar Oferta</ion-label>
+  </ion-button>
+</ion-footer>

@@ -1,0 +1,32 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title>Gestionar ingreso egreso</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+
+  <ion-list>
+    <ion-item>
+      <ion-label>
+        <ion-button (click)='exec("Ingreso")'>
+          Ingreso
+        </ion-button>
+      </ion-label>
+    </ion-item>
+
+    <ion-item>
+      <ion-label>
+        <ion-button (click)='exec("Egreso")'>
+          Egreso
+        </ion-button>
+      </ion-label>
+    </ion-item>
+
+    <ion-item>
+      <ion-label> Saldo: {{saldo}}</ion-label>
+    </ion-item>
+
+  </ion-list>
+
+</ion-content>
