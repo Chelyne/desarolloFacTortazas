@@ -1,8 +1,13 @@
-[
-    {
+[{
         "icon": "home-outline",
         "name": "Inicio",
         "redirecTo": "/home"
+    },
+
+    {
+        "icon": "speedometer-outline",
+        "name": "DASHBOARD",
+        "redirecTo": "/dashboard"
     },
 
     {
@@ -12,11 +17,17 @@
     },
 
     {
+        "icon": "document-text-outline",
+        "name": "Catalogo",
+        "redirecTo": "/catalogo"
+    },
+
+    {
         "icon": "person-outline",
         "name": "Perfil",
         "redirecTo": "/perfil"
     },
-    
+
     {
         "icon": "newspaper-outline",
         "name": "Pedidos",
