@@ -24,7 +24,7 @@ export class DbDataService {
   private clientes: Observable<AdmiInterface[]>;
 
   private clientesCollection: AngularFirestoreCollection<ClienteInterface>;
-  //private clientes: Observable<ClienteInterface[]>;
+  // private clientes: Observable<ClienteInterface[]>;
 
   private administradorDoc: AngularFirestoreDocument<AdmiInterface>;
   private administrador: Observable<AdmiInterface>;
@@ -120,6 +120,9 @@ export class DbDataService {
         });
       }));
   }
+
+
+
 
   ObtenerListaClientes(sede: string) {
     // const sede1 = sede.toLocaleLowerCase();
@@ -403,7 +406,7 @@ export class DbDataService {
 
   ObtenerUsuario(dni: string) {
 
-    this.usuariosCollection = this.afs.collection('usuarios', ref=>ref.where('dni', '==', dni ));
+    this.usuariosCollection = this.afs.collection('usuarios', ref => ref.where('dni', '==', dni ));
 
     return this.usuarios = this.usuariosCollection.snapshotChanges()
     .pipe(map(
@@ -451,7 +454,7 @@ export class DbDataService {
 
 
   actualizarCliente(idCliente: string, newCliente: ClienteInterface) {
-    //console.log( idCliente, newCliente);
+    // console.log( idCliente, newCliente);
 
     const promesa =  new Promise( (resolve, reject) => {
       this.afs.collection('clientes').doc(idCliente).update(newCliente);
@@ -461,12 +464,29 @@ export class DbDataService {
     return promesa;
   }
 
-  //NOTE - Esta función es identica a la que se encuentro más arriba ObtenerListaClientes
-  //TODO - Refactorizar
+  // NOTE - Esta función es identica a la que se encuentro más arriba ObtenerListaClientes
+  // TODO - Refactorizar
 
   ObtenerListaDeClientes() {
 
     this.clientesCollection = this.afs.collection('clientes');
+
+    return this.clientes = this.clientesCollection.snapshotChanges()
+      .pipe(map(
+        changes => {
+          return changes.map(action => {
+            const data = action.payload.doc.data() as ClienteInterface;
+            data.id = action.payload.doc.id;
+            return data;
+            });
+          }
+      ));
+
+  }
+  
+  ObtenerListaDeproductos() {
+
+    this.clientesCollection = this.afs.collection('sedes').doc('andahuaylas').collection('productos');
 
     return this.clientes = this.clientesCollection.snapshotChanges()
       .pipe(map(
@@ -568,5 +588,20 @@ export class DbDataService {
   }
 
 
-
+  // ObtenerProductos por categoria
+  ObtenerProductosCategoria(sede: string, subCategoria: string) {
+    const sede1 = sede.toLocaleLowerCase();
+    // tslint:disable-next-line:max-line-length
+    this.productoCollection = this.afs.collection('sedes').doc(sede1).collection('productos' , ref => ref.where('subCategoria', '==', subCategoria).orderBy('fechaRegistro', 'desc'));
+    // tslint:disable-next-line:max-line-length
+    // this.productoCollection = this.afs.collection<ProductoInterface>('frutas', ref => ref.where('propietario', '==', propietario).orderBy('fechaRegistro', 'desc'));
+    return this.productos = this.productoCollection.snapshotChanges()
+      .pipe(map(changes => {
+        return changes.map(action => {
+          const data = action.payload.doc.data() as ProductoInterface;
+          data.id = action.payload.doc.id;
+          return data;
+        });
+      }));
+  }
 }

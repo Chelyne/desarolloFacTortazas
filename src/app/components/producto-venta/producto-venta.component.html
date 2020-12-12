@@ -1,24 +1,39 @@
 
-<ion-item>
-  <form [formGroup]="formVenta" autocomplete="off">
-    <ion-input type="text" formControlName="cantidad" placeholder="nombres" [value]="itemDeVenta.cantidad==0?'':itemDeVenta.cantidad" maxlength="5"
-      (keyup)="cambioCantidad()" ></ion-input>
-    <div class="alertDanger" *ngIf="cantidad.invalid && (cantidad.dirty || cantidad.touched)">
-      <div class="mensajeError" *ngIf="cantidad.errors.required">
-        *Complete la cantidad
+<ion-row class="ion-justify-content-center ion-align-items-center">
+  <ion-col size="2">
+    <form [formGroup]="formVenta" autocomplete="off">
+      <ion-input type="text" formControlName="cantidad" placeholder="nombres" [value]="itemDeVenta.cantidad==0?'':itemDeVenta.cantidad" maxlength="5"
+        (keyup)="cambioCantidad()" ></ion-input>
+      <div class="alertDanger" *ngIf="cantidad.invalid && (cantidad.dirty || cantidad.touched)">
+        <div class="mensajeError" *ngIf="cantidad.errors.required">
+          *Complete la cantidad
+        </div>
+        <div class="mensajeError" *ngIf="cantidad.errors.pattern">
+          *solo ingresar enteros positivos
+        </div>
       </div>
-      <div class="mensajeError" *ngIf="cantidad.errors.pattern">
-        *solo ingresar enteros positivos
-      </div>
-    </div>
-  </form>
-  <ion-label> {{itemDeVenta.producto.nombre | titlecase}} </ion-label>
-  <ion-label> S/ {{itemDeVenta.producto.precio | number: '1.2'}} </ion-label>
-  <ion-label> S/ {{itemDeVenta.tatalxprod | number: '1.2'}}</ion-label>
+    </form>
+  </ion-col>
+  <ion-col size="6.5">
+    <ion-label class="ion-text-wrap"> {{itemDeVenta.producto.nombre | titlecase}} </ion-label>
+  </ion-col>
+  <ion-col size="0.5">
+    <ion-label color="dark">S/</ion-label>
+  </ion-col>
+  <ion-col size="2">
+    <ion-input readonly="true" value="{{itemDeVenta.tatalxprod}}"></ion-input>
+  </ion-col>
+  <ion-col size="1">
+    <ion-buttons>
+      <ion-button (click)="eventoEliminarItem()">
+        <ion-icon slot="icon-only" color="danger" name="trash"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-col>
+</ion-row>
+<!-- <ion-item> -->
 
-  <ion-buttons slot="end">
-    <ion-button (click)="eventoEliminarItem()">
-      <ion-icon slot="icon-only" color="danger" name="trash"></ion-icon>
-    </ion-button>
-  </ion-buttons>
-</ion-item>
+  <!-- <ion-label> S/ {{itemDeVenta.producto.precio | number: '1.2'}} </ion-label> -->
+
+
+<!-- </ion-item> -->

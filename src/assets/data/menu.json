@@ -1,8 +1,9 @@
 [
+
     {
-        "icon": "home-outline",
-        "name": "Inicio",
-        "redirecTo": "/home"
+        "icon": "speedometer-outline",
+        "name": "Dashboard",
+        "redirecTo": "/dashboard"
     },
 
     {
@@ -12,11 +13,11 @@
     },
 
     {
-        "icon": "person-outline",
-        "name": "Perfil",
-        "redirecTo": "/perfil"
+        "icon": "document-text-outline",
+        "name": "Catalogo",
+        "redirecTo": "/catalogo"
     },
-    
+
     {
         "icon": "newspaper-outline",
         "name": "Pedidos",
@@ -27,24 +28,6 @@
         "icon": "people-outline",
         "name": "Clientes",
         "redirecTo": "/clientes"
-    },
-
-    {
-        "icon": "megaphone-outline",
-        "name": "Ofertas",
-        "redirecTo": "/ofertas"
-    },
-
-    {
-        "icon": "paw-outline",
-        "name": "Tips",
-        "redirecTo": "/tips"
-    },
-
-    {
-        "icon": "pricetags-outline",
-        "name": "Descuentos",
-        "redirecTo": "/descuentos"
     },
 
     {

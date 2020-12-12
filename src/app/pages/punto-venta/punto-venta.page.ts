@@ -7,6 +7,7 @@ import { Subscription } from 'rxjs';
 import { VentaInterface } from 'src/app/models/venta/venta';
 import { ItemDeVentaInterface } from 'src/app/models/venta/item-de-venta';
 import { ProductoInterface } from 'src/app/models/ProductoInterface';
+import { DbDataService } from '../../services/db-data.service';
 
 @Component({
   selector: 'app-punto-venta',
@@ -21,28 +22,31 @@ export class PuntoVentaPage implements OnInit {
 
   listaVenta = [];
   private suscripcionProducto: Subscription;
+
+  sinDatos;
   constructor(private menuCtrl: MenuController,
               private categoriasService: CategoriasService,
-              private pagination: PaginationProductosService) {
+              private pagination: PaginationProductosService,
+              private dataApi: DbDataService) {
     this.menuCtrl.enable(true);
    }
 
 
-  //Ventas
-    listaDeVentas:VentaInterface[] = [];
+  // Ventas
+    listaDeVentas: VentaInterface[] = [];
 
     venta: VentaInterface;
 
-    totalxPagar:number;
+    totalxPagar: number;
 
 
-  //ObjetoVentas o ItemsDeVenta
+  // ObjetoVentas o ItemsDeVenta
     // listaItemsDeVenta:ItemDeVentaInterface[] = [];
-    listaItemsDeVenta:ItemDeVentaInterface[] = [];
+    listaItemsDeVenta: ItemDeVentaInterface[] = [];
 
 
 
-  //Productos
+  // Productos
     listaDeProductos: ProductoInterface[];
     productoItem: ProductoInterface;
 
@@ -50,10 +54,12 @@ export class PuntoVentaPage implements OnInit {
 
   ngOnInit() {
     this.categorias = this.categoriasService.getcategoriasNegocio('petshop');
+    this.sinDatos = false;
   }
 
 
   listaProductosCategoria(categoria: string) {
+    this.sinDatos = null;
     if (this.categoria !== categoria) {
       console.log('de cero');
       this.listaProductos = [];
@@ -61,14 +67,24 @@ export class PuntoVentaPage implements OnInit {
     this.categoria = categoria;
     // const propietario = this.storage.datosNegocio.correo;
     const sede1 = 'andahuaylas';
-    this.suscripcionProducto = this.pagination.getProductos(sede1, this.categoria, null).subscribe( data => {
-      if (data !== null) {
-        this.listaProductos.push(...data);
-        // this.sinDatos = false;
+    this.dataApi.ObtenerProductosCategoria(sede1, categoria).subscribe(datos => {
+      if (datos.length > 0) {
+        this.listaProductos =  datos;
+        this.sinDatos = false;
+
       } else {
-        // this.sinDatos = true;
+        console.log('NO HAY PRODUCTOS');
+        this.sinDatos = true;
       }
     });
+    // this.suscripcionProducto = this.pagination.getProductos(sede1, this.categoria, null).subscribe( data => {
+    //   if (data !== null) {
+    //     this.listaProductos.push(...data);
+    //     this.sinDatos = false;
+    //   } else {
+    //     this.sinDatos = true;
+    //   }
+    // });
   }
 
   loadData(event) {
@@ -97,7 +113,7 @@ export class PuntoVentaPage implements OnInit {
 
   AgregarItemDeVenta(prodItem: ProductoInterface){
 
-    let producExist: boolean = false;
+    let producExist = false;
     const idProdItem: string = prodItem.id;
 
     if (this.listaItemsDeVenta.length > 0) {
@@ -111,14 +127,14 @@ export class PuntoVentaPage implements OnInit {
       }
     }
 
-    if(!producExist){
+    if (!producExist){
       this.listaItemsDeVenta.push( this.CrearItemDeVenta(prodItem));
     }
 
     this.calcularTotalaPagar();
   }
 
-  CrearItemDeVenta(prodItem: ProductoInterface):ItemDeVentaInterface{
+  CrearItemDeVenta(prodItem: ProductoInterface): ItemDeVentaInterface{
     return {
       producto: prodItem,
       idProducto: prodItem.id,
@@ -127,15 +143,15 @@ export class PuntoVentaPage implements OnInit {
     };
   }
 
-  inputModificado(evento:{id :string, cantidad: number}){
-    //console.log(evento);
+  inputModificado(evento: {id: string, cantidad: number}){
+    // console.log(evento);
     this.ActualizarMonto(evento.id, evento.cantidad);
   }
 
   ActualizarMonto(idProdItem: string, cantidad: number){
     if (this.listaItemsDeVenta.length > 0) {
       for (const itemDeVenta of this.listaItemsDeVenta) {
-        //console.log('ssssssssssssssssss')
+        // console.log('ssssssssssssssssss')
         if (idProdItem === itemDeVenta.idProducto){
             itemDeVenta.cantidad = cantidad;
             itemDeVenta.tatalxprod = itemDeVenta.cantidad * itemDeVenta.producto.precio;
@@ -148,17 +164,17 @@ export class PuntoVentaPage implements OnInit {
   }
 
 
-  quitarProducto(evento:{id:string}){
+  quitarProducto(evento: {id: string}){
 
-    let index: number= 0;
+    let index = 0;
     const idProdItem: string = evento.id;
 
     if (this.listaItemsDeVenta.length > 0) {
 
       for (const itemDeVenta of this.listaItemsDeVenta) {
         if (idProdItem === itemDeVenta.idProducto){
-            console.log("quitar producto", index);
-            this.listaItemsDeVenta.splice(index,1);
+            console.log('quitar producto', index);
+            this.listaItemsDeVenta.splice(index, 1);
             break;
         }
         index++;
@@ -169,24 +185,24 @@ export class PuntoVentaPage implements OnInit {
   }
 
   calcularTotalaPagar(){
-    let totalxpagar: number = 0;
+    let totalxpagar = 0;
 
     for (const item of this.listaItemsDeVenta) {
       totalxpagar += item.tatalxprod;
     }
-    //console.log(totalxpagar);
+    // console.log(totalxpagar);
 
     this.totalxPagar = totalxpagar;
   }
 
-  //......................................
-  //nuevas funcionalidades
+  // ......................................
+  // nuevas funcionalidades
 
   AgregaraListaDeEspera(){
-    //poner la venta en la lista de espera
-    //anadir el array de itemsDeVenta a listaDeVentas
+    // poner la venta en la lista de espera
+    // anadir el array de itemsDeVenta a listaDeVentas
     // +totalapagar
-    //NOTE - quizas necesitas; crearVenta
+    // NOTE - quizas necesitas; crearVenta
     this.listaDeVentas.push(this.CrearItemDeVentas());
     this.listaItemsDeVenta = [];
     this.totalxPagar = 0;
@@ -194,7 +210,7 @@ export class PuntoVentaPage implements OnInit {
 
   }
 
-  CrearItemDeVentas():VentaInterface{
+  CrearItemDeVentas(): VentaInterface{
     return {
       listaItemsDeVenta: this.listaItemsDeVenta,
       totalaPagar: this.totalxPagar,
@@ -202,17 +218,17 @@ export class PuntoVentaPage implements OnInit {
     };
   }
 
-  //sacar de espera
-  //moverAListaPrincipal
-  moverAListaPrincipal(venta:VentaInterface){
+  // sacar de espera
+  // moverAListaPrincipal
+  moverAListaPrincipal(venta: VentaInterface){
 
     this.listaItemsDeVenta = venta.listaItemsDeVenta;
 
     const idVenta = venta.idVenta;
     let index = 0;
     for (const ventaItem of this.listaDeVentas) {
-      if (idVenta== ventaItem.idVenta) {
-        this.listaDeVentas.splice(index,1);
+      if (idVenta === ventaItem.idVenta) {
+        this.listaDeVentas.splice(index, 1);
         break;
       }
       index++;
@@ -226,9 +242,9 @@ export class PuntoVentaPage implements OnInit {
     this.totalxPagar = 0;
   }
 
-  CrearVentaId():string{
+  CrearVentaId(): string{
     const hoy = new Date();
-    const hora = ''+hoy.getHours()+''+hoy.getMinutes()+''+hoy.getSeconds()+''+hoy.getMilliseconds();
+    const hora = '' + hoy.getHours() + '' + hoy.getMinutes() + '' + hoy.getSeconds() + '' + hoy.getMilliseconds();
     return hora;
   }
 

@@ -26,11 +26,11 @@ export class PaginationProductosService {
     }
     if (this.ultimoDoc === null) {
       this.productoCollection = this.afs.collection<ProductoInterface>('sedes').doc(sede)
-      .collection('productos', ref => ref.where('subCategoria', '==', categoria).orderBy('fechaRegistro', 'desc').limit(8));
+      .collection('productos', ref => ref.where('subCategoria', '==', categoria).orderBy('fechaRegistro', 'desc').limit(18));
     } else {
       this.productoCollection = this.afs.collection<ProductoInterface>('sedes').doc(sede)
       // tslint:disable-next-line:max-line-length
-      .collection('productos', ref => ref.where('subCategoria', '==', categoria).orderBy('fechaRegistro', 'desc').startAfter(this.ultimoDoc).limit(8));
+      .collection('productos', ref => ref.where('subCategoria', '==', categoria).orderBy('fechaRegistro', 'desc').startAfter(this.ultimoDoc).limit(18));
     }
     return this.productoCollection.snapshotChanges().pipe(map( changes => {
       if (changes.length > 0) {
