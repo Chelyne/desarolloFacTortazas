@@ -121,6 +121,9 @@ export class DbDataService {
       }));
   }
 
+
+
+
   ObtenerListaClientes(sede: string) {
     // const sede1 = sede.toLocaleLowerCase();
     // tslint:disable-next-line:max-line-length
@@ -467,6 +470,23 @@ export class DbDataService {
   ObtenerListaDeClientes() {
 
     this.clientesCollection = this.afs.collection('clientes');
+
+    return this.clientes = this.clientesCollection.snapshotChanges()
+      .pipe(map(
+        changes => {
+          return changes.map(action => {
+            const data = action.payload.doc.data() as ClienteInterface;
+            data.id = action.payload.doc.id;
+            return data;
+            });
+          }
+      ));
+
+  }
+  
+  ObtenerListaDeproductos() {
+
+    this.clientesCollection = this.afs.collection('sedes').doc('andahuaylas').collection('productos');
 
     return this.clientes = this.clientesCollection.snapshotChanges()
       .pipe(map(

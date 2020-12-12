@@ -1,0 +1,87 @@
+<ion-header>
+    <ion-toolbar>
+        <ion-title>dashboard</ion-title>
+    </ion-toolbar>
+</ion-header>
+
+<ion-content>
+    <ion-grid>
+        <ion-row>
+            <ion-col size="12 " size-xs="12 " size-sm="12" size-md="6" size-lg="4">
+                <ion-card>
+                    <ion-grid>
+                        <ion-row>
+                            <ion-col>
+                                <ion-item>
+                                    <ion-label>SEDE</ion-label>
+                                    <ion-select interface="popover">
+                                        <ion-select-option value="Andahuylas">Andahuaylas</ion-select-option>
+                                        <ion-select-option value="Abancay">Abancay</ion-select-option>
+                                    </ion-select>
+                                </ion-item>
+                            </ion-col>
+                        </ion-row>
+
+                        <ion-row>
+                            <ion-col>
+
+                                <ion-item>
+                                    <ion-label>PERIODO</ion-label>
+                                    <ion-datetime displayFormat="MMMM YYYY"></ion-datetime>
+
+                                </ion-item>
+                            </ion-col>
+                        </ion-row>
+                    </ion-grid>
+                </ion-card>
+            </ion-col>
+            <ion-col size="12 " size-xs="12 " size-sm="12" size-md="6 " size-lg="4">
+                <ion-card>
+                    <ion-card-header>
+                        <ion-card-title>VENTAS</ion-card-title>
+                    </ion-card-header>
+
+                    <ion-card-content>
+                        <div class="chard-container">
+                            <canvas id="chartss"></canvas>
+                        </div>
+                    </ion-card-content>
+                </ion-card>
+            </ion-col>
+
+            <ion-col size="12 " size-xs="12 " size-sm="12" size-md="6" size-lg="4">
+                <ion-card>
+                    <ion-card-header>
+                        <ion-card-title>Card Subtitle</ion-card-title>
+                    </ion-card-header>
+
+                    <ion-card-content>
+                        <div class="chard-container">
+                            <canvas id="chartpie"></canvas>
+                        </div>
+                    </ion-card-content>
+                </ion-card>
+
+            </ion-col>
+        </ion-row>
+
+        <ion-row>
+
+            <ion-col size="12 " size-xs="12 " size-sm="12" size-md="6 " size-lg="6">
+                <ion-card>
+                    <ion-card-header>
+                        <ion-card-title>Card Subtitle</ion-card-title>
+                    </ion-card-header>
+
+                    <ion-card-content>
+                        <div class="chard-container">
+                            <canvas id="chartradar"></canvas>
+                        </div>
+                    </ion-card-content>
+                </ion-card>
+            </ion-col>
+
+        </ion-row>
+    </ion-grid>
+
+</ion-content>
