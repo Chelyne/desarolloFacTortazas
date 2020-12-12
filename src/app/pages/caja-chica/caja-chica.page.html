@@ -1,0 +1,68 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-menu-button color="primary" menu="primerMenu">
+      </ion-menu-button>
+    </ion-buttons>
+    <ion-title>Caja Chica</ion-title>
+    <ion-buttons slot="end">
+      <ion-button (click)="reporteGeneral()" color="primary">
+        <ion-icon slot="start" name="cart"></ion-icon>
+        Reporte General
+      </ion-button>
+      <ion-button (click)="modalAperturaCajaChica()" color="primary">
+        <ion-icon slot="start" name="cart"></ion-icon>
+        Apertura Caja Chica
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <ion-toolbar color="primary">
+    <ion-title color="light">Listado de cajas</ion-title>
+  </ion-toolbar>
+  <ion-item>
+    <ion-item style="width: 50%;" lines="none">
+      <ion-label>Filtrar por</ion-label>
+      <ion-select value="ingresos" mode="ios">
+        <ion-select-option value="ingresos">Ingresos</ion-select-option>
+        <ion-select-option value="ecgresos">Egresos</ion-select-option>
+      </ion-select>
+    </ion-item>
+    <ion-searchbar style="width: 40%;" slot="end" (ionClear)="limpiar()" (ionChange)="Search($event)" #search placeholder="Buscar" inputmode="text" debounce="1000" animated="true" mode="ios"></ion-searchbar>
+  </ion-item>
+  <ion-grid fixed>
+    <ion-row>
+      <ion-col size="0.5"><ion-label>#</ion-label></ion-col>
+      <ion-col size ="1.5"><ion-label>Vendedor</ion-label></ion-col>
+      <ion-col size ="1.5"><ion-label>Apertura</ion-label></ion-col>
+      <ion-col size ="1.5"><ion-label>Cierre</ion-label></ion-col>
+      <ion-col size ="1.5"><ion-label>Saldo Inicial</ion-label></ion-col>
+      <ion-col size ="1.5"><ion-label>Saldo Final</ion-label></ion-col>
+      <ion-col size ="1.5"><ion-label>Estado</ion-label></ion-col>
+      <ion-col size ="2.5"><ion-label>Acciones</ion-label></ion-col>
+    </ion-row>
+    <ion-row *ngFor="let item of listaCajaChica; let i=index ">
+      <ion-col size="0.5"><ion-label>{{i+1}}</ion-label></ion-col>
+      <ion-col size="1.5"><ion-label>{{item.nombreVendedor}}</ion-label></ion-col>
+      <ion-col size="1.5"><ion-label>{{item.FechaApertura}}</ion-label></ion-col>
+      <ion-col size="1.5"><ion-label>{{item.FechaCierre}}</ion-label></ion-col>
+      <ion-col size="1.5"><ion-label>{{item.saldoInicial}}</ion-label></ion-col>
+      <ion-col size="1.5"><ion-label>{{item.saldoFinal}}</ion-label></ion-col>
+      <ion-col size="1.5"><ion-label>{{item.estado}}</ion-label></ion-col>
+      <ion-col size="2.5">
+        <ion-row>
+          <ion-col>
+            <ion-button class="botones" size="13" color="primary" >
+              Reporte
+            </ion-button>
+          </ion-col>
+        </ion-row>
+        
+      </ion-col>
+      
+    </ion-row>
+  </ion-grid>
+
+</ion-content>

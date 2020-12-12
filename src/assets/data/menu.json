@@ -51,5 +51,10 @@
         "icon": "people-outline",
         "name": "Usuarios",
         "redirecTo": "/usuarios"
+    },
+    {
+        "icon": "people-outline",
+        "name": "Caja Chica POS",
+        "redirecTo": "/caja-chica"
     }
 ]

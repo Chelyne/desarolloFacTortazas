@@ -390,7 +390,7 @@ export class DbDataService {
 
 
   actualizarUsuario(idUser: string, newUser: UsuarioInterface) {
-    //console.log( idUser, newUser);
+    // console.log( idUser, newUser);
 
     const promesa =  new Promise( (resolve, reject) => {
       this.afs.collection('usuarios').doc(idUser).update(newUser);
@@ -438,7 +438,7 @@ export class DbDataService {
 
 
   // Guardar Nuevo CLIENTE
-  //TODO -  Refactorizar en los lugares donde se usa
+  // TODO -  Refactorizar en los lugares donde se usa
   guardarCliente(newCliente: ClienteInterface) {
 
     const promesa =  new Promise( (resolve, reject) => {
@@ -497,7 +497,7 @@ export class DbDataService {
 
 
   actualizarProveedor(idProveedor: string, newProveedor: ProveedorInterface) {
-    //console.log( idProveedor, newProveedor);
+    // console.log( idProveedor, newProveedor);
 
     const promesa =  new Promise( (resolve, reject) => {
       this.afs.collection('proveedores').doc(idProveedor).update(newProveedor);
@@ -524,6 +524,49 @@ export class DbDataService {
       ));
 
   }
+  // chelin
+  ObtenerListaDeUsuariosSede(sede: string) {
+
+    this.usuariosCollection = this.afs.collection('usuarios', ref => ref.where('sede', '==', sede ));
+
+    return this.usuarios = this.usuariosCollection.snapshotChanges()
+      .pipe(map(
+        changes => {
+          return changes.map(action => {
+            const data = action.payload.doc.data() as UsuarioInterface;
+            data.id = action.payload.doc.id;
+            return data;
+            });
+          }
+      ));
+
+  }
+  guardarCajaChica(newcajaChica) {
+    // const celular = newUsuario.celular;
+    const promesa =  new Promise( (resolve, reject) => {
+      this.afs.collection('CajaChica').add(newcajaChica); // .get().set(newcajaChina) //si es  que quieres asignar una id
+      resolve();
+    });
+    return promesa;
+    // this.afs.collection<ProductoInterface>(categoria).add(newProducto);
+  }
+  ObtenerListaCajaChica(sede: string) {
+
+    this.usuariosCollection = this.afs.collection('CajaChica', ref => ref.where('sede', '==', sede ).orderBy('FechaApertura', 'asc') );
+
+    return this.usuarios = this.usuariosCollection.snapshotChanges()
+      .pipe(map(
+        changes => {
+          return changes.map(action => {
+            const data = action.payload.doc.data() as UsuarioInterface;
+            data.id = action.payload.doc.id;
+            return data;
+            });
+          }
+      ));
+
+  }
+
 
 
 }

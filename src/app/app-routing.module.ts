@@ -142,7 +142,15 @@ const routes: Routes = [
   {
     path: 'ingreso-egreso-gestor',
     loadChildren: () => import('./pages/ingreso-egreso-gestor/ingreso-egreso-gestor.module').then( m => m.IngresoEgresoGestorPageModule)
+  },  {
+    path: 'caja-chica',
+    loadChildren: () => import('./pages/caja-chica/caja-chica.module').then( m => m.CajaChicaPageModule)
+  },
+  {
+    path: 'abrir-cerrar-caja',
+    loadChildren: () => import('./modals/abrir-cerrar-caja/abrir-cerrar-caja.module').then( m => m.AbrirCerrarCajaPageModule)
   }
+
 
 
 ];
