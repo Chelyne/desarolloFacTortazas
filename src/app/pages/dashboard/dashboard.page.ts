@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
-import * as Chart from "chart.js";
+import * as Chart from 'chart.js';
+import { MenuController } from '@ionic/angular';
 
 @Component({
   selector: 'app-dashboard',
@@ -13,7 +14,7 @@ export class DashboardPage implements OnInit {
   customDayShortNames = ['s\u00f8n', 'man', 'tir', 'ons', 'tor', 'fre', 'l\u00f8r'];
   customPickerOptions: any;
 
-  constructor() {
+  constructor(private menuCtrl: MenuController) {
     this.customPickerOptions = {
       buttons: [{
         text: 'Save',
@@ -30,6 +31,7 @@ export class DashboardPage implements OnInit {
    }
 
    async ngOnInit(){
+    this.menuCtrl.enable(true);
     this.generarChards();
     this.generarChardslinea();
     this.generarChardsdona();
