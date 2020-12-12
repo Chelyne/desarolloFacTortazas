@@ -1,12 +1,12 @@
 @font-face{
-    font-family: Sniglet;
-    src : url('../assets/fonts/Sniglet.woff2')
+    font-family: Nunito;
+    src : url('../assets/fonts/nunito.woff2')
 }
 
 * {
     ion-item{
         ion-label {
-            font-family: Sniglet;
+            font-family: Nunito;
         }
     } 
  }

@@ -1,8 +1,18 @@
-*{
-    margin-left: 5px;
-    margin-right: 10px;
+
+* {
+    ion-label {
+        font-family: Nunito;
+    }
 }
 ion-input {
+    border-radius: 5px;
     width: 50px;
-    border: 2px gray solid;
+    border: 1px gray solid;
+}
+
+ion-row {
+    padding: 0px;
+    ion-col {
+        padding: 0px;
+    }
 }

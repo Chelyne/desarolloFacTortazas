@@ -18,6 +18,6 @@ import { ProductoVentaComponent } from 'src/app/components/producto-venta/produc
 
     ReactiveFormsModule
   ],
-  declarations: [PuntoVentaPage,ProductoVentaComponent]
+  declarations: [PuntoVentaPage, ProductoVentaComponent]
 })
 export class PuntoVentaPageModule {}
