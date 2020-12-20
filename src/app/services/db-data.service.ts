@@ -667,7 +667,7 @@ export class DbDataService {
 
     const promesa =  new Promise( (resolve, reject) => {
       this.afs.collection('compras').add(newCompra);
-      resolve();
+      resolve(resolve);
     });
 
     return promesa;
