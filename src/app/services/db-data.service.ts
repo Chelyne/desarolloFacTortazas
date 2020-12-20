@@ -203,7 +203,7 @@ export class DbDataService {
     // const sede1 =  sede.toLocaleLowerCase();
     const promesa =  new Promise((resolve, reject) => {
       this.afs.collection('sedes').doc(sede.toLocaleLowerCase()).collection('ofertas').add(oferta);
-      resolve();
+      resolve(resolve);
     });
     return promesa;
   }
@@ -224,7 +224,7 @@ export class DbDataService {
     }
     const promesa = new Promise((resolve, reject) => {
       this.afs.collection('sedes').doc(data.sede.toLocaleLowerCase()).collection('ofertas').doc(id).update(datos);
-      resolve();
+      resolve(resolve);
     });
     return promesa;
   }
@@ -278,7 +278,7 @@ export class DbDataService {
     // const sede1 =  sede.toLocaleLowerCase();
     const promesa =  new Promise((resolve, reject) => {
       this.afs.collection('tips').add(tip);
-      resolve();
+      resolve(resolve);
     });
     return promesa;
   }
@@ -375,7 +375,7 @@ export class DbDataService {
   actualizarUrlFoto(sede: string, id: string, url: string) {
     const promesa = new Promise((resolve, reject) => {
       this.afs.collection('sedes').doc(sede).collection('productos').doc(id).update({img: url}).then(() => {
-        resolve();
+        resolve(resolve);
       });
     });
     return promesa;
@@ -415,7 +415,7 @@ export class DbDataService {
   guardarUsuario(newUser: UsuarioInterface) {
     const promesa =  new Promise( (resolve, reject) => {
       this.afs.collection('usuarios').add(newUser);
-      resolve();
+      resolve(resolve);
     });
 
     return promesa;
@@ -427,7 +427,7 @@ export class DbDataService {
 
     const promesa =  new Promise( (resolve, reject) => {
       this.afs.collection('usuarios').doc(idUser).update(newUser);
-      resolve();
+      resolve(resolve);
     });
 
     return promesa;
@@ -476,7 +476,7 @@ export class DbDataService {
 
     const promesa =  new Promise( (resolve, reject) => {
       this.afs.collection('clientes').add(newCliente);
-      resolve();
+      resolve(resolve);
     });
 
     return promesa;
@@ -488,7 +488,7 @@ export class DbDataService {
 
     const promesa =  new Promise( (resolve, reject) => {
       this.afs.collection('clientes').doc(idCliente).update(newCliente);
-      resolve();
+      resolve(resolve);
     });
 
     return promesa;
@@ -539,7 +539,7 @@ export class DbDataService {
 
     const promesa =  new Promise( (resolve, reject) => {
       this.afs.collection('proveedores').add(newProveedor);
-      resolve();
+      resolve(resolve);
     });
 
     return promesa;
@@ -551,7 +551,7 @@ export class DbDataService {
 
     const promesa =  new Promise( (resolve, reject) => {
       this.afs.collection('proveedores').doc(idProveedor).update(newProveedor);
-      resolve();
+      resolve(resolve);
     });
 
     return promesa;
@@ -595,7 +595,7 @@ export class DbDataService {
     // const celular = newUsuario.celular;
     const promesa =  new Promise( (resolve, reject) => {
       this.afs.collection('CajaChica').add(newcajaChica); // .get().set(newcajaChina) //si es  que quieres asignar una id
-      resolve();
+      resolve(resolve);
     });
     return promesa;
     // this.afs.collection<ProductoInterface>(categoria).add(newProducto);
