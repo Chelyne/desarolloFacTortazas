@@ -143,6 +143,17 @@ const routes: Routes = [
     path: 'ingreso-egreso-gestor',
     loadChildren: () => import('./pages/ingreso-egreso-gestor/ingreso-egreso-gestor.module').then( m => m.IngresoEgresoGestorPageModule)
   },
+  
+  // {
+  //   path: 'compras',
+  //   loadChildren: () => import('./pages/compras/compras.module').then( m => m.ComprasPageModule)
+  // },
+  // {
+  //   path: 'lista-de-productos',
+  //   loadChildren: () => import('./pages/lista-de-productos/lista-de-productos.module').then( m => m.ListaDeProductosPageModule)
+  // },
+
+
   {
     path: 'caja-chica',
     loadChildren: () => import('./pages/caja-chica/caja-chica.module').then( m => m.CajaChicaPageModule)
@@ -158,7 +169,16 @@ const routes: Routes = [
   {
     path: 'catalogo',
     loadChildren: () => import('./pages/catalogo/catalogo.module').then( m => m.CatalogoPageModule)
+  },
+  {
+    path: 'refactor-compra',
+    loadChildren: () => import('./pages/refactor-compra/refactor-compra.module').then( m => m.RefactorCompraPageModule)
+  },
+  {
+    path: 'lista-de-compras',
+    loadChildren: () => import('./pages/lista-de-compras/lista-de-compras.module').then( m => m.ListaDeComprasPageModule)
   }
+
 
 
 ];

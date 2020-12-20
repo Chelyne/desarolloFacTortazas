@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, Input, OnInit } from '@angular/core';
 import { ModalController } from '@ionic/angular';
 import { AgregarEditarProveedorPage } from 'src/app/modals/agregar-editar-proveedor/agregar-editar-proveedor.page';
 import { ProveedorInterface } from 'src/app/models/proveedor';
@@ -21,6 +21,8 @@ export class ListaDeProveedoresPage implements OnInit {
   modalTitle: String;
   modalTag: string;
   modalDataProveedor: ProveedorInterface;
+
+  @Input() esModal: boolean = false;
 
 
   constructor(private dataApi: DbDataService, private modalCtlr: ModalController) {
@@ -83,7 +85,12 @@ export class ListaDeProveedoresPage implements OnInit {
     await modal.present()
   }
 
+  SeleccionarProveedor(proveedorSelect: ProveedorInterface){
 
+    this.modalCtlr.dismiss({
+      proveedor: proveedorSelect
+    });
+  }
 
 
 }

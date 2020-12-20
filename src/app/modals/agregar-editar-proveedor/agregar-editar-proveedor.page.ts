@@ -38,7 +38,7 @@ export class AgregarEditarProveedorPage implements OnInit {
   createFormProveedor() {
     return new FormGroup({
       nombre: new FormControl('', [Validators.required, Validators.minLength(3)]),
-      ruc: new FormControl('', [Validators.required, Validators.minLength(13), Validators.maxLength(13)]),
+      ruc: new FormControl('', [Validators.required, Validators.minLength(11), Validators.maxLength(11)]),
       telefono: new FormControl('',[Validators.required, Validators.minLength(6), Validators.maxLength(9)]),
       direccion: new FormControl('', [Validators.required, Validators.minLength(3)]),
       email: new FormControl('', [Validators.required, Validators.minLength(3), Validators.pattern('^[_a-z0-9]+(\.[_a-z0-9]+)*@[a-z0-9-]+(\.[_a-z0-9]+)*\.([a-z]{2,4})$')])
@@ -54,7 +54,7 @@ export class AgregarEditarProveedorPage implements OnInit {
   formForUpdate(){
     return new FormGroup({
       nombre: new FormControl(this.dataInvoker.nombre, [Validators.required, Validators.minLength(3)]),
-      ruc: new FormControl(this.dataInvoker.ruc, [Validators.required, Validators.minLength(13), Validators.maxLength(13)]),
+      ruc: new FormControl(this.dataInvoker.ruc, [Validators.required, Validators.minLength(11), Validators.maxLength(11)]),
       telefono: new FormControl(this.dataInvoker.telefono, [Validators.required, Validators.minLength(6), Validators.maxLength(9)]),
       direccion: new FormControl(this.dataInvoker.direccion, [Validators.required, Validators.minLength(3)]),
       email: new FormControl(this.dataInvoker.email, [Validators.required, Validators.minLength(3), Validators.pattern('^[_a-z0-9]+(\.[_a-z0-9]+)*@[a-z0-9-]+(\.[_a-z0-9]+)*\.([a-z]{2,4})$')])

@@ -284,7 +284,7 @@ export class ModalAgregarProductoPage implements OnInit {
   //     // window.alert(error);
   //   });
   // }
-
+  //TODO - modificar subir imagen a firebase
   uploadImage(image) {
     return new Promise<any>((resolve, reject) => {
       // tslint:disable-next-line:prefer-const
