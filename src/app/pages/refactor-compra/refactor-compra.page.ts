@@ -56,7 +56,7 @@ export class RefactorCompraPage implements OnInit {
 
 
   ObtenerProductos(){
-    this.dataApi.ObtenerListaProductosSinCat(this.sede).subscribe(data => {
+    this.dataApi.ObtenerListaProductosSinCat(this.sede,10).subscribe(data => {
       this.listaDeProductos = data;
       // console.log(data);
     });
@@ -74,7 +74,7 @@ export class RefactorCompraPage implements OnInit {
     const lowercaseKey = key.toLowerCase();
 
     if (lowercaseKey.length) {
-      this.dataApi.ObtenerListaProductosByName(this.sede, lowercaseKey).subscribe(data => {
+      this.dataApi.ObtenerListaProductosByName(this.sede, lowercaseKey,10).subscribe(data => {
         this.listaDeProductos = data;
       });
     } else  {

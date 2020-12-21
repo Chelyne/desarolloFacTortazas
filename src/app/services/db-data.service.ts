@@ -122,7 +122,7 @@ export class DbDataService {
       }));
   }
 
-  ObtenerListaProductosByName(sede: string, nombre:string) {
+  ObtenerListaProductosByName(sede: string, nombre:string, limit:number) {
     const sede1 = sede.toLocaleLowerCase();
     // tslint:disable-next-line:max-line-length
     this.productoCollection = this.afs.collection('sedes').doc(sede1).collection('productos' , ref => ref.orderBy('nombre').startAt(nombre).endAt(nombre+"\uf8ff").limit(10));
@@ -138,7 +138,7 @@ export class DbDataService {
       }));
   }
 
-  ObtenerListaProductosSinCat(sede: string) {
+  ObtenerListaProductosSinCat(sede: string, limit:number) {
     const sede1 = sede.toLocaleLowerCase();
     // tslint:disable-next-line:max-line-length
     this.productoCollection = this.afs.collection('sedes').doc(sede1).collection('productos', ref => ref.orderBy('fechaTimeRegistro', 'desc').limit(10));
@@ -667,7 +667,7 @@ export class DbDataService {
 
     const promesa =  new Promise( (resolve, reject) => {
       this.afs.collection('compras').add(newCompra);
-      resolve();
+      resolve(resolve);
     });
 
     return promesa;
