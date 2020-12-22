@@ -2,8 +2,8 @@ export interface ProductoInterface {
     id?: string;
     img?: string;
     nombre?: string;
-    cantidad?: number;
-    unidad?: string;
+    cantidad?: number; //?NOTE , numero de unidades en una venta
+    unidad?: string; // !quitar
     precio?: number;
     sede?: string;
     medida?: string;    //!quitar

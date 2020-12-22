@@ -123,6 +123,10 @@ const routes: Routes = [
     path: 'punto-venta',
     loadChildren: () => import('./pages/punto-venta/punto-venta.module').then( m => m.PuntoVentaPageModule)
   },
+  {
+    path: 'punto-venta/:cancelar',
+    loadChildren: () => import('./pages/punto-venta/punto-venta.module').then( m => m.PuntoVentaPageModule)
+  },
 
 
 
@@ -177,6 +181,10 @@ const routes: Routes = [
   {
     path: 'lista-de-compras',
     loadChildren: () => import('./pages/lista-de-compras/lista-de-compras.module').then( m => m.ListaDeComprasPageModule)
+  },
+  {
+    path: 'confirmar-venta',
+    loadChildren: () => import('./pages/confirmar-venta/confirmar-venta.module').then( m => m.ConfirmarVentaPageModule)
   }
 
 
