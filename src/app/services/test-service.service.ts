@@ -39,10 +39,4 @@ export class TestServiceService {
     this.listaItemsDeVenta = [];
   }
 
-
-
-
-
-
-
 }

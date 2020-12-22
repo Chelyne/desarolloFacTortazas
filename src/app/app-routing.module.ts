@@ -147,7 +147,7 @@ const routes: Routes = [
     path: 'ingreso-egreso-gestor',
     loadChildren: () => import('./pages/ingreso-egreso-gestor/ingreso-egreso-gestor.module').then( m => m.IngresoEgresoGestorPageModule)
   },
-  
+
   // {
   //   path: 'compras',
   //   loadChildren: () => import('./pages/compras/compras.module').then( m => m.ComprasPageModule)
@@ -185,6 +185,10 @@ const routes: Routes = [
   {
     path: 'confirmar-venta',
     loadChildren: () => import('./pages/confirmar-venta/confirmar-venta.module').then( m => m.ConfirmarVentaPageModule)
+  },
+  {
+    path: 'compras',
+    loadChildren: () => import('./pages/compras/compras.module').then( m => m.ComprasPageModule)
   }
 
 
