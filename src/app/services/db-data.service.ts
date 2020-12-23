@@ -574,6 +574,12 @@ export class DbDataService {
       ));
 
   }
+
+  EliminarProveedor(idProveedor: string) {
+    this.productoDoc = this.afs.doc<ProductoInterface>(`proveedores/${idProveedor}`);
+    this.productoDoc.delete();
+  }
+
   // chelin
   ObtenerListaDeUsuariosSede(sede: string) {
 
