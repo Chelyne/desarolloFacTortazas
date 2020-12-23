@@ -1,0 +1,19 @@
+ion-content{
+    ion-label {
+        font-family: Nunito;
+        font-size: 14px;
+    }
+    ion-item:hover {
+        --background: rgb(212, 212, 212) !important;
+        cursor: pointer;
+    }
+}
+
+.seleccionar {
+    color: var(--ion-color-primary);
+    font-weight: bold;
+}
+
+.cargando {
+    text-align: center;
+}

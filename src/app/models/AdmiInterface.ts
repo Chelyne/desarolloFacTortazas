@@ -6,4 +6,5 @@ export interface AdmiInterface {
     foto?: string;
     sede?: string;
     celular?: number;
+    password?: string;
 }

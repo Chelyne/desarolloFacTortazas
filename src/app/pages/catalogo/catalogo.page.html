@@ -11,6 +11,36 @@
             <ion-col size="12 " size-xs="12 " size-sm="12" size-md="6 " size-lg="6">
                 <ion-card>
                     <ion-card-header>
+                        <ion-card-title>Productos</ion-card-title>
+                    </ion-card-header>
+
+                    <ion-card-content>
+                        <ion-list>
+                            <ion-item *ngFor="let productos of listaDeproductos">
+                                <ion-avatar slot="start">
+                                    <img *ngIf="productos.img" src="{{productos.img}}" alt="">
+                                    <img *ngIf="!productos.img" src="../../../assets/img/pet chop.png" alt="">
+                                </ion-avatar>
+                                <ion-label>
+                                    <h2>{{productos.nombre | titlecase}}</h2>
+                                    <h3>{{productos.cantidad}} {{productos.medida}}</h3>
+                                    <p *ngIf="productos.precio" class="precio">S/. {{productos.precio | number: '1.2'}}</p>
+
+
+
+                                </ion-label>
+                                
+                            </ion-item>
+
+                        </ion-list>
+                    </ion-card-content>
+
+
+                </ion-card>
+            </ion-col>
+            <ion-col size="12 " size-xs="12 " size-sm="12" size-md="6 " size-lg="6">
+                <ion-card>
+                    <ion-card-header>
                         <ion-card-title>Categorias</ion-card-title>
                     </ion-card-header>
 
@@ -32,19 +62,6 @@
                             </ion-item>
 
                         </ion-list>
-                    </ion-card-content>
-
-
-                </ion-card>
-            </ion-col>
-            <ion-col size="12 " size-xs="12 " size-sm="12" size-md="6 " size-lg="6">
-                <ion-card>
-                    <ion-card-header>
-                        <ion-card-title>Productos</ion-card-title>
-                    </ion-card-header>
-
-                    <ion-card-content>
-
                     </ion-card-content>
                 </ion-card>
             </ion-col>

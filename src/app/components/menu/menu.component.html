@@ -3,9 +3,10 @@
     <div class="menuHeader">
       <div class="datosNegocio">
         <img src="https://image.freepik.com/vector-gratis/doctor-icono-o-avatar-blanco_136162-58.jpg" alt=""><br>
-        <ion-label class="tienda"  *ngIf="this.storage.datosAdmi">{{this.storage.datosAdmi.nombre}} {{this.storage.datosAdmi.apellidos}}</ion-label>
+        <ion-label class="tienda"  *ngIf="this.storage.datosAdmi">{{this.storage.datosAdmi.nombre | titlecase}} {{this.storage.datosAdmi.apellidos | titlecase}}</ion-label>
         <hr>
-        <ion-label class="ubicacion" color="light" *ngIf="this.storage.datosAdmi"><ion-icon name="location" color="light"></ion-icon>&nbsp;{{this.storage.datosAdmi.sede}}</ion-label>
+        <ion-label class="ubicacion" color="light" *ngIf="this.storage.datosAdmi && this.storage.datosAdmi.rol === 'Administrador'"><ion-icon name="location" color="light"></ion-icon>&nbsp;{{this.storage.datosAdmi.sede}}</ion-label>
+        <ion-label class="ubicacion" color="light" *ngIf="this.storage.datosAdmi && this.storage.datosAdmi.rol === 'Vendedor'"><ion-icon name="location" color="light"></ion-icon>&nbsp;{{this.storage.datosAdmi.rol}}</ion-label>
       </div>
     </div>
   </ion-header>

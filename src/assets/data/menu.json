@@ -33,7 +33,7 @@
     {
         "icon": "people-outline",
         "name": "Usuarios",
-        "redirecTo": "/usuarios"
+        "redirecTo": "/lista-de-usarios"
     },
     {
         "icon": "people-outline",
