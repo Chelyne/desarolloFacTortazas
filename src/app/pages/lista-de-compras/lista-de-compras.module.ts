@@ -1,6 +1,6 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 
 import { IonicModule } from '@ionic/angular';
 
@@ -13,7 +13,8 @@ import { ListaDeComprasPage } from './lista-de-compras.page';
     CommonModule,
     FormsModule,
     IonicModule,
-    ListaDeComprasPageRoutingModule
+    ListaDeComprasPageRoutingModule,
+    ReactiveFormsModule
   ],
   declarations: [ListaDeComprasPage]
 })

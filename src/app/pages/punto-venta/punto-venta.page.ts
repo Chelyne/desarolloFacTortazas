@@ -8,9 +8,10 @@ import { VentaInterface } from 'src/app/models/venta/venta';
 import { ItemDeVentaInterface } from 'src/app/models/venta/item-de-venta';
 import { ProductoInterface } from 'src/app/models/ProductoInterface';
 import { DbDataService } from '../../services/db-data.service';
-import { TestServiceService } from 'src/app/services/test-service.service';
+// import { TestServiceService } from 'src/app/services/test-service.service';
 
 import { ActivatedRoute } from '@angular/router';
+import { ConfirmarVentaService } from 'src/app/services/confirmar-venta.service';
 
 @Component({
   selector: 'app-punto-venta',
@@ -31,7 +32,7 @@ export class PuntoVentaPage implements OnInit {
               private categoriasService: CategoriasService,
               private pagination: PaginationProductosService,
               private dataApi: DbDataService,
-              private testServ: TestServiceService,
+              private testServ: ConfirmarVentaService,
               private rutaActiva: ActivatedRoute
               ) {
     this.menuCtrl.enable(true);

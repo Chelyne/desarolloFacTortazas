@@ -37,9 +37,10 @@ export class ListaDeComprasPage implements OnInit {
     // console.log("getProveedores");
 
     this.dataApi.ObtenerListaCompras().subscribe(data => {
-      // console.log(data);
+      console.log(data);
       this.listaDeCompras = data;
-      //console.log(this.proveedoressList.length);
+      console.log(this.listaDeCompras);
+      console.log('..............................................');
     });
 
   }

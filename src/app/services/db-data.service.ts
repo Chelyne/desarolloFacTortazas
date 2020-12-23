@@ -125,7 +125,7 @@ export class DbDataService {
   ObtenerListaProductosByName(sede: string, nombre: string, limit: number) {
     const sede1 = sede.toLocaleLowerCase();
     // tslint:disable-next-line:max-line-length
-    this.productoCollection = this.afs.collection('sedes').doc(sede1).collection('productos' , ref => ref.orderBy('nombre').startAt(nombre).endAt(nombre+"\uf8ff").limit(limit));
+    this.productoCollection = this.afs.collection('sedes').doc(sede1).collection('productos' , ref => ref.orderBy('nombre').startAt(nombre).endAt(nombre + '\uf8ff').limit(limit));
     // tslint:disable-next-line:max-line-length
     // this.productoCollection = this.afs.collection<ProductoInterface>('frutas', ref => ref.where('propietario', '==', propietario).orderBy('fechaRegistro', 'desc'));
     return this.productos = this.productoCollection.snapshotChanges()
@@ -654,7 +654,7 @@ export class DbDataService {
     return this.clientes = this.comprasCollection.snapshotChanges()
       .pipe(map(changes => {
         return changes.map(action => {
-          const data = action.payload.doc.data() as ProductoInterface;
+          const data = action.payload.doc.data() as CompraInterface;
           data.id = action.payload.doc.id;
           return data;
         });

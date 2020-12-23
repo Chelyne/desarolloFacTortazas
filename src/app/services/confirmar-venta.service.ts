@@ -6,7 +6,7 @@ import { VentaInterface } from '../models/venta/venta';
 @Injectable({
   providedIn: 'root'
 })
-export class TestServiceService {
+export class ConfirmarVentaService {
 
   textService: string = 'Nada desde service';
 

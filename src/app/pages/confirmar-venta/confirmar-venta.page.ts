@@ -1,7 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { VentaInterface } from 'src/app/models/venta/venta';
-import { TestServiceService } from 'src/app/services/test-service.service';
+import { ConfirmarVentaService } from 'src/app/services/confirmar-venta.service';
+// import { TestServiceService } from 'src/app/services/test-service.service';
 
 @Component({
   selector: 'app-confirmar-venta',
@@ -37,7 +38,7 @@ export class ConfirmarVentaPage implements OnInit {
   textService: string = 'Nothing';
   venta: VentaInterface = {} ;
   constructor(
-    private testServ: TestServiceService
+    private testServ: ConfirmarVentaService
   ) {
     this.formPago = this.createFormPago();
    }
