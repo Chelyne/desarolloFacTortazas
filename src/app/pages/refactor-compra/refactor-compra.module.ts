@@ -4,18 +4,18 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 
 import { IonicModule } from '@ionic/angular';
 
-import { CatalogoPageRoutingModule } from './catalogo-routing.module';
+import { RefactorCompraPageRoutingModule } from './refactor-compra-routing.module';
 
-import { CatalogoPage } from './catalogo.page';
+import { RefactorCompraPage } from './refactor-compra.page';
 
 @NgModule({
   imports: [
     CommonModule,
     FormsModule,
-    ReactiveFormsModule,
     IonicModule,
-    CatalogoPageRoutingModule
+    RefactorCompraPageRoutingModule,
+    ReactiveFormsModule
   ],
-  declarations: [CatalogoPage]
+  declarations: [RefactorCompraPage]
 })
-export class CatalogoPageModule {}
+export class RefactorCompraPageModule {}

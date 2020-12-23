@@ -306,7 +306,7 @@
           </ion-grid>
         </ion-content>
         <div style=" height: 10%; width: 100%; position: absolute;">
-          <ion-button [disabled]="!totalxPagar" style="height: 100%;" expand="block">
+          <ion-button [disabled]="!totalxPagar" style="height: 100%;" expand="block" routerLink="/confirmar-venta" (click)="SaveOnService()">
               <ion-icon  color="light"name="caret-forward-outline"></ion-icon>
               <ion-label color="light">PAGAR</ion-label> &nbsp;&nbsp;
               <ion-label color="light">S/. {{totalxPagar | number: '1.2'}}</ion-label>

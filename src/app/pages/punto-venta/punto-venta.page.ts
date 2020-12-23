@@ -12,6 +12,10 @@ import { AngularFirestore } from '@angular/fire/firestore';
 import { map } from 'rxjs/operators';
 import { StorageService } from '../../services/storage.service';
 import { PoppoverClientesComponent } from '../../components/poppover-clientes/poppover-clientes.component';
+// import { TestServiceService } from 'src/app/services/test-service.service';
+
+import { ActivatedRoute } from '@angular/router';
+import { ConfirmarVentaService } from 'src/app/services/confirmar-venta.service';
 
 @Component({
   selector: 'app-punto-venta',
@@ -44,7 +48,10 @@ export class PuntoVentaPage implements OnInit {
               private afs: AngularFirestore,
               private storage: StorageService,
               private toastController: ToastController,
-              private popoverController: PopoverController) {
+              private popoverController: PopoverController,
+              private testServ: ConfirmarVentaService,
+              private rutaActiva: ActivatedRoute
+              ) {
     this.menuCtrl.enable(true);
    }
 
@@ -71,6 +78,10 @@ export class PuntoVentaPage implements OnInit {
   ngOnInit() {
     this.categorias = this.categoriasService.getcategoriasNegocio('petshop');
     this.sinDatos = false;
+
+    if (this.rutaActiva.snapshot.params.cancelar === 'true') {
+      this.listaItemsDeVenta = [];
+    }
   }
 
   listaProductosCategoria(categoria: string) {
@@ -265,6 +276,12 @@ export class PuntoVentaPage implements OnInit {
 
   LimpiarListaDeVentas(){
     this.listaDeVentas = [];
+  }
+
+  // TODO : Mejorar los nombre de este modulo
+  SaveOnService(){
+    this.testServ.setTextService('Buenos Días Beto');
+    this.testServ.setVenta(this.CrearItemDeVentas());
   }
 
 

@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, Input, OnInit } from '@angular/core';
 import { ModalController } from '@ionic/angular';
 import { AgregarEditarProveedorPage } from 'src/app/modals/agregar-editar-proveedor/agregar-editar-proveedor.page';
 import { ProveedorInterface } from 'src/app/models/proveedor';
@@ -22,9 +22,12 @@ export class ListaDeProveedoresPage implements OnInit {
   modalTag: string;
   modalDataProveedor: ProveedorInterface;
 
+  @Input() esModal: boolean = false;
+
+  // objeto = {nombre: 'huanalals', nulo: null};
 
   constructor(private dataApi: DbDataService, private modalCtlr: ModalController) {
-    //this.proveedoresForm = this.createFormGroupProveedor();
+    // this.proveedoresForm = this.createFormGroupProveedor();
     this.ObtenerProveedores();
   }
 
@@ -52,15 +55,15 @@ export class ListaDeProveedoresPage implements OnInit {
 
   ActualizarDataProveedor(proveedor: ProveedorInterface){
 
-    // console.log('xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx');
-    // console.log(proveedor);
-    // console.log('xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx');
+    console.log('xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx');
+    console.log(proveedor);
+    console.log('xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx');
 
     this.modalEvento = 'actualizarProveedor';
     this.modalTitle = 'Actualizar datos del proveedor';
     this.modalTag = 'Actualizar';
     this.modalDataProveedor = proveedor;
-
+    
     setTimeout(() => {
       this.abrirModal();
     }, 500);
@@ -80,10 +83,15 @@ export class ListaDeProveedoresPage implements OnInit {
       }
     });
 
-    await modal.present()
+    await modal.present();
   }
 
+  SeleccionarProveedor(proveedorSelect: ProveedorInterface){
 
+    this.modalCtlr.dismiss({
+      proveedor: proveedorSelect
+    });
+  }
 
 
 }

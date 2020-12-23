@@ -8,6 +8,7 @@ import { UsuarioInterface } from '../models/usuario';
 import { ClienteInterface } from '../models/cliente-interface';
 import { ProveedorInterface } from '../models/proveedor';
 import { UsuarioInterfce } from '../models/User';
+import { CompraInterface } from '../models/Compra';
 
 @Injectable({
   providedIn: 'root'
@@ -37,6 +38,13 @@ export class DbDataService {
 
   private proveedoresCollection: AngularFirestoreCollection<ProveedorInterface>;
   private proveedores: Observable<ProveedorInterface[]>;
+
+
+  private comprasCollection: AngularFirestoreCollection<ProductoInterface>;
+  private compras: Observable<ProductoInterface[]>;
+
+  private compraDoc: AngularFirestoreDocument<ProductoInterface>;
+  private compra: Observable<ProductoInterface>;
 
 
   constructor(private afs: AngularFirestore) { }
@@ -121,8 +129,37 @@ export class DbDataService {
       }));
   }
 
+  ObtenerListaProductosByName(sede: string, nombre: string, limit: number) {
+    const sede1 = sede.toLocaleLowerCase();
+    // tslint:disable-next-line:max-line-length
+    this.productoCollection = this.afs.collection('sedes').doc(sede1).collection('productos' , ref => ref.orderBy('nombre').startAt(nombre).endAt(nombre + '\uf8ff').limit(limit));
+    // tslint:disable-next-line:max-line-length
+    // this.productoCollection = this.afs.collection<ProductoInterface>('frutas', ref => ref.where('propietario', '==', propietario).orderBy('fechaRegistro', 'desc'));
+    return this.productos = this.productoCollection.snapshotChanges()
+      .pipe(map(changes => {
+        return changes.map(action => {
+          const data = action.payload.doc.data() as ProductoInterface;
+          data.id = action.payload.doc.id;
+          return data;
+        });
+      }));
+  }
 
-
+  ObtenerListaProductosSinCat(sede: string, limit: number) {
+    const sede1 = sede.toLocaleLowerCase();
+    // tslint:disable-next-line:max-line-length
+    this.productoCollection = this.afs.collection('sedes').doc(sede1).collection('productos', ref => ref.orderBy('fechaTimeRegistro', 'desc').limit(limit));
+    // tslint:disable-next-line:max-line-length
+    // this.productoCollection = this.afs.collection<ProductoInterface>('frutas', ref => ref.where('propietario', '==', propietario).orderBy('fechaRegistro', 'desc'));
+    return this.productos = this.productoCollection.snapshotChanges()
+      .pipe(map(changes => {
+        return changes.map(action => {
+          const data = action.payload.doc.data() as ProductoInterface;
+          data.id = action.payload.doc.id;
+          return data;
+        });
+      }));
+  }
 
   ObtenerListaClientes(sede: string) {
     // const sede1 = sede.toLocaleLowerCase();
@@ -611,4 +648,35 @@ export class DbDataService {
     this.administradorDoc = this.afs.doc<ProductoInterface>(`Roles/${id}`);
     this.administradorDoc.delete();
   }
+
+  // COMPRAS
+  // TODO: OBTENER LISTA DE COMPRAS
+  ObtenerListaCompras() {
+    // const sede1 = sede.toLocaleLowerCase();
+    // tslint:disable-next-line:max-line-length
+    this.comprasCollection = this.afs.collection('compras' , ref => ref.orderBy('fechaRegistro', 'desc').limit(10));
+    // tslint:disable-next-line:max-line-length
+    // this.productoCollection = this.afs.collection<ProductoInterface>('frutas', ref => ref.where('propietario', '==', propietario).orderBy('fechaRegistro', 'desc'));
+    return this.clientes = this.comprasCollection.snapshotChanges()
+      .pipe(map(changes => {
+        return changes.map(action => {
+          const data = action.payload.doc.data() as CompraInterface;
+          data.id = action.payload.doc.id;
+          return data;
+        });
+      }));
+  }
+
+
+  // TODO: GUARDAR COMPRA
+  guardarCompra(newCompra: CompraInterface) {
+
+    const promesa =  new Promise( (resolve, reject) => {
+      this.afs.collection('compras').add(newCompra);
+      resolve(resolve);
+    });
+
+    return promesa;
+  }
+
 }

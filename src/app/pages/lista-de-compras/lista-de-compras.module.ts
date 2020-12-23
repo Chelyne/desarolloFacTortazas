@@ -4,18 +4,18 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 
 import { IonicModule } from '@ionic/angular';
 
-import { CatalogoPageRoutingModule } from './catalogo-routing.module';
+import { ListaDeComprasPageRoutingModule } from './lista-de-compras-routing.module';
 
-import { CatalogoPage } from './catalogo.page';
+import { ListaDeComprasPage } from './lista-de-compras.page';
 
 @NgModule({
   imports: [
     CommonModule,
     FormsModule,
-    ReactiveFormsModule,
     IonicModule,
-    CatalogoPageRoutingModule
+    ListaDeComprasPageRoutingModule,
+    ReactiveFormsModule
   ],
-  declarations: [CatalogoPage]
+  declarations: [ListaDeComprasPage]
 })
-export class CatalogoPageModule {}
+export class ListaDeComprasPageModule {}
