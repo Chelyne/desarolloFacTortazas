@@ -18,11 +18,11 @@ export class ListaDeProveedoresPage implements OnInit {
   proveedorItem: ProveedorInterface;
 
   modalEvento: string;
-  modalTitle: String;
+  modalTitle: string;
   modalTag: string;
   modalDataProveedor: ProveedorInterface;
 
-  @Input() esModal: boolean = false;
+  @Input() esModal = false;
 
   // objeto = {nombre: 'huanalals', nulo: null};
 
@@ -41,7 +41,7 @@ export class ListaDeProveedoresPage implements OnInit {
     this.dataApi.ObtenerListaDeProveedores().subscribe(data => {
       // console.log(data);
       this.listaDeProveedores = data;
-      //console.log(this.proveedoressList.length);
+      // console.log(this.proveedoressList.length);
     });
 
   }
@@ -63,7 +63,6 @@ export class ListaDeProveedoresPage implements OnInit {
     this.modalTitle = 'Actualizar datos del proveedor';
     this.modalTag = 'Actualizar';
     this.modalDataProveedor = proveedor;
-    
     setTimeout(() => {
       this.abrirModal();
     }, 500);

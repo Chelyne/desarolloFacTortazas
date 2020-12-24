@@ -189,6 +189,18 @@ const routes: Routes = [
   {
     path: 'compras',
     loadChildren: () => import('./pages/compras/compras.module').then( m => m.ComprasPageModule)
+  },
+  {
+    path: 'modal-proveedores',
+    loadChildren: () => import('./modals/modal-proveedores/modal-proveedores.module').then( m => m.ModalProveedoresPageModule)
+  },
+  {
+    path: 'modal-producto-compra',
+    loadChildren: () => import('./modals/modal-producto-compra/modal-producto-compra.module').then( m => m.ModalProductoCompraPageModule)
+  },
+  {
+    path: 'modal-buscador',
+    loadChildren: () => import('./modals/modal-buscador/modal-buscador.module').then( m => m.ModalBuscadorPageModule)
   }
 
 

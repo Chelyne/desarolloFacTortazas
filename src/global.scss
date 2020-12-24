@@ -54,3 +54,28 @@
     background: rgb(89, 202, 255);
     border-radius: 10px;
   }
+
+
+  /* Popover Interface: set color for the popover using Item's CSS variables */
+  .ionSelects .popover-content{
+    width: 300px;
+    ion-item{
+      --border-width: 0;
+      --inner-border-width: 0;
+    }
+  }
+  .ionSelects .select-interface-option {
+    // width: 400px;
+    ion-label{
+      font-family: Nunito;
+    }
+  }
+
+  .ionSelects .popover-content::-webkit-scrollbar {
+    width: 5px;
+  }
+
+  .ionSelects  .popover-content::-webkit-scrollbar-thumb {
+    background: rgb(89, 202, 255);
+    border-radius: 10px;
+  }

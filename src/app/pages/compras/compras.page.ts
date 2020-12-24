@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
-import { ModalController } from '@ionic/angular';
+import { ModalController, MenuController } from '@ionic/angular';
 import { AgregarProductoPage } from 'src/app/modals/agregar-producto/agregar-producto.page';
 import { CompraInterface, ItemDeCompraInterface } from 'src/app/models/Compra';
 import { ProductoInterface } from 'src/app/models/ProductoInterface';
@@ -8,6 +8,9 @@ import { ProveedorInterface } from 'src/app/models/proveedor';
 import { DbDataService } from 'src/app/services/db-data.service';
 import { StorageService } from 'src/app/services/storage.service';
 import { ListaDeProveedoresPage } from '../lista-de-proveedores/lista-de-proveedores.page';
+import { ModalProveedoresPage } from '../../modals/modal-proveedores/modal-proveedores.page';
+import { ModalProductoCompraPage } from '../../modals/modal-producto-compra/modal-producto-compra.page';
+import { isNullOrUndefined } from 'util';
 
 
 @Component({
@@ -23,7 +26,7 @@ export class ComprasPage implements OnInit {
   productSelect: ProductoInterface = null;
 
   // Datos del buscador
-    buscando: boolean = false;
+    buscando = false;
     // sinResultados: string;
 
   provedorObtenido: ProveedorInterface = null;
@@ -37,15 +40,12 @@ export class ComprasPage implements OnInit {
   // COMPRA
   compra: CompraInterface;
   listaItemsDeCompra: ItemDeCompraInterface[] = [];
-  totalxCompra: number = 0;
-
-
-
-
+  totalxCompra = 0;
   constructor(
     private dataApi: DbDataService,
     private storage: StorageService,
-    private modalCtlr: ModalController
+    private modalCtlr: ModalController,
+    private menuCtrl: MenuController
   ) {
     this.ObtenerProductos();
     this.formItemDeCompras = this.createFormCompras();
@@ -53,6 +53,15 @@ export class ComprasPage implements OnInit {
   }
 
   ngOnInit() {
+    this.menuCtrl.enable(true);
+      // Pass a custom class to each select interface for styling
+    const selects = document.querySelectorAll('.custom-options');
+    // tslint:disable-next-line:prefer-for-of
+    // for (let i = 0; i < selects.length; i++) {
+    //   selects[i].interfaceOptions = {
+    //     cssClass: 'ionSelects'
+    //   };
+    // }
   }
 
 
@@ -193,7 +202,6 @@ export class ComprasPage implements OnInit {
   }
 
 
-
   calcularTotalaPagar(){
     let totalxcompra = 0;
 
@@ -205,18 +213,20 @@ export class ComprasPage implements OnInit {
 
   CrearItemDeCompra(): ItemDeCompraInterface{
 
-    const local_pu_compra: number = parseFloat(this.formItemDeCompras.value.pu_compra);
-    const local_cantidad: number = parseInt(this.formItemDeCompras.value.cantidad);
-    let local_descuento: number = parseFloat(this.formItemDeCompras.value.descuento);
-    if (isNaN(local_descuento)) local_descuento = 0;
+    const localPuCompra = parseFloat(this.formItemDeCompras.value.pu_compra);
+    const localCantidad = parseInt(this.formItemDeCompras.value.cantidad, 10);
+    let localDescuento = parseFloat(this.formItemDeCompras.value.descuento);
+    if (isNaN(localDescuento)) {
+      localDescuento = 0;
+    }
 
-    let itemDeCompra = {
+    const itemDeCompra = {
       id: this.productSelect.id,
       producto: this.productSelect,
-      PU_compra: local_pu_compra,
-      cantidad: local_cantidad,
-      descuento: local_descuento,
-      totalCompraxProducto: local_pu_compra * local_cantidad - local_descuento
+      PU_compra: localPuCompra,
+      cantidad: localCantidad,
+      descuento: localDescuento,
+      totalCompraxProducto: localPuCompra * localCantidad - localDescuento
     };
 
     return itemDeCompra;
@@ -234,18 +244,13 @@ export class ComprasPage implements OnInit {
   /* -------------------------------------------------------------------------- */
 
 
-  async abriModalProveedor(){
-
+  async modalProveedor(){
     const modal =  await this.modalCtlr.create({
-      component: ListaDeProveedoresPage,
+      component: ModalProveedoresPage,
       componentProps: {
-        esModal: true
       }
     });
-
     await modal.present();
-
-
     const {data} = await modal.onDidDismiss();
     if (data){
       this.provedorObtenido = data.proveedor;
@@ -276,7 +281,7 @@ export class ComprasPage implements OnInit {
 
 
   generarCompra(){
-    let compra = {
+    const compra = {
       proveedor: this.provedorObtenido,
       listaItemsDeCompra: this.listaItemsDeCompra,
       IGV_compra: 0,
@@ -339,6 +344,23 @@ export class ComprasPage implements OnInit {
   limpiarListaDeCompras(){
     this.listaItemsDeCompra = [];
     this.calcularTotalaPagar();
+  }
+
+  async agregarProductoCompra() {
+    const modal = await this.modalCtlr.create({
+      component: ModalProductoCompraPage,
+      cssClass: 'my-custom-class'
+    });
+    await modal.present();
+
+    const data = await modal.onWillDismiss();
+    if (isNullOrUndefined(data.data)) {
+    } else {
+      console.log(data.data.data);
+      this.listaItemsDeCompra.push(data.data.data);
+      console.log(this.listaItemsDeCompra);
+      this.calcularTotalaPagar();
+    }
   }
 
 }

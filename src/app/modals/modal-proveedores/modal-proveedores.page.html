@@ -1,0 +1,57 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title>Lista de Proveedores</ion-title>
+    <ion-buttons slot="end">
+      <ion-button (click)="cerrarModal()">
+        <ion-icon slot="icon-only" color="primary" name="close-outline"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <div class="sinDatos" *ngIf="sinDatos===true">
+    <div class="textoSindatos">
+      <ion-icon class="icono" name="people-outline" color="medium"></ion-icon> <br><br>
+      <ion-label color="medium">No existe ningun usuario registrado</ion-label> <br> <br>
+      <!-- <ion-button [routerLink]="[ '/home']" fill="outline" shape="round">Seguir comprando
+        <ion-icon name="chevron-forward-outline"></ion-icon>
+      </ion-button> -->
+    </div>
+  </div>
+  <div class="cargando" *ngIf="(sinDatos===null || sinDatos===undefined)">
+    <div class="textoCargando">
+      <ion-spinner name="crescent" color="primary"></ion-spinner>
+    </div>
+  </div>
+  <ion-grid *ngIf="listaDeProveedores && listaDeProveedores.length > 0">
+    <ion-row class="headerProveedores">
+      <ion-col>
+        <ion-label color="light">Nombre</ion-label>
+      </ion-col>
+      <ion-col>
+        <ion-label color="light">RUC</ion-label>
+      </ion-col>
+      <ion-col>
+        <ion-label color="light">Telefono</ion-label>
+      </ion-col>
+      <ion-col>
+        <ion-label color="light">Direccion</ion-label>
+      </ion-col>
+    </ion-row>
+    <ion-row class="contentProveedores" (click)="SeleccionarProveedor(provedor)" *ngFor="let provedor of listaDeProveedores">
+      <ion-col>
+        <ion-label>{{provedor.nombre | titlecase}}</ion-label>
+      </ion-col>
+      <ion-col>
+        <ion-label>{{provedor.ruc}}</ion-label>
+      </ion-col>
+      <ion-col>
+        <ion-label>{{provedor.telefono}}</ion-label>
+      </ion-col>
+      <ion-col>
+        <ion-label>{{provedor.direccion | titlecase}}</ion-label>
+      </ion-col>
+    </ion-row>
+  </ion-grid>
+</ion-content>

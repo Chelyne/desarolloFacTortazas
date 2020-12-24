@@ -1,10 +1,11 @@
 import { Component, OnInit } from '@angular/core';
-import { ModalController, MenuController } from '@ionic/angular';
+import { ModalController, MenuController, ToastController } from '@ionic/angular';
 import { AgregarEditarUsuarioPage } from 'src/app/modals/agregar-editar-usuario/agregar-editar-usuario.page';
 // import { AgregarEditarUsuarioPage } from 'src/app/modals/agregar-editar-usuario/agregar-editar-usuario.page';
 import { UsuarioInterface } from 'src/app/models/usuario';
 import { DbDataService } from 'src/app/services/db-data.service';
 // import { UserRegistroService } from 'src/app/services/user-registro.service';
+import { AuthServiceService } from '../../services/auth-service.service';
 
 @Component({
   selector: 'app-lista-de-usarios',
@@ -23,8 +24,11 @@ export class ListaDeUsariosPage implements OnInit {
   modalDataUsuario: UsuarioInterface;
 
   sinDatos;
-  constructor(private dataApi: DbDataService, private modalCtlr: ModalController,
-              private menuCtrl: MenuController) {
+  constructor(private dataApi: DbDataService,
+              private modalCtlr: ModalController,
+              private menuCtrl: MenuController,
+              private toastController: ToastController,
+              private authSrv: AuthServiceService) {
   }
 
   ngOnInit() {
@@ -80,6 +84,18 @@ export class ListaDeUsariosPage implements OnInit {
 
 
 
+  eliminarUsuario(id) {
+    this.dataApi.EliminarUsuario(id).then(() => {
+      this.presentToast('Usuario eliminado');
+    });
+  }
 
+  async presentToast(mensaje: string) {
+    const toast = await this.toastController.create({
+      message: mensaje,
+      duration: 1000
+    });
+    toast.present();
+  }
 
 }

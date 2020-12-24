@@ -645,8 +645,13 @@ export class DbDataService {
   // ELIMINAR UN USUARIO
 
   EliminarUsuario(id: string) {
-    this.administradorDoc = this.afs.doc<ProductoInterface>(`Roles/${id}`);
-    this.administradorDoc.delete();
+    const promesa =  new Promise<void>( (resolve, reject) => {
+      this.administradorDoc = this.afs.doc<ProductoInterface>(`Roles/${id}`);
+      this.administradorDoc.delete().then(() => {
+      resolve();
+      });
+    });
+    return promesa;
   }
 
   // COMPRAS

@@ -35,6 +35,13 @@
         "name": "Usuarios",
         "redirecTo": "/lista-de-usarios"
     },
+
+    {
+        "icon": "storefront-outline",
+        "name": "Compras",
+        "redirecTo": "/compras"
+    },
+
     {
         "icon": "people-outline",
         "name": "Caja Chica POS",

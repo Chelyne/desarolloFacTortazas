@@ -1,0 +1,39 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title>Buscar Producto</ion-title>
+    <ion-buttons slot="end">
+      <ion-button (click)="cerrarModal()">
+        <ion-icon slot="icon-only" color="primary" name="close-outline"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding">
+  <ion-item>
+    <ion-searchbar style="width: 100%;" slot="end" (ionClear)="limpiarBuscador()" (ionChange)="Search($event)" #search placeholder="Buscar" inputmode="text" debounce="500" mode="ios"></ion-searchbar>
+  </ion-item>
+  <ion-grid *ngIf=" listaDeProductos && listaDeProductos.length>0">
+    <ion-item color="light">
+      <ion-label color="primary">Lista de productos</ion-label>
+    </ion-item>
+    <ion-row class="headProductos">
+      <ion-col size="1">#</ion-col>
+      <ion-col>Nombre</ion-col>
+      <ion-col>Cantidad</ion-col>
+      <ion-col>Precio</ion-col>
+      <ion-col>Accion</ion-col>
+    </ion-row>
+    <ion-row class="contentProductos" *ngFor="let producto of listaDeProductos; let i=index">
+      <ion-col size="1">{{i + 1}}</ion-col>
+      <ion-col>{{producto.nombre | titlecase}}</ion-col>
+      <ion-col>{{producto.cantidad}}</ion-col>
+      <ion-col>{{producto.precio}}</ion-col>
+      <ion-col>
+        <ion-button (click)="seleccionarProducto(producto)" size="small">
+          <ion-label color="light">Seleccionar</ion-label>
+        </ion-button>
+      </ion-col>
+    </ion-row>
+  </ion-grid>
+</ion-content>
