@@ -125,7 +125,7 @@ export class DbDataService {
   ObtenerListaProductosByName(sede: string, nombre:string, limit:number) {
     const sede1 = sede.toLocaleLowerCase();
     // tslint:disable-next-line:max-line-length
-    this.productoCollection = this.afs.collection('sedes').doc(sede1).collection('productos' , ref => ref.orderBy('nombre').startAt(nombre).endAt(nombre+"\uf8ff").limit(10));
+    this.productoCollection = this.afs.collection('sedes').doc(sede1).collection('productos' , ref => ref.orderBy('nombre').startAt(nombre).endAt(nombre+"\uf8ff").limit(limit));
     // tslint:disable-next-line:max-line-length
     // this.productoCollection = this.afs.collection<ProductoInterface>('frutas', ref => ref.where('propietario', '==', propietario).orderBy('fechaRegistro', 'desc'));
     return this.productos = this.productoCollection.snapshotChanges()
@@ -133,7 +133,7 @@ export class DbDataService {
         return changes.map(action => {
           const data = action.payload.doc.data() as ProductoInterface;
           data.id = action.payload.doc.id;
-          return data;
+          return data;  
         });
       }));
   }
@@ -141,7 +141,7 @@ export class DbDataService {
   ObtenerListaProductosSinCat(sede: string, limit:number) {
     const sede1 = sede.toLocaleLowerCase();
     // tslint:disable-next-line:max-line-length
-    this.productoCollection = this.afs.collection('sedes').doc(sede1).collection('productos', ref => ref.orderBy('fechaTimeRegistro', 'desc').limit(10));
+    this.productoCollection = this.afs.collection('sedes').doc(sede1).collection('productos', ref => ref.orderBy('fechaRegistro', 'desc').limit(limit));
     // tslint:disable-next-line:max-line-length
     // this.productoCollection = this.afs.collection<ProductoInterface>('frutas', ref => ref.where('propietario', '==', propietario).orderBy('fechaRegistro', 'desc'));
     return this.productos = this.productoCollection.snapshotChanges()
