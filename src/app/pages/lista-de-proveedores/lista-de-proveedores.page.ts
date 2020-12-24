@@ -1,5 +1,5 @@
 import { Component, Input, OnInit } from '@angular/core';
-import { ModalController } from '@ionic/angular';
+import { AlertController, ModalController, ToastController } from '@ionic/angular';
 import { AgregarEditarProveedorPage } from 'src/app/modals/agregar-editar-proveedor/agregar-editar-proveedor.page';
 import { ProveedorInterface } from 'src/app/models/proveedor';
 import { DbDataService } from 'src/app/services/db-data.service';
@@ -26,7 +26,12 @@ export class ListaDeProveedoresPage implements OnInit {
 
   // objeto = {nombre: 'huanalals', nulo: null};
 
-  constructor(private dataApi: DbDataService, private modalCtlr: ModalController) {
+  constructor(
+    private dataApi: DbDataService,
+    private modalCtlr: ModalController,
+    private toastCtrl: ToastController,
+    public alertController: AlertController
+  ) {
     // this.proveedoresForm = this.createFormGroupProveedor();
     this.ObtenerProveedores();
   }
@@ -63,6 +68,7 @@ export class ListaDeProveedoresPage implements OnInit {
     this.modalTitle = 'Actualizar datos del proveedor';
     this.modalTag = 'Actualizar';
     this.modalDataProveedor = proveedor;
+
     setTimeout(() => {
       this.abrirModal();
     }, 500);
@@ -90,6 +96,48 @@ export class ListaDeProveedoresPage implements OnInit {
     this.modalCtlr.dismiss({
       proveedor: proveedorSelect
     });
+  }
+
+  // EliminarProveedor(proveedorSelect: ProveedorInterface){
+  //   // TODO - Agregar un mensaje de confirmación
+  //   this.dataApi.EliminarProveedor(proveedorSelect.id);
+  //   this.presentToast('Eliminó exitosamente');
+  // }
+
+  async presentToast(message: string){
+    const toast = await this.toastCtrl.create({
+      message,
+      duration: 2000
+    });
+
+    toast.present();
+  }
+
+  async  EliminarProveedor(proveedorSelect: ProveedorInterface) {
+    const alert = await this.alertController.create({
+      header: 'Eliminar Proveedor',
+      message: `Desea eliminar al proveedor ${proveedorSelect.nombre}`,
+      // buttons: ['Disagree', 'Agree']
+      buttons: [
+        {
+          text: 'No, conservar proveedor',
+          role: 'cancel',
+          handler: () => {
+            console.log('No clicked');
+          }
+        },
+        {
+          text: 'si, deseo eliminar.',
+          handler: () => {
+            console.log('Yes clicked');
+            this.dataApi.EliminarProveedor(proveedorSelect.id);
+            this.presentToast('Eliminó exitosamente');
+          }
+        }
+      ]
+    });
+
+    await alert.present();
   }
 
 

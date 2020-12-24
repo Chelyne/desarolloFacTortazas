@@ -201,6 +201,10 @@ const routes: Routes = [
   {
     path: 'modal-buscador',
     loadChildren: () => import('./modals/modal-buscador/modal-buscador.module').then( m => m.ModalBuscadorPageModule)
+  },
+  {
+    path: 'detalles-de-compra',
+    loadChildren: () => import('./modals/detalles-de-compra/detalles-de-compra.module').then( m => m.DetallesDeCompraPageModule)
   }
 
 

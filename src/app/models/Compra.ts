@@ -12,6 +12,7 @@ export interface CompraInterface {
     numeroComprobante?: number;
     fechaDeEmision?: Date;
     fechaRegistro?: Date;
+    anulado?: boolean;
 }
 
 export interface ItemDeCompraInterface {

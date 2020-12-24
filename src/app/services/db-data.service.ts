@@ -148,7 +148,7 @@ export class DbDataService {
   ObtenerListaProductosSinCat(sede: string, limit: number) {
     const sede1 = sede.toLocaleLowerCase();
     // tslint:disable-next-line:max-line-length
-    this.productoCollection = this.afs.collection('sedes').doc(sede1).collection('productos', ref => ref.orderBy('fechaTimeRegistro', 'desc').limit(limit));
+    this.productoCollection = this.afs.collection('sedes').doc(sede1).collection('productos', ref => ref.orderBy('fechaRegistro', 'desc').limit(limit));
     // tslint:disable-next-line:max-line-length
     // this.productoCollection = this.afs.collection<ProductoInterface>('frutas', ref => ref.where('propietario', '==', propietario).orderBy('fechaRegistro', 'desc'));
     return this.productos = this.productoCollection.snapshotChanges()
@@ -581,10 +581,16 @@ export class DbDataService {
       ));
 
   }
+
+  EliminarProveedor(idProveedor: string) {
+    this.productoDoc = this.afs.doc<ProductoInterface>(`proveedores/${idProveedor}`);
+    this.productoDoc.delete();
+  }
+
   // chelin
   ObtenerListaDeUsuariosSede(sede: string) {
 
-    this.usuariosCollection = this.afs.collection('usuarios', ref => ref.where('sede', '==', sede ));
+    this.usuariosCollection = this.afs.collection('Roles', ref => ref.where('sede', '==', sede ));
 
     return this.usuarios = this.usuariosCollection.snapshotChanges()
       .pipe(map(
@@ -609,7 +615,7 @@ export class DbDataService {
   }
   ObtenerListaCajaChica(sede: string) {
 
-    this.usuariosCollection = this.afs.collection('CajaChica', ref => ref.where('sede', '==', sede ).orderBy('FechaApertura', 'asc') );
+    this.usuariosCollection = this.afs.collection('CajaChica', ref => ref.where('sede', '==', sede ).orderBy('FechaApertura', 'desc') );
 
     return this.usuarios = this.usuariosCollection.snapshotChanges()
       .pipe(map(
@@ -621,7 +627,56 @@ export class DbDataService {
             });
           }
       ));
+  }
+  CerrarCajaChica(id: string, dato: any){
+    const saldoFin = dato.saldoFinal;
+    const FechaCier = dato.FechaCierre;
 
+    const promesa =  new Promise<void>( (resolve, reject) => {
+      this.afs.collection('CajaChica').doc(id).update({
+        saldoFinal: saldoFin,
+        FechaCierre: FechaCier,
+        estado: 'Cerrado'
+      });
+      resolve();
+    });
+
+    return promesa;
+  }
+  EliminarCajaChica(idCaja: string) {
+    const promesa =  new Promise<void>( (resolve, reject) => {
+      this.productoDoc = this.afs.doc<ProductoInterface>(`CajaChica/${idCaja}`);
+      this.productoDoc.delete();
+      resolve();
+    });
+
+    return promesa;
+  }
+  EditarCajaChica(id: string, dato: any){
+    const montoInicial = dato.saldoInicial;
+    const vendedor = dato.nombreVendedor;
+    const promesa =  new Promise<void>( (resolve, reject) => {
+        this.afs.collection('CajaChica').doc(id).update({
+          saldoInicial: montoInicial,
+          nombreVendedor: vendedor,
+        });
+        resolve();
+      });
+    return promesa;
+  }
+  VerificarCajaChicaVendedor(estadoCaja: string, nombre: string) {
+    console.log('obteniedno caja de: ', nombre, ' con el estado ABIERTO: ', estadoCaja);
+    // tslint:disable-next-line:max-line-length
+    return this.afs.collection('CajaChica').ref.where('estado', '==', estadoCaja).where( 'nombreVendedor', '==', nombre).limit(1).get();
+    // return cajaCollection.snapshotChanges()
+    // .pipe(map(changes => {
+    //   return changes.map(action => {
+    //     console.log('datos obtenidos', action.payload.doc.data());
+    //     const data = action.payload.doc.data() as any;
+    //     data.id = action.payload.doc.id;
+    //     return data;
+    //     });
+    //   }));
   }
 
 
@@ -683,5 +738,16 @@ export class DbDataService {
 
     return promesa;
   }
+
+  toggleAnularCompra(idCompra: string, esAnulado: boolean) {
+    // console.log( idProveedor, newProveedor);
+
+    const promesa =  new Promise( (resolve, reject) => {
+      this.afs.collection('compras').doc(idCompra).update({anulado: !esAnulado});
+      resolve(resolve);
+    });
+    return promesa;
+  }
+
 
 }

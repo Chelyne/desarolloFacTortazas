@@ -34,6 +34,7 @@ export class AgregarProductoPage implements OnInit {
   async agregarProductoModal(subcategoria: string) {
     const modal = await this.modalController.create({
       component: ModalAgregarProductoPage,
+      cssClass: 'modal-fullscreen',
       componentProps: {
         sede: this.sede,
         categoria: this.categoria,

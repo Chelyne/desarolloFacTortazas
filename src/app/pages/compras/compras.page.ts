@@ -6,6 +6,7 @@ import { CompraInterface, ItemDeCompraInterface } from 'src/app/models/Compra';
 import { ProductoInterface } from 'src/app/models/ProductoInterface';
 import { ProveedorInterface } from 'src/app/models/proveedor';
 import { DbDataService } from 'src/app/services/db-data.service';
+import { EditarCompraService } from 'src/app/services/editar-compra.service';
 import { StorageService } from 'src/app/services/storage.service';
 import { ListaDeProveedoresPage } from '../lista-de-proveedores/lista-de-proveedores.page';
 import { ModalProveedoresPage } from '../../modals/modal-proveedores/modal-proveedores.page';
@@ -46,6 +47,7 @@ export class ComprasPage implements OnInit {
     private storage: StorageService,
     private modalCtlr: ModalController,
     private menuCtrl: MenuController
+    // private editCompra: EditarCompraService
   ) {
     this.ObtenerProductos();
     this.formItemDeCompras = this.createFormCompras();
@@ -63,6 +65,10 @@ export class ComprasPage implements OnInit {
     //   };
     // }
   }
+
+  // ObtenerCompra(){
+  //   TODO - Obtener compra
+  // }
 
 
   ObtenerProductos(){

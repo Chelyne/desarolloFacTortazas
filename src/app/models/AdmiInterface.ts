@@ -7,4 +7,6 @@ export interface AdmiInterface {
     sede?: string;
     celular?: number;
     password?: string;
+    rol?: string;
+    token?: string;
 }
