@@ -5,57 +5,52 @@
 </ion-header>
 
 <ion-content>
-  <ion-grid>
-    <ion-row>
-      <ion-col *ngFor="let c of [1,1,1,1,1,1,1,1,1,1,1,1]; let i = index" class="testRows">
-        {{i+1}}
-      </ion-col>
+  <ion-grid fixed>
+    <ion-row color="primary">
+      <ion-list-header lines="inset" color="primary">
+      <ion-col size="0.5"> <ion-label>#</ion-label></ion-col>
+      <ion-col size="2"><ion-label>proveedor</ion-label></ion-col>
+      <ion-col size="2"><ion-label>comprobante</ion-label></ion-col>
+      <ion-col size="1.5"><ion-label>numero</ion-label></ion-col>
+      <ion-col size="1.5"><ion-label>fecha Emision</ion-label></ion-col>
+      <ion-col size="1.5"><ion-label>IGV</ion-label></ion-col>
+      <ion-col size="1.5"><ion-label>totalxCompra</ion-label></ion-col>
+      </ion-list-header>
     </ion-row>
-    <ion-row>
-      <ion-col></ion-col>
-      <ion-col size="12" size-lg="8" size-md="10" size-sm="10" size-xs="12">
-        <ion-list>
-          <ion-list-header lines="inset" color="primary">
-            <ion-label>#</ion-label>
-            <ion-label>proveedor</ion-label>
-            <ion-label>comprobante</ion-label>
-            <ion-label>numero</ion-label>
-            <ion-label>fecha Emision</ion-label>
-            <ion-label>IGV</ion-label>
-            <ion-label>totalxCompra</ion-label>
-          </ion-list-header>
-          <ion-item *ngFor="let compra of listaDeCompras; let i = index">
-            <ion-label>{{i+1}}</ion-label>
-            <ion-label>{{compra.proveedor.nombre}}</ion-label>
-            <ion-label>{{compra.typoComprobante}}</ion-label>
-            <ion-label>{{compra.serieComprobante}} - {{compra.numeroComprobante}}</ion-label>
-            <ion-label>{{compra.fechaDeEmision}}</ion-label>
-            <ion-label>{{compra.IGV_compra}}</ion-label>
-            <ion-label>{{compra.totalxCompra}}</ion-label>
-            <ion-item>
-              <ion-button>
-                <ion-icon name="caret-down-outline"></ion-icon>
-              </ion-button>
-            </ion-item>
-            <!-- <ion-label>
-              <ion-button (click)="SeleccionarProveedor(provedor)" *ngIf="esModal">
-                Seleccionar
-              </ion-button>
-            </ion-label>
-            <ion-label>
-              <ion-button (click)="ActualizarDataProveedor(provedor)">
-                Actualizar
-              </ion-button>
-            </ion-label> -->
-          </ion-item>
-        </ion-list>
+    <ion-row *ngFor="let compra of listaDeCompras; let i = index" [class]="compra.anulado?'red':''">
+      <ion-col size="0.5"><ion-label>{{i+1}}</ion-label></ion-col>
+      <ion-col size="2"><ion-label>{{compra.proveedor.nombre}}</ion-label></ion-col>
+      <ion-col size="2"><ion-label>{{compra.typoComprobante}}</ion-label></ion-col>
+      <ion-col size="1.5"><ion-label>{{compra.serieComprobante}}</ion-label></ion-col>
+      <ion-col size="1.5"><ion-label>{{compra.fechaDeEmision | date:'dd-MM-yyyy'}}</ion-label></ion-col>
+      <ion-col size="1.5"><ion-label>{{compra.IGV_compra | number:'1.2'}}</ion-label></ion-col>
+      <ion-col size="1.5"><ion-label>{{compra.totalxCompra | number: '1.2'}}</ion-label></ion-col>
+      <ion-col size="0.5">
+        <ion-buttons>
+          <ion-button (click)="abrirModalMostrarDetalles(compra)">
+            <ion-icon name="caret-down-outline"></ion-icon>
+          </ion-button>
+        </ion-buttons>
       </ion-col>
-      <ion-col></ion-col>
+      <ion-col size="0.5">
+        <ion-buttons>
+          <ion-button (click)="EditarCompra()" routerLink="/compras">
+            <ion-icon name="create-outline"></ion-icon>
+          </ion-button>
+        </ion-buttons>
+      </ion-col>
+      <ion-col size="0.5">
+        <ion-buttons>
+          <ion-button (click)="bloquearCompra(compra)">
+            <ion-icon name="ban-outline"></ion-icon>
+          </ion-button>
+        </ion-buttons>
+      </ion-col>
     </ion-row>
   </ion-grid>
-  <!-- <ion-fab vertical="bottom" horizontal="end" slot="fixed">
-    <ion-button >
-      Agregar Proveedor
-    </ion-button>
-  </ion-fab> -->
+
+  <div>
+    <ion-spinner name="crescent"></ion-spinner>
+  </div>
+  
 </ion-content>

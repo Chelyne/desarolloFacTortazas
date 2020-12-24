@@ -668,7 +668,7 @@ export class DbDataService {
   }
 
 
-  //TODO: GUARDAR COMPRA
+  // TODO: GUARDAR COMPRA
   guardarCompra(newCompra: CompraInterface) {
 
     const promesa =  new Promise( (resolve, reject) => {
@@ -678,5 +678,16 @@ export class DbDataService {
 
     return promesa;
   }
+
+  toggleAnularCompra(idCompra: string, esAnulado: boolean) {
+    // console.log( idProveedor, newProveedor);
+
+    const promesa =  new Promise( (resolve, reject) => {
+      this.afs.collection('compras').doc(idCompra).update({anulado: !esAnulado});
+      resolve(resolve);
+    });
+    return promesa;
+  }
+
 
 }

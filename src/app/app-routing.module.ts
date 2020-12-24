@@ -189,6 +189,10 @@ const routes: Routes = [
   {
     path: 'compras',
     loadChildren: () => import('./pages/compras/compras.module').then( m => m.ComprasPageModule)
+  },
+  {
+    path: 'detalles-de-compra',
+    loadChildren: () => import('./modals/detalles-de-compra/detalles-de-compra.module').then( m => m.DetallesDeCompraPageModule)
   }
 
 
