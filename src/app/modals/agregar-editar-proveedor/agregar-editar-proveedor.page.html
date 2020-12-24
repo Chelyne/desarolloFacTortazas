@@ -21,7 +21,7 @@
     </div>
 
 
-    <ion-item>
+    <!-- <ion-item>
       <ion-label>RUC:* </ion-label>
       <ion-input type="text" formControlName="ruc" placeholder="RUC" (keypress)="numberOnlyValidation($event)"></ion-input>
     </ion-item>
@@ -30,10 +30,49 @@
         *Ingrese el RUC del proveedor
       </div>
       <div class="alertDanger" *ngIf="ruc.errors.minlength">
-        *Ingrese 13 caracteres
+        *Ingrese 11 caracteres
       </div>
       <div class="alertDanger" *ngIf="ruc.errors.maxlength">
-        *Ingrese más de 13 caracteres
+        *Ingrese más de 11 caracteres
+      </div>
+    </div> -->
+
+    <ion-item>
+      <ion-label>Tipo de Documento</ion-label>
+      <ion-select  multiple="false" interface="popover" formControlName="tipoDocumento" (ionChange)="siRucoDni()">
+        <ion-select-option value="ruc">RUC</ion-select-option>
+        <ion-select-option value="dni">DNI</ion-select-option>
+      </ion-select>
+    </ion-item>
+
+    <ion-item>
+      <ion-label>Número Documento:* </ion-label>
+      <ion-input type="text" formControlName="numeroDocumento" (keypress)="numberOnlyValidation($event)"></ion-input>
+    </ion-item>
+    <div class="alertDanger" *ngIf="numeroDocumento.invalid && (numeroDocumento.dirty || numeroDocumento.touched)">
+      <div *ngIf="typoDocumento=='ruc'">
+        <div class="mensajeError" *ngIf="numeroDocumento.errors.required">
+          *Ingrese el Número del Documento
+          Ingrese ruc
+        </div>
+        <div class="alertDanger" *ngIf="numeroDocumento.errors.minlength">
+          *Ingresaste menos carácteres
+        </div>
+        <div class="alertDanger" *ngIf="numeroDocumento.errors.maxlength">
+          *Ingrese más caracteres
+        </div>
+      </div>
+      <div *ngIf="typoDocumento=='dni'">
+        <div class="mensajeError" *ngIf="numeroDocumento.errors.required">
+          *Ingrese el Número del Documento
+          Ingrese DNI
+        </div>
+        <div class="alertDanger" *ngIf="numeroDocumento.errors.minlength">
+          *Ingresaste menos carácteres
+        </div>
+        <div class="alertDanger" *ngIf="numeroDocumento.errors.maxlength">
+          *Ingrese más caracteres
+        </div>
       </div>
     </div>
 

@@ -70,6 +70,7 @@ export class CategoriasPagePage implements OnInit {
   async agregarProductoModal() {
     const modal = await this.modalController.create({
       component: AgregarProductoPage,
+      cssClass:'modal-fullscreen',
       componentProps: {
         sede: this.sede,
         categoria: this.categoria

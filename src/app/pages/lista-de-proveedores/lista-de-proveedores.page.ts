@@ -1,5 +1,5 @@
-import { Component, OnInit } from '@angular/core';
-import { ModalController } from '@ionic/angular';
+import { Component, Input, OnInit } from '@angular/core';
+import { AlertController, ModalController, ToastController } from '@ionic/angular';
 import { AgregarEditarProveedorPage } from 'src/app/modals/agregar-editar-proveedor/agregar-editar-proveedor.page';
 import { ProveedorInterface } from 'src/app/models/proveedor';
 import { DbDataService } from 'src/app/services/db-data.service';
@@ -22,9 +22,17 @@ export class ListaDeProveedoresPage implements OnInit {
   modalTag: string;
   modalDataProveedor: ProveedorInterface;
 
+  @Input() esModal: boolean = false;
 
-  constructor(private dataApi: DbDataService, private modalCtlr: ModalController) {
-    //this.proveedoresForm = this.createFormGroupProveedor();
+  // objeto = {nombre: 'huanalals', nulo: null};
+
+  constructor(
+    private dataApi: DbDataService,
+    private modalCtlr: ModalController,
+    private toastCtrl: ToastController,
+    public alertController: AlertController
+  ) {
+    // this.proveedoresForm = this.createFormGroupProveedor();
     this.ObtenerProveedores();
   }
 
@@ -52,9 +60,9 @@ export class ListaDeProveedoresPage implements OnInit {
 
   ActualizarDataProveedor(proveedor: ProveedorInterface){
 
-    // console.log('xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx');
-    // console.log(proveedor);
-    // console.log('xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx');
+    console.log('xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx');
+    console.log(proveedor);
+    console.log('xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx');
 
     this.modalEvento = 'actualizarProveedor';
     this.modalTitle = 'Actualizar datos del proveedor';
@@ -80,10 +88,57 @@ export class ListaDeProveedoresPage implements OnInit {
       }
     });
 
-    await modal.present()
+    await modal.present();
   }
 
+  SeleccionarProveedor(proveedorSelect: ProveedorInterface){
 
+    this.modalCtlr.dismiss({
+      proveedor: proveedorSelect
+    });
+  }
+
+  // EliminarProveedor(proveedorSelect: ProveedorInterface){
+  //   // TODO - Agregar un mensaje de confirmación
+  //   this.dataApi.EliminarProveedor(proveedorSelect.id);
+  //   this.presentToast('Eliminó exitosamente');
+  // }
+
+  async presentToast(message: string){
+    const toast = await this.toastCtrl.create({
+      message,
+      duration: 2000
+    });
+
+    toast.present();
+  }
+
+  async  EliminarProveedor(proveedorSelect: ProveedorInterface) {
+    const alert = await this.alertController.create({
+      header: 'Eliminar Proveedor',
+      message: `Desea eliminar al proveedor ${proveedorSelect.nombre}`,
+      // buttons: ['Disagree', 'Agree']
+      buttons: [
+        {
+          text: 'No, conservar proveedor',
+          role: 'cancel',
+          handler: () => {
+            console.log('No clicked');
+          }
+        },
+        {
+          text: 'si, deseo eliminar.',
+          handler: () => {
+            console.log('Yes clicked');
+            this.dataApi.EliminarProveedor(proveedorSelect.id);
+            this.presentToast('Eliminó exitosamente');
+          }
+        }
+      ]
+    });
+
+    await alert.present();
+  }
 
 
 }

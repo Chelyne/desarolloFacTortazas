@@ -8,6 +8,10 @@ import { VentaInterface } from 'src/app/models/venta/venta';
 import { ItemDeVentaInterface } from 'src/app/models/venta/item-de-venta';
 import { ProductoInterface } from 'src/app/models/ProductoInterface';
 import { DbDataService } from '../../services/db-data.service';
+// import { TestServiceService } from 'src/app/services/test-service.service';
+
+import { ActivatedRoute } from '@angular/router';
+import { ConfirmarVentaService } from 'src/app/services/confirmar-venta.service';
 
 @Component({
   selector: 'app-punto-venta',
@@ -27,7 +31,10 @@ export class PuntoVentaPage implements OnInit {
   constructor(private menuCtrl: MenuController,
               private categoriasService: CategoriasService,
               private pagination: PaginationProductosService,
-              private dataApi: DbDataService) {
+              private dataApi: DbDataService,
+              private testServ: ConfirmarVentaService,
+              private rutaActiva: ActivatedRoute
+              ) {
     this.menuCtrl.enable(true);
    }
 
@@ -55,6 +62,10 @@ export class PuntoVentaPage implements OnInit {
   ngOnInit() {
     this.categorias = this.categoriasService.getcategoriasNegocio('petshop');
     this.sinDatos = false;
+
+    if (this.rutaActiva.snapshot.params.cancelar === 'true') {
+      this.listaItemsDeVenta = [];
+    }
   }
 
 
@@ -250,6 +261,12 @@ export class PuntoVentaPage implements OnInit {
 
   LimpiarListaDeVentas(){
     this.listaDeVentas = [];
+  }
+
+  //TODO : Mejorar los nombre de este modulo
+  SaveOnService(){
+    this.testServ.setTextService('Buenos Días Beto');
+    this.testServ.setVenta(this.CrearItemDeVentas());
   }
 
 

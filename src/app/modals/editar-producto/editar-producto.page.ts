@@ -30,11 +30,14 @@ export class EditarProductoPage implements OnInit {
               private firebaseStorage: AngularFireStorage,
               private loadingController: LoadingController
               ) {
+
+              //  this.updateForm = this.createFormGroup();
+
    }
 
   ngOnInit() {
     this.updateForm = this.createFormGroup();
-    console.log(this.dataProducto);
+    console.log('holaola',this.dataProducto);
   }
 
   createFormGroup() {
@@ -53,6 +56,7 @@ export class EditarProductoPage implements OnInit {
     });
   }
 
+  
   get nombre() {return this.updateForm.get('nombre'); }
   get cantidad() {return this.updateForm.get('cantidad'); }
   get medida() {return this.updateForm.get('medida'); }

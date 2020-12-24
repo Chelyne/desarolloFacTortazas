@@ -30,8 +30,18 @@
             <ion-label>{{provedor.direccion}}</ion-label>
             <ion-label>{{provedor.email}}</ion-label>
             <ion-label>
+              <ion-button (click)="SeleccionarProveedor(provedor)" *ngIf="esModal">
+                Seleccionar
+              </ion-button>
+            </ion-label>
+            <ion-label>
               <ion-button (click)="ActualizarDataProveedor(provedor)">
-                Actualizar
+                <ion-icon name="create-outline"></ion-icon>
+              </ion-button>
+            </ion-label>
+            <ion-label>
+              <ion-button (click)="EliminarProveedor(provedor)">
+                <ion-icon name="trash-outline"></ion-icon>
               </ion-button>
             </ion-label>
           </ion-item>
@@ -42,7 +52,14 @@
   </ion-grid>
   <ion-fab vertical="bottom" horizontal="end" slot="fixed">
     <ion-button (click)="AgregarNuevoProveedor()">
-      Agregar Usuario
+      Agregar Proveedor
     </ion-button>
   </ion-fab>
+
+  <!-- <ion-label>{{objeto.nombre}}</ion-label>
+  <ion-label>{{objeto.nulo}}</ion-label>
+  <ion-label>{{objeto.correo}}</ion-label> -->
+  <!-- <ion-button (click)="handleButtonClick()" expand="block" fill="clear" shape="round">
+    Click me
+  </ion-button> -->
 </ion-content>

@@ -8,6 +8,7 @@ import { UsuarioInterface } from '../models/usuario';
 import { ClienteInterface } from '../models/cliente-interface';
 import { ProveedorInterface } from '../models/proveedor';
 import { UsuarioInterfce } from '../models/User';
+import { CompraInterface } from '../models/Compra';
 
 @Injectable({
   providedIn: 'root'
@@ -121,8 +122,37 @@ export class DbDataService {
       }));
   }
 
+  ObtenerListaProductosByName(sede: string, nombre: string, limit: number) {
+    const sede1 = sede.toLocaleLowerCase();
+    // tslint:disable-next-line:max-line-length
+    this.productoCollection = this.afs.collection('sedes').doc(sede1).collection('productos' , ref => ref.orderBy('nombre').startAt(nombre).endAt(nombre + '\uf8ff').limit(limit));
+    // tslint:disable-next-line:max-line-length
+    // this.productoCollection = this.afs.collection<ProductoInterface>('frutas', ref => ref.where('propietario', '==', propietario).orderBy('fechaRegistro', 'desc'));
+    return this.productos = this.productoCollection.snapshotChanges()
+      .pipe(map(changes => {
+        return changes.map(action => {
+          const data = action.payload.doc.data() as ProductoInterface;
+          data.id = action.payload.doc.id;
+          return data;
+        });
+      }));
+  }
 
-
+  ObtenerListaProductosSinCat(sede: string, limit: number) {
+    const sede1 = sede.toLocaleLowerCase();
+    // tslint:disable-next-line:max-line-length
+    this.productoCollection = this.afs.collection('sedes').doc(sede1).collection('productos', ref => ref.orderBy('fechaRegistro', 'desc').limit(limit));
+    // tslint:disable-next-line:max-line-length
+    // this.productoCollection = this.afs.collection<ProductoInterface>('frutas', ref => ref.where('propietario', '==', propietario).orderBy('fechaRegistro', 'desc'));
+    return this.productos = this.productoCollection.snapshotChanges()
+      .pipe(map(changes => {
+        return changes.map(action => {
+          const data = action.payload.doc.data() as ProductoInterface;
+          data.id = action.payload.doc.id;
+          return data;
+        });
+      }));
+  }
 
   ObtenerListaClientes(sede: string) {
     // const sede1 = sede.toLocaleLowerCase();
@@ -173,7 +203,7 @@ export class DbDataService {
     // const sede1 =  sede.toLocaleLowerCase();
     const promesa =  new Promise<void>((resolve, reject) => {
       this.afs.collection('sedes').doc(sede.toLocaleLowerCase()).collection('ofertas').add(oferta);
-      resolve();
+      resolve(resolve);
     });
     return promesa;
   }
@@ -194,7 +224,7 @@ export class DbDataService {
     }
     const promesa = new Promise<void>((resolve, reject) => {
       this.afs.collection('sedes').doc(data.sede.toLocaleLowerCase()).collection('ofertas').doc(id).update(datos);
-      resolve();
+      resolve(resolve);
     });
     return promesa;
   }
@@ -248,7 +278,7 @@ export class DbDataService {
     // const sede1 =  sede.toLocaleLowerCase();
     const promesa =  new Promise<void>((resolve, reject) => {
       this.afs.collection('tips').add(tip);
-      resolve();
+      resolve(resolve);
     });
     return promesa;
   }
@@ -345,7 +375,7 @@ export class DbDataService {
   actualizarUrlFoto(sede: string, id: string, url: string) {
     const promesa = new Promise<void>((resolve, reject) => {
       this.afs.collection('sedes').doc(sede).collection('productos').doc(id).update({img: url}).then(() => {
-        resolve();
+        resolve(resolve);
       });
     });
     return promesa;
@@ -385,7 +415,7 @@ export class DbDataService {
   guardarUsuario(newUser: UsuarioInterface) {
     const promesa =  new Promise<void>( (resolve, reject) => {
       this.afs.collection('usuarios').add(newUser);
-      resolve();
+      resolve(resolve);
     });
 
     return promesa;
@@ -397,7 +427,7 @@ export class DbDataService {
 
     const promesa =  new Promise<void>( (resolve, reject) => {
       this.afs.collection('usuarios').doc(idUser).update(newUser);
-      resolve();
+      resolve(resolve);
     });
 
     return promesa;
@@ -446,7 +476,7 @@ export class DbDataService {
 
     const promesa =  new Promise<void>( (resolve, reject) => {
       this.afs.collection('clientes').add(newCliente);
-      resolve();
+      resolve(resolve);
     });
 
     return promesa;
@@ -458,7 +488,7 @@ export class DbDataService {
 
     const promesa =  new Promise<void>( (resolve, reject) => {
       this.afs.collection('clientes').doc(idCliente).update(newCliente);
-      resolve();
+      resolve(resolve);
     });
 
     return promesa;
@@ -509,7 +539,7 @@ export class DbDataService {
 
     const promesa =  new Promise<void>( (resolve, reject) => {
       this.afs.collection('proveedores').add(newProveedor);
-      resolve();
+      resolve(resolve);
     });
 
     return promesa;
@@ -521,7 +551,7 @@ export class DbDataService {
 
     const promesa =  new Promise<void>( (resolve, reject) => {
       this.afs.collection('proveedores').doc(idProveedor).update(newProveedor);
-      resolve();
+      resolve(resolve);
     });
 
     return promesa;
@@ -544,6 +574,12 @@ export class DbDataService {
       ));
 
   }
+
+  EliminarProveedor(idProveedor: string) {
+    this.productoDoc = this.afs.doc<ProductoInterface>(`proveedores/${idProveedor}`);
+    this.productoDoc.delete();
+  }
+
   // chelin
   ObtenerListaDeUsuariosSede(sede: string) {
 
@@ -565,7 +601,7 @@ export class DbDataService {
     // const celular = newUsuario.celular;
     const promesa =  new Promise<void>( (resolve, reject) => {
       this.afs.collection('CajaChica').add(newcajaChica); // .get().set(newcajaChina) //si es  que quieres asignar una id
-      resolve();
+      resolve(resolve);
     });
     return promesa;
     // this.afs.collection<ProductoInterface>(categoria).add(newProducto);
@@ -653,4 +689,54 @@ export class DbDataService {
         });
       }));
   }
+
+
+
+  private comprasCollection: AngularFirestoreCollection<ProductoInterface>;
+  private compras: Observable<ProductoInterface[]>;
+
+  private compraDoc: AngularFirestoreDocument<ProductoInterface>;
+  private compra: Observable<ProductoInterface>;
+
+  //COMPRAS
+  //TODO: OBTENER LISTA DE COMPRAS
+  ObtenerListaCompras() {
+    // const sede1 = sede.toLocaleLowerCase();
+    // tslint:disable-next-line:max-line-length
+    this.comprasCollection = this.afs.collection('compras' , ref => ref.orderBy('fechaRegistro', 'desc').limit(10));
+    // tslint:disable-next-line:max-line-length
+    // this.productoCollection = this.afs.collection<ProductoInterface>('frutas', ref => ref.where('propietario', '==', propietario).orderBy('fechaRegistro', 'desc'));
+    return this.clientes = this.comprasCollection.snapshotChanges()
+      .pipe(map(changes => {
+        return changes.map(action => {
+          const data = action.payload.doc.data() as CompraInterface;
+          data.id = action.payload.doc.id;
+          return data;
+        });
+      }));
+  }
+
+
+  // TODO: GUARDAR COMPRA
+  guardarCompra(newCompra: CompraInterface) {
+
+    const promesa =  new Promise( (resolve, reject) => {
+      this.afs.collection('compras').add(newCompra);
+      resolve(resolve);
+    });
+
+    return promesa;
+  }
+
+  toggleAnularCompra(idCompra: string, esAnulado: boolean) {
+    // console.log( idProveedor, newProveedor);
+
+    const promesa =  new Promise( (resolve, reject) => {
+      this.afs.collection('compras').doc(idCompra).update({anulado: !esAnulado});
+      resolve(resolve);
+    });
+    return promesa;
+  } 
+
+
 }
