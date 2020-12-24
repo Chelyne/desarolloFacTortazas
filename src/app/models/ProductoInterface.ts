@@ -1,4 +1,4 @@
-export interface ProductoInterface extends ProgressEvent{
+export interface ProductoInterface {
     id?: string;
     img?: string;
     nombre?: string;

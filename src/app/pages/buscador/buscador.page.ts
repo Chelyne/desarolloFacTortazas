@@ -57,7 +57,7 @@ export class BuscadorPage implements OnInit {
           return data;
         });
       }
-      )).subscribe(res => {
+      )).subscribe((res: ProductoInterface[]) => {
         if (res.length === 0 ) {
           console.log('no hay datos');
           this.productos = null;
