@@ -3,6 +3,7 @@ import { ModalController } from '@ionic/angular';
 import { DetallesDeCompraPage } from 'src/app/modals/detalles-de-compra/detalles-de-compra.page';
 import { CompraInterface } from 'src/app/models/Compra';
 import { DbDataService } from 'src/app/services/db-data.service';
+import { EditarCompraService } from 'src/app/services/editar-compra.service';
 
 @Component({
   selector: 'app-lista-de-compras',
@@ -28,7 +29,8 @@ export class ListaDeComprasPage implements OnInit {
 
   constructor(
     private dataApi: DbDataService,
-    private modalCtlr: ModalController
+    private modalCtlr: ModalController,
+    private editCompra: EditarCompraService
   ) {
     // this.proveedoresForm = this.createFormGroupProveedor();
     this.ObtenerCompras();
@@ -40,7 +42,7 @@ export class ListaDeComprasPage implements OnInit {
 
   ObtenerCompras(){
     // console.log("getProveedores");
-
+    // CLEAN
     this.dataApi.ObtenerListaCompras().subscribe(data => {
       console.log(data);
       this.listaDeCompras = data;
@@ -128,8 +130,9 @@ export class ListaDeComprasPage implements OnInit {
     }
   }
 
-  EditarCompra(){
-    console.log('EditarCompra');
+  EditarCompra(compraSelect: CompraInterface){
+    console.log('EditarCompra', compraSelect);
+    this.editCompra.setCompra(compraSelect);
   }
 
 

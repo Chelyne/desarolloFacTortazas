@@ -6,6 +6,7 @@ import { CompraInterface, ItemDeCompraInterface } from 'src/app/models/Compra';
 import { ProductoInterface } from 'src/app/models/ProductoInterface';
 import { ProveedorInterface } from 'src/app/models/proveedor';
 import { DbDataService } from 'src/app/services/db-data.service';
+import { EditarCompraService } from 'src/app/services/editar-compra.service';
 import { StorageService } from 'src/app/services/storage.service';
 import { ListaDeProveedoresPage } from '../lista-de-proveedores/lista-de-proveedores.page';
 
@@ -45,7 +46,8 @@ export class ComprasPage implements OnInit {
   constructor(
     private dataApi: DbDataService,
     private storage: StorageService,
-    private modalCtlr: ModalController
+    private modalCtlr: ModalController // ,
+    // private editCompra: EditarCompraService
   ) {
     this.ObtenerProductos();
     this.formItemDeCompras = this.createFormCompras();
@@ -53,7 +55,16 @@ export class ComprasPage implements OnInit {
   }
 
   ngOnInit() {
+    // this.ObtenerCompra();
+    // console.log('venta');
+    // if (Object.entries(this.venta).length !== 0){
+
+    // }
   }
+
+  // ObtenerCompra(){
+  //   TODO - Obtener compra
+  // }
 
 
   ObtenerProductos(){
