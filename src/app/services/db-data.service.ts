@@ -171,7 +171,7 @@ export class DbDataService {
   // Ofertas para clientes
   guardarOferta(oferta: any, sede: string) {
     // const sede1 =  sede.toLocaleLowerCase();
-    const promesa =  new Promise((resolve, reject) => {
+    const promesa =  new Promise<void>((resolve, reject) => {
       this.afs.collection('sedes').doc(sede.toLocaleLowerCase()).collection('ofertas').add(oferta);
       resolve();
     });
@@ -192,7 +192,7 @@ export class DbDataService {
         sede: data.sede
       };
     }
-    const promesa = new Promise((resolve, reject) => {
+    const promesa = new Promise<void>((resolve, reject) => {
       this.afs.collection('sedes').doc(data.sede.toLocaleLowerCase()).collection('ofertas').doc(id).update(datos);
       resolve();
     });
@@ -246,7 +246,7 @@ export class DbDataService {
 
   guardarTip(tip: any) {
     // const sede1 =  sede.toLocaleLowerCase();
-    const promesa =  new Promise((resolve, reject) => {
+    const promesa =  new Promise<void>((resolve, reject) => {
       this.afs.collection('tips').add(tip);
       resolve();
     });
@@ -343,7 +343,7 @@ export class DbDataService {
   }
 
   actualizarUrlFoto(sede: string, id: string, url: string) {
-    const promesa = new Promise((resolve, reject) => {
+    const promesa = new Promise<void>((resolve, reject) => {
       this.afs.collection('sedes').doc(sede).collection('productos').doc(id).update({img: url}).then(() => {
         resolve();
       });
@@ -383,7 +383,7 @@ export class DbDataService {
 
   // Guardar Nuevo USURARIO / VENDEDOR
   guardarUsuario(newUser: UsuarioInterface) {
-    const promesa =  new Promise( (resolve, reject) => {
+    const promesa =  new Promise<void>( (resolve, reject) => {
       this.afs.collection('usuarios').add(newUser);
       resolve();
     });
@@ -395,7 +395,7 @@ export class DbDataService {
   actualizarUsuario(idUser: string, newUser: UsuarioInterface) {
     // console.log( idUser, newUser);
 
-    const promesa =  new Promise( (resolve, reject) => {
+    const promesa =  new Promise<void>( (resolve, reject) => {
       this.afs.collection('usuarios').doc(idUser).update(newUser);
       resolve();
     });
@@ -444,7 +444,7 @@ export class DbDataService {
   // TODO -  Refactorizar en los lugares donde se usa
   guardarCliente(newCliente: ClienteInterface) {
 
-    const promesa =  new Promise( (resolve, reject) => {
+    const promesa =  new Promise<void>( (resolve, reject) => {
       this.afs.collection('clientes').add(newCliente);
       resolve();
     });
@@ -456,7 +456,7 @@ export class DbDataService {
   actualizarCliente(idCliente: string, newCliente: ClienteInterface) {
     // console.log( idCliente, newCliente);
 
-    const promesa =  new Promise( (resolve, reject) => {
+    const promesa =  new Promise<void>( (resolve, reject) => {
       this.afs.collection('clientes').doc(idCliente).update(newCliente);
       resolve();
     });
@@ -483,7 +483,7 @@ export class DbDataService {
       ));
 
   }
-  
+
   ObtenerListaDeproductos() {
 
     this.clientesCollection = this.afs.collection('sedes').doc('andahuaylas').collection('productos');
@@ -507,7 +507,7 @@ export class DbDataService {
 
   guardarProveedor(newProveedor: ProveedorInterface) {
 
-    const promesa =  new Promise( (resolve, reject) => {
+    const promesa =  new Promise<void>( (resolve, reject) => {
       this.afs.collection('proveedores').add(newProveedor);
       resolve();
     });
@@ -519,7 +519,7 @@ export class DbDataService {
   actualizarProveedor(idProveedor: string, newProveedor: ProveedorInterface) {
     // console.log( idProveedor, newProveedor);
 
-    const promesa =  new Promise( (resolve, reject) => {
+    const promesa =  new Promise<void>( (resolve, reject) => {
       this.afs.collection('proveedores').doc(idProveedor).update(newProveedor);
       resolve();
     });
@@ -547,7 +547,7 @@ export class DbDataService {
   // chelin
   ObtenerListaDeUsuariosSede(sede: string) {
 
-    this.usuariosCollection = this.afs.collection('usuarios', ref => ref.where('sede', '==', sede ));
+    this.usuariosCollection = this.afs.collection('Roles', ref => ref.where('sede', '==', sede ));
 
     return this.usuarios = this.usuariosCollection.snapshotChanges()
       .pipe(map(
@@ -563,7 +563,7 @@ export class DbDataService {
   }
   guardarCajaChica(newcajaChica) {
     // const celular = newUsuario.celular;
-    const promesa =  new Promise( (resolve, reject) => {
+    const promesa =  new Promise<void>( (resolve, reject) => {
       this.afs.collection('CajaChica').add(newcajaChica); // .get().set(newcajaChina) //si es  que quieres asignar una id
       resolve();
     });
@@ -572,7 +572,7 @@ export class DbDataService {
   }
   ObtenerListaCajaChica(sede: string) {
 
-    this.usuariosCollection = this.afs.collection('CajaChica', ref => ref.where('sede', '==', sede ).orderBy('FechaApertura', 'asc') );
+    this.usuariosCollection = this.afs.collection('CajaChica', ref => ref.where('sede', '==', sede ).orderBy('FechaApertura', 'desc') );
 
     return this.usuarios = this.usuariosCollection.snapshotChanges()
       .pipe(map(
@@ -584,7 +584,56 @@ export class DbDataService {
             });
           }
       ));
+  }
+  CerrarCajaChica(id: string, dato: any){
+    const saldoFin = dato.saldoFinal;
+    const FechaCier = dato.FechaCierre;
 
+    const promesa =  new Promise<void>( (resolve, reject) => {
+      this.afs.collection('CajaChica').doc(id).update({
+        saldoFinal: saldoFin,
+        FechaCierre: FechaCier,
+        estado: 'Cerrado'
+      });
+      resolve();
+    });
+
+    return promesa;
+  }
+  EliminarCajaChica(idCaja: string) {
+    const promesa =  new Promise<void>( (resolve, reject) => {
+      this.productoDoc = this.afs.doc<ProductoInterface>(`CajaChica/${idCaja}`);
+      this.productoDoc.delete();
+      resolve();
+    });
+
+    return promesa;
+  }
+  EditarCajaChica(id: string, dato: any){
+    const montoInicial = dato.saldoInicial;
+    const vendedor = dato.nombreVendedor;
+    const promesa =  new Promise<void>( (resolve, reject) => {
+        this.afs.collection('CajaChica').doc(id).update({
+          saldoInicial: montoInicial,
+          nombreVendedor: vendedor,
+        });
+        resolve();
+      });
+    return promesa;
+  }
+  VerificarCajaChicaVendedor(estadoCaja: string, nombre: string) {
+    console.log('obteniedno caja de: ', nombre, ' con el estado ABIERTO: ', estadoCaja);
+    // tslint:disable-next-line:max-line-length
+    return this.afs.collection('CajaChica').ref.where('estado', '==', estadoCaja).where( 'nombreVendedor', '==', nombre).limit(1).get();
+    // return cajaCollection.snapshotChanges()
+    // .pipe(map(changes => {
+    //   return changes.map(action => {
+    //     console.log('datos obtenidos', action.payload.doc.data());
+    //     const data = action.payload.doc.data() as any;
+    //     data.id = action.payload.doc.id;
+    //     return data;
+    //     });
+    //   }));
   }
 
 
