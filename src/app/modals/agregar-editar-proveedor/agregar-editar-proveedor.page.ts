@@ -25,7 +25,7 @@ export class AgregarEditarProveedorPage implements OnInit {
     private toastCtrl: ToastController
   ) {
     this.proveedorModalForm = this.createFormProveedor();
-    //console.log(this.eventoInvoker, this.tagInvoker, this.dataInvoker);
+    // console.log(this.eventoInvoker, this.tagInvoker, this.dataInvoker);
   }
 
 
@@ -33,13 +33,17 @@ export class AgregarEditarProveedorPage implements OnInit {
     if( this.eventoInvoker === 'actualizarProveedor' ){
       this.proveedorModalForm = this.formForUpdate();
     }
+
+    console.log('datainvoker', this.dataInvoker);
   }
 
   createFormProveedor() {
     return new FormGroup({
       nombre: new FormControl('', [Validators.required, Validators.minLength(3)]),
       ruc: new FormControl('', [Validators.required, Validators.minLength(11), Validators.maxLength(11)]),
-      telefono: new FormControl('',[Validators.required, Validators.minLength(6), Validators.maxLength(9)]),
+      tipoDocumento: new FormControl('', [Validators.required]),
+      numeroDocumento: new FormControl('', [Validators.required]),
+      telefono: new FormControl('', [Validators.required, Validators.minLength(6), Validators.maxLength(9)]),
       direccion: new FormControl('', [Validators.required, Validators.minLength(3)]),
       email: new FormControl('', [Validators.required, Validators.minLength(3), Validators.pattern('^[_a-z0-9]+(\.[_a-z0-9]+)*@[a-z0-9-]+(\.[_a-z0-9]+)*\.([a-z]{2,4})$')])
     });
@@ -47,6 +51,8 @@ export class AgregarEditarProveedorPage implements OnInit {
 
   get nombre() { return this.proveedorModalForm.get('nombre'); }
   get ruc() { return this.proveedorModalForm.get('ruc'); }
+  get tipoDocumento() { return this.proveedorModalForm.get('tipoDocumento'); }
+  get numeroDocumento() { return this.proveedorModalForm.get('numeroDocumento'); }
   get telefono() { return this.proveedorModalForm.get('telefono'); }
   get direccion() { return this.proveedorModalForm.get('direccion'); }
   get email() { return this.proveedorModalForm.get('email'); }
@@ -55,42 +61,64 @@ export class AgregarEditarProveedorPage implements OnInit {
     return new FormGroup({
       nombre: new FormControl(this.dataInvoker.nombre, [Validators.required, Validators.minLength(3)]),
       ruc: new FormControl(this.dataInvoker.ruc, [Validators.required, Validators.minLength(11), Validators.maxLength(11)]),
+      tipoDocumento: new FormControl(this.dataInvoker.tipoDocumento, [Validators.required]),
+      numeroDocumento: new FormControl(this.dataInvoker.numeroDocumento, [Validators.required]),
       telefono: new FormControl(this.dataInvoker.telefono, [Validators.required, Validators.minLength(6), Validators.maxLength(9)]),
       direccion: new FormControl(this.dataInvoker.direccion, [Validators.required, Validators.minLength(3)]),
       email: new FormControl(this.dataInvoker.email, [Validators.required, Validators.minLength(3), Validators.pattern('^[_a-z0-9]+(\.[_a-z0-9]+)*@[a-z0-9-]+(\.[_a-z0-9]+)*\.([a-z]{2,4})$')])
     });
   }
 
+  siRucoDni(){
+    console.log('se invocoooooooooooooooooooooooooooooo');
+    const typeDoc = this.proveedorModalForm.value.tipoDocumento;
+    if (typeDoc === 'dni'){
+      this.proveedorModalForm.setControl(
+        'tipoDocumento',
+        new FormControl('', [Validators.required, Validators.minLength(11), Validators.maxLength(11)])
+      );
+
+    } else if (typeDoc === 'ruc'){
+      this.proveedorModalForm.setControl(
+        'tipoDocumento',
+        new FormControl('', [Validators.required, Validators.minLength(8), Validators.maxLength(8)])
+      );
+
+    } else {
+      console.log('Documento no valido');
+    }
+  }
+
 
   execFun(){
-    if(this.eventoInvoker === 'guardarProveedor'){
+    if (this.eventoInvoker === 'guardarProveedor'){
       this.guardarProveedor();
 
     }
-    else if(this.eventoInvoker === 'actualizarProveedor'){
+    else if (this.eventoInvoker === 'actualizarProveedor'){
       this.actualizarProveedor();
 
     } else {
-      console.log("La función no existe");
+      console.log('La función no existe');
     }
 
   }
 
   guardarProveedor(){
     // console.log(this.proveedorModalForm.value);
-    this.dataApi.guardarProveedor(this.proveedorModalForm.value).then(()=>{
-      //console.log("Se ingreso Correctamente")
-      this.presentToast("Datos guardados correctamente");
-      //this.modalCtlr.dismiss();
+    this.dataApi.guardarProveedor(this.proveedorModalForm.value).then(() => {
+      // console.log("Se ingreso Correctamente")
+      this.presentToast('Datos guardados correctamente');
+      // this.modalCtlr.dismiss();
     });
   }
 
   actualizarProveedor(){
 
     this.dataApi.actualizarProveedor(this.dataInvoker.id, this.proveedorModalForm.value).then(
-      () => {console.log('Se ingreso Correctamente');
-      this.presentToast("Datos actualizados correctamente");
-      this.modalCtlr.dismiss();
+        () => {console.log('Se ingreso Correctamente');
+        this.presentToast('Datos actualizados correctamente');
+        this.modalCtlr.dismiss();
       }
     );
 

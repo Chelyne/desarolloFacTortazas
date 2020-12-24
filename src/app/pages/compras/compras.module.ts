@@ -4,18 +4,18 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 
 import { IonicModule } from '@ionic/angular';
 
-import { ListaDeComprasPageRoutingModule } from './lista-de-compras-routing.module';
+import { ComprasPageRoutingModule } from './compras-routing.module';
 
-import { ListaDeComprasPage } from './lista-de-compras.page';
+import { ComprasPage } from './compras.page';
 
 @NgModule({
   imports: [
     CommonModule,
     FormsModule,
     IonicModule,
-    ListaDeComprasPageRoutingModule,
+    ComprasPageRoutingModule,
     ReactiveFormsModule
   ],
-  declarations: [ListaDeComprasPage]
+  declarations: [ComprasPage]
 })
-export class ListaDeComprasPageModule {}
+export class ComprasPageModule {}

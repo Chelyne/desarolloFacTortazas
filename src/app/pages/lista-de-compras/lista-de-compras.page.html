@@ -23,13 +23,12 @@
             <ion-label>fecha Emision</ion-label>
             <ion-label>IGV</ion-label>
             <ion-label>totalxCompra</ion-label>
-
           </ion-list-header>
-          <ion-item *ngFor="let compra of listaDeCompras;let i = index">
+          <ion-item *ngFor="let compra of listaDeCompras; let i = index">
             <ion-label>{{i+1}}</ion-label>
             <ion-label>{{compra.proveedor.nombre}}</ion-label>
             <ion-label>{{compra.typoComprobante}}</ion-label>
-            <ion-label>{{compra.serieComprobante}}- {{compra.numeroComprobante}}</ion-label>
+            <ion-label>{{compra.serieComprobante}} - {{compra.numeroComprobante}}</ion-label>
             <ion-label>{{compra.fechaDeEmision}}</ion-label>
             <ion-label>{{compra.IGV_compra}}</ion-label>
             <ion-label>{{compra.totalxCompra}}</ion-label>

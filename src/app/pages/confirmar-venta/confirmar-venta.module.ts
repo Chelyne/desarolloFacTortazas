@@ -4,18 +4,18 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 
 import { IonicModule } from '@ionic/angular';
 
-import { ListaDeComprasPageRoutingModule } from './lista-de-compras-routing.module';
+import { ConfirmarVentaPageRoutingModule } from './confirmar-venta-routing.module';
 
-import { ListaDeComprasPage } from './lista-de-compras.page';
+import { ConfirmarVentaPage } from './confirmar-venta.page';
 
 @NgModule({
   imports: [
     CommonModule,
     FormsModule,
     IonicModule,
-    ListaDeComprasPageRoutingModule,
+    ConfirmarVentaPageRoutingModule,
     ReactiveFormsModule
   ],
-  declarations: [ListaDeComprasPage]
+  declarations: [ConfirmarVentaPage]
 })
-export class ListaDeComprasPageModule {}
+export class ConfirmarVentaPageModule {}
