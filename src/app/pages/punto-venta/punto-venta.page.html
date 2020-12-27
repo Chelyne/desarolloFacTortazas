@@ -258,7 +258,30 @@
         </ion-content>
       </ion-col>
       <ion-col size="4">
-        <ion-content style="height: 90%;" color="light">
+        <ion-header class="ion-no-border">
+          <ion-toolbar>
+            <ion-buttons slot="start">
+              <ion-button [disabled]="listaItemsDeVenta.length===0" (click)="AgregaraListaDeEspera()" color="primary">
+                <ion-icon slot="icon-only" name="snow-outline"></ion-icon>
+              </ion-button>
+              <ion-button (click)="modalCongelados()" color="danger">
+                <ion-icon slot="icon-only" name="flame-outline"></ion-icon>
+              </ion-button>
+            </ion-buttons>
+            <ion-buttons slot="end">
+              <ion-button [disabled]="listaItemsDeVenta.length===0" (click)="QuitarListaDeVenta()" color="danger">
+                <ion-icon slot="icon-only" name="trash-bin"></ion-icon>
+              </ion-button>
+            </ion-buttons>
+          </ion-toolbar>
+        </ion-header>
+        <ion-content class="contentItemsVenta" style="height: 80%;" color="light">
+          <div class="sinDatosVenta" *ngIf="listaItemsDeVenta.length === 0">
+            <div class="textoSindatos">
+              <ion-icon class="icono" name="reader-outline" color="medium"></ion-icon> <br><br>
+              <ion-label color="medium">No hay productos agregados</ion-label>
+            </div>
+          </div>
           <ion-grid>
             <ion-row>
               <ion-col size="12" *ngFor="let item of listaItemsDeVenta.reverse(); let i = index">
@@ -271,8 +294,8 @@
                   ></app-producto-venta>
                 <!-- </ion-item> -->
               </ion-col>
-
-              <ion-col size="12">
+              <!-- CONGELAR BOTONES -->
+              <!-- <ion-col size="12">
                 <ion-label >Total a pagar: {{totalxPagar}} </ion-label>
                 <ion-button (click)="AgregaraListaDeEspera()" expand="block" fill="clear" shape="round">
                   Agregar a lista de espera
@@ -280,7 +303,7 @@
                 <ion-button (click)="QuitarListaDeVenta()" expand="block" fill="clear" shape="round">
                   Quitar lista
                 </ion-button>
-              </ion-col>
+              </ion-col> -->
             </ion-row>
             <!-- CONGELAR VENTA -->
             <!-- <ion-row *ngIf="listaDeVentas.length">

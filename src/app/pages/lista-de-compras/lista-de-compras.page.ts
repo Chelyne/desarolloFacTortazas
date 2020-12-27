@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { ModalController } from '@ionic/angular';
+import { ModalController, MenuController } from '@ionic/angular';
 import { DetallesDeCompraPage } from 'src/app/modals/detalles-de-compra/detalles-de-compra.page';
 import { CompraInterface } from 'src/app/models/Compra';
 import { DbDataService } from 'src/app/services/db-data.service';
@@ -30,13 +30,15 @@ export class ListaDeComprasPage implements OnInit {
   constructor(
     private dataApi: DbDataService,
     private modalCtlr: ModalController,
-    private editCompra: EditarCompraService
+    private editCompra: EditarCompraService,
+    private menuCtrl: MenuController
   ) {
     // this.proveedoresForm = this.createFormGroupProveedor();
     this.ObtenerCompras();
   }
 
   ngOnInit() {
+    this.menuCtrl.enable(true);
   }
 
 

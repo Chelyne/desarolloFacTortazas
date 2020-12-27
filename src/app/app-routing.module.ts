@@ -205,6 +205,10 @@ const routes: Routes = [
   {
     path: 'detalles-de-compra',
     loadChildren: () => import('./modals/detalles-de-compra/detalles-de-compra.module').then( m => m.DetallesDeCompraPageModule)
+  },
+  {
+    path: 'ventas-congeladas',
+    loadChildren: () => import('./modals/ventas-congeladas/ventas-congeladas.module').then( m => m.VentasCongeladasPageModule)
   }
 
 

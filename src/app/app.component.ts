@@ -44,6 +44,7 @@ export class AppComponent {
   initializeApp() {
     this.platform.ready().then(() => {
       this.storage.cargarDatosAdmiStorage().then(() => {
+        this.storage.cargarVentsaCongeladas();
         this.statusBar.styleDefault();
         this.statusBar.backgroundColorByHexString('#ffffff');
         this.splashScreen.hide();

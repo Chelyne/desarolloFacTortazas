@@ -1,9 +1,9 @@
 
-// // * {
-// //     ion-label {
-// //         font-family: Nunito;
-// //     }
-// // }
+* {
+    ion-label {
+        font-family: Nunito;
+    }
+}
 ion-input {
     border-radius: 5px;
     // width: 50px;
@@ -25,5 +25,9 @@ ion-input {
 
 .boton-superior:hover{
     border: 3px gray solid;
+}
+
+.detallesVenta {
+    background-color: var(--ion-color-light);
 }
 

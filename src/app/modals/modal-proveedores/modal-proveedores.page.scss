@@ -1,6 +1,6 @@
 * {
     ion-label {
-        font-size: 14px;
+        // font-size: 14px;
     }
 }
 .headerProveedores {
@@ -11,12 +11,16 @@
 .contentProveedores {
     background-color: var(--ion-color-light);
     text-align: center;
-    margin-bottom: 5px;
+    // margin-bottom: 5px;
     cursor: pointer;
     border-bottom-left-radius: 5px;
     border-bottom-right-radius: 5px;
 }
 
+.contentProveedores:hover {
+    background-color: var(--ion-color-medium);
+    color: var(--ion-color-light);
+}
 .sinDatos {
     height: 100%;
     display: flex;

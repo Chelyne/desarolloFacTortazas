@@ -3,6 +3,7 @@ import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { VentaInterface } from 'src/app/models/venta/venta';
 import { ConfirmarVentaService } from 'src/app/services/confirmar-venta.service';
 // import { TestServiceService } from 'src/app/services/test-service.service';
+import { MenuController } from '@ionic/angular';
 
 @Component({
   selector: 'app-confirmar-venta',
@@ -24,7 +25,7 @@ export class ConfirmarVentaPage implements OnInit {
 
 
   // tslint:disable-next-line: no-inferrable-types
-  tipoComprobante: string = 'FACTURA';
+  tipoComprobante: string = 'factura';
   serieComprobante = 'F002';
 
 
@@ -38,12 +39,14 @@ export class ConfirmarVentaPage implements OnInit {
   textService: string = 'Nothing';
   venta: VentaInterface = {} ;
   constructor(
-    private testServ: ConfirmarVentaService
+    private testServ: ConfirmarVentaService,
+    private menuCtrl: MenuController
   ) {
     this.formPago = this.createFormPago();
    }
 
   ngOnInit() {
+    this.menuCtrl.enable(true);
     // REFACTOR
     console.log('ssssssssssssssssollo una vez');
     this.ObtenerTextService();
@@ -106,6 +109,7 @@ export class ConfirmarVentaPage implements OnInit {
     this.totalconDescuento = this.totalAPagar - this.descuentoDeVenta;
     console.log(this.totalconDescuento, this.totalAPagar, this.descuentoDeVenta);
 
+    // tslint:disable-next-line:max-line-length
     // this.formPago.setControl('descuento', new FormControl(this.totalconDescuento, [Validators.required, Validators.pattern('^[0-9]*\.?[0-9]*$')]));
     // this.modificarMontoEntrante(this.totalconDescuento);
     // this.calcularVuelto();
@@ -161,12 +165,12 @@ export class ConfirmarVentaPage implements OnInit {
   SeleccionarComprobante(comprobante: string){
     this.tipoComprobante = comprobante;
 
-    if (comprobante === 'FACTURA'){
+    if (comprobante === 'factura'){
       this.serieComprobante = 'F002';
-    } else if (comprobante === 'BOLETA'){
+    } else if (comprobante === 'boleta'){
       this.serieComprobante = 'B002';
 
-    }else if (comprobante === 'N.VENTA'){
+    }else if (comprobante === 'n. venta'){
       this.serieComprobante = 'NV01';
     }
   }

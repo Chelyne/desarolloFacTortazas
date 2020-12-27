@@ -1,5 +1,5 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
-import { MenuController, ToastController, PopoverController } from '@ionic/angular';
+import { MenuController, ToastController, PopoverController, ModalController } from '@ionic/angular';
 import { CategoriasService } from '../../services/categorias.service';
 import { PaginationProductosService } from '../../services/pagination-productos.service';
 import { Subscription } from 'rxjs';
@@ -16,6 +16,8 @@ import { PoppoverClientesComponent } from '../../components/poppover-clientes/po
 
 import { ActivatedRoute } from '@angular/router';
 import { ConfirmarVentaService } from 'src/app/services/confirmar-venta.service';
+import { VentasCongeladasPage } from '../../modals/ventas-congeladas/ventas-congeladas.page';
+import { isNullOrUndefined } from 'util';
 
 @Component({
   selector: 'app-punto-venta',
@@ -50,7 +52,8 @@ export class PuntoVentaPage implements OnInit {
               private toastController: ToastController,
               private popoverController: PopoverController,
               private testServ: ConfirmarVentaService,
-              private rutaActiva: ActivatedRoute
+              private rutaActiva: ActivatedRoute,
+              private modalController: ModalController
               ) {
     this.menuCtrl.enable(true);
    }
@@ -81,6 +84,10 @@ export class PuntoVentaPage implements OnInit {
 
     if (this.rutaActiva.snapshot.params.cancelar === 'true') {
       this.listaItemsDeVenta = [];
+    }
+
+    if (!isNullOrUndefined(this.storage.listaVenta)) {
+      this.listaDeVentas = this.storage.listaVenta;
     }
   }
 
@@ -234,6 +241,9 @@ export class PuntoVentaPage implements OnInit {
     this.totalxPagar = 0;
     console.log(this.listaDeVentas);
 
+    this.storage.congelarVenta(this.listaDeVentas).then(() => {
+      this.presentToast('Se guardo la lista de venta', 'success');
+    });
   }
 
   CrearItemDeVentas(): VentaInterface{
@@ -414,6 +424,25 @@ export class PuntoVentaPage implements OnInit {
       //   case 'Editar': this.presentModalEditar(); break;
       //   case 'Eliminar': this.presentAlertConfirmEliminar(); break;
       // }
+    }
+  }
+
+  async modalCongelados() {
+    const modal = await this.modalController.create({
+      component: VentasCongeladasPage,
+      cssClass: 'my-custom-class'
+    });
+    await modal.present();
+
+    const data = await modal.onWillDismiss();
+    if (isNullOrUndefined(data.data)) {
+      console.log(data.data);
+    } else {
+      console.log(data.data.dataVenta);
+      this.moverAListaPrincipal(data.data.dataVenta);
+      this.storage.congelarVenta(this.listaDeVentas).then(() => {
+        console.log('todo ok');
+      });
     }
   }
 }

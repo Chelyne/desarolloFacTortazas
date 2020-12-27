@@ -1,6 +1,9 @@
 <ion-header>
   <ion-toolbar>
-    <ion-title>confirmar-venta</ion-title>
+    <ion-buttons slot="start">
+      <ion-back-button color="primary" defaultHref="punto-venta"></ion-back-button>
+    </ion-buttons>
+    <ion-title color="primary">Confirmar Venta</ion-title>
   </ion-toolbar>
 </ion-header>
 
@@ -13,13 +16,13 @@
           <ion-grid fixed>
             <ion-row>
               <ion-col size="12">
-                <ion-item>
+                <ion-item color="light" lines="none">
                   <ion-label>0000 0000 - CLIENTE</ion-label>
                 </ion-item>
               </ion-col>
             </ion-row>
             <ion-row *ngFor="let itemDeventa of venta.listaItemsDeVenta;let i = index">
-              <ion-col size="0.5">{{i+1}}</ion-col>
+              <!-- <ion-col size="0.5">{{i+1}}</ion-col> -->
               <ion-col size="5">{{itemDeventa.producto.nombre | titlecase}}</ion-col>
               <ion-col size="2">{{itemDeventa.cantidad}}</ion-col>
               <ion-col size="2">S/. {{itemDeventa.tatalxprod | number: '1.2'}}</ion-col>
@@ -34,20 +37,45 @@
           </ion-item>
         </ion-item> -->
         <ion-item>
-          <ion-label>Subtotal: {{subTotalDeVenta | number: '0.00'}}</ion-label>
+          <ion-label>Subtotal</ion-label>
+          <ion-label class="ion-text-end" slot="end">{{subTotalDeVenta | number: '0.00'}}</ion-label>
         </ion-item>
         <ion-item>
-          <ion-label>IGV: {{IGVdeVenta | number: '0.00'}}</ion-label>
+          <ion-label>IGV</ion-label>
+          <ion-label class="ion-text-end" slot="end">{{IGVdeVenta | number: '0.00'}}</ion-label>
         </ion-item>
         <ion-item>
-          <ion-label>Total: {{totalAPagar | number: '0.00'}}</ion-label>
+          <ion-label>Total</ion-label>
+          <ion-label class="ion-text-end" slot="end">{{totalAPagar | number: '0.00'}}</ion-label>
         </ion-item>
       </ion-col>
 
-      <ion-col size="12" size-lg="7" size-md="7" size-sm="12" size-xs="12">
+      <ion-col class="detallesVenta" size="12" size-lg="7" size-md="7" size-sm="12" size-xs="12">
         <ion-grid>
           <ion-row>
-            <ion-col size="2" >
+            <ion-col>
+              <ion-item>
+                <ion-button *ngIf="tipoComprobante!=='factura'" fill="outline" (click)="SeleccionarComprobante('factura')">
+                  <ion-label color="primary">Factura</ion-label>
+                </ion-button>
+                <ion-button *ngIf="tipoComprobante==='factura'" (click)="SeleccionarComprobante('factura')">
+                  <ion-label color="light">Factura</ion-label>
+                </ion-button>
+                <ion-button *ngIf="tipoComprobante!=='boleta'" fill="outline" (click)="SeleccionarComprobante('boleta')">
+                  <ion-label color="primary">Boleta</ion-label>
+                </ion-button>
+                <ion-button *ngIf="tipoComprobante==='boleta'" (click)="SeleccionarComprobante('boleta')">
+                  <ion-label color="light">Boleta</ion-label>
+                </ion-button>
+                <ion-button *ngIf="tipoComprobante!=='n. venta'" fill="outline" (click)="SeleccionarComprobante('n. venta')">
+                  <ion-label color="primary">N. Venta</ion-label>
+                </ion-button>
+                <ion-button *ngIf="tipoComprobante==='n. venta'" (click)="SeleccionarComprobante('n. venta')">
+                  <ion-label color="light">N. Venta</ion-label>
+                </ion-button>
+              </ion-item>
+            </ion-col>
+            <!-- <ion-col size="2" >
               <ion-item lines="none" class="boton-superior" (click)="SeleccionarComprobante('FACTURA')" [color]="tipoComprobante=='FACTURA'?'primary':''">
                 <ion-label>FACTURA</ion-label>
               </ion-item>
@@ -61,18 +89,17 @@
               <ion-item lines="none" class="boton-superior" (click)="SeleccionarComprobante('N.VENTA')" [color]="tipoComprobante=='N.VENTA'?'primary':''">
                 <ion-label>NOTA DE VENTA</ion-label>
               </ion-item>
-            </ion-col>
-            <ion-col size="2" >
-            </ion-col>
+            </ion-col> -->
             <ion-col size="2" >
               <ion-item lines="none" >
                 <ion-label>{{serieComprobante}}</ion-label>
               </ion-item>
             </ion-col>
-            <ion-col size="2" >
+            <ion-col size="4" >
               <ion-item lines="none" >
                 <ion-button routerLink="/punto-venta">
-                  Regresar
+                  <ion-icon color="light" name="chevron-back-outline"></ion-icon>
+                  <ion-label color="light">Regresar</ion-label>
                 </ion-button>
               </ion-item>
             </ion-col>
@@ -98,7 +125,7 @@
 
         <ion-card style="text-align:center" >
           <ion-grid>
-            <ion-row>
+            <ion-row class="ion-justify-content-center ion-align-items-center">
               <ion-col size="12" size-lg="6" size-md="6" size-sm="12" size-xs="12">
                 <form [formGroup]="formPago">
                   <ion-card-subtitle>Monto a Descuento</ion-card-subtitle>
@@ -143,7 +170,7 @@
 
         <ion-card style="text-align:center" >
           <ion-grid>
-            <ion-row>
+            <ion-row class="ion-justify-content-center ion-align-items-center">
               <ion-col size="12" size-lg="6" size-md="6" size-sm="12" size-xs="12">
                 <form [formGroup]="formPago">
                   <ion-card-subtitle>Ingrese Monto</ion-card-subtitle>
@@ -161,7 +188,6 @@
                 </form>
               </ion-col>
               <ion-col size="12" size-lg="6" size-md="6" size-sm="12" size-xs="12">
-
                 <ion-card-subtitle>Vuelto</ion-card-subtitle>
                 <ion-card-title *ngIf="vuelto>=0">Vuelto: {{vuelto | number: '0.00'}}</ion-card-title>
                 <ion-card-title *ngIf="0>vuelto" style="color:red"> Falta: {{vuelto | number: '0.00'}}</ion-card-title>
@@ -170,37 +196,37 @@
             <ion-row class='row-buttons'>
               <ion-col size="12">
                 <ion-item lines="none">
-                  <ion-content>
+                  <!-- <ion-content> -->
                     <ion-grid>
                       <ion-row>
                         <ion-col size="2">
                           <ion-button (click)="sumarAMontoEntrante(10)">
-                            S/. 10
+                           <ion-label color="light"> S/. 10</ion-label>
                           </ion-button>
                         </ion-col>
                         <ion-col size="2">
                           <ion-button (click)="sumarAMontoEntrante(20)">
-                            S/. 20
+                           <ion-label color="light"> S/. 20</ion-label>
                           </ion-button>
                         </ion-col>
                         <ion-col size="2">
                           <ion-button (click)="sumarAMontoEntrante(50)">
-                            S/. 50
+                           <ion-label color="light"> S/. 50</ion-label>
                           </ion-button>
                         </ion-col>
                         <ion-col size="2">
                           <ion-button (click)="sumarAMontoEntrante(100)">
-                            S/. 100
+                            <ion-label color="light">S/. 100</ion-label>
                           </ion-button>
                         </ion-col>
                         <ion-col size="2">
                           <ion-button (click)="ponerMontoExacto()">
-                            exacto
+                           <ion-label color="light"> exacto</ion-label>
                           </ion-button>
                         </ion-col>
                       </ion-row>
                     </ion-grid>
-                  </ion-content>
+                  <!-- </ion-content> -->
                 </ion-item>
               </ion-col>
             </ion-row>
@@ -212,13 +238,13 @@
           <ion-grid>
             <ion-row>
               <ion-col size="12" size-lg="6" size-md="6" size-sm="12" size-xs="12">
-                <ion-button [disabled]="0>vuelto" (click)="generarPago()" routerLink="/punto-venta/true">
-                  Pagar
+                <ion-button expand="block" color="danger" (click)="cancelarVenta()" routerLink="/punto-venta/true">
+                  <ion-label>Cancelar Venta</ion-label>
                 </ion-button>
               </ion-col>
               <ion-col size="12" size-lg="6" size-md="6" size-sm="12" size-xs="12">
-                <ion-button (click)="cancelarVenta()" routerLink="/punto-venta/true">
-                  Cancelar Venta
+                <ion-button expand="block" color="primary" [disabled]="0>vuelto" (click)="generarPago()" routerLink="/punto-venta/true">
+                  <ion-label color="light">Confirmar venta</ion-label>
                 </ion-button>
               </ion-col>
             </ion-row>

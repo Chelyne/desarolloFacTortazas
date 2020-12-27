@@ -1,9 +1,15 @@
 .gridPrincipal {
     height: 100%;
+    padding: 0px;
+    margin: 0px;
     ion-row {
         height: 100%; //se cambio a 100
+        padding: 0px;
+        margin: 0px;
         ion-col {
             height: 100%;
+            padding: 0px;
+            margin: 0px;
         }
     }
 }
@@ -139,3 +145,28 @@ ion-card:hover {
 .cardBuscador:hover {
   cursor: pointer;
 }
+
+.sinDatosVenta {
+  height: 90%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  align-content: center;
+  .textoSindatos {
+      text-align: center;
+      // border: solid 2px var(--ion-color-danger);
+      padding: 10%;
+      margin: 10%;
+      border-radius: 10px;
+      font-weight: bold;
+      .icono {
+          zoom: 4;
+      }
+  }
+}
+
+.contentItemsVenta {
+  // border: solid 2px red;
+}
+
+

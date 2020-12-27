@@ -4,12 +4,14 @@ import { DbDataService } from './db-data.service';
 import { Platform } from '@ionic/angular';
 // import { NativeStorage } from '@ionic-native/native-storage/ngx';
 import { AdmiInterface } from '../models/AdmiInterface';
+import { VentaInterface } from '../models/venta/venta';
 
 @Injectable({
   providedIn: 'root'
 })
 export class StorageService {
   datosAdmi: AdmiInterface;
+  listaVenta: VentaInterface[];
   constructor(
     private authService: AuthServiceService,
     private dataApi: DbDataService,
@@ -18,7 +20,7 @@ export class StorageService {
   ) { }
 
   cargarDatosLogin() {
-    const promesa = new Promise( (resolve, reject) => {
+    const promesa = new Promise<void>( (resolve, reject) => {
       this.consultaDatos();
       resolve();
     });
@@ -59,8 +61,33 @@ export class StorageService {
     });
   }
 
+  congelarVenta(lista) {
+    const promesa = new Promise<void>( (resolve, reject) => {
+      if (this.platform.is('cordova')) {} else {
+        localStorage.setItem('listaVenta', JSON.stringify(lista));
+        this.listaVenta = JSON.parse(localStorage.getItem('listaVenta'));
+        resolve();
+      }
+    });
+    return promesa;
+  }
+
+  cargarVentsaCongeladas() {
+    const promesa = new Promise<void>( (resolve, reject) => {
+      if (this.platform.is('cordova')) {
+      } else {
+        // escritorio
+        if ( localStorage.getItem('listaVenta') ) {
+          this.listaVenta = JSON.parse(localStorage.getItem('listaVenta'));
+        }
+      }
+      resolve();
+    });
+    return promesa;
+  }
+
   cargarDatosAdmiStorage() {
-    const promesa = new Promise( (resolve, reject) => {
+    const promesa = new Promise<void>( (resolve, reject) => {
       if (this.platform.is('cordova')) {
         // dispositivo
         // this.nativeStorage.getItem('datosAdmi')
