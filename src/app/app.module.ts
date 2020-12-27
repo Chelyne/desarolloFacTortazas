@@ -29,6 +29,8 @@ import { LOCALE_ID } from '@angular/core';
 import localeEs from '@angular/common/locales/es';
 import { registerLocaleData } from '@angular/common';
 import { ModalDetallesServiciosPage } from './modals/modal-detalles-servicios/modal-detalles-servicios.page';
+// import { BuscarClientePipe } from './pipes/buscar-cliente.pipe';
+import { PipesModule } from './pipes/pipes.module';
 registerLocaleData(localeEs);
 
 @NgModule({
@@ -40,9 +42,10 @@ registerLocaleData(localeEs);
     FormsModule,
     ReactiveFormsModule,
     AngularFireModule.initializeApp(environment.firebaseConfig),
-    AngularFirestoreModule,
+    AngularFirestoreModule.enablePersistence(),
     AngularFireAuthModule,
-    HttpClientModule
+    HttpClientModule,
+    PipesModule
   ],
   providers: [
     StatusBar,

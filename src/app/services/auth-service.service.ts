@@ -15,6 +15,11 @@ export class AuthServiceService {
               // private fcm: FCM,
               private menuCtrl: MenuController) { }
 
+
+  crearUsuario(email, password) {
+    return this.auth.createUserWithEmailAndPassword(email, password);
+  }
+
   loginEmail(email, password) {
     return this.auth.signInWithEmailAndPassword(email, password);
   }

@@ -1,5 +1,5 @@
-import { Component, OnInit } from '@angular/core';
-import { MenuController } from '@ionic/angular';
+import { Component, OnInit, ViewChild } from '@angular/core';
+import { MenuController, ToastController, PopoverController } from '@ionic/angular';
 import { CategoriasService } from '../../services/categorias.service';
 import { PaginationProductosService } from '../../services/pagination-productos.service';
 import { Subscription } from 'rxjs';
@@ -8,6 +8,10 @@ import { VentaInterface } from 'src/app/models/venta/venta';
 import { ItemDeVentaInterface } from 'src/app/models/venta/item-de-venta';
 import { ProductoInterface } from 'src/app/models/ProductoInterface';
 import { DbDataService } from '../../services/db-data.service';
+import { AngularFirestore } from '@angular/fire/firestore';
+import { map } from 'rxjs/operators';
+import { StorageService } from '../../services/storage.service';
+import { PoppoverClientesComponent } from '../../components/poppover-clientes/poppover-clientes.component';
 // import { TestServiceService } from 'src/app/services/test-service.service';
 
 import { ActivatedRoute } from '@angular/router';
@@ -19,6 +23,13 @@ import { ConfirmarVentaService } from 'src/app/services/confirmar-venta.service'
   styleUrls: ['./punto-venta.page.scss'],
 })
 export class PuntoVentaPage implements OnInit {
+  @ViewChild('search', {static: false}) search: any;
+  productos: ProductoInterface[];
+  buscando: boolean;
+  buscarNombre = true;
+
+  sinResultados: string;
+
   numeros = [1, 2, 3, 4, 5, 6, 7, 8, 9, 0, '.'];
   categorias = [];
   listaProductos = [];
@@ -28,16 +39,21 @@ export class PuntoVentaPage implements OnInit {
   private suscripcionProducto: Subscription;
 
   sinDatos;
+
+  cliente;
   constructor(private menuCtrl: MenuController,
               private categoriasService: CategoriasService,
               private pagination: PaginationProductosService,
               private dataApi: DbDataService,
+              private afs: AngularFirestore,
+              private storage: StorageService,
+              private toastController: ToastController,
+              private popoverController: PopoverController,
               private testServ: ConfirmarVentaService,
               private rutaActiva: ActivatedRoute
               ) {
     this.menuCtrl.enable(true);
    }
-
 
   // Ventas
     listaDeVentas: VentaInterface[] = [];
@@ -67,7 +83,6 @@ export class PuntoVentaPage implements OnInit {
       this.listaItemsDeVenta = [];
     }
   }
-
 
   listaProductosCategoria(categoria: string) {
     this.sinDatos = null;
@@ -263,11 +278,142 @@ export class PuntoVentaPage implements OnInit {
     this.listaDeVentas = [];
   }
 
-  //TODO : Mejorar los nombre de este modulo
+  // TODO : Mejorar los nombre de este modulo
   SaveOnService(){
     this.testServ.setTextService('Buenos Días Beto');
     this.testServ.setVenta(this.CrearItemDeVentas());
   }
 
 
+   // implementacion de buscador ed productos
+   Search(ev) {
+    this.sinResultados = null;
+    this.buscando = true;
+    console.log(ev.detail.value);
+    const key = ev.detail.value;
+    console.log('dato a buscar', key);
+    const lowercaseKey = key.toLowerCase();
+    // const lowercaseKey = key; // esto es para buscar sin convertir en minuscula
+    console.log('dato convertido en minuscula', key);
+    // console.log(lowercaseKey);
+    if ( lowercaseKey.length > 0) {
+      // console.log('sede', this.sede);
+      console.log('lowercase> 0');
+      // tslint:disable-next-line:max-line-length
+      console.log(this.buscarNombre);
+      if (this.buscarNombre) {
+        // tslint:disable-next-line:max-line-length
+        this.afs.collection('sedes').doc(this.storage.datosAdmi.sede.toLowerCase()).collection('productos', res => res.where('categoria', '==', 'petshop').orderBy('nombre').startAt(lowercaseKey).endAt(lowercaseKey + '\uf8ff')).snapshotChanges()
+        .pipe(map(changes => {
+          return changes.map(action => {
+            const data = action.payload.doc.data();
+            data.id = action.payload.doc.id;
+            console.log(data);
+            return data;
+          });
+        }
+        )).subscribe(res => {
+          if (res.length === 0 ) {
+            console.log('no hay datos');
+            this.productos = null;
+            this.buscando = false;
+            this.sinResultados = 'No se encontraron productos';
+            this.presentToast(this.sinResultados, 'danger');
+          } else {
+            console.log(res );
+            this.productos = res;
+            this.buscando = false;
+          }
+        }, error => { console.log('error de subscribe'  + error); }
+        );
+      } else {
+        // tslint:disable-next-line:max-line-length
+        this.afs.collection('sedes').doc(this.storage.datosAdmi.sede.toLowerCase()).collection('productos', res => res.where('categoria', '==', 'petshop').orderBy('codigoBarra').startAt(lowercaseKey).endAt(lowercaseKey + '\uf8ff')).snapshotChanges()
+        .pipe(map(changes => {
+          return changes.map(action => {
+            const data = action.payload.doc.data();
+            data.id = action.payload.doc.id;
+            console.log(data);
+            return data;
+          });
+        }
+        )).subscribe(res => {
+          if (res.length === 0 ) {
+            console.log('no hay datos');
+            this.productos = null;
+            this.buscando = false;
+            this.sinResultados = 'No se encontraron productos';
+            this.presentToast(this.sinResultados, 'danger');
+          } else {
+            console.log(res );
+            this.productos = res;
+            this.buscando = false;
+          }
+        }, error => { console.log('error de subscribe'  + error); }
+        );
+      }
+     } else  {
+      console.log('lowercase 0');
+      this.productos = null;
+      this.buscando = null;
+     }
+  }
+  limpiar() {
+    this.buscando = null;
+  }
+
+  cambiarModoBusqueda() {
+    this.buscarNombre = !this.buscarNombre;
+    this.limpiar();
+    this.productos = null;
+    this.search.value = null;
+    this.search.setFocus();
+  }
+
+   // FIN BUSCADOR DE PRODUCTOS
+
+
+   async presentToast(mensaje: string, color1: string) {
+    const toast = await this.toastController.create({
+      message: mensaje,
+      duration: 2000,
+      position: 'top',
+      color: color1
+    });
+    toast.present();
+  }
+
+  // busqueda de clientes
+  async abrirPoppoverClientes(ev: any) {
+    // let clientes;
+    // this.dataApi.ObtenerListaDeClientes().subscribe(datos => {
+    //   console.log(datos);
+    //   if (datos.length > 0) {
+    //     clientes = datos;
+    //   }
+    // });
+    console.log(ev);
+    const popover = await this.popoverController.create({
+      component: PoppoverClientesComponent,
+      cssClass: 'poppoverCliente',
+      event: ev,
+      translucent: true,
+      mode: 'ios',
+      componentProps: {
+        // listaClientes: clientes,
+        seleccionado: this.cliente
+      }
+    });
+    await popover.present();
+
+    const { data } = await popover.onWillDismiss();
+    console.log(data);
+    if (data && data.cliente) {
+      this.cliente = data.cliente;
+      // switch (data.cliente) {
+      //   case 'Editar': this.presentModalEditar(); break;
+      //   case 'Eliminar': this.presentAlertConfirmEliminar(); break;
+      // }
+    }
+  }
 }

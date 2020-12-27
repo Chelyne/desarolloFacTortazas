@@ -1,6 +1,6 @@
 <ion-header>
   <ion-toolbar>
-    <ion-title>Aperturar Caja Chica POST</ion-title>
+    <ion-title>{{modo | titlecase}} Caja Chica POS</ion-title>
     <ion-buttons slot="end">
       <ion-button (click)="cerrarModal()">
         <ion-icon slot="icon-only" name="close-outline"></ion-icon>
@@ -8,7 +8,7 @@
     </ion-buttons>
   </ion-toolbar>
 </ion-header>
-  <ion-content>
+  <ion-content *ngIf="modo === 'abrir'">
     <form [formGroup]="cajaChicaForm" autocomplete="off">
 
       <ion-row>
@@ -33,15 +33,73 @@
       </ion-row>
     </form>
   </ion-content>
+
+
+  <ion-content *ngIf="modo === 'cerrar'">
+    <form [formGroup]="CerrarCajaChicaForm" autocomplete="off">
+
+      <ion-row>
+        <!-- <ion-col size-lg="6" size-md="6" size-sm="12" size-xs="12">
+          <ion-item lines="none" style="width: 6  0%;"  *ngIf="listaUsuarios && listaUsuarios.length>0">
+            <ion-label position="stacked">Vendedor: </ion-label>
+            <ion-select [value]="listaUsuarios ? listaUsuarios[0].nombre : ''" mode="ios" formControlName="nombreUsuario">
+              <div *ngFor="let item of listaUsuarios">
+                <ion-select-option value="{{item.nombre}}">{{item.nombre}} </ion-select-option>
+              </div>
+            </ion-select>
+          </ion-item>
+          
+        </ion-col> -->
+        <ion-col size-lg="6" size-md="6" size-sm="12" size-xs="12">
+          <ion-item lines="none">
+            <ion-label position="stacked">Saldo Final</ion-label>
+            <ion-label ></ion-label>
+            <ion-input style="border: 1px solid" type="number" formControlName="montoFinal"></ion-input>
+          </ion-item>
+        </ion-col>
+      </ion-row>
+    </form>
+  </ion-content>
+  <ion-content *ngIf="this.modo === 'editar'">
+    <form [formGroup]="cajaChicaEditForm" autocomplete="off">
+      <ion-row>
+        <ion-col size-lg="6" size-md="6" size-sm="12" size-xs="12">
+          <ion-item lines="none" style="width: 6  0%;"  *ngIf="listaUsuarios && listaUsuarios.length>0">
+            <ion-label position="stacked">Vendedor: </ion-label>
+            <ion-select [value]="datosCaja ? datosCaja.nombreVendedor : ''" mode="ios" formControlName="nombreUsuarioEdit">
+              <div *ngFor="let item of listaUsuarios">
+                <ion-select-option value="{{item.nombre}}">{{item.nombre}} </ion-select-option>
+              </div>
+            </ion-select>
+          </ion-item>
+          
+        </ion-col>
+        <ion-col size-lg="6" size-md="6" size-sm="12" size-xs="12">
+          <ion-item lines="none">
+            <ion-label position="stacked">Saldo Inicial</ion-label>
+            <ion-label ></ion-label>
+            <ion-input style="border: 1px solid" type="number" formControlName="montoInicialEdit"></ion-input>
+          </ion-item>
+        </ion-col>
+      </ion-row>
+    </form>
+  </ion-content>
   <ion-footer class="ion-no-border">
     <ion-toolbar lines="none">
-      <ion-buttons slot="end" (click)="cerrarModal()">
-        <ion-button>
+      <ion-item slot="end" lines="none">
+        <ion-button  color="light" (click)="cerrarModal()">
           Cancelar
         </ion-button>
-        <ion-button color="primary" (click)="GuardarCaja()" expand="block"  [disabled]="cajaChicaForm.invalid">
+        <ion-button *ngIf="modo === 'abrir'" color="primary" (click)="GuardarCaja()" expand="block"  [disabled]="cajaChicaForm.invalid">
           Guardar
         </ion-button>
-      </ion-buttons>
+        <ion-button *ngIf="modo === 'editar'" color="primary" (click)="EditarCajaChica()" expand="block"  [disabled]="cajaChicaEditForm.invalid">
+          Guardar Cambios
+        </ion-button>
+        <ion-button *ngIf="modo === 'cerrar'" color="primary" (click)="CerrarCaja()" expand="block"  [disabled]="CerrarCajaChicaForm.invalid">
+          Cerrar caja
+        </ion-button>
+      </ion-item>
     </ion-toolbar>
   </ion-footer>
+

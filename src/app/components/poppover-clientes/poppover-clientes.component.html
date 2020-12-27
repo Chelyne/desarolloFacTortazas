@@ -1,0 +1,12 @@
+<ion-content>
+  <ion-searchbar #search (ionChange)="buscarCliente($event)" placeholder="Buscar cliente"></ion-searchbar>
+  <ion-list *ngIf="listaClientes">
+    <ion-item (click)="popAction(cliente)" *ngFor="let cliente of listaClientes| buscarCliente:textoBuscar" lines="none">
+      <!-- <ion-icon slot="start" name="create-outline" color="primary"></ion-icon> -->
+      <ion-label [ngClass]="{'seleccionar': seleccionado && seleccionado.dni === cliente.dni}">{{cliente.dni}} - {{cliente.nombre | titlecase}} {{cliente.apellidos | titlecase}}</ion-label>
+    </ion-item>
+  </ion-list>
+  <div class="cargando" *ngIf="listaClientes.length===0">
+    <ion-spinner color="primary" name="bubbles"></ion-spinner>
+  </div>
+</ion-content>

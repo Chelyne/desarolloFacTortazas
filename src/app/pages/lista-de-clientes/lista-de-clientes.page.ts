@@ -17,7 +17,7 @@ export class ListaDeClientesPage implements OnInit {
 
 
   modalEvento: string;
-  modalTitle: String;
+  modalTitle: string;
   modalTag: string;
   modalDataCliente: ClienteInterface;
 
@@ -74,10 +74,11 @@ export class ListaDeClientesPage implements OnInit {
         titleInvoker: this.modalTitle,
         tagInvoker: this.modalTag,
         dataInvoker: this.modalDataCliente
+
       }
     });
 
-    await modal.present()
+    await modal.present();
   }
 
 

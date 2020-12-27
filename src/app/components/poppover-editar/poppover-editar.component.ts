@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, Input, OnInit } from '@angular/core';
 import { PopoverController } from '@ionic/angular';
 
 
@@ -8,6 +8,8 @@ import { PopoverController } from '@ionic/angular';
   styleUrls: ['./poppover-editar.component.scss'],
 })
 export class PoppoverEditarComponent implements OnInit {
+
+  @Input() exportar;
   constructor(private popoverController: PopoverController) { }
 
   ngOnInit() {}

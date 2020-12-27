@@ -1,0 +1,63 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title>detalles-de-compra</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+
+  <!-- <ion-list-header lines="inset" color="primary">
+    <ion-label>Nombre</ion-label>
+    <ion-label>Apellidos</ion-label>
+    <ion-label>DNI</ion-label>
+    <ion-label>Telefono</ion-label>
+    <ion-label>Direccion</ion-label>
+    <ion-label>Email</ion-label>
+    <ion-label></ion-label>
+  </ion-list-header>
+  <ion-item *ngFor="let itemCompra of compra.listaItemsDeCompra; let i = index">
+    <ion-label>{{itemCompra.producto.nombre}}</ion-label>
+    <ion-label>{{itemCompra.PU_compra}}</ion-label>
+    <ion-label>{{itemCompra.cantidad}}</ion-label>
+    <ion-label>{{itemCompra.totalCompraxProducto}}</ion-label>
+
+    <ion-label>
+      <ion-button>
+        Actualizar
+      </ion-button>
+    </ion-label>
+  </ion-item> -->
+
+  <ion-grid>
+    <ion-row class="header-lista-de-productos">
+      <ion-col size="0.5">#</ion-col>
+      <ion-col size="3">nombre</ion-col>
+      <ion-col size="2">PU compra</ion-col>
+      <ion-col size="2">Cantidad</ion-col>
+      <ion-col size="2">Total</ion-col>
+    </ion-row>
+    <ion-row *ngFor="let itemCompra of compra.listaItemsDeCompra; let i = index">
+      <ion-col size="0.5">
+        {{i+1}}
+      </ion-col>
+      <ion-col size="3">
+        {{itemCompra.producto.nombre}}
+      </ion-col>
+      <ion-col size="2">
+        {{itemCompra.pu_compra | number:'1.2'}}
+      </ion-col>
+      <ion-col size="2">
+        {{itemCompra.cantidad}}
+      </ion-col>
+      <ion-col size="2">
+        {{itemCompra.totalCompraxProducto | number:'1.2'}}
+      </ion-col>
+    </ion-row>
+    <ion-row>
+      <ion-col size="12">
+        TOTAL: {{compra.totalxCompra | number:'1.2'}}
+      </ion-col>
+    </ion-row>
+  </ion-grid>
+
+</ion-content>

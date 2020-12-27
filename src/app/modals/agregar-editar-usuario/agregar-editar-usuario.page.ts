@@ -20,6 +20,7 @@ export class AgregarEditarUsuarioPage implements OnInit {
   @Input() tagInvoker: string;
   @Input() dataInvoker: UsuarioInterface;
 
+  emailPattern: any = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
 
   constructor(
     private dataApi: DbDataService,
@@ -28,58 +29,57 @@ export class AgregarEditarUsuarioPage implements OnInit {
   ) {
 
     this.usuarioModalForm = this.createFormGroupUsuario();
-    //console.log(this.eventoInvoker, this.tagInvoker, this.dataInvoker);
   }
 
 
   ngOnInit() {
-    if( this.eventoInvoker === 'actualizarUsuario' ){
+    if ( this.eventoInvoker === 'actualizarUsuario' ){
       this.usuarioModalForm = this.formForUpdate();
     }
   }
 
   createFormGroupUsuario() {
     return new FormGroup({
-      nombre: new FormControl('', [Validators.required, Validators.minLength(3), Validators.pattern('^[a-zA-ZÀ-ÿ\u00f1\u00d1 ]+$')]),
-      apellidos: new FormControl('', [Validators.required, Validators.minLength(3), Validators.pattern('^[a-zA-ZÀ-ÿ\u00f1\u00d1 ]+$')]),
-      dni: new FormControl('',[Validators.required, Validators.minLength(8), Validators.maxLength(8)]),
-      usuario: new FormControl('', [Validators.required, Validators.minLength(6)]),
+      nombre: new FormControl('', [Validators.required, Validators.minLength(3), Validators.maxLength(40), Validators.pattern('^[a-zA-ZÀ-ÿ\u00f1\u00d1 ]+$')]),
+      apellidos: new FormControl('', [Validators.required, Validators.minLength(3), Validators.maxLength(60), Validators.pattern('^[a-zA-ZÀ-ÿ\u00f1\u00d1 ]+$')]),
+      dni: new FormControl('', [Validators.required, Validators.minLength(8), Validators.maxLength(8)]),
+      correo: new FormControl('', [Validators.required, Validators.minLength(8), Validators.pattern(this.emailPattern)]),
       password: new FormControl('', [Validators.required, Validators.minLength(6)]),
       rol: new FormControl('', Validators.required)
-      //rol: new FormControl('')
     });
   }
 
   formForUpdate() {
     return new FormGroup({
-      nombre: new FormControl(this.dataInvoker.nombre, [Validators.required, Validators.minLength(3), Validators.pattern('^[a-zA-ZÀ-ÿ\u00f1\u00d1 ]+$')]),
-      apellidos: new FormControl(this.dataInvoker.apellidos, [Validators.required, Validators.minLength(3), Validators.pattern('^[a-zA-ZÀ-ÿ\u00f1\u00d1 ]+$')]),
-      dni: new FormControl(this.dataInvoker.dni,[Validators.required, Validators.minLength(8), Validators.maxLength(8)]),
-      usuario: new FormControl(this.dataInvoker.usuario, [Validators.required, Validators.minLength(6)]),
+      // tslint:disable-next-line:max-line-length
+      nombre: new FormControl(this.dataInvoker.nombre, [Validators.required, Validators.minLength(3), Validators.maxLength(40), Validators.pattern('^[a-zA-ZÀ-ÿ\u00f1\u00d1 ]+$')]),
+      // tslint:disable-next-line:max-line-length
+      apellidos: new FormControl(this.dataInvoker.apellidos, [Validators.required, Validators.minLength(3), Validators.maxLength(60), Validators.pattern('^[a-zA-ZÀ-ÿ\u00f1\u00d1 ]+$')]),
+      dni: new FormControl(this.dataInvoker.dni, [Validators.required, Validators.minLength(8), Validators.maxLength(8)]),
+      // tslint:disable-next-line:max-line-length
+      correo: new FormControl(this.dataInvoker.correo, [Validators.required, Validators.minLength(8), Validators.pattern(this.emailPattern)]),
       password: new FormControl(this.dataInvoker.password, [Validators.required, Validators.minLength(6)]),
       rol: new FormControl(this.dataInvoker.rol, Validators.required)
-      //rol: new FormControl('')
     });
   }
 
   get nombre() { return this.usuarioModalForm.get('nombre'); }
   get apellidos() { return this.usuarioModalForm.get('apellidos'); }
   get dni() { return this.usuarioModalForm.get('dni'); }
-  get usuario() { return this.usuarioModalForm.get('usuario'); }
+  get correo() { return this.usuarioModalForm.get('correo'); }
   get password() { return this.usuarioModalForm.get('password'); }
   get rol() { return this.usuarioModalForm.get('rol'); }
 
   execFun(){
-    if(this.eventoInvoker === 'guardarUsuario'){
+    if (this.eventoInvoker === 'guardarUsuario'){
       this.guardarUsuario();
 
     }
-    else if(this.eventoInvoker === 'actualizarUsuario'){
+    else if (this.eventoInvoker === 'actualizarUsuario'){
       this.actualizarUsuario();
 
     } else {
-      console.log("La función no existe");
-
+      console.log('La función no existe');
     }
   }
 
@@ -87,12 +87,12 @@ export class AgregarEditarUsuarioPage implements OnInit {
     this.usuarioModalForm.value.nombre = this.nombre.value.toLowerCase();
     this.usuarioModalForm.value.apellidos = this.apellidos.value.toLowerCase();
 
-    this.dataApi.guardarUsuario(this.usuarioModalForm.value).then(
-      () => {console.log('Se ingreso Correctamente');
-        this.presentToast("Se ingreso correctamente");
-        this.usuarioModalForm.reset()
-        //this.modalCtlr.dismiss();
-      }
+    this.dataApi.guardarUsuario(this.usuarioModalForm.value).then(() => {
+      console.log('Se ingreso Correctamente');
+      this.presentToast('Se ingreso correctamente');
+      this.usuarioModalForm.reset();
+      this.salirDeModal();
+    }
     );
 
   }
@@ -103,10 +103,11 @@ export class AgregarEditarUsuarioPage implements OnInit {
     this.usuarioModalForm.value.nombre = this.nombre.value.toLowerCase();
     this.usuarioModalForm.value.apellidos = this.apellidos.value.toLowerCase();
 
-    this.dataApi.actualizarUsuario(this.dataInvoker.id, this.usuarioModalForm.value).then(
-      () => {console.log('Se ingreso Correctamente');
-      this.presentToast("Datos actualizados correctamente");
-      this.modalCtlr.dismiss();
+    this.dataApi.actualizarUsuario(this.dataInvoker.correo, this.usuarioModalForm.value).then(
+      () => {
+        console.log('Se ingreso Correctamente');
+        this.presentToast('Datos actualizados correctamente');
+        this.modalCtlr.dismiss();
       }
     );
 
@@ -133,7 +134,7 @@ export class AgregarEditarUsuarioPage implements OnInit {
 
   numberOnlyValidation(event: any) {
     const pattern = /[0-9]/;
-    let inputChar = String.fromCharCode(event.charCode);
+    const inputChar = String.fromCharCode(event.charCode);
 
     if (!pattern.test(inputChar)) {
       // invalid character, prevent input
@@ -143,7 +144,7 @@ export class AgregarEditarUsuarioPage implements OnInit {
 
   stringOnlyValidation(event: any) {
     const pattern = /[a-zA-ZÀ-ÿ\u00f1\u00d1 ]/;
-    let inputChar = String.fromCharCode(event.charCode);
+    const inputChar = String.fromCharCode(event.charCode);
 
     if (!pattern.test(inputChar)) {
       // invalid character, prevent input

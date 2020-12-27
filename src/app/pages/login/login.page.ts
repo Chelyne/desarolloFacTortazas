@@ -6,6 +6,7 @@ import { AuthServiceService } from '../../services/auth-service.service';
 import { StorageService } from '../../services/storage.service';
 // import { FCM } from '@ionic-native/fcm/ngx';
 import { DbDataService } from '../../services/db-data.service';
+import { isNullOrUndefined } from 'util';
 
 @Component({
   selector: 'app-login',
@@ -71,8 +72,36 @@ export class LoginPage implements OnInit {
           this.loading.dismiss();
         });
       }).catch((error) => {
-        this.presentToast('Error al iniciar sesión');
-        this.loading.dismiss();
+        console.log(error);
+        if (error.code === 'auth/user-not-found') {
+          console.log('Usuario no encontrado');
+          this.dataSrv.ObtenerUnAdministrador(this.LoginForm.value.email).subscribe(user => {
+            if (isNullOrUndefined(user)) {
+              this.presentToast('Usuario no encontrado');
+              this.loading.dismiss();
+            } else {
+              console.log(user);
+              if (this.LoginForm.value.password === user.password) {
+                // this.authService.
+                console.log('crear usuario');
+                this.authService.crearUsuario(user.correo, user.password).then(() => {
+                  this.presentToast('Usuario creado correctamente');
+                  this.dataSrv.actualizarToken(this.token, this.LoginForm.value.email);
+                  this.router.navigate(['/home']);
+                  this.onResetForm();
+                  this.menuCtrl.enable(true);
+                  this.loading.dismiss();
+                });
+              } else {
+                this.presentToast('Contraseña incorrecta');
+                this.loading.dismiss();
+              }
+            }
+          });
+        } else {
+          this.presentToast('Error al iniciar sesión');
+          this.loading.dismiss();
+        }
       });
     } else {
       this.presentToast('Ingrese los datos correctos');

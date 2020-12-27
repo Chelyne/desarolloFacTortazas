@@ -1,0 +1,22 @@
+* {
+    ion-label {
+        font-family: Nunito;
+    }
+}
+
+.headProductos {
+    text-align: center;
+    background-color: var(--ion-color-primary);
+}
+
+.contentProductos {
+    text-align: center;
+    background-color: var(--ion-color-light);
+}
+
+.cantidad, .precio, .nombre {
+    margin-top: 5px;
+    border: solid 1px var(--ion-color-primary);
+    border-radius: 5px;
+    --padding-start: 12px;
+}

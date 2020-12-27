@@ -1,6 +1,9 @@
 import { Component, OnInit } from '@angular/core';
+import { ModalController } from '@ionic/angular';
+import { DetallesDeCompraPage } from 'src/app/modals/detalles-de-compra/detalles-de-compra.page';
 import { CompraInterface } from 'src/app/models/Compra';
 import { DbDataService } from 'src/app/services/db-data.service';
+import { EditarCompraService } from 'src/app/services/editar-compra.service';
 
 @Component({
   selector: 'app-lista-de-compras',
@@ -24,8 +27,12 @@ export class ListaDeComprasPage implements OnInit {
   // @Input() esModal: boolean = false;
 
 
-  constructor(private dataApi: DbDataService) {
-    //this.proveedoresForm = this.createFormGroupProveedor();
+  constructor(
+    private dataApi: DbDataService,
+    private modalCtlr: ModalController,
+    private editCompra: EditarCompraService
+  ) {
+    // this.proveedoresForm = this.createFormGroupProveedor();
     this.ObtenerCompras();
   }
 
@@ -35,7 +42,7 @@ export class ListaDeComprasPage implements OnInit {
 
   ObtenerCompras(){
     // console.log("getProveedores");
-
+    // CLEAN
     this.dataApi.ObtenerListaCompras().subscribe(data => {
       console.log(data);
       this.listaDeCompras = data;
@@ -91,6 +98,42 @@ export class ListaDeComprasPage implements OnInit {
   //     proveedor: proveedorSelect
   //   });
   // }
+
+  mostrarDetalleDeCompra(compraSelect: CompraInterface){
+    console.log('aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa');
+    setTimeout(() => {
+      // this.abrirModal();
+      this.abrirModalMostrarDetalles(compraSelect);
+    }, 500);
+  }
+
+  async abrirModalMostrarDetalles(compraSelect: CompraInterface){
+
+    const modal =  await this.modalCtlr.create({
+      component: DetallesDeCompraPage,
+      componentProps: {
+        compra: compraSelect
+      }
+    });
+
+    await modal.present();
+
+  }
+
+  bloquearCompra(compraSelect: CompraInterface){
+
+    // console.log(compraSelect.anulado);
+    if (typeof(compraSelect.anulado) === 'undefined'){
+      this.dataApi.toggleAnularCompra(compraSelect.id, false);
+    } else {
+      this.dataApi.toggleAnularCompra(compraSelect.id, compraSelect.anulado);
+    }
+  }
+
+  EditarCompra(compraSelect: CompraInterface){
+    console.log('EditarCompraaaaaaaaaaaa', compraSelect);
+    this.editCompra.setCompra(compraSelect);
+  }
 
 
 }

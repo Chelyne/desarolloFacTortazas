@@ -18,6 +18,7 @@ export class AgregarEditarProveedorPage implements OnInit {
   @Input() titleInvoker: string;
   @Input() dataInvoker: ProveedorInterface;
 
+  typoDocumento: string = 'ruc';
 
   constructor(
     private dataApi: DbDataService,
@@ -40,9 +41,9 @@ export class AgregarEditarProveedorPage implements OnInit {
   createFormProveedor() {
     return new FormGroup({
       nombre: new FormControl('', [Validators.required, Validators.minLength(3)]),
-      ruc: new FormControl('', [Validators.required, Validators.minLength(11), Validators.maxLength(11)]),
-      tipoDocumento: new FormControl('', [Validators.required]),
-      numeroDocumento: new FormControl('', [Validators.required]),
+      // ruc: new FormControl('', [Validators.required, Validators.minLength(11), Validators.maxLength(11)]),
+      tipoDocumento: new FormControl('ruc', [Validators.required]),
+      numeroDocumento: new FormControl('', [Validators.required, Validators.minLength(11), Validators.maxLength(11)]),
       telefono: new FormControl('', [Validators.required, Validators.minLength(6), Validators.maxLength(9)]),
       direccion: new FormControl('', [Validators.required, Validators.minLength(3)]),
       email: new FormControl('', [Validators.required, Validators.minLength(3), Validators.pattern('^[_a-z0-9]+(\.[_a-z0-9]+)*@[a-z0-9-]+(\.[_a-z0-9]+)*\.([a-z]{2,4})$')])
@@ -50,7 +51,7 @@ export class AgregarEditarProveedorPage implements OnInit {
   }
 
   get nombre() { return this.proveedorModalForm.get('nombre'); }
-  get ruc() { return this.proveedorModalForm.get('ruc'); }
+  // get ruc() { return this.proveedorModalForm.get('ruc'); }
   get tipoDocumento() { return this.proveedorModalForm.get('tipoDocumento'); }
   get numeroDocumento() { return this.proveedorModalForm.get('numeroDocumento'); }
   get telefono() { return this.proveedorModalForm.get('telefono'); }
@@ -60,7 +61,7 @@ export class AgregarEditarProveedorPage implements OnInit {
   formForUpdate(){
     return new FormGroup({
       nombre: new FormControl(this.dataInvoker.nombre, [Validators.required, Validators.minLength(3)]),
-      ruc: new FormControl(this.dataInvoker.ruc, [Validators.required, Validators.minLength(11), Validators.maxLength(11)]),
+      // ruc: new FormControl(this.dataInvoker.ruc, [Validators.required, Validators.minLength(11), Validators.maxLength(11)]),
       tipoDocumento: new FormControl(this.dataInvoker.tipoDocumento, [Validators.required]),
       numeroDocumento: new FormControl(this.dataInvoker.numeroDocumento, [Validators.required]),
       telefono: new FormControl(this.dataInvoker.telefono, [Validators.required, Validators.minLength(6), Validators.maxLength(9)]),
@@ -70,20 +71,21 @@ export class AgregarEditarProveedorPage implements OnInit {
   }
 
   siRucoDni(){
-    console.log('se invocoooooooooooooooooooooooooooooo');
     const typeDoc = this.proveedorModalForm.value.tipoDocumento;
-    if (typeDoc === 'dni'){
+    if (typeDoc === 'ruc'){
       this.proveedorModalForm.setControl(
-        'tipoDocumento',
+        'numeroDocumento',
         new FormControl('', [Validators.required, Validators.minLength(11), Validators.maxLength(11)])
       );
 
-    } else if (typeDoc === 'ruc'){
+      this.typoDocumento = 'ruc';
+    } else if (typeDoc === 'dni'){
       this.proveedorModalForm.setControl(
-        'tipoDocumento',
+        'numeroDocumento',
         new FormControl('', [Validators.required, Validators.minLength(8), Validators.maxLength(8)])
       );
 
+      this.typoDocumento = 'dni';
     } else {
       console.log('Documento no valido');
     }
@@ -110,6 +112,8 @@ export class AgregarEditarProveedorPage implements OnInit {
       // console.log("Se ingreso Correctamente")
       this.presentToast('Datos guardados correctamente');
       // this.modalCtlr.dismiss();
+      this.proveedorModalForm.reset();
+
     });
   }
 

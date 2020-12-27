@@ -1,10 +1,11 @@
 import { Component, OnInit } from '@angular/core';
-import { ModalController } from '@ionic/angular';
+import { ModalController, MenuController, ToastController } from '@ionic/angular';
 import { AgregarEditarUsuarioPage } from 'src/app/modals/agregar-editar-usuario/agregar-editar-usuario.page';
 // import { AgregarEditarUsuarioPage } from 'src/app/modals/agregar-editar-usuario/agregar-editar-usuario.page';
 import { UsuarioInterface } from 'src/app/models/usuario';
 import { DbDataService } from 'src/app/services/db-data.service';
 // import { UserRegistroService } from 'src/app/services/user-registro.service';
+import { AuthServiceService } from '../../services/auth-service.service';
 
 @Component({
   selector: 'app-lista-de-usarios',
@@ -22,24 +23,27 @@ export class ListaDeUsariosPage implements OnInit {
   modalTag: string;
   modalDataUsuario: UsuarioInterface;
 
-
-  constructor(private dataApi: DbDataService, private modalCtlr: ModalController) {
-    //this.usuarioForm = this.createFormGroupUsuario();
-    this.ObtenerUsuarios();
+  sinDatos;
+  constructor(private dataApi: DbDataService,
+              private modalCtlr: ModalController,
+              private menuCtrl: MenuController,
+              private toastController: ToastController,
+              private authSrv: AuthServiceService) {
   }
 
   ngOnInit() {
+    this.menuCtrl.enable(true);
+    this.ObtenerUsuarios();
   }
 
-
-
   ObtenerUsuarios(){
-    //console.log("getUsuarios");
-
     this.dataApi.ObtenerListaDeUsuarios().subscribe(data => {
-      //console.log(data);
-      this.listaDeUsuarios = data;
-      //console.log(this.usuariosList.length);
+      if (data.length > 0) {
+        this.sinDatos = false;
+        this.listaDeUsuarios = data;
+      } else {
+        this.sinDatos = true;
+      }
     });
 
   }
@@ -53,11 +57,6 @@ export class ListaDeUsariosPage implements OnInit {
 
 
   ActualizarDataUsuario(usuario: UsuarioInterface){
-
-    // console.log('xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx');
-    // console.log(usuario);
-    // console.log('xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx');
-
     this.modalEvento = 'actualizarUsuario';
     this.modalTitle = 'Actualizar datos del usuario';
     this.modalTag = 'Actualizar';
@@ -65,12 +64,11 @@ export class ListaDeUsariosPage implements OnInit {
 
     setTimeout(() => {
       this.abrirModal();
-    }, 500);
+    }, 10);
 
   }
 
   async abrirModal(){
-
     const modal =  await this.modalCtlr.create({
       component: AgregarEditarUsuarioPage,
       componentProps: {
@@ -81,11 +79,23 @@ export class ListaDeUsariosPage implements OnInit {
       }
     });
 
-    await modal.present()
+    await modal.present();
   }
 
 
 
+  eliminarUsuario(id) {
+    this.dataApi.EliminarUsuario(id).then(() => {
+      this.presentToast('Usuario eliminado');
+    });
+  }
 
+  async presentToast(mensaje: string) {
+    const toast = await this.toastController.create({
+      message: mensaje,
+      duration: 1000
+    });
+    toast.present();
+  }
 
 }

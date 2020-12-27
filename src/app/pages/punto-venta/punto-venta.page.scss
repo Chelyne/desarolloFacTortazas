@@ -8,6 +8,10 @@
     }
 }
 
+ion-card:hover {
+  cursor: pointer;
+}
+
 // .categoriasContent {   //se comento
 //     height: 100%;
 //     .categorias {
@@ -112,4 +116,26 @@
           zoom: 4;
       }
   }
+}
+
+.cardBuscador{
+  padding: 5px;
+  border-radius: 10px;
+  // height: 100px;
+  ion-row {
+      .colImg{
+          text-align: center;
+          img {
+            max-height: 80px;
+          }
+      }
+      .colDatos{
+          display: table-cell;
+          vertical-align: middle;
+      }
+  }
+}
+
+.cardBuscador:hover {
+  cursor: pointer;
 }

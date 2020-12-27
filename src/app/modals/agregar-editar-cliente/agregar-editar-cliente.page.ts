@@ -12,7 +12,7 @@ import { DbDataService } from 'src/app/services/db-data.service';
 export class AgregarEditarClientePage implements OnInit {
 
   clienteModalForm: FormGroup;
-  //passwordTypeInput  =  'password';
+  // passwordTypeInput  =  'password';
 
   @Input() eventoInvoker: string;
   @Input() titleInvoker: string;
@@ -30,7 +30,7 @@ export class AgregarEditarClientePage implements OnInit {
   }
 
   ngOnInit() {
-    if( this.eventoInvoker === 'actualizarCliente' ){
+    if ( this.eventoInvoker === 'actualizarCliente' ){
       this.clienteModalForm = this.formForUpdate();
     }
     console.log(this.eventoInvoker, this.tagInvoker, this.dataInvoker);
@@ -41,7 +41,7 @@ export class AgregarEditarClientePage implements OnInit {
     return new FormGroup({
       nombre: new FormControl('', [Validators.required, Validators.minLength(3), Validators.pattern('^[a-zA-ZÀ-ÿ\u00f1\u00d1 ]+$')]),
       apellidos: new FormControl('', [Validators.required, Validators.minLength(3), Validators.pattern('^[a-zA-ZÀ-ÿ\u00f1\u00d1 ]+$')]),
-      dni: new FormControl('',[Validators.required, Validators.minLength(8), Validators.maxLength(8)]),
+      dni: new FormControl('', [Validators.required, Validators.minLength(8), Validators.maxLength(8)]),
       telefono: new FormControl('', [Validators.required, Validators.minLength(6), Validators.maxLength(9)]),
       direccion: new FormControl('', [Validators.required, Validators.minLength(3)]),
       email: new FormControl('', [Validators.required, Validators.minLength(3), Validators.pattern('^[_a-z0-9]+(\.[_a-z0-9]+)*@[a-z0-9-]+(\.[_a-z0-9]+)*\.([a-z]{2,4})$')])
@@ -63,21 +63,21 @@ export class AgregarEditarClientePage implements OnInit {
       telefono: new FormControl(this.dataInvoker.telefono, [Validators.required, Validators.minLength(6), Validators.maxLength(9)]),
       direccion: new FormControl(this.dataInvoker.direccion, [Validators.required, Validators.minLength(3)]),
       email: new FormControl(this.dataInvoker.email, [Validators.required, Validators.minLength(3), Validators.pattern('^[_a-z0-9]+(\.[_a-z0-9]+)*@[a-z0-9-]+(\.[_a-z0-9]+)*\.([a-z]{2,4})$')])
-    })
+    });
   }
 
 
 
   execFun(){
-    if(this.eventoInvoker === 'guardarCliente'){
+    if (this.eventoInvoker === 'guardarCliente'){
       this.guardarCliente();
 
     }
-    else if(this.eventoInvoker === 'actualizarCliente'){
+    else if (this.eventoInvoker === 'actualizarCliente'){
       this.actualizarCliente();
 
     } else {
-      console.log("La función no existe");
+      console.log('La función no existe');
 
     }
   }
@@ -89,9 +89,9 @@ export class AgregarEditarClientePage implements OnInit {
     this.dataApi.guardarCliente(this.clienteModalForm.value).then(
       () => {
         console.log('Se ingreso Correctamente');
-        this.presentToast("Se ingreso correctamente");
-        this.clienteModalForm.reset()
-        //this.modalCtlr.dismiss();
+        this.presentToast('Se ingreso correctamente');
+        this.clienteModalForm.reset();
+        // this.modalCtlr.dismiss();
       }
     );
 
@@ -106,7 +106,7 @@ export class AgregarEditarClientePage implements OnInit {
     this.dataApi.actualizarCliente(this.dataInvoker.id, this.clienteModalForm.value).then(
       () => {
         console.log('Se ingreso Correctamente');
-        this.presentToast("Datos actualizados correctamente");
+        this.presentToast('Datos actualizados correctamente');
         this.modalCtlr.dismiss();
       }
     );

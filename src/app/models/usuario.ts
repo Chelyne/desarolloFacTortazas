@@ -3,7 +3,7 @@ export interface UsuarioInterface {
     nombre?: string;
     apellidos?: string;
     dni?: string;
-    usuario?: string;
+    correo?: string;
     password?: string;
     rol?: string;
 }

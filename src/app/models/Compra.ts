@@ -12,12 +12,13 @@ export interface CompraInterface {
     numeroComprobante?: number;
     fechaDeEmision?: Date;
     fechaRegistro?: Date;
+    anulado?: boolean;
 }
 
 export interface ItemDeCompraInterface {
     id?: string;
     producto?: ProductoInterface;
-    PU_compra?: number;
+    pu_compra?: number;
     cantidad?: number; // ?NOTE - representa el numero de unidades que se compra;
     descuento?: number;
     totalCompraxProducto?: number;

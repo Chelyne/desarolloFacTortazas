@@ -1,4 +1,4 @@
-<ion-list>
+<ion-list *ngIf="!exportar">
   <ion-item (click)="popAction('Editar')">
     <ion-icon slot="start" name="create-outline" color="primary"></ion-icon>
     <ion-label>Editar</ion-label>
@@ -6,5 +6,16 @@
   <ion-item lines="none" (click)="popAction('Eliminar')">
     <ion-icon slot="start" name="trash-outline" color="danger"></ion-icon>
     <ion-label>Eliminar</ion-label>
+  </ion-item>
+</ion-list>
+
+<ion-list *ngIf="exportar">
+  <ion-item (click)="popAction('pdf')" lines="none">
+    <ion-icon slot="start"name="archive-outline"></ion-icon>
+    <ion-label>Pdf</ion-label>
+  </ion-item>
+  <ion-item lines="none" (click)="popAction('excel')">
+    <ion-icon slot="start" name="archive-outline"></ion-icon>
+    <ion-label>Excel</ion-label>
   </ion-item>
 </ion-list>
