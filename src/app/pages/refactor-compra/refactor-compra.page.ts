@@ -129,7 +129,7 @@ export class RefactorCompraPage implements OnInit {
     return new FormGroup({
       nombre: new FormControl(itemCompra.producto.nombre, [Validators.required]),
       descripcion: new FormControl(itemCompra.producto.descripcionProducto, []),
-      cantidad: new FormControl(itemCompra.PU_compra, [Validators.required, Validators.pattern("^[0-9]*$")]),
+      cantidad: new FormControl(itemCompra.pu_compra, [Validators.required, Validators.pattern("^[0-9]*$")]),
       pu_compra: new FormControl(itemCompra.cantidad,[Validators.required, Validators.pattern('^[0-9]*\.?[0-9]*$')]),
       descuento: new FormControl(itemCompra.descuento, [Validators.pattern('^[0-9]*\.?[0-9]*$')])
     });

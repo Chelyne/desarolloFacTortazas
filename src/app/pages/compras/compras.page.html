@@ -103,7 +103,7 @@
           <ion-label>{{itemCompra.producto.unidad!=null?itemCompra.producto.unidad:'non'}}</ion-label>
           <ion-label>{{itemCompra.cantidad}}</ion-label>
           <ion-label>????</ion-label>
-          <ion-label>{{itemCompra.PU_compra}}</ion-label>
+          <ion-label>{{itemCompra.pu_compra}}</ion-label>
           <ion-label>{{itemCompra.descuento}}</ion-label>
           <ion-label>????</ion-label>
           <ion-label>{{itemCompra.totalCompraxProducto}}</ion-label>
@@ -138,7 +138,7 @@
           </ion-item>
         </ion-item> -->
 
-        <ion-item>
+        <ion-item *ngIf="!ACTUALIZAR_COMPRA">
           <ion-label>IGV</ion-label>
           <ion-label>Total: {{totalxCompra}}</ion-label>
           <ion-button (click)="limpiarListaDeCompras()"  [disabled]="!listaItemsDeCompra.length">
@@ -146,6 +146,16 @@
           </ion-button>
           <ion-button (click)="generarCompra()" [disabled]="formComprobante.invalid">
             Comprar/Generar
+          </ion-button>
+        </ion-item>
+        <ion-item  *ngIf="ACTUALIZAR_COMPRA">
+          <ion-label>IGV</ion-label>
+          <ion-label>Total: {{totalxCompra}}</ion-label>
+          <ion-button [disabled]="!listaItemsDeCompra.length" routerLink="/lista-de-compras" (click)="cancelarActulizarCompra()">
+            Cancelar
+          </ion-button>
+          <ion-button (click)="ActualizarCompra()" [disabled]="formComprobante.invalid" routerLink="/lista-de-compras">
+            Actualiazar
           </ion-button>
         </ion-item>
 
@@ -187,7 +197,7 @@
             <ion-label>Nombre</ion-label>
           </ion-col>
           <ion-col>
-            <ion-label>Cantidad</ion-label>
+            <ion-label>Cant. Stock</ion-label>
           </ion-col>
           <ion-col>
             <ion-label>Precio</ion-label>
@@ -201,10 +211,10 @@
             <ion-label>{{prod.nombre | titlecase}}</ion-label>
           </ion-col>
           <ion-col>
-            <ion-label>{{prod.cantidad}}</ion-label>
+            <ion-label>{{prod.cantStock}}</ion-label>
           </ion-col>
           <ion-col>
-            <ion-label>{{prod.precio}}</ion-label>
+            <ion-label>{{prod.precio | number:'1.2'}}</ion-label>
           </ion-col>
         </ion-row>
         <ion-item>
@@ -272,8 +282,5 @@
       </ion-col>
     </ion-row>
   </ion-grid>
-
-
-
-
 </ion-content>
+
