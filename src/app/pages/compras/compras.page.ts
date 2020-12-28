@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
-import { ModalController, MenuController } from '@ionic/angular';
+import { ModalController, MenuController, ToastController } from '@ionic/angular';
 import { AgregarProductoPage } from 'src/app/modals/agregar-producto/agregar-producto.page';
 import { CompraInterface, ItemDeCompraInterface } from 'src/app/models/Compra';
 import { ProductoInterface } from 'src/app/models/ProductoInterface';
@@ -12,6 +12,8 @@ import { ListaDeProveedoresPage } from '../lista-de-proveedores/lista-de-proveed
 import { ModalProveedoresPage } from '../../modals/modal-proveedores/modal-proveedores.page';
 import { ModalProductoCompraPage } from '../../modals/modal-producto-compra/modal-producto-compra.page';
 import { isNullOrUndefined } from 'util';
+
+import { GlobalService } from "../../global/global.service";
 
 
 @Component({
@@ -39,15 +41,18 @@ export class ComprasPage implements OnInit {
   // TODO - Subir a la parte superior
   // NOTE - parece no ser necesario
   // COMPRA
-  compra: CompraInterface;
+  ACTUALIZAR_COMPRA: boolean = false;
+  compra: CompraInterface = {};
   listaItemsDeCompra: ItemDeCompraInterface[] = [];
   totalxCompra = 0;
   constructor(
     private dataApi: DbDataService,
     private storage: StorageService,
     private modalCtlr: ModalController,
-    private menuCtrl: MenuController
-    // private editCompra: EditarCompraService
+    private menuCtrl: MenuController,
+    private editCompra: EditarCompraService,
+    private toastCtrl: ToastController,
+    private globalService: GlobalService
   ) {
     this.ObtenerProductos();
     this.formItemDeCompras = this.createFormCompras();
@@ -64,11 +69,29 @@ export class ComprasPage implements OnInit {
     //     cssClass: 'ionSelects'
     //   };
     // }
+
+    this.ObtenerCompra();
+    if (Object.entries(this.compra).length !== 0){
+      this.ACTUALIZAR_COMPRA = true;
+      //this.formItemDeCompras = {};
+      this.formComprobante = new FormGroup({
+        tipoComp: new FormControl(this.compra.typoComprobante, [Validators.required]),
+        serieComp: new FormControl(this.compra.serieComprobante, [Validators.required]),
+        numeroComp: new FormControl(this.compra.numeroComprobante, [Validators.required]),
+        fechaEmisionComp: new FormControl(this.compra.fechaDeEmision, [])
+      });
+      this.provedorObtenido = this.compra.proveedor;
+      this.listaItemsDeCompra = this.compra.listaItemsDeCompra;
+      this.calcularTotalaPagar();
+    }
+
+
   }
 
-  // ObtenerCompra(){
-  //   TODO - Obtener compra
-  // }
+  ObtenerCompra(){
+    this.compra = this.editCompra.getCompra();
+    // console.log('ssssssssssssssCompras',this.compra);
+  }
 
 
   ObtenerProductos(){
@@ -145,8 +168,8 @@ export class ComprasPage implements OnInit {
     return new FormGroup({
       nombre: new FormControl(itemCompra.producto.nombre, [Validators.required]),
       descripcion: new FormControl(itemCompra.producto.descripcionProducto, []),
-      cantidad: new FormControl(itemCompra.PU_compra, [Validators.required, Validators.pattern('^[0-9]*$')]),
-      pu_compra: new FormControl(itemCompra.cantidad, [Validators.required, Validators.pattern('^[0-9]*\.?[0-9]*$')]),
+      cantidad: new FormControl(itemCompra.cantidad, [Validators.required, Validators.pattern('^[0-9]*$')]),
+      pu_compra: new FormControl(itemCompra.pu_compra, [Validators.required, Validators.pattern('^[0-9]*\.?[0-9]*$')]),
       descuento: new FormControl(itemCompra.descuento, [Validators.pattern('^[0-9]*\.?[0-9]*$')])
     });
   }
@@ -220,7 +243,9 @@ export class ComprasPage implements OnInit {
   CrearItemDeCompra(): ItemDeCompraInterface{
 
     const localPuCompra = parseFloat(this.formItemDeCompras.value.pu_compra);
-    const localCantidad = parseInt(this.formItemDeCompras.value.cantidad, 10);
+    // const localCantidad = parseInt(this.formItemDeCompras.value.cantidad, 10);
+    // tslint:disable-next-line: radix
+    const localCantidad = parseInt(this.formItemDeCompras.value.cantidad);
     let localDescuento = parseFloat(this.formItemDeCompras.value.descuento);
     if (isNaN(localDescuento)) {
       localDescuento = 0;
@@ -229,7 +254,7 @@ export class ComprasPage implements OnInit {
     const itemDeCompra = {
       id: this.productSelect.id,
       producto: this.productSelect,
-      PU_compra: localPuCompra,
+      pu_compra: localPuCompra,
       cantidad: localCantidad,
       descuento: localDescuento,
       totalCompraxProducto: localPuCompra * localCantidad - localDescuento
@@ -303,15 +328,48 @@ export class ComprasPage implements OnInit {
     this.dataApi.guardarCompra(compra).then(
       () => {
         console.log('Se ingreso Correctamente');
+        this.limpiarListaDeCompras();
+        this.formComprobante = this.createFormComprobante();
+        this.presentToast('Guardo la compra con exito.');
+      }
+    );
+
+    // for (const itemDeCompra of compra.listaItemsDeCompra) {
+    //   this.ActualizarStockProducto(itemDeCompra.id, itemDeCompra.cantidad + itemDeCompra.producto.cantStock);
+    // }
+  }
+
+  ActualizarCompra(){
+    const compra = {
+      proveedor: this.provedorObtenido,
+      listaItemsDeCompra: this.listaItemsDeCompra,
+      IGV_compra: 0,
+      totalxCompra: this.totalxCompra,
+      typoComprobante: this.formComprobante.value.tipoComp,
+      serieComprobante: this.formComprobante.value.serieComp,
+      numeroComprobante: this.formComprobante.value.numeroComp,
+      fechaDeEmision: this.formComprobante.value.fechaEmisionComp,
+      fechaRegistro: new Date()
+
+    };
+
+    this.dataApi.actualizarCompra(this.compra.id, compra).then(
+      () => {
+        console.log('Se ingreso Correctamente');
         // this.presentToast("Se ingreso correctamente");
         // this.clienteModalForm.reset()
         // this.modalCtlr.dismiss();
       }
     );
 
-    this.limpiarListaDeCompras();
-    this.formComprobante = this.createFormComprobante();
+    // this.limpiarListaDeCompras();
+    //this.formComprobante = this.createFormComprobante();
+    this.presentToast('Actualizó con exito la compra.');
+    this.editCompra.setCompra({});
+  }
 
+  cancelarActulizarCompra(){
+    this.editCompra.setCompra({});
   }
 
 
@@ -367,6 +425,23 @@ export class ComprasPage implements OnInit {
       console.log(this.listaItemsDeCompra);
       this.calcularTotalaPagar();
     }
+  }
+
+  async presentToast(message: string){
+    const toast = await this.toastCtrl.create({
+      message,
+      duration: 2000
+    });
+
+    toast.present();
+  }
+
+  ActualizarStockProducto(productoId: string, stock: number){
+    this.dataApi.ActualizarProductoStock(this.sede, productoId, stock).then(
+      () => {
+        console.log('Se ingreso Correctamente');
+      }
+    );
   }
 
 }

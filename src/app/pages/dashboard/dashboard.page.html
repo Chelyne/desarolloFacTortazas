@@ -7,80 +7,278 @@
 <ion-content>
     <ion-grid>
         <ion-row>
-            <ion-col size="12 " size-xs="12 " size-sm="12" size-md="6" size-lg="4">
-                <ion-card>
+            <ion-col size="12 " size-xs="12 " size-sm="12" size-md="6" size-lg="6">
+                <ion-card style="height: 100%;">
                     <ion-grid>
                         <ion-row>
-                            <ion-col>
-                                <ion-item>
-                                    <ion-label>SEDE</ion-label>
+                            <ion-col size="12 " size-xs="12 " size-sm="12" size-md="6" size-lg="6">
+                                <ion-item lines="none">
+                                    <ion-label>Sede</ion-label>
                                     <ion-select interface="popover">
-                                        <ion-select-option value="Andahuylas">Andahuaylas</ion-select-option>
-                                        <ion-select-option value="Abancay">Abancay</ion-select-option>
+                                        <ion-select-option value="andahuaylas">Andahuaylas</ion-select-option>
+                                        <ion-select-option value="abancay">Abancay</ion-select-option>
+                                    </ion-select>
+                                </ion-item>
+                            </ion-col>
+                            <ion-col size="12 " size-xs="12 " size-sm="12" size-md="6" size-lg="6">
+                                <ion-item lines="none">
+                                    <ion-label>Periodo</ion-label>
+                                    <ion-select interface="popover">
+                                        <ion-select-option value="todo">Todo</ion-select-option>
+                                        <ion-select-option value="pormes">Por mes</ion-select-option>
+                                        <ion-select-option value="entremes">Entre meses</ion-select-option>
+                                        <ion-select-option value="porfecha">por fecha</ion-select-option>
+                                        <ion-select-option value="entrefecha">Entre fecha</ion-select-option>
                                     </ion-select>
                                 </ion-item>
                             </ion-col>
                         </ion-row>
-
                         <ion-row>
-                            <ion-col>
+                            <ion-col size="12 " size-xs="12 " size-sm="12" size-md="6" size-lg="6">
+                                <ion-label>Fecha del</ion-label> <br>
 
-                                <ion-item>
-                                    <ion-label>PERIODO</ion-label>
-                                    <ion-datetime displayFormat="MMMM YYYY"></ion-datetime>
+                                <input type="date" id="start" name="trip-start">
 
-                                </ion-item>
+                            </ion-col>
+                            <ion-col size="12 " size-xs="12 " size-sm="12" size-md="6" size-lg="6">
+                                <ion-label>Fecha al</ion-label> <br>
+
+                                <input type="date" id="start" name="trip-start">
+
                             </ion-col>
                         </ion-row>
                     </ion-grid>
                 </ion-card>
             </ion-col>
-            <ion-col size="12 " size-xs="12 " size-sm="12" size-md="6 " size-lg="4">
-                <ion-card>
+            <ion-col size="12 " size-xs="12 " size-sm="12" size-md="6" size-lg="6">
+                <ion-card style="height: 100%;">
                     <ion-card-header>
-                        <ion-card-title>VENTAS</ion-card-title>
+                        <ion-card-title> Disco Duro Porcentaje de uso </ion-card-title>
                     </ion-card-header>
-
-                    <ion-card-content>
-                        <div class="chard-container">
-                            <canvas id="chartss"></canvas>
-                        </div>
-                    </ion-card-content>
+                    <ion-list>
+                        <ion-list-header>
+                            <ion-label>Default at 50%</ion-label>
+                        </ion-list-header>
+                        <ion-progress-bar value="0.5"></ion-progress-bar>
+                    </ion-list>
                 </ion-card>
-            </ion-col>
-
-            <ion-col size="12 " size-xs="12 " size-sm="12" size-md="6" size-lg="4">
-                <ion-card>
-                    <ion-card-header>
-                        <ion-card-title>Card Subtitle</ion-card-title>
-                    </ion-card-header>
-
-                    <ion-card-content>
-                        <div class="chard-container">
-                            <canvas id="chartpie"></canvas>
-                        </div>
-                    </ion-card-content>
-                </ion-card>
-
             </ion-col>
         </ion-row>
 
-        <ion-row>
 
+        <ion-row>
+            <ion-col size="12 " size-xs="12 " size-sm="12" size-md="6" size-lg="3">
+                <ion-card style="height: 100%;">
+                    <ion-card-header>
+                        <ion-card-title>Notas de Venta</ion-card-title>
+                    </ion-card-header>
+                    <ion-item lines="none">
+                        <ion-label color="primary">
+                            Total pagado: S/ 41348.21
+                        </ion-label>
+                    </ion-item>
+                    <ion-item lines="none">
+                        <ion-label color="danger">
+                            Total por pagar: S/ 6.90
+                        </ion-label>
+                    </ion-item>
+                    <ion-item lines="none">
+                        <ion-label>
+                            Total: s/ 41355.11
+                        </ion-label>
+                    </ion-item>
+                    <div class="chard-container">
+                        <canvas id="chartNotasVenta"></canvas>
+                    </div>
+                    <br>
+                </ion-card>
+            </ion-col>
+            <ion-col size="12 " size-xs="12 " size-sm="12" size-md="6" size-lg="3">
+                <ion-card style="height: 100%;">
+                    <ion-card-header>
+                        <ion-card-title>Conprovantes</ion-card-title>
+                    </ion-card-header>
+                    <ion-item lines="none">
+                        <ion-label color="primary">
+                            Total pagado: S/ 41348.21
+                        </ion-label>
+                    </ion-item>
+                    <ion-item lines="none">
+                        <ion-label color="danger">
+                            Total por pagar: S/ 6.90
+                        </ion-label>
+                    </ion-item>
+                    <ion-item lines="none">
+                        <ion-label>
+                            Total: s/ 41355.11
+                        </ion-label>
+                    </ion-item>
+                    <div class="chard-container">
+                        <canvas id="chartpie"></canvas>
+                    </div>
+                    <br>
+                </ion-card>
+            </ion-col>
+            <ion-col size="12 " size-xs="12 " size-sm="12" size-md="12" size-lg="6">
+                <ion-card style="height: 100%;">
+                    <ion-card-header>
+                        <ion-card-title>totales</ion-card-title>
+                    </ion-card-header>
+                    <ion-grid>
+                        <ion-row>
+                            <ion-col size="12 " size-xs="12 " size-sm="12" size-md="4" size-lg="4">
+
+                                <ion-label color="primary">
+                                    Total pagado: S/ 41348.21
+                                </ion-label>
+
+                            </ion-col>
+                            <ion-col size="12 " size-xs="12 " size-sm="12" size-md="4" size-lg="4">
+
+                                <ion-label color="danger">
+                                    Total comprobantes: S/ 6.90
+                                </ion-label>
+
+                            </ion-col>
+                            <ion-col size="12 " size-xs="12 " size-sm="12" size-md="4" size-lg="4">
+
+                                <ion-label>
+                                    Total: s/ 41355.11
+                                </ion-label>
+
+                            </ion-col>
+                        </ion-row>
+                    </ion-grid>
+                    <div class="chard-container">
+                        <canvas id="chartss"></canvas>
+                    </div>
+                </ion-card>
+            </ion-col>
+        </ion-row>
+
+
+        <ion-row>
+            <ion-col size="12 " size-xs="12 " size-sm="12" size-md="6" size-lg="3">
+                <ion-card style="height: 100%;">
+                    <ion-card-header>
+                        <ion-card-title>Balance Ventas - Compras - Gastos</ion-card-title>
+                    </ion-card-header>
+                    <ion-item lines="none">
+                        <ion-label color="primary">
+                            Totales: S/ 41348.21
+                        </ion-label>
+                    </ion-item>
+                    <ion-item lines="none">
+                        <ion-label color="danger">
+                            Total pagos: S/ 6.90
+                        </ion-label>
+                    </ion-item>
+                    <div class="chard-container">
+                        <canvas id="chartBalanceVenta"></canvas>
+                    </div>
+                    <br>
+                </ion-card>
+            </ion-col>
+            <ion-col size="12 " size-xs="12 " size-sm="12" size-md="6" size-lg="3">
+                <ion-card style="height: 100%;">
+                    <ion-card-header>
+                        <ion-card-title>Utilidades/Ganancias</ion-card-title>
+                    </ion-card-header>
+                    <ion-item lines="none">
+                        <ion-label color="primary">
+                            Ingresos: S/ 41348.21
+                        </ion-label>
+                    </ion-item>
+                    <ion-item lines="none">
+                        <ion-label color="danger">
+                            Egresos: S/ 6.90
+                        </ion-label>
+                    </ion-item>
+                    <ion-item lines="none">
+                        <ion-label>
+                            Utilidad: s/ 41355.11
+                        </ion-label>
+                    </ion-item>
+                    <div class="chard-container">
+                        <canvas id="chartGanancias"></canvas>
+                    </div>
+                    <br>
+                </ion-card>
+            </ion-col>
+            <ion-col size="12 " size-xs="12 " size-sm="12" size-md="12" size-lg="6">
+                <ion-card style="height: 100%;">
+                    <ion-card-header>
+                        <ion-card-title>Compras </ion-card-title>
+                    </ion-card-header>
+                    <ion-grid>
+                        <ion-row>
+                            <ion-col size="12 " size-xs="12 " size-sm="12" size-md="4" size-lg="4">
+
+                                <ion-label color="primary">
+                                    Total percepciones: S/ 41348.21
+                                </ion-label>
+
+                            </ion-col>
+                            <ion-col size="12 " size-xs="12 " size-sm="12" size-md="4" size-lg="4">
+
+                                <ion-label color="danger">
+                                    Total compras: S/ 6.90
+                                </ion-label>
+
+                            </ion-col>
+                            <ion-col size="12 " size-xs="12 " size-sm="12" size-md="4" size-lg="4">
+
+                                <ion-label>
+                                    Total: s/ 41355.11
+                                </ion-label>
+
+                            </ion-col>
+                        </ion-row>
+                    </ion-grid>
+                    <div class="chard-container">
+                        <canvas id="chartsCompras"></canvas>
+                    </div>
+                </ion-card>
+            </ion-col>
+        </ion-row>
+
+
+
+
+        <ion-row>
             <ion-col size="12 " size-xs="12 " size-sm="12" size-md="6 " size-lg="6">
                 <ion-card>
                     <ion-card-header>
-                        <ion-card-title>Card Subtitle</ion-card-title>
+                        <ion-card-title>Productos por agotarse</ion-card-title>
                     </ion-card-header>
 
                     <ion-card-content>
-                        <div class="chard-container">
-                            <canvas id="chartradar"></canvas>
-                        </div>
+
                     </ion-card-content>
                 </ion-card>
             </ion-col>
+            <ion-col>
+                <ion-card>
+                    <ion-card-header>
+                        <ion-card-title>Ventas por producto</ion-card-title>
+                    </ion-card-header>
 
+                    <ion-card-content>
+
+                    </ion-card-content>
+                </ion-card>
+            </ion-col>
+            <ion-col>
+                <ion-card>
+                    <ion-card-header>
+                        <ion-card-title>Top clientes</ion-card-title>
+                    </ion-card-header>
+
+                    <ion-card-content>
+
+                    </ion-card-content>
+                </ion-card>
+            </ion-col>
         </ion-row>
     </ion-grid>
 

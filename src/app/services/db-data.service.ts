@@ -739,6 +739,17 @@ export class DbDataService {
     return promesa;
   }
 
+  actualizarCompra(idCompra: string, datosCompra: CompraInterface) {
+    // console.log( idProveedor, newProveedor);
+
+    const promesa =  new Promise<void>( (resolve, reject) => {
+      this.afs.collection('compras').doc(idCompra).update(datosCompra);
+      resolve();
+    });
+
+    return promesa;
+  }
+
   toggleAnularCompra(idCompra: string, esAnulado: boolean) {
     // console.log( idProveedor, newProveedor);
 
@@ -746,6 +757,15 @@ export class DbDataService {
       this.afs.collection('compras').doc(idCompra).update({anulado: !esAnulado});
       resolve(resolve);
     });
+    return promesa;
+  }
+
+  ActualizarProductoStock(sede: string, productId: string, stock: number){
+    const promesa =  new Promise( (resolve, reject) => {
+      this.afs.collection('sedes').doc(sede).collection('productos').doc(productId).update({cantStock: stock});
+      resolve(resolve);
+    });
+
     return promesa;
   }
 

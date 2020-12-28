@@ -131,7 +131,7 @@ export class ListaDeComprasPage implements OnInit {
   }
 
   EditarCompra(compraSelect: CompraInterface){
-    console.log('EditarCompra', compraSelect);
+    console.log('EditarCompraaaaaaaaaaaa', compraSelect);
     this.editCompra.setCompra(compraSelect);
   }
 
