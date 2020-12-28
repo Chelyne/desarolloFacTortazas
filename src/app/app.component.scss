@@ -62,3 +62,19 @@
      transition: color 2ms, font-size 0.2s;
      --ion-item-background: var(--ion-color-light);;
  }
+
+
+ // desplegable menu
+#subseccion1 {
+    // position: absolute;
+    // top: 100%;
+    // left: 0px;  
+    // background-color: #41338b;
+    // font:normal 0.8em arial;  
+    // padding: 0.2em 0.5em ;
+    padding-left: 2em;
+    display: none;
+}
+#splitpane {
+    display: none;
+}

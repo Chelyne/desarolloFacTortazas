@@ -10,6 +10,8 @@ import { PopoverController } from '@ionic/angular';
 export class PoppoverEditarComponent implements OnInit {
 
   @Input() exportar;
+  @Input() importarProductosCompuestos;
+
   constructor(private popoverController: PopoverController) { }
 
   ngOnInit() {}

@@ -1,0 +1,76 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-menu-button color="primary" menu="primerMenu">
+      </ion-menu-button>
+    </ion-buttons>
+    <ion-title>Productos</ion-title>
+    <ion-item slot="end" lines="none">
+      <ion-button color="secondary" (click)="ImportarProductos($event)" >
+        <ion-icon  slot="start"name="cloud-upload-outline"></ion-icon>
+        Importar
+        <ion-icon slot="end" name="chevron-down-outline"></ion-icon>
+      </ion-button>
+      <ion-button color="secondary" (click)="modalAperturaCajaChica('agregar',null)">
+        <ion-icon slot="start" name="add"></ion-icon>
+        Nuevo
+      </ion-button>
+    </ion-item>
+  </ion-toolbar>
+  
+</ion-header>
+
+<ion-content>
+  <ion-card>
+    <ion-card-header color="secondary">
+      <ion-card-title>Productos Compuestos</ion-card-title>
+    </ion-card-header>
+    <ion-card-content>
+      <ion-item lines="none">
+        <ion-item style="width: 50%;" lines="none">
+          <ion-label>Filtrar por</ion-label>
+          <ion-select value="ingresos" mode="ios">
+            <ion-select-option value="ingresos">Ingresos</ion-select-option>
+            <ion-select-option value="ecgresos">Egresos</ion-select-option>
+          </ion-select>
+        </ion-item>
+        <ion-searchbar style="width: 40%;" slot="end" #search placeholder="Buscar" inputmode="text" debounce="1000" animated="true" mode="ios"></ion-searchbar>
+      </ion-item>
+
+      <ion-grid>
+        <ion-row class="header">
+          <ion-col  size="0.25"><ion-label>#</ion-label></ion-col>
+          <ion-col size="1"><ion-label>cód. Interno</ion-label></ion-col>
+          <ion-col size="1"><ion-label>Unidad</ion-label></ion-col>
+          <ion-col size="1.5"><ion-label>Nombre</ion-label></ion-col>
+          <ion-col size="2"><ion-label>Descripción</ion-label></ion-col>
+          <ion-col size="1"><ion-label>cód. SUNAT</ion-label></ion-col>
+          <ion-col size="1.25"><ion-label>P. Unitario(venta)</ion-label></ion-col>
+          <ion-col size="1"><ion-label>Tiene Igv.</ion-label></ion-col>
+          <ion-col size="3"><ion-label>Acciones</ion-label></ion-col>
+        </ion-row>
+        <ion-row *ngFor="let number of [1,2,3,4,5]" class="ion-justify-content-center ion-align-items-center contentCompuestos">
+          <ion-col  size="0.25"><ion-label>{{number}}</ion-label></ion-col>
+          <ion-col size="1"><ion-label>000041</ion-label></ion-col>
+          <ion-col size="1"><ion-label>NIU</ion-label></ion-col>
+          <ion-col size="1.5"><ion-label>Pasta dental</ion-label></ion-col>
+          <ion-col size="2"><ion-label>{{descripcion.length > 20?((descripcion | slice: 0:20) + '..'):descripcion}}</ion-label></ion-col>
+          <ion-col size="1"><ion-label>1052065565</ion-label></ion-col>
+          <ion-col size="1.25"><ion-label>s/. 7.555</ion-label></ion-col>
+          <ion-col size="1"><ion-label>si</ion-label></ion-col>
+          <ion-col size="3">
+            <ion-label>
+              <ion-button color="secondary" size="small" (click)="modalAperturaCajaChica('editar',null)" >
+                Editar
+              </ion-button>
+              <ion-button color="danger" size="small">
+                Eliminar
+              </ion-button>
+            </ion-label>
+          </ion-col>
+        </ion-row>
+      </ion-grid>
+    </ion-card-content>
+  </ion-card>
+
+</ion-content>

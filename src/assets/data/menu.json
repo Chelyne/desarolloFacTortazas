@@ -40,11 +40,5 @@
         "icon": "storefront-outline",
         "name": "Compras",
         "redirecTo": "/compras"
-    },
-
-    {
-        "icon": "people-outline",
-        "name": "Caja Chica POS",
-        "redirecTo": "/caja-chica"
     }
 ]

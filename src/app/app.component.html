@@ -20,6 +20,32 @@
               <ion-label>{{c.name}}</ion-label>
             </ion-item>
           </ion-menu-toggle>
+              <ion-item  lines="none" (click)="ver(1)">  <!--[ngClass]="{'seleccionado': menuSeleccionado===c.name, 'NOseleccionado': c.name!==menuSeleccionado}"-->
+              <ion-icon slot="start" name="reader" color="primary"></ion-icon>
+              <!-- <ion-icon slot="end"name="chevron-forward-circle-outline"></ion-icon> -->
+              <ion-icon  slot="end" name="chevron-down-sharp" *ngIf="ocultarMenu === true"></ion-icon>
+              <ion-icon  slot="end" name="chevron-up-sharp" *ngIf="ocultarMenu === false"></ion-icon>
+
+              <ion-label>POS</ion-label>
+            </ion-item>
+              <div id="subseccion1">
+                <ion-menu-toggle autoHide="false">
+                  <ion-item  lines="none" >  <!--[ngClass]="{'seleccionado': menuSeleccionado===c.name, 'NOseleccionado': c.name!==menuSeleccionado}"-->
+                    <ion-label>Punto de Venta</ion-label>
+                  </ion-item>
+                </ion-menu-toggle>
+                <ion-menu-toggle autoHide="false">
+                  <ion-item  lines="none" routerLink="/caja-chica">  <!--[ngClass]="{'seleccionado': menuSeleccionado===c.name, 'NOseleccionado': c.name!==menuSeleccionado}"-->
+                    <ion-label>Caja Chica POS</ion-label>
+                  </ion-item>
+                </ion-menu-toggle>
+                <ion-menu-toggle autoHide="false">
+                  <ion-item  lines="none" routerLink="/productos-compuestos">  <!--[ngClass]="{'seleccionado': menuSeleccionado===c.name, 'NOseleccionado': c.name!==menuSeleccionado}"-->
+                    <ion-label>Conjuntos/Packs/Promociones</ion-label>
+                  </ion-item>
+                </ion-menu-toggle>
+  
+              </div>
         </ion-list>
       </ion-content>
       <ion-footer>

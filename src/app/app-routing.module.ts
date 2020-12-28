@@ -209,6 +209,15 @@ const routes: Routes = [
   {
     path: 'ventas-congeladas',
     loadChildren: () => import('./modals/ventas-congeladas/ventas-congeladas.module').then( m => m.VentasCongeladasPageModule)
+  },
+  {
+    path: 'productos-compuestos',
+    loadChildren: () => import('./pages/productos-compuestos/productos-compuestos.module').then( m => m.ProductosCompuestosPageModule)
+  },
+  {
+    path: 'agregar-editar-prod-compuestos',
+    // tslint:disable-next-line:max-line-length
+    loadChildren: () => import('./modals/agregar-editar-prod-compuestos/agregar-editar-prod-compuestos.module').then( m => m.AgregarEditarProdCompuestosPageModule)
   }
 
 

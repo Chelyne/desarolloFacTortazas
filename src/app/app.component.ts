@@ -20,6 +20,7 @@ export class AppComponent {
   menuSeleccionado = 'Inicio';
   datosAdmi;
   componentes: Observable<any[]>;
+  ocultarMenu = true;
   constructor(
     private menu: MenuService,
     private authService: AuthServiceService,
@@ -98,4 +99,13 @@ export class AppComponent {
 
     await alert.present();
   }
+  ver(n) {
+    if (this.ocultarMenu === true) {
+    document.getElementById('subseccion' + n).style.display = 'block';
+    this.ocultarMenu = false;
+    }else {
+    document.getElementById('subseccion' + n).style.display = 'none';
+    this.ocultarMenu = true;
+    }
+    }
 }
