@@ -1,0 +1,31 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title>{{modo | titlecase}} Productos Compuestos</ion-title>
+    <ion-buttons slot="end">
+      <ion-button (click)="cerrarModal()">
+        <ion-icon slot="icon-only" name="close-outline"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+</ion-content>
+
+
+<ion-footer class="ion-no-border">
+  <ion-toolbar lines="none">
+    <ion-item slot="end" lines="none">
+      <ion-button  color="light" (click)="cerrarModal()">
+        Cancelar
+      </ion-button>
+      <ion-button *ngIf="modo === 'agregar'" color="primary" expand="block" >
+        Guardar
+      </ion-button>
+      <ion-button *ngIf="modo === 'editar'" color="primary" expand="block" >
+        Guardar Cambios
+      </ion-button>
+    </ion-item>
+  </ion-toolbar>
+</ion-footer>
+

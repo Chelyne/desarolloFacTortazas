@@ -79,6 +79,7 @@ export class CajaChicaPage implements OnInit {
     const modal = await this.modalController.create({
       component: AbrirCerrarCajaPage,
       cssClass: 'my-custom-class',
+      backdropDismiss: false,
       componentProps: {
         modo: modoCaja,
         datosCaja: datos

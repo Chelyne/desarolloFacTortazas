@@ -205,6 +205,14 @@ const routes: Routes = [
   {
     path: 'detalles-de-compra',
     loadChildren: () => import('./modals/detalles-de-compra/detalles-de-compra.module').then( m => m.DetallesDeCompraPageModule)
+  },
+  {
+    path: 'productos-compuestos',
+    loadChildren: () => import('./pages/productos-compuestos/productos-compuestos.module').then( m => m.ProductosCompuestosPageModule)
+  },
+  {
+    path: 'agregar-editar-prod-compuestos',
+    loadChildren: () => import('./modals/agregar-editar-prod-compuestos/agregar-editar-prod-compuestos.module').then( m => m.AgregarEditarProdCompuestosPageModule)
   }
 
 
