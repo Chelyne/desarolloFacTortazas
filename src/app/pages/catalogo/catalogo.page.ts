@@ -16,16 +16,14 @@ import { EditarProductoPage } from '../../modals/editar-producto/editar-producto
   styleUrls: ['./catalogo.page.scss'],
 })
 export class CatalogoPage implements OnInit {
-  //-------------
   sedes = this.storage.datosAdmi.sede;
-  listaDeProductos:ProductoInterface[] = [];
-  buscando: boolean=false;
+  listaDeProductos: ProductoInterface[] = [];
+  buscando = false;
   id: any;
 
-  //-------------
   categorias = [];
   categoria;
-  
+
   ultimaCategoria;
   dataProducto: ProductoInterface;
   sinDatos;
@@ -75,7 +73,7 @@ export class CatalogoPage implements OnInit {
     if (lowercaseKey.length) {
       this.dataApi.ObtenerListaProductosByName(this.sedes, lowercaseKey, 5).subscribe(data => {
         this.listaDeProductos = data;
-        console.log("love", data);
+        console.log('love', data);
 
       });
     } else  {
@@ -91,10 +89,10 @@ export class CatalogoPage implements OnInit {
   /*                           agregar nuevo producto                           */
   /* -------------------------------------------------------------------------- */
 
- 
 
 
-  //==========================================================================================
+
+  // ==========================================================================================
   agregarProducto() {
     this.router.navigate(['/agregar-producto', this.sedes, this.categoria]);
   }

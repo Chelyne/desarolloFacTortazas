@@ -18,7 +18,7 @@ export class AgregarEditarProveedorPage implements OnInit {
   @Input() titleInvoker: string;
   @Input() dataInvoker: ProveedorInterface;
 
-  typoDocumento: string = 'ruc';
+  typoDocumento = 'ruc';
 
   constructor(
     private dataApi: DbDataService,
@@ -31,7 +31,7 @@ export class AgregarEditarProveedorPage implements OnInit {
 
 
   ngOnInit() {
-    if( this.eventoInvoker === 'actualizarProveedor' ){
+    if ( this.eventoInvoker === 'actualizarProveedor' ){
       this.proveedorModalForm = this.formForUpdate();
     }
 
@@ -43,7 +43,7 @@ export class AgregarEditarProveedorPage implements OnInit {
       nombre: new FormControl('', [Validators.required, Validators.minLength(3)]),
       // ruc: new FormControl('', [Validators.required, Validators.minLength(11), Validators.maxLength(11)]),
       tipoDocumento: new FormControl('ruc', [Validators.required]),
-      numeroDocumento: new FormControl('', [Validators.required, Validators.minLength(11), Validators.maxLength(11)]),
+      numeroDocumento: new FormControl('', [Validators.required, Validators.minLength(8), Validators.maxLength(11)]),
       telefono: new FormControl('', [Validators.required, Validators.minLength(6), Validators.maxLength(9)]),
       direccion: new FormControl('', [Validators.required, Validators.minLength(3)]),
       email: new FormControl('', [Validators.required, Validators.minLength(3), Validators.pattern('^[_a-z0-9]+(\.[_a-z0-9]+)*@[a-z0-9-]+(\.[_a-z0-9]+)*\.([a-z]{2,4})$')])
@@ -111,7 +111,7 @@ export class AgregarEditarProveedorPage implements OnInit {
     this.dataApi.guardarProveedor(this.proveedorModalForm.value).then(() => {
       // console.log("Se ingreso Correctamente")
       this.presentToast('Datos guardados correctamente');
-      // this.modalCtlr.dismiss();
+      this.modalCtlr.dismiss();
       this.proveedorModalForm.reset();
 
     });
@@ -120,16 +120,17 @@ export class AgregarEditarProveedorPage implements OnInit {
   actualizarProveedor(){
 
     this.dataApi.actualizarProveedor(this.dataInvoker.id, this.proveedorModalForm.value).then(
-        () => {console.log('Se ingreso Correctamente');
-        this.presentToast('Datos actualizados correctamente');
-        this.modalCtlr.dismiss();
+        () => {
+          console.log('Se ingreso Correctamente');
+          this.presentToast('Datos actualizados correctamente');
+          this.modalCtlr.dismiss();
       }
     );
 
   }
 
 
-  salirDeModal(){
+  cerrarModal(){
     this.modalCtlr.dismiss();
   }
 
@@ -146,7 +147,7 @@ export class AgregarEditarProveedorPage implements OnInit {
 
   numberOnlyValidation(event: any) {
     const pattern = /[0-9]/;
-    let inputChar = String.fromCharCode(event.charCode);
+    const inputChar = String.fromCharCode(event.charCode);
 
     if (!pattern.test(inputChar)) {
       // invalid character, prevent input
@@ -156,7 +157,7 @@ export class AgregarEditarProveedorPage implements OnInit {
 
   stringOnlyValidation(event: any) {
     const pattern = /[a-zA-ZÀ-ÿ\u00f1\u00d1 ]/;
-    let inputChar = String.fromCharCode(event.charCode);
+    const inputChar = String.fromCharCode(event.charCode);
 
     if (!pattern.test(inputChar)) {
       // invalid character, prevent input
