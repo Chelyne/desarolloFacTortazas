@@ -14,7 +14,10 @@
                             <ion-icon slot="start" name="add-circle-outline"></ion-icon>
                             Nuevo Producto
                         </ion-button>
-
+                        <ion-button slot="end" shape="round" fill="outline" (click)="agregarProductoPrueba()">
+                            <ion-icon slot="start" name="add-circle-outline"></ion-icon>
+                            Nuevo prueba
+                        </ion-button>
                         <ion-title>Lista de productos</ion-title>
                     </ion-toolbar>
 
@@ -56,18 +59,10 @@
 
                     <ion-card-content>
                         <ion-list>
-                            <ion-item *ngFor="let productos of listaDeproductos">
-                                <ion-avatar slot="start">
-                                    <img *ngIf="productos.img" src="{{productos.img}}" alt="">
-                                    <img *ngIf="!productos.img" src="../../../assets/img/pet chop.png" alt="">
-                                </ion-avatar>
+                            <ion-item *ngFor="let item of categorias">
+
                                 <ion-label>
-                                    <h2>{{productos.nombre | titlecase}}</h2>
-                                    <h3>{{productos.cantidad}} {{productos.medida}}</h3>
-                                    <p *ngIf="productos.precio" class="precio">S/. {{productos.precio | number: '1.2'}}</p>
-
-
-
+                                    <h2>{{item.categoria}}</h2>
                                 </ion-label>
                             </ion-item>
 

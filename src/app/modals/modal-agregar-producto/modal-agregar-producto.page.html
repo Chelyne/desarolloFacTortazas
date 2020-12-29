@@ -15,46 +15,46 @@
         <ion-grid>
             <ion-row>
                 <ion-col size="12 " size-xs="12" size-sm="12" size-md="6" size-lg="3">
-                    <ion-card class="imagenes">
-                        <div>
-                            <input type="file" id="fileLoader" #fileLoader name="files" title="Load File" hidden />
-                            <ion-toolbar color="secondary">
-                                <ion-item color="transulcent" style="text-align: center;" lines="none">
+                    <div style="display: flex; justify-content: center; align-items: center;">
+                        <ion-card class="imagenes">
+                            <div style="height:220px;">
+                                <input type="file" id="fileLoader" #fileLoader name="files" title="Load File" hidden accept=".jpg, .jpeg, .png" />
+                                <ion-toolbar color="secondary">
+                                    <ion-item color="transulcent" style="text-align: center;" lines="none">
+                                        <ion-icon slot="end" name="camera-outline" (click)="presentActionSheet(fileLoader)"></ion-icon>
+                                        <ion-icon slot="end" name="trash-outline" (click)="removePic()"></ion-icon>
+                                        <div style="width: 100%; text-align: center;">
+                                            <!--
+                                                <span *ngIf="processing">
+                                                    <ion-spinner></ion-spinner>
+                                                </span>-->
 
-                                    <ion-icon slot="end" name="camera-outline" (click)="presentActionSheet(fileLoader)"></ion-icon>
-                                    <ion-icon slot="end" name="trash-outline" (click)="removePic()"></ion-icon>
-                                    <div style="width: 100%; text-align: center;">
-                                        <!--
-                                            <span *ngIf="processing">
-                                                <ion-spinner></ion-spinner>
-                                            </span>-->
-
-                                    </div>
-                                </ion-item>
-                            </ion-toolbar>
-                            <div class="fotoProducto">
-                                <img (click)="presentActionSheet(fileLoader)" *ngIf="!image" src="../../../assets/fondoImg.jpg" alt="">
-                                <img (click)="presentActionSheet(fileLoader)" *ngIf="image" [src]="uploadImage" alt="foto">
+                                        </div>
+                                    </ion-item>
+                                </ion-toolbar>
+                                <div class="fotoProducto">
+                                    <img (click)="presentActionSheet(fileLoader)" *ngIf="!image" src="../../../assets/fondoImg.jpg" alt="">
+                                    <img (click)="presentActionSheet(fileLoader)" *ngIf="image" [src]="uploadImage" alt="foto">
+                                </div>
+                                <span *ngIf="uploadImage != null">
+                                  <img id="checkinImage"   (load)="imageLoaded()" /> 
+                                </span>
                             </div>
-                            <span *ngIf="uploadImage != null">
-                              <img id="checkinImage"   (load)="imageLoaded()" /> 
-                            </span>
-                        </div>
-                        <div class="alertDanger" *ngIf="sinFoto">
-                            <div class="mensajeError">
-                                {{sinFoto}}
+                            <div class="alertDanger" *ngIf="sinFoto">
+                                <div class="mensajeError">
+                                    {{sinFoto}}
+                                </div>
                             </div>
-                        </div>
-                    </ion-card>
+                        </ion-card>
+                    </div>
                 </ion-col>
                 <ion-col size="12 " size-xs="12" size-sm="12" size-md="6" size-lg="9">
-
                     <ion-grid>
                         <ion-row>
                             <ion-col>
-                                <ion-item>
+                                <ion-item lines="none">
                                     <ion-label position="floating">Nombre del producto o servicio</ion-label>
-                                    <ion-input maxLength="35" formControlName="nombre" class="nombre"></ion-input>
+                                    <ion-input maxLength="35" formControlName="nombre" class="nombre" placeholder="Ingrese nombre"></ion-input>
                                 </ion-item>
                                 <div class="alertDanger" *ngIf="nombre.invalid && (nombre.dirty || nombre.touched)">
                                     <div class="mensajeError" *ngIf="!!nombre.errors.required">
@@ -68,13 +68,25 @@
                                     </div>
                                 </div>
                             </ion-col>
+                            <ion-col>
+                                <ion-item lines="none">
+                                    <ion-label position="stacked">Categorias</ion-label>
+                                    <ion-select class="custom-options" value="item.categoria" interface="popover" formControlName="categoriass" placeholder="categorias" cancelText="Cancelar" okText="Aceptar" mode="ios">
+                                        <ion-select-option *ngFor="let item of categorias" [value]="item.categoria">{{item.categoria}}</ion-select-option>
+                                    </ion-select>
+                                </ion-item>
+                                <div class="alertDanger" *ngIf="categoriass.invalid && (categoriass.dirty || categoriass.touched)">
+                                    <div class="mensajeError" *ngIf="!!categoriass.errors.required">
+                                        Complete la categorias
+                                    </div>
+                                </div>
+                            </ion-col>
                         </ion-row>
-                        <br>
                         <ion-row>
                             <ion-col>
-                                <ion-item>
+                                <ion-item lines="none">
                                     <ion-label position="floating">Cantidad</ion-label>
-                                    <ion-input formControlName="cantidad" type="number"></ion-input>
+                                    <ion-input formControlName="cantidad" type="number" placeholder="Ingrese cantidad"></ion-input>
                                 </ion-item>
                                 <div class="alertDanger" *ngIf="cantidad.invalid && (cantidad.dirty || cantidad.touched)">
                                     <div class="mensajeError" *ngIf="!!cantidad.errors.required">
@@ -86,9 +98,9 @@
                                 </div>
                             </ion-col>
                             <ion-col>
-                                <ion-item>
-                                    <ion-label>Medida</ion-label>
-                                    <ion-select interface="popover" formControlName="medida" placeholder="medida" cancelText="Cancelar" okText="Aceptar" mode="ios">
+                                <ion-item lines="none">
+                                    <ion-label position="stacked">Medida</ion-label>
+                                    <ion-select class="custom-options" interface="popover" formControlName="medida" placeholder="medida" cancelText="Cancelar" okText="Aceptar" mode="ios">
                                         <ion-select-option value="Gramos">Gramos</ion-select-option>
                                         <ion-select-option value="Kilogramo">Kilogramo</ion-select-option>
                                         <ion-select-option value="Litro">Litro</ion-select-option>
@@ -105,12 +117,11 @@
                                 </div>
                             </ion-col>
                         </ion-row>
-                        <br>
                         <ion-row>
                             <ion-col>
-                                <ion-item>
+                                <ion-item lines="none">
                                     <ion-label position="floating">Ingrese la marca</ion-label>
-                                    <ion-input maxLength="35" formControlName="marca" class="marca"></ion-input>
+                                    <ion-input maxLength="35" formControlName="marca" class="marca" placeholder="Ingrese marca del producto"></ion-input>
                                 </ion-item>
                                 <div class="alertDanger" *ngIf="marca.invalid && (marca.dirty || marca.touched)">
                                     <div class="mensajeError" *ngIf="!!marca.errors.required">
@@ -128,12 +139,11 @@
                     </ion-grid>
                 </ion-col>
             </ion-row>
-            <br>
             <ion-row>
                 <ion-col size="12 " size-xs="12" size-sm="12" size-md="6" size-lg="4">
-                    <ion-item *ngIf="subCategoria !== 'farmacia'">
+                    <ion-item *ngIf="subCategoria !== 'farmacia'" lines="none">
                         <ion-label position="floating">Precio</ion-label>
-                        <ion-input [readonly]="tallas && tallas.length>0" formControlName="precio" type="number"></ion-input>
+                        <ion-input [readonly]="tallas && tallas.length>0" formControlName="precio" type="number" placeholder="Ingrese precio del producto"></ion-input>
                     </ion-item>
                     <div class="alertDanger" *ngIf="precio.invalid && (precio.dirty || precio.touched)">
                         <div class="mensajeError" *ngIf="!!precio.errors.required">
@@ -142,9 +152,9 @@
                     </div>
                 </ion-col>
                 <ion-col size="12 " size-xs="12" size-sm="12" size-md="6" size-lg="4">
-                    <ion-item>
+                    <ion-item lines="none">
                         <ion-label position="floating">Cantidad de stock:</ion-label>
-                        <ion-input [readonly]="tallas && tallas.length>0" formControlName="cantStock" type="number"></ion-input>
+                        <ion-input [readonly]="tallas && tallas.length>0" formControlName="cantStock" type="number" placeholder="Ingrese la cantidad de Stock"></ion-input>
                     </ion-item>
                     <div class="alertDanger" *ngIf="cantStock.invalid && (cantStock.dirty || cantStock.touched)">
                         <div class="mensajeError" *ngIf="!!cantStock.errors.required">
@@ -156,36 +166,28 @@
                     </div>
                 </ion-col>
                 <ion-col size="12 " size-xs="12" size-sm="12" size-md="6" size-lg="4">
-                    <ion-item>
-                        <ion-label>Fecha de vencimiento:</ion-label>
-                        <ion-datetime formControlName="fechadevencimiento" displayFormat="MM DD YY" max="2040" placeholder="Select Date"></ion-datetime>
+                    <ion-item lines="none">
+                        <ion-label position="stacked">Fecha de vencimiento:</ion-label>
+                        <ion-input type="date" formControlName="fechadevencimiento" class="form-control"></ion-input>
                     </ion-item>
                     <div class="alertDanger" *ngIf="fechadevencimiento && fechadevencimiento.invalid && (fechadevencimiento.dirty || fechadevencimiento.touched)">
                         <div class="mensajeError" *ngIf="  !!fechadevencimiento.errors.required">
                             Ingrese fecha de vencimiento
                         </div>
                     </div>
-
-
-
-
-
-
-
                 </ion-col>
             </ion-row>
-            <br>
             <ion-row>
                 <ion-col size="12 " size-xs="12" size-sm="12" size-md="6" size-lg="8">
-                    <ion-item>
-                        <ion-label position="floating">Descripción</ion-label>
+                    <ion-item lines="none">
+                        <ion-label position="stacked">Descripción</ion-label>
                         <ion-textarea rows="5" cols="20" formControlName="descripcionProducto"></ion-textarea>
                     </ion-item>
                 </ion-col>
                 <ion-col size="12 " size-xs="12" size-sm="12" size-md="6" size-lg="4">
                     <ion-button (click)="agregarTallas()" *ngIf="tallas===undefined && this.productoForm.value.precio && this.productoForm.value.cantStock" fill="clear">Agregar tallas, colores, etc.</ion-button>
-                    <ion-item *ngIf="tallas!==undefined">
-                        <ion-label color="primary">Que desea agregar?</ion-label>
+                    <ion-item *ngIf="tallas!==undefined" lenes="none">
+                        <ion-label color="primary" position="floating">Que desea agregar?</ion-label>
                         <ion-input [readonly]="tallas.length>0" formControlName="nombreTalla" type="text" placeholder="talla, color, etc."></ion-input>
                     </ion-item>
                     <div class="tallas" *ngIf="tallas!==undefined && this.productoForm.value.nombreTalla">
