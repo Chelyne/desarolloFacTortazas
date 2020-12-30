@@ -33,12 +33,13 @@
                                     </ion-item>
                                 </ion-toolbar>
                                 <div class="fotoProducto">
-                                    <img (click)="presentActionSheet(fileLoader)" *ngIf="!image" src="../../../assets/fondoImg.jpg" alt="">
-                                    <img (click)="presentActionSheet(fileLoader)" *ngIf="image" [src]="uploadImage" alt="foto">
+                                    <img (click)="presentActionSheet(fileLoader)" *ngIf="dataProducto.img !image" src="{{dataProducto.img}}" alt="">
+                                    <img (click)="presentActionSheet(fileLoader)" *ngIf="!dataProducto.img && !image" src="../../../assets/img/pet chop.png" alt="">
+                                    <img (click)="presentActionSheet(fileLoader)" *ngIf="image" src="{{image}}" alt="">
                                 </div>
                                 <span *ngIf="uploadImage != null">
                                       <img id="checkinImage"   (load)="imageLoaded()" /> 
-                                    </span>
+                                </span>
                             </div>
                             <div class="alertDanger" *ngIf="sinFoto">
                                 <div class="mensajeError">
@@ -119,7 +120,7 @@
                 <ion-col size="12 " size-xs="12" size-sm="12" size-md="6" size-lg="4">
                     <ion-item lines="none" *ngIf="dataProducto.categoria!=='farmacia'">
                         <ion-label position="floating">Precio</ion-label>
-                        <ion-input formControlName="precio" class="ion-text-center" type="number" value="{{dataProducto.precio | number: '1.2'}}">S/. </ion-input>
+                        <ion-input formControlName="precio" type="number" value="{{dataProducto.precio | number: '1.2'}}">S/. </ion-input>
                     </ion-item>
                     <div class="alertDanger" *ngIf="precio && precio.invalid && (precio.dirty || precio.touched)">
                         <div class="mensajeError" *ngIf="!!precio.errors.required">
@@ -128,78 +129,40 @@
                     </div>
                 </ion-col>
                 <ion-col size="12 " size-xs="12" size-sm="12" size-md="6" size-lg="4">
-
+                    <ion-item lines="none">
+                        <ion-label position="floating">Stock de producto:</ion-label>
+                        <ion-input type="number" formControlName="cantStock" value="{{dataProducto.cantStock}}"></ion-input>
+                    </ion-item>
+                    <div class="alertDanger" *ngIf="cantStock.invalid && (cantStock.dirty || cantStock.touched)">
+                        <div class="mensajeError" *ngIf="!!cantStock.errors.required">
+                            Ingrese la cantidad de stock
+                        </div>
+                        <div class="mensajeError" *ngIf="!!cantStock.errors.min">
+                            La cantidad minima en stock es 0
+                        </div>
+                    </div>
+                    <div class="alertDanger" *ngIf="cantStock.value===0">
+                        <div class="mensajeError">
+                            El producto se mostrará como agotado
+                        </div>
+                    </div>
                 </ion-col>
                 <ion-col size="12 " size-xs="12" size-sm="12" size-md="6" size-lg="4">
-
+                    fecha de vecimiento
                 </ion-col>
             </ion-row>
             <ion-row>
                 <ion-col size="12 " size-xs="12" size-sm="12" size-md="6" size-lg="8">
-
+                    <ion-item lenes="none">
+                        <ion-label position="floating">Descripción</ion-label>
+                        <ion-textarea formControlName="descripcionProducto" placeholder="Ingrese una descripción del producto..."></ion-textarea>
+                    </ion-item>
                 </ion-col>
                 <ion-col size="12 " size-xs="12" size-sm="12" size-md="6" size-lg="4">
 
                 </ion-col>
             </ion-row>
         </ion-grid>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-        <img *ngIf="dataProducto.img !image" src="{{dataProducto.img}}" alt="">
-        <img *ngIf="!dataProducto.img && !image" src="../../../assets/img/pet chop.png" alt="">
-        <img *ngIf="image" src="{{image}}" alt="">
-        <ion-button size="small" fill="outline" shape="round">
-            <ion-icon name="camera-outline"></ion-icon> &nbsp;
-            <ion-label>Cambiar foto</ion-label>
-        </ion-button>
-
-
-
-
-        <ion-item class="stock">
-            <ion-label slot="start" color="primary">Stock de producto:</ion-label> &nbsp;
-            <ion-input type="number" formControlName="cantStock" class="ion-text-center" value="{{dataProducto.cantStock}}" style="font-family: Sniglet;"></ion-input>
-        </ion-item>
-        <div class="alertDanger" *ngIf="cantStock.invalid && (cantStock.dirty || cantStock.touched)">
-            <div class="mensajeError" *ngIf="!!cantStock.errors.required">
-                Ingrese la cantidad de stock
-            </div>
-            <div class="mensajeError" *ngIf="!!cantStock.errors.min">
-                La cantidad minima en stock es 0
-            </div>
-        </div>
-        <div class="alertDanger" *ngIf="cantStock.value===0">
-            <div class="mensajeError">
-                El producto se mostrará como agotado
-            </div>
-        </div>
-
-        <ion-item>
-            <ion-label position="floating">Descripción</ion-label>
-            <ion-textarea formControlName="descripcionProducto" placeholder="Ingrese una descripción del producto..."></ion-textarea>
-        </ion-item>
-
         <div class="variantes" *ngIf="dataProducto.tallas  && dataProducto.tallas.length>0">
             <ion-grid class="ion-text-center">
                 <ion-row style="background-color: #75ceee;" class="ion-justify-content-center ion-align-items-center">
