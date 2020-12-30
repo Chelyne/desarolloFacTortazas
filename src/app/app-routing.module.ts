@@ -175,10 +175,6 @@ const routes: Routes = [
     loadChildren: () => import('./pages/catalogo/catalogo.module').then( m => m.CatalogoPageModule)
   },
   {
-    path: 'refactor-compra',
-    loadChildren: () => import('./pages/refactor-compra/refactor-compra.module').then( m => m.RefactorCompraPageModule)
-  },
-  {
     path: 'lista-de-compras',
     loadChildren: () => import('./pages/lista-de-compras/lista-de-compras.module').then( m => m.ListaDeComprasPageModule)
   },

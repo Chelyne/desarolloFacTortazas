@@ -6,4 +6,5 @@ documento?: string;
 celular?: string;
 direccion?: string;
 email?: string;
+dni?: string;
 }
