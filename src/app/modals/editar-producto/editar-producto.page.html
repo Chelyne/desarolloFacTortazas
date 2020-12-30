@@ -28,7 +28,6 @@
                                                     <span *ngIf="processing">
                                                         <ion-spinner></ion-spinner>
                                                     </span>-->
-
                                         </div>
                                     </ion-item>
                                 </ion-toolbar>
@@ -70,7 +69,10 @@
                                 </div>
                             </ion-col>
                             <ion-col>
-                                categorias
+                                <ion-item lines="none">
+                                    <ion-label position="floating">Categoria</ion-label>
+                                    <ion-input value="{{dataProducto.categoria}}"></ion-input>
+                                </ion-item>
                             </ion-col>
                         </ion-row>
                         <ion-row>
@@ -110,7 +112,21 @@
                         </ion-row>
                         <ion-row>
                             <ion-col>
-                                marca
+                                <ion-item lines="none">
+                                    <ion-label position="floating">Ingrese la marca</ion-label>
+                                    <ion-input maxLength="35" formControlName="marca" class="marca" placeholder="Ingrese marca del producto" value="{{dataProducto.marca}}"></ion-input>
+                                </ion-item>
+                                <div class="alertDanger" *ngIf="marca.invalid && (marca.dirty || marca.touched)">
+                                    <div class="mensajeError" *ngIf="!!marca.errors.required">
+                                        Complete el marca
+                                    </div>
+                                    <div class="mensajeError" *ngIf="!!marca.errors.minlength">
+                                        El marca debe tener al menos 3 caracteres.
+                                    </div>
+                                    <div class="mensajeError" *ngIf="!!marca.errors.maxlength">
+                                        El marca debe tener máximo 35 caracteres.
+                                    </div>
+                                </div>
                             </ion-col>
                         </ion-row>
                     </ion-grid>
@@ -148,7 +164,15 @@
                     </div>
                 </ion-col>
                 <ion-col size="12 " size-xs="12" size-sm="12" size-md="6" size-lg="4">
-                    fecha de vecimiento
+                    <ion-item lines="none">
+                        <ion-label position="stacked">Fecha de vencimiento:</ion-label>
+                        <ion-input type="date" formControlName="fechaDeVencimiento" class="form-control" value="{{dataProducto.fechaDeVencimiento}}"></ion-input>
+                    </ion-item>
+                    <div class="alertDanger" *ngIf="fechaDeVencimiento && fechaDeVencimiento.invalid && (fechaDeVencimiento.dirty || fechaDeVencimiento.touched)">
+                        <div class="mensajeError" *ngIf="  !!fechaDeVencimiento.errors.required">
+                            Ingrese fecha de vencimiento
+                        </div>
+                    </div>
                 </ion-col>
             </ion-row>
             <ion-row>

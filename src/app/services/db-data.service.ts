@@ -90,8 +90,10 @@ export class DbDataService {
           nombre: data.nombre,
           cantidad: data.cantidad,
           medida: data.medida,
+          marca: data.marca,
           precio: data.precio,
           cantStock: data.cantStock,
+          fechaDeVencimiento: data.fechaDeVencimiento,
           descripcionProducto: data.descripcionProducto
           // tallas: data.tallas
         });
@@ -100,8 +102,10 @@ export class DbDataService {
           nombre: data.nombre,
           cantidad: data.cantidad,
           medida: data.medida,
+          marca: data.marca,
           precio: data.precio,
           cantStock: data.cantStock,
+          fechaDeVencimiento: data.fechaDeVencimiento,
           descripcionProducto: data.descripcionProducto
           // tallas: data.tallas
         });
