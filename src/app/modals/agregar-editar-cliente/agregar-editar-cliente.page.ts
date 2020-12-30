@@ -3,6 +3,7 @@ import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { ModalController, ToastController } from '@ionic/angular';
 import { ClienteInterface } from 'src/app/models/cliente-interface';
 import { DbDataService } from 'src/app/services/db-data.service';
+import { StorageService } from '../../services/storage.service';
 
 @Component({
   selector: 'app-agregar-editar-cliente',
@@ -22,7 +23,8 @@ export class AgregarEditarClientePage implements OnInit {
   constructor(
     private dataApi: DbDataService,
     private modalCtlr: ModalController,
-    private toastCtrl: ToastController
+    private toastCtrl: ToastController,
+    private storage: StorageService
   ) {
 
     this.clienteModalForm = this.createFormCliente();
@@ -40,8 +42,8 @@ export class AgregarEditarClientePage implements OnInit {
   createFormCliente(){
     return new FormGroup({
       nombre: new FormControl('', [Validators.required, Validators.minLength(3), Validators.pattern('^[a-zA-ZÀ-ÿ\u00f1\u00d1 ]+$')]),
-      apellidos: new FormControl('', [Validators.required, Validators.minLength(3), Validators.pattern('^[a-zA-ZÀ-ÿ\u00f1\u00d1 ]+$')]),
-      dni: new FormControl('', [Validators.required, Validators.minLength(8), Validators.maxLength(8)]),
+      // apellidos: new FormControl('', [Validators.required, Validators.minLength(3), Validators.pattern('^[a-zA-ZÀ-ÿ\u00f1\u00d1 ]+$')]),
+      documento: new FormControl('', [Validators.required, Validators.minLength(8), Validators.maxLength(11)]),
       celular: new FormControl('', [Validators.required, Validators.minLength(9), Validators.maxLength(9)]),
       direccion: new FormControl('', [Validators.required, Validators.minLength(3)]),
       email: new FormControl('', [Validators.required, Validators.minLength(3), Validators.pattern('^[_a-z0-9]+(\.[_a-z0-9]+)*@[a-z0-9-]+(\.[_a-z0-9]+)*\.([a-z]{2,4})$')])
@@ -50,7 +52,7 @@ export class AgregarEditarClientePage implements OnInit {
 
   get nombre() { return this.clienteModalForm.get('nombre'); }
   get apellidos() { return this.clienteModalForm.get('apellidos'); }
-  get dni() { return this.clienteModalForm.get('dni'); }
+  get documento() { return this.clienteModalForm.get('documento'); }
   get celular() { return this.clienteModalForm.get('celular'); }
   get direccion() { return this.clienteModalForm.get('direccion'); }
   get email() { return this.clienteModalForm.get('email'); }
@@ -58,8 +60,9 @@ export class AgregarEditarClientePage implements OnInit {
   formForUpdate() {
     return new FormGroup({
       nombre: new FormControl(this.dataInvoker.nombre, [Validators.required, Validators.minLength(3), Validators.pattern('^[a-zA-ZÀ-ÿ\u00f1\u00d1 ]+$')]),
-      apellidos: new FormControl(this.dataInvoker.apellidos, [Validators.required, Validators.minLength(3), Validators.pattern('^[a-zA-ZÀ-ÿ\u00f1\u00d1 ]+$')]),
-      dni: new FormControl(this.dataInvoker.dni, [Validators.required, Validators.minLength(8), Validators.maxLength(8)]),
+      // tslint:disable-next-line:max-line-length
+      // apellidos: new FormControl(this.dataInvoker.apellidos, [Validators.required, Validators.minLength(3), Validators.pattern('^[a-zA-ZÀ-ÿ\u00f1\u00d1 ]+$')]),
+      documento: new FormControl(this.dataInvoker.documento, [Validators.required, Validators.minLength(8), Validators.maxLength(11)]),
       celular: new FormControl(this.dataInvoker.celular, [Validators.required, Validators.minLength(9), Validators.maxLength(9)]),
       direccion: new FormControl(this.dataInvoker.direccion, [Validators.required, Validators.minLength(3)]),
       email: new FormControl(this.dataInvoker.email, [Validators.required, Validators.minLength(3), Validators.pattern('^[_a-z0-9]+(\.[_a-z0-9]+)*@[a-z0-9-]+(\.[_a-z0-9]+)*\.([a-z]{2,4})$')])
@@ -84,7 +87,7 @@ export class AgregarEditarClientePage implements OnInit {
 
   guardarCliente(){
     this.clienteModalForm.value.nombre = this.nombre.value.toLowerCase();
-    this.clienteModalForm.value.apellidos = this.apellidos.value.toLowerCase();
+    // this.clienteModalForm.value.apellidos = this.apellidos.value.toLowerCase();
 
     this.dataApi.guardarCliente(this.clienteModalForm.value).then(
       () => {
@@ -101,7 +104,7 @@ export class AgregarEditarClientePage implements OnInit {
   actualizarCliente(){
 
     this.clienteModalForm.value.nombre = this.nombre.value.toLowerCase();
-    this.clienteModalForm.value.apellidos = this.apellidos.value.toLowerCase();
+    // this.clienteModalForm.value.apellidos = this.apellidos.value.toLowerCase();
 
     this.dataApi.actualizarCliente(this.dataInvoker.id, this.clienteModalForm.value).then(
       () => {

@@ -4,6 +4,7 @@ import { AgregarEditarProveedorPage } from 'src/app/modals/agregar-editar-provee
 import { ProveedorInterface } from 'src/app/models/proveedor';
 import { DbDataService } from 'src/app/services/db-data.service';
 // import { ProveedorRegistroService } from 'src/app/services/proveedor-registro.service';
+import { StorageService } from '../../services/storage.service';
 
 @Component({
   selector: 'app-lista-de-proveedores',
@@ -31,7 +32,8 @@ export class ListaDeProveedoresPage implements OnInit {
     private modalCtlr: ModalController,
     private toastCtrl: ToastController,
     public alertController: AlertController,
-    private menuCtrl: MenuController
+    private menuCtrl: MenuController,
+    private storage: StorageService
   ) {
     // this.proveedoresForm = this.createFormGroupProveedor();
     this.ObtenerProveedores();

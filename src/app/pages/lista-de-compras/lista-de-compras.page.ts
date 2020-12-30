@@ -4,6 +4,7 @@ import { DetallesDeCompraPage } from 'src/app/modals/detalles-de-compra/detalles
 import { CompraInterface } from 'src/app/models/Compra';
 import { DbDataService } from 'src/app/services/db-data.service';
 import { EditarCompraService } from 'src/app/services/editar-compra.service';
+import { StorageService } from '../../services/storage.service';
 
 @Component({
   selector: 'app-lista-de-compras',
@@ -31,7 +32,8 @@ export class ListaDeComprasPage implements OnInit {
     private dataApi: DbDataService,
     private modalCtlr: ModalController,
     private editCompra: EditarCompraService,
-    private menuCtrl: MenuController
+    private menuCtrl: MenuController,
+    private storage: StorageService
   ) {
     // this.proveedoresForm = this.createFormGroupProveedor();
     this.ObtenerCompras();
@@ -45,7 +47,7 @@ export class ListaDeComprasPage implements OnInit {
   ObtenerCompras(){
     // console.log("getProveedores");
     // CLEAN
-    this.dataApi.ObtenerListaCompras().subscribe(data => {
+    this.dataApi.ObtenerListaCompras(this.storage.datosAdmi.sede).subscribe(data => {
       console.log(data);
       this.listaDeCompras = data;
       console.log(this.listaDeCompras);

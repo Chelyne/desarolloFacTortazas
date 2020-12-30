@@ -40,7 +40,7 @@ export class ProductoVentaComponent implements OnInit {
   updateFormVenta() {
     return new FormGroup({
       cantidad: new FormControl(this.itemDeVenta.cantidad, [Validators.required, Validators.pattern('[0-9]+')]),
-      precioVenta: new FormControl(this.itemDeVenta.tatalxprod, [Validators.required, Validators.pattern('[0-9]+')])
+      precioVenta: new FormControl(this.itemDeVenta.tatalxprod, [Validators.required])
     });
   }
 
@@ -83,14 +83,14 @@ export class ProductoVentaComponent implements OnInit {
       this.cambiarCantidadProd.emit({
         id: this.itemDeVenta.idProducto,
         cantidad: parseInt(this.formVenta.value.cantidad, 10),
-        precioVenta: parseInt(this.formVenta.value.precioVenta, 10),
+        precioVenta: this.formVenta.value.precioVenta ? parseInt(this.formVenta.value.precioVenta, 10) : null,
       });
     } else {
       if (this.cantidad.errors.required){
         this.cambiarCantidadProd.emit({
           id: this.itemDeVenta.idProducto,
           cantidad: 0,
-          precioVenta: parseInt(this.formVenta.value.precioVenta, 10),
+          precioVenta: this.formVenta.value.precioVenta ? parseInt(this.formVenta.value.precioVenta, 10) : null,
         });
       }
     }
