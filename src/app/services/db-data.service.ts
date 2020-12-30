@@ -9,6 +9,8 @@ import { ClienteInterface } from '../models/cliente-interface';
 import { ProveedorInterface } from '../models/proveedor';
 import { UsuarioInterfce } from '../models/User';
 import { CompraInterface } from '../models/Compra';
+import { VentaInterface } from '../models/venta/venta';
+import { formatDate } from '@angular/common';
 
 @Injectable({
   providedIn: 'root'
@@ -21,8 +23,8 @@ export class DbDataService {
   private productoDoc: AngularFirestoreDocument<ProductoInterface>;
   private producto: Observable<ProductoInterface>;
 
-  private clienteCollection: AngularFirestoreCollection<AdmiInterface>;
-  private clientes: Observable<AdmiInterface[]>;
+  private clienteCollection: AngularFirestoreCollection<ClienteInterface>;
+  private clientes: Observable<ClienteInterface[]>;
 
   private clientesCollection: AngularFirestoreCollection<ClienteInterface>;
   // private clientes: Observable<ClienteInterface[]>;
@@ -505,9 +507,7 @@ export class DbDataService {
   // TODO - Refactorizar
 
   ObtenerListaDeClientes() {
-
     this.clientesCollection = this.afs.collection('clientes');
-
     return this.clientes = this.clientesCollection.snapshotChanges()
       .pipe(map(
         changes => {
@@ -522,10 +522,8 @@ export class DbDataService {
   }
 
   ObtenerListaDeproductos() {
-
-    this.clientesCollection = this.afs.collection('sedes').doc('andahuaylas').collection('productos');
-
-    return this.clientes = this.clientesCollection.snapshotChanges()
+    this.productoCollection = this.afs.collection('sedes').doc('andahuaylas').collection('productos');
+    return this.productos = this.productoCollection.snapshotChanges()
       .pipe(map(
         changes => {
           return changes.map(action => {
@@ -770,4 +768,31 @@ export class DbDataService {
   }
 
 
+  // PUNTO DE VENTA
+
+  confirmarVenta(venta: VentaInterface) {
+    console.log(venta);
+    const data = {
+      productos: venta.listaItemsDeVenta
+    };
+
+    const id = formatDate(new Date(), 'dd-MM-yyyy', 'en');
+    venta.fechaEmision = new Date();
+    const promesa = new Promise( (resolve, reject) => {
+      this.afs.collection('productosVenta').add(data).then( guardado => {
+        const dataVenta = {
+          idListaProductos: guardado.id,
+          cliente: venta.cliente,
+          vendedor: venta.vendedor,
+          total: venta.totalaPagar,
+          tipoComprobante: venta.tipoComprobante,
+          serieComprobante: venta.serieComprobante,
+        };
+        this.afs.collection('ventas').doc(id).collection('ventasDia').add(dataVenta).then(ventas => {
+          resolve(ventas.id);
+        });
+      });
+    });
+    return promesa;
+  }
 }

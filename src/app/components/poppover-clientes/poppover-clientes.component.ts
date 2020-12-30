@@ -12,7 +12,7 @@ export class PoppoverClientesComponent implements OnInit, AfterViewInit {
   @ViewChild('search', {static: false}) search: any;
 
   @Input() listaClientes: any = [];
-  @Input() seleccionado: string;
+  @Input() seleccionado: any;
   // listaClientes = [];
 
   textoBuscar = '';

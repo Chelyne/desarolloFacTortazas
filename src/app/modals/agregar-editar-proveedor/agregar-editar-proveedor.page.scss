@@ -1,12 +1,21 @@
+* {
+    ion-label{
+        font-family: Nunito;
+    }
+    ion-input {
+        font-family: Nunito;
+        margin-top: 5px;
+    }
+}
 .alertDanger {
-    color: rgb(255, 0, 0);
-    background-color: rgb(248, 172, 172);
+    color: var(--ion-color-danger);
+    // background-color: rgb(248, 172, 172);
     border-radius: 3px;
     width: 100%;
 }
 .mensajeError {
     margin-left: 10px;
-    font-size: 13px;
+    font-size: 12px;
     padding: 5px;
-    text-align: center;
+    text-align: left;
 }

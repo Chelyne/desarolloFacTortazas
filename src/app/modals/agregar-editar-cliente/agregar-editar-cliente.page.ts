@@ -42,7 +42,7 @@ export class AgregarEditarClientePage implements OnInit {
       nombre: new FormControl('', [Validators.required, Validators.minLength(3), Validators.pattern('^[a-zA-ZÀ-ÿ\u00f1\u00d1 ]+$')]),
       apellidos: new FormControl('', [Validators.required, Validators.minLength(3), Validators.pattern('^[a-zA-ZÀ-ÿ\u00f1\u00d1 ]+$')]),
       dni: new FormControl('', [Validators.required, Validators.minLength(8), Validators.maxLength(8)]),
-      telefono: new FormControl('', [Validators.required, Validators.minLength(6), Validators.maxLength(9)]),
+      celular: new FormControl('', [Validators.required, Validators.minLength(9), Validators.maxLength(9)]),
       direccion: new FormControl('', [Validators.required, Validators.minLength(3)]),
       email: new FormControl('', [Validators.required, Validators.minLength(3), Validators.pattern('^[_a-z0-9]+(\.[_a-z0-9]+)*@[a-z0-9-]+(\.[_a-z0-9]+)*\.([a-z]{2,4})$')])
     });
@@ -51,7 +51,7 @@ export class AgregarEditarClientePage implements OnInit {
   get nombre() { return this.clienteModalForm.get('nombre'); }
   get apellidos() { return this.clienteModalForm.get('apellidos'); }
   get dni() { return this.clienteModalForm.get('dni'); }
-  get telefono() { return this.clienteModalForm.get('telefono'); }
+  get celular() { return this.clienteModalForm.get('celular'); }
   get direccion() { return this.clienteModalForm.get('direccion'); }
   get email() { return this.clienteModalForm.get('email'); }
 
@@ -60,7 +60,7 @@ export class AgregarEditarClientePage implements OnInit {
       nombre: new FormControl(this.dataInvoker.nombre, [Validators.required, Validators.minLength(3), Validators.pattern('^[a-zA-ZÀ-ÿ\u00f1\u00d1 ]+$')]),
       apellidos: new FormControl(this.dataInvoker.apellidos, [Validators.required, Validators.minLength(3), Validators.pattern('^[a-zA-ZÀ-ÿ\u00f1\u00d1 ]+$')]),
       dni: new FormControl(this.dataInvoker.dni, [Validators.required, Validators.minLength(8), Validators.maxLength(8)]),
-      telefono: new FormControl(this.dataInvoker.telefono, [Validators.required, Validators.minLength(6), Validators.maxLength(9)]),
+      celular: new FormControl(this.dataInvoker.celular, [Validators.required, Validators.minLength(9), Validators.maxLength(9)]),
       direccion: new FormControl(this.dataInvoker.direccion, [Validators.required, Validators.minLength(3)]),
       email: new FormControl(this.dataInvoker.email, [Validators.required, Validators.minLength(3), Validators.pattern('^[_a-z0-9]+(\.[_a-z0-9]+)*@[a-z0-9-]+(\.[_a-z0-9]+)*\.([a-z]{2,4})$')])
     });
@@ -91,7 +91,7 @@ export class AgregarEditarClientePage implements OnInit {
         console.log('Se ingreso Correctamente');
         this.presentToast('Se ingreso correctamente');
         this.clienteModalForm.reset();
-        // this.modalCtlr.dismiss();
+        this.modalCtlr.dismiss();
       }
     );
 
@@ -113,7 +113,7 @@ export class AgregarEditarClientePage implements OnInit {
 
   }
 
-  salirDeModal(){
+  cerrarModal(){
     this.modalCtlr.dismiss();
   }
 
@@ -129,7 +129,7 @@ export class AgregarEditarClientePage implements OnInit {
 
   numberOnlyValidation(event: any) {
     const pattern = /[0-9]/;
-    let inputChar = String.fromCharCode(event.charCode);
+    const inputChar = String.fromCharCode(event.charCode);
 
     if (!pattern.test(inputChar)) {
       // invalid character, prevent input
@@ -139,7 +139,7 @@ export class AgregarEditarClientePage implements OnInit {
 
   stringOnlyValidation(event: any) {
     const pattern = /[a-zA-ZÀ-ÿ\u00f1\u00d1 ]/;
-    let inputChar = String.fromCharCode(event.charCode);
+    const inputChar = String.fromCharCode(event.charCode);
 
     if (!pattern.test(inputChar)) {
       // invalid character, prevent input

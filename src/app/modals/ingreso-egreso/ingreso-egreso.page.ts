@@ -9,13 +9,13 @@ import { ModalController, ToastController } from '@ionic/angular';
 })
 export class IngresoEgresoPage implements OnInit {
 
-  ingresoEgresoForm : FormGroup;
-  private saldoInsuficiente: boolean = false;
+  ingresoEgresoForm: FormGroup;
+  public saldoInsuficiente = false;
 
-  @Input() eventoInvoker : string;
-  @Input() tagInvoker : string;
-  @Input() buttonTagInvoer:string;
-  @Input() saldoInvoker : number;
+  @Input() eventoInvoker: string;
+  @Input() tagInvoker: string;
+  @Input() buttonTagInvoer: string;
+  @Input() saldoInvoker: number;
 
 
 
@@ -34,7 +34,7 @@ export class IngresoEgresoPage implements OnInit {
       monto: new FormControl('', [Validators.required,  Validators.pattern('[0-9]*[\.]?[0-9]+$')])
     });
   }
-  //^[_a-z0-9]+(\.[_a-z0-9]+)*@[a-z0-9-]+(\.[_a-z0-9]+)*\.([a-z]{2,4})$
+  // ^[_a-z0-9]+(\.[_a-z0-9]+)*@[a-z0-9-]+(\.[_a-z0-9]+)*\.([a-z]{2,4})$
 
   get monto() { return this.ingresoEgresoForm.get('monto'); }
 
@@ -43,10 +43,10 @@ export class IngresoEgresoPage implements OnInit {
   execTransaction(){
     console.log(this.eventoInvoker);
 
-    if (this.eventoInvoker == 'Ingreso') {
+    if (this.eventoInvoker === 'Ingreso') {
       this.IngresarMonto();
 
-    } else if (this.eventoInvoker == 'Egreso') {
+    } else if (this.eventoInvoker === 'Egreso') {
       this.EgresarMonto();
 
     } else {
@@ -55,26 +55,26 @@ export class IngresoEgresoPage implements OnInit {
     }
   }
 
-  IngresarMonto () {
+  IngresarMonto() {
 
-    const monto : number = parseFloat(this.ingresoEgresoForm.value.monto);
-    //console.log(this.ingresoEgresoForm.value);
-    //console.log(monto, this.saldoInvoker);
+    const monto: number = parseFloat(this.ingresoEgresoForm.value.monto);
+    // console.log(this.ingresoEgresoForm.value);
+    // console.log(monto, this.saldoInvoker);
     this.modalCtlr.dismiss({
       newMonto: this.saldoInvoker + monto
     });
 
-    this.presentToast('Ingreso de monto exitoso.')
+    this.presentToast('Ingreso de monto exitoso.');
   }
 
   EgresarMonto(){
-    const monto : number = parseFloat(this.ingresoEgresoForm.value.monto);
+    const monto: number = parseFloat(this.ingresoEgresoForm.value.monto);
 
     if (this.saldoInvoker >= monto) {
       this.modalCtlr.dismiss({
         newMonto: this.saldoInvoker - monto
       });
-      this.presentToast('Retiro exitoso.')
+      this.presentToast('Retiro exitoso.');
 
     } else {
       this.saldoInsuficiente = true;
@@ -98,7 +98,7 @@ export class IngresoEgresoPage implements OnInit {
 
   numberOnlyValidation(event: any) {
     const pattern = /[0-9.]/;
-    let inputChar = String.fromCharCode(event.charCode);
+    const inputChar = String.fromCharCode(event.charCode);
 
     if (!pattern.test(inputChar)) {
       // invalid character, prevent input

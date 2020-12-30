@@ -8,9 +8,8 @@ import { VentaInterface } from '../models/venta/venta';
 })
 export class ConfirmarVentaService {
 
-  textService: string = 'Nada desde service';
 
-  venta: VentaInterface = {};
+  venta: VentaInterface;
   listaItemsDeVenta: ItemDeVentaInterface[] = [];
 
   cliente: ClienteInterface;
@@ -19,13 +18,6 @@ export class ConfirmarVentaService {
 
   constructor() { }
 
-  getTextService(){
-    return this.textService;
-  }
-
-  setTextService(text: string){
-    this.textService = text;
-  }
 
   getVentaService(): VentaInterface{
     return this.venta;

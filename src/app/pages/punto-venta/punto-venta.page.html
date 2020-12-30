@@ -5,6 +5,12 @@
       </ion-menu-button>
     </ion-buttons>
     <ion-title color="primary">Punto de Venta</ion-title>
+    <ion-item lines="none" slot="end">
+      <ion-button size="small" fill="outline">
+        <ion-icon name="add-circle-outline"></ion-icon> &nbsp;
+        <ion-label>Agregar Producto</ion-label>
+      </ion-button>
+    </ion-item>
   </ion-toolbar>
   <ion-toolbar color="light">
     <ion-grid>
@@ -21,7 +27,7 @@
         <ion-col size="4">
           <ion-item style="border-radius: 10px;" lines="none">
             <ion-icon slot="start" color="primary" name="person"></ion-icon>
-            <ion-input [value]="cliente?cliente.nombre + ' ' + cliente.apellidos: null" (ionFocus)="abrirPoppoverClientes($event)" type="text" placeholder="Cliente"></ion-input>
+            <ion-input [value]="cliente?(cliente.nombre | titlecase) + ' ' + (cliente.apellidos | titlecase): null" (ionFocus)="abrirPoppoverClientes($event)" type="text" placeholder="Cliente"></ion-input>
           </ion-item>
         </ion-col>
       </ion-row>
@@ -195,7 +201,7 @@
           </div>
           <!-- <img src="https://images.vexels.com/media/users/3/153874/isolated/preview/5147b9d69f00249a07732a905bcb251e-buscar-configuraci--n-icono-de-trazo-de-color-by-vexels.png" alt=""> -->
         </ion-content>
-        <ion-content class="categoriasContent scroll" *ngIf="!listaProductos.length && !this.categoria && !productos">
+        <ion-content class="categoriasContent" *ngIf="!listaProductos.length && !this.categoria && !productos">
           <ion-grid class="categorias">
             <ion-row>
               <ion-col size-lg="3" size-md="3" size-sm="6" size-xs="6" *ngFor="let categoria of categorias">
@@ -207,12 +213,12 @@
             </ion-row>
           </ion-grid>
         </ion-content>
-        <ion-content class="productosContent scroll"  *ngIf="categoria && !productos">
+        <ion-content class="productosContent"  *ngIf="categoria && !productos">
           <ion-segment scrollable value="{{categoria}}">
             <!-- <ion-segment-button value="categoria" (click)="resetListaCa">
               <ion-label>Categorias</ion-label>
             </ion-segment-button> -->
-            <ion-segment-button value ="{{categoria.categoria}}" *ngFor="let categoria of categorias" (click)="listaProductosCategoria(categoria.categoria)" >
+            <ion-segment-button [id]="categoria.categoria" value ="{{categoria.categoria}}" *ngFor="let categoria of categorias" (click)="listaProductosCategoria(categoria.categoria)" >
               <!-- <ion-card >
                 <ion-card-header [style.background-color]="categoria.color">
                   <img [src]="categoria.img" alt="">
@@ -259,7 +265,7 @@
       </ion-col>
       <ion-col size="4">
         <ion-header class="ion-no-border">
-          <ion-toolbar>
+          <ion-toolbar color="light">
             <ion-buttons slot="start">
               <ion-button [disabled]="listaItemsDeVenta.length===0" (click)="AgregaraListaDeEspera()" color="primary">
                 <ion-icon slot="icon-only" name="snow-outline"></ion-icon>
@@ -275,7 +281,7 @@
             </ion-buttons>
           </ion-toolbar>
         </ion-header>
-        <ion-content class="contentItemsVenta" style="height: 80%;" color="light">
+        <ion-content class="contentItemsVenta">
           <div class="sinDatosVenta" *ngIf="listaItemsDeVenta.length === 0">
             <div class="textoSindatos">
               <ion-icon class="icono" name="reader-outline" color="medium"></ion-icon> <br><br>
@@ -329,7 +335,7 @@
           </ion-grid>
         </ion-content>
         <div style=" height: 10%; width: 100%; position: absolute;">
-          <ion-button [disabled]="!totalxPagar" style="height: 100%;" expand="block" routerLink="/confirmar-venta" (click)="SaveOnService()">
+          <ion-button [disabled]="!totalxPagar" style="height: 100%;" expand="block" (click)="irPagar()">
               <ion-icon  color="light"name="caret-forward-outline"></ion-icon>
               <ion-label color="light">PAGAR</ion-label> &nbsp;&nbsp;
               <ion-label color="light">S/. {{totalxPagar | number: '1.2'}}</ion-label>

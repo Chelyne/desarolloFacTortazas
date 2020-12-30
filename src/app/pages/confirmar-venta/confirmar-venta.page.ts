@@ -4,6 +4,10 @@ import { VentaInterface } from 'src/app/models/venta/venta';
 import { ConfirmarVentaService } from 'src/app/services/confirmar-venta.service';
 // import { TestServiceService } from 'src/app/services/test-service.service';
 import { MenuController } from '@ionic/angular';
+import { isNullOrUndefined } from 'util';
+import { Router } from '@angular/router';
+import { DbDataService } from '../../services/db-data.service';
+import { StorageService } from '../../services/storage.service';
 
 @Component({
   selector: 'app-confirmar-venta',
@@ -35,36 +39,41 @@ export class ConfirmarVentaPage implements OnInit {
   montoEntrante: number = 0;
   descuentoDeVenta: number;
 
-  // tslint:disable-next-line: no-inferrable-types
-  textService: string = 'Nothing';
-  venta: VentaInterface = {} ;
+  venta: VentaInterface;
   constructor(
     private testServ: ConfirmarVentaService,
-    private menuCtrl: MenuController
+    private menuCtrl: MenuController,
+    private router: Router,
+    private dataApi: DbDataService,
+    private storage: StorageService
   ) {
     this.formPago = this.createFormPago();
    }
 
+  ionViewWillEnter() {
+    this.venta = this.testServ.getVentaService();
+    if (isNullOrUndefined(this.venta)) {
+      this.router.navigate(['/punto-venta']);
+    } else {
+      if (Object.entries(this.venta).length !== 0){
+        this.subTotalDeVenta = this.venta.totalaPagar;
+        this.IGVdeVenta = this.subTotalDeVenta * 18 / 100;
+        this.totalAPagar = this.subTotalDeVenta + this.IGVdeVenta;
+        this.montoEntrante = this.totalAPagar;
+        this.totalconDescuento = this.totalAPagar;
+      } else {
+        this.subTotalDeVenta = 0;
+        this.IGVdeVenta = 0;
+        this.totalAPagar = 0;
+        this.totalconDescuento = 0;
+      }
+      console.log('venta', this.venta);
+    }
+  }
+
   ngOnInit() {
     this.menuCtrl.enable(true);
     // REFACTOR
-    console.log('ssssssssssssssssollo una vez');
-    this.ObtenerTextService();
-    this.ObtenerVentaService();
-    console.log('venta');
-    if (Object.entries(this.venta).length !== 0){
-      this.subTotalDeVenta = this.venta.totalaPagar;
-      this.IGVdeVenta = this.subTotalDeVenta * 18 / 100;
-      this.totalAPagar = this.subTotalDeVenta + this.IGVdeVenta;
-      this.montoEntrante = this.totalAPagar;
-      this.totalconDescuento = this.totalAPagar;
-
-    } else {
-      this.subTotalDeVenta = 0;
-      this.IGVdeVenta = 0;
-      this.totalAPagar = 0;
-      this.totalconDescuento = 0;
-    }
 
     this.formPago.setControl('montoIngreso',
       new FormControl(this.totalAPagar, [Validators.required, Validators.pattern('^[0-9]*\.?[0-9]*$')])
@@ -75,16 +84,6 @@ export class ConfirmarVentaPage implements OnInit {
     );
 
     // console.log('sssssssssssss', this.venta);
-  }
-
-  // CLEAN - quitar
-  ObtenerTextService(){
-    this.textService = this.testServ.getTextService();
-  }
-
-  ObtenerVentaService(){
-    this.venta = this.testServ.getVentaService();
-    console.log(this.venta);
   }
 
 
@@ -176,7 +175,14 @@ export class ConfirmarVentaPage implements OnInit {
   }
 
   generarPago(){
+    this.venta.tipoComprobante = this.tipoComprobante;
+    this.venta.serieComprobante = this.serieComprobante;
+    this.venta.vendedor = this.storage.datosAdmi;
     console.log('Se generó el pago');
+    this.dataApi.confirmarVenta(this.venta).then(data => {
+      this.router.navigate(['/punto-venta', 'true']);
+      console.log('guardado', data);
+    });
   }
 
 }

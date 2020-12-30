@@ -16,13 +16,11 @@ import { EditarProductoPage } from '../../modals/editar-producto/editar-producto
   styleUrls: ['./catalogo.page.scss'],
 })
 export class CatalogoPage implements OnInit {
-  // -------------
   sedes = this.storage.datosAdmi.sede;
   listaDeProductos: ProductoInterface[] = [];
-  buscando: boolean = false;
+  buscando = false;
   id: any;
 
-  // -------------
   categorias = [];
   categoria;
 
@@ -99,6 +97,8 @@ export class CatalogoPage implements OnInit {
     this.router.navigate(['/agregar-producto', this.sedes, this.categoria]);
   }
 
+
+  // ==========================================================================================
   agregarProducto() {
     // this.router.navigate(['/agregar-producto', this.sedes, this.categoria]);
     this.abrirModalNuevoProducto();
