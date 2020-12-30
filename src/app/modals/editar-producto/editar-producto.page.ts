@@ -160,8 +160,10 @@ export class EditarProductoPage implements OnInit {
       nombre: new FormControl(this.dataProducto.nombre, [Validators.required, Validators.minLength(3), Validators.maxLength(65)]),
       cantidad: new FormControl(this.dataProducto.cantidad, [Validators.required, Validators.min(1)]),
       medida: new FormControl(this.dataProducto.medida, [Validators.required]),
+      marca: new FormControl(this.dataProducto.marca, [Validators.required, Validators.minLength(3), Validators.maxLength(65)]),
       precio: new FormControl(this.dataProducto.precio, [Validators.required]),
       cantStock: new FormControl(this.dataProducto.cantStock, [Validators.required, Validators.min(0)]),
+      fechaDeVencimiento: new FormControl(this.dataProducto.fechaDeVencimiento, [Validators.required]),
       tallas: new FormControl(this.dataProducto.tallas),
       categoria: new FormControl(this.dataProducto.categoria),
       img: new FormControl(this.dataProducto.img),
@@ -173,8 +175,10 @@ export class EditarProductoPage implements OnInit {
   get nombre() {return this.updateForm.get('nombre'); }
   get cantidad() {return this.updateForm.get('cantidad'); }
   get medida() {return this.updateForm.get('medida'); }
+  get marca() {return this.updateForm.get('marca'); }
   get precio() {return this.updateForm.get('precio'); }
   get cantStock() {return this.updateForm.get('cantStock'); }
+  get fechaDeVencimiento() {return this.updateForm.get('fechaDeVencimiento'); }
 
   actualizarProducto() {
     console.log(this.updateForm.value, this.cantStock);

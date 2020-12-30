@@ -192,7 +192,7 @@ resetOrientation(srcBase64, srcOrientation, callback) {
       marca: new FormControl('', [Validators.required, Validators.minLength(3), Validators.maxLength(45)]),
       precio: new FormControl('', [Validators.required]),
       cantStock: new FormControl('', [Validators.required, Validators.min(1)]),
-      fechadevencimiento: new FormControl('', [Validators.required]),
+      fechaDeVencimiento: new FormControl('', [Validators.required]),
       img: new FormControl(''),
       fechaRegistro: new FormControl(''),
       sede: new FormControl(''),
@@ -210,7 +210,7 @@ resetOrientation(srcBase64, srcOrientation, callback) {
   get marca() {return this.productoForm.get('marca'); }
   get precio() {return this.productoForm.get('precio'); }
   get cantStock() {return this.productoForm.get('cantStock'); }
-  get fechadevencimiento() {return this.productoForm.get('fechadevencimiento'); }
+  get fechaDeVencimiento() {return this.productoForm.get('fechaDeVencimiento'); }
 
 
   onResetForm() {

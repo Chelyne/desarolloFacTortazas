@@ -168,10 +168,10 @@
                 <ion-col size="12 " size-xs="12" size-sm="12" size-md="6" size-lg="4">
                     <ion-item lines="none">
                         <ion-label position="stacked">Fecha de vencimiento:</ion-label>
-                        <ion-input type="date" formControlName="fechadevencimiento" class="form-control"></ion-input>
+                        <ion-input type="date" formControlName="fechaDeVencimiento" class="form-control"></ion-input>
                     </ion-item>
-                    <div class="alertDanger" *ngIf="fechadevencimiento && fechadevencimiento.invalid && (fechadevencimiento.dirty || fechadevencimiento.touched)">
-                        <div class="mensajeError" *ngIf="  !!fechadevencimiento.errors.required">
+                    <div class="alertDanger" *ngIf="fechaDeVencimiento && fechaDeVencimiento.invalid && (fechaDeVencimiento.dirty || fechaDeVencimiento.touched)">
+                        <div class="mensajeError" *ngIf="  !!fechaDeVencimiento.errors.required">
                             Ingrese fecha de vencimiento
                         </div>
                     </div>

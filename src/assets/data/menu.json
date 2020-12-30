@@ -9,8 +9,7 @@
     {
         "icon": "calculator-outline",
         "name": "POS",
-        "sub": [
-            {
+        "sub": [{
                 "icon": "receipt-outline",
                 "name": "Punto de Venta",
                 "redirecTo": "/punto-venta"
@@ -31,8 +30,7 @@
     {
         "icon": "cart-outline",
         "name": "Compras",
-        "sub": [
-            {
+        "sub": [{
                 "icon": "receipt-outline",
                 "name": "Nuevo",
                 "redirecTo": "/compras"
@@ -53,8 +51,7 @@
     {
         "icon": "cash-outline",
         "name": "Ventas",
-        "sub": [
-            {
+        "sub": [{
                 "icon": "receipt-outline",
                 "name": "Nuevo Comprobante",
                 "redirecTo": "#"
@@ -80,8 +77,7 @@
     {
         "icon": "storefront-outline",
         "name": "Inventario",
-        "sub": [
-            {
+        "sub": [{
                 "icon": "receipt-outline",
                 "name": "Productos",
                 "redirecTo": "/catalogo"
@@ -89,7 +85,7 @@
             {
                 "icon": "receipt-outline",
                 "name": "Categorias",
-                "redirecTo": "#"
+                "redirecTo": "/catalogo"
             },
             {
                 "icon": "receipt-outline",
@@ -113,8 +109,7 @@
     {
         "icon": "stats-chart-outline",
         "name": "Reportes",
-        "sub": [
-            {
+        "sub": [{
                 "icon": "receipt-outline",
                 "name": "Compras",
                 "redirecTo": "#"
