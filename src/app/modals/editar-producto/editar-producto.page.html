@@ -32,7 +32,7 @@
                                     </ion-item>
                                 </ion-toolbar>
                                 <div class="fotoProducto">
-                                    <img (click)="presentActionSheet(fileLoader)" *ngIf="dataProducto.img !image" src="{{dataProducto.img}}" alt="">
+                                    <img (click)="presentActionSheet(fileLoader)" *ngIf="dataProducto.img && !image" src="{{dataProducto.img}}" alt="">
                                     <img (click)="presentActionSheet(fileLoader)" *ngIf="!dataProducto.img && !image" src="../../../assets/img/pet chop.png" alt="">
                                     <img (click)="presentActionSheet(fileLoader)" *ngIf="image" src="{{image}}" alt="">
                                 </div>
