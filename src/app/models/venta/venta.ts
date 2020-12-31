@@ -1,7 +1,16 @@
+import { ClienteInterface } from '../cliente-interface';
 import { ItemDeVentaInterface } from './item-de-venta';
 
+
 export interface VentaInterface {
-    idVenta?:string;
+    fechaEmision?: Date;
+    idVenta?: string;
+    cliente?: ClienteInterface;
+    vendedor?: {};
+    tipoComprobante?: string;
+    serieComprobante?: string;
+    numeroComprobante?: string;
     listaItemsDeVenta?: ItemDeVentaInterface[];
     totalaPagar?: number;
 }
+

@@ -9,6 +9,7 @@ import { ClienteInterface } from '../models/cliente-interface';
 import { ProveedorInterface } from '../models/proveedor';
 import { UsuarioInterfce } from '../models/User';
 import { CompraInterface } from '../models/Compra';
+import { EmpresaInterface } from '../models/api-peru/empresa';
 
 @Injectable({
   providedIn: 'root'
@@ -45,6 +46,8 @@ export class DbDataService {
 
   private compraDoc: AngularFirestoreDocument<ProductoInterface>;
   private compra: Observable<ProductoInterface>;
+
+  private datosEmpresa: EmpresaInterface[] = [];
 
 
   constructor(private afs: AngularFirestore) { }
@@ -768,6 +771,56 @@ export class DbDataService {
 
     return promesa;
   }
+
+
+/* -------------------------------------------------------------------------- */
+/*                              consultas para datos de api                   */
+/* -------------------------------------------------------------------------- */
+  async guardarDatosEmpresa(empresa: EmpresaInterface) {
+    await this.obtenerEmpresa().subscribe(data => {
+      this.datosEmpresa = data;
+    });
+
+    if (this.datosEmpresa.length){
+      // Actualizar empresa
+      const id = this.datosEmpresa[0].id;
+      const promesa =  new Promise( (resolve) => {
+        this.afs.collection('empresa').doc(id).update(empresa);
+        // tslint:disable-next-line: no-unused-expression
+        resolve;
+      });
+
+      return promesa;
+    } else{
+      // agregar empresa
+      const promesa =  new Promise( (resolve, reject) => {
+        this.afs.collection('empresa').add(empresa);
+        // tslint:disable-next-line: no-unused-expression
+        resolve;
+      });
+      return promesa;
+    }
+  }
+
+  obtenerEmpresa(){
+
+    const empresa = this.afs.collection('empresa');
+
+    return empresa.snapshotChanges()
+      .pipe(map(
+        changes => {
+          return changes.map(action => {
+            const data = action.payload.doc.data() as ProveedorInterface;
+            data.id = action.payload.doc.id;
+            return data;
+            });
+          }
+      ));
+
+  }
+
+
+/* -------------------------------------------------------------------------- */
 
 
 }
