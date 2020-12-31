@@ -1,9 +1,10 @@
 import { Component, OnInit } from '@angular/core';
-import { ModalController } from '@ionic/angular';
+import { ModalController, MenuController } from '@ionic/angular';
 import { AgregarEditarClientePage } from 'src/app/modals/agregar-editar-cliente/agregar-editar-cliente.page';
 import { ClienteInterface } from 'src/app/models/cliente-interface';
 import { DbDataService } from 'src/app/services/db-data.service';
 // import { RegistrarClienteService } from 'src/app/services/registrar-cliente.service';
+import { StorageService } from '../../services/storage.service';
 
 @Component({
   selector: 'app-lista-de-clientes',
@@ -21,22 +22,26 @@ export class ListaDeClientesPage implements OnInit {
   modalTag: string;
   modalDataCliente: ClienteInterface;
 
-  constructor(private dataApi: DbDataService, private modalCtlr: ModalController) {
-    //this.usuarioForm = this.createFormGroupUsuario();
+  constructor(private dataApi: DbDataService,
+              private modalCtlr: ModalController,
+              private menuCtrl: MenuController,
+              private storage: StorageService) {
+    // this.usuarioForm = this.createFormGroupUsuario();
     this.ObtenerClientes();
   }
 
   ngOnInit() {
+    this.menuCtrl.enable(true);
   }
 
 
   ObtenerClientes(){
-    //console.log("getUsuarios");
+    // console.log("getUsuarios");
 
     this.dataApi.ObtenerListaDeClientes().subscribe(data => {
       // console.log(data);
       this.listaDeclientes = data;
-      //console.log(this.usuariosList.length);
+      // console.log(this.usuariosList.length);
     });
 
   }
@@ -61,7 +66,7 @@ export class ListaDeClientesPage implements OnInit {
 
     setTimeout(() => {
       this.abrirModal();
-    }, 500);
+    }, 10);
   }
 
 

@@ -10,7 +10,7 @@ import { StorageService } from '../../services/storage.service';
 export class VentasCongeladasPage implements OnInit {
 
   constructor(private modalCtrl: ModalController,
-              private storage: StorageService) { }
+              public storage: StorageService) { }
 
   ngOnInit() {
     console.log(this.storage.listaVenta);

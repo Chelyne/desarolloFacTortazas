@@ -7,6 +7,7 @@ import { FormGroup, FormControl, Validators } from '@angular/forms';
 import { isNullOrUndefined } from 'util';
 // import { ImagePicker } from '@ionic-native/image-picker/ngx';
 import { DbDataService } from '../../services/db-data.service';
+import { CategoriasService } from '../../services/categorias.service';
 
 
 @Component({
@@ -16,7 +17,6 @@ import { DbDataService } from '../../services/db-data.service';
   providers: [DatePipe]
 })
 export class ModalAgregarProductoPage implements OnInit {
-  
   @ViewChild('inputTalla', {static: false}) inputTalla;
   @ViewChild('inputInventario', {static: false}) inputInventario;
   @ViewChild('inputPrecio', {static: false}) inputPrecio;
@@ -27,12 +27,12 @@ export class ModalAgregarProductoPage implements OnInit {
   @Input() sede: string;
   @Input() categoria: string;
   @Input() subCategoria: string;
-  file: File;
-  photoSelected: string | ArrayBuffer;
-//----------------
+  
+// ----------------
   processing:boolean;
   uploadImage: string | ArrayBuffer;
-//----------------
+
+// ----------------
   image: any;
   sinFoto: string;
   progress = 0;
@@ -46,6 +46,8 @@ export class ModalAgregarProductoPage implements OnInit {
 
   variable;
   variante = [];
+  // ----------
+  categorias = [];
   constructor(
     private modalController: ModalController,
     private dbData: DbDataService,
@@ -55,18 +57,24 @@ export class ModalAgregarProductoPage implements OnInit {
     private firebaseStorage: AngularFireStorage,
     private datePipe: DatePipe,
     private loadingController: LoadingController,
+    private categoriaService: CategoriasService
     // private imagePicker: ImagePicker,
   ) {
     this.productoForm = this.createFormGroup();
-    
+
    }
 
   ngOnInit() {
     console.log(this.sede, this.categoria, this.subCategoria);
     console.log("foto", this.uploadImage);
+
+    this.categorias = this.categoriaService.getcategoriasNegocio(this.categoria);
+    console.log('categorias', this.categorias);
+    console.log('sede', this.sede);
+    console.log('categoria', this.categoria);
   }
-  //--------------------------
-  presentActionSheet(fileLoader) {
+  // --------------------------
+   presentActionSheet(fileLoader) {
     fileLoader.click();
     var that = this;
     fileLoader.onchange = function () {
@@ -75,11 +83,12 @@ export class ModalAgregarProductoPage implements OnInit {
 
       reader.addEventListener("load", function () {
         that.processing = true;
+        that.uploadImage = reader.result;
+
         that.getOrientation(fileLoader.files[0], function (orientation) {
           if (orientation > 1) {
             that.resetOrientation(reader.result, orientation, function (resetBase64Image) {
               that.uploadImage = resetBase64Image;
-
             });
           } else {
             that.uploadImage = reader.result;
@@ -89,13 +98,14 @@ export class ModalAgregarProductoPage implements OnInit {
 
       if (file) {
         reader.readAsDataURL(file);
-        
       }
-    }
+    };
   }
 imageLoaded(){
   this.processing = false;
 }
+
+
 getOrientation(file, callback) {
   var reader = new FileReader();
   reader.onload = function (e:any) {
@@ -123,6 +133,7 @@ getOrientation(file, callback) {
   };
   reader.readAsArrayBuffer(file);
   console.log("fotobase100", this.uploadImage);
+
   this.image = this.uploadImage;
 }
 resetOrientation(srcBase64, srcOrientation, callback) {
@@ -165,9 +176,9 @@ resetOrientation(srcBase64, srcOrientation, callback) {
   img.src = srcBase64;
 }
   removePic() {
-    this.uploadImage = '../../../assets/fondoImg.jpg';
+    this.uploadImage   = '../../../assets/fondoImg.jpg';
   }
-  //-------------------------
+  // -------------------------
 
 
 
@@ -175,12 +186,13 @@ resetOrientation(srcBase64, srcOrientation, callback) {
     return new FormGroup({
       // tslint:disable-next-line:max-line-length
       nombre: new FormControl('', [Validators.required, Validators.minLength(3), Validators.maxLength(45)]),
+      categoriass: new FormControl('', [Validators.required]),
       cantidad: new FormControl('', [Validators.required, Validators.min(1)]),
       medida: new FormControl('', [Validators.required]),
       marca: new FormControl('', [Validators.required, Validators.minLength(3), Validators.maxLength(45)]),
       precio: new FormControl('', [Validators.required]),
       cantStock: new FormControl('', [Validators.required, Validators.min(1)]),
-      fechadevencimiento: new FormControl('', [Validators.required]),
+      fechaDeVencimiento: new FormControl('', [Validators.required]),
       img: new FormControl(''),
       fechaRegistro: new FormControl(''),
       sede: new FormControl(''),
@@ -192,12 +204,13 @@ resetOrientation(srcBase64, srcOrientation, callback) {
   }
 
   get nombre() {return this.productoForm.get('nombre'); }
+  get categoriass() {return this.productoForm.get('categoriass'); }
   get cantidad() {return this.productoForm.get('cantidad'); }
   get medida() {return this.productoForm.get('medida'); }
   get marca() {return this.productoForm.get('marca'); }
   get precio() {return this.productoForm.get('precio'); }
   get cantStock() {return this.productoForm.get('cantStock'); }
-  get fechadevencimiento() {return this.productoForm.get('fechadevencimiento'); }
+  get fechaDeVencimiento() {return this.productoForm.get('fechaDeVencimiento'); }
 
 
   onResetForm() {
@@ -300,7 +313,7 @@ resetOrientation(srcBase64, srcOrientation, callback) {
         this.productoForm.value.img = url;
         this.productoForm.value.nombre = this.productoForm.value.nombre.toLowerCase();
         this.productoForm.value.categoria = this.categoria;
-        this.productoForm.value.subCategoria = this.subCategoria;
+        this.productoForm.value.subCategoria = this.productoForm.value.categoriass.toLowerCase();
         this.productoForm.value.sede = this.sede;
         this.productoForm.value.fechaRegistro = new Date();
         this.dbData.guardarProducto(this.productoForm.value, this.sede);

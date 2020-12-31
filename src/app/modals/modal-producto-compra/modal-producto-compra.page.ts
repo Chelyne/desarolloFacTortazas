@@ -24,13 +24,13 @@ export class ModalProductoCompraPage implements OnInit {
   ngOnInit() {
   }
 
-
-  async presentModalBuscador(busca: string) {
+  // busca: string
+  async presentModalBuscador() {
     const modal = await this.modalCtrl.create({
       component: ModalBuscadorPage,
       cssClass: 'my-custom-class',
       componentProps: {
-        buscar: busca
+        // buscar: busca
       }
     });
     await modal.present();

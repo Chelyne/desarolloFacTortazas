@@ -3,7 +3,7 @@
   <ion-list *ngIf="listaClientes">
     <ion-item (click)="popAction(cliente)" *ngFor="let cliente of listaClientes| buscarCliente:textoBuscar" lines="none">
       <!-- <ion-icon slot="start" name="create-outline" color="primary"></ion-icon> -->
-      <ion-label [ngClass]="{'seleccionar': seleccionado && seleccionado.dni === cliente.dni}">{{cliente.dni}} - {{cliente.nombre | titlecase}} {{cliente.apellidos | titlecase}}</ion-label>
+      <ion-label [ngClass]="{'seleccionar': seleccionado && seleccionado.documento === cliente.documento}">{{cliente.documento}} - {{cliente.nombre | titlecase}}</ion-label>
     </ion-item>
   </ion-list>
   <div class="cargando" *ngIf="listaClientes.length===0">

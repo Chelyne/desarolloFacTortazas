@@ -1,6 +1,11 @@
 <ion-header>
   <ion-toolbar>
     <ion-title>{{titleInvoker | titlecase}}</ion-title>
+    <ion-buttons slot="end">
+      <ion-button (click)="cerrarModal()">
+        <ion-icon color="primary" slot="icon-only" name="close-outline"></ion-icon>
+      </ion-button>
+    </ion-buttons>
   </ion-toolbar>
 </ion-header>
 
@@ -8,8 +13,8 @@
   <form [formGroup]="proveedorModalForm" autocomplete="off">
 
     <ion-item>
-      <ion-label>Nombre:* </ion-label>
-      <ion-input type="text" formControlName="nombre" placeholder="(Persona o Empresa):"></ion-input>
+      <ion-label color="primary" position="floating">Nombre</ion-label>
+      <ion-input type="text" formControlName="nombre" placeholder="Persona o Empresa"></ion-input>
     </ion-item>
     <div class="alertDanger" *ngIf="nombre.invalid && (nombre.dirty || nombre.touched)">
       <div class="mensajeError" *ngIf="nombre.errors.required">
@@ -19,7 +24,6 @@
         *Ingrese mínimo 3 caracteres
       </div>
     </div>
-
 
     <!-- <ion-item>
       <ion-label>RUC:* </ion-label>
@@ -38,7 +42,7 @@
     </div> -->
 
     <ion-item>
-      <ion-label>Tipo de Documento</ion-label>
+      <ion-label color="primary">Tipo de Documento</ion-label>
       <ion-select  multiple="false" interface="popover" formControlName="tipoDocumento" (ionChange)="siRucoDni()">
         <ion-select-option value="ruc">RUC</ion-select-option>
         <ion-select-option value="dni">DNI</ion-select-option>
@@ -46,8 +50,8 @@
     </ion-item>
 
     <ion-item>
-      <ion-label>Número Documento:* </ion-label>
-      <ion-input type="text" formControlName="numeroDocumento" (keypress)="numberOnlyValidation($event)"></ion-input>
+      <ion-label color="primary" position="floating">Número Documento</ion-label>
+      <ion-input placeholder="Número Documento" type="text" formControlName="numeroDocumento" (keypress)="numberOnlyValidation($event)"></ion-input>
     </ion-item>
     <div class="alertDanger" *ngIf="numeroDocumento.invalid && (numeroDocumento.dirty || numeroDocumento.touched)">
       <div *ngIf="typoDocumento=='ruc'">
@@ -56,10 +60,10 @@
           Ingrese ruc
         </div>
         <div class="alertDanger" *ngIf="numeroDocumento.errors.minlength">
-          *Ingresaste menos carácteres
+          *Ingresaste al menos 8 carácteres
         </div>
         <div class="alertDanger" *ngIf="numeroDocumento.errors.maxlength">
-          *Ingrese más caracteres
+          *Ingrese máximo 11 caracteres
         </div>
       </div>
       <div *ngIf="typoDocumento=='dni'">
@@ -68,33 +72,33 @@
           Ingrese DNI
         </div>
         <div class="alertDanger" *ngIf="numeroDocumento.errors.minlength">
-          *Ingresaste menos carácteres
+          *Ingresaste al menos 8 carácteres
         </div>
         <div class="alertDanger" *ngIf="numeroDocumento.errors.maxlength">
-          *Ingrese más caracteres
+          *Ingrese máximo 11 caracteres
         </div>
       </div>
     </div>
 
     <ion-item>
-      <ion-label>Teléfono: </ion-label>
-      <ion-input type="text" (keypress)="numberOnlyValidation($event)" formControlName="telefono" placeholder="Teléfono o Cel"></ion-input>
+      <ion-label color="primary" position="floating">Teléfono / Celular</ion-label>
+      <ion-input type="text" (keypress)="numberOnlyValidation($event)" formControlName="telefono" placeholder="Teléfono o Celular"></ion-input>
     </ion-item>
     <div class="alertDanger" *ngIf="telefono.invalid && (telefono.dirty || telefono.touched)">
       <div class="mensajeError" *ngIf="telefono.errors.required">
         *Ingrese el número de teléfono o celular del proveedor
       </div>
-      <div class="alertDanger" *ngIf="telefono.errors.minlength">
+      <div class="mensajeError" *ngIf="telefono.errors.minlength">
         *Ingrese mínimo 6 caracteres
       </div>
-      <div class="alertDanger" *ngIf="telefono.errors.maxlength">
-        *Teléfono invalido más de 9 caracteres
+      <div class="mensajeError" *ngIf="telefono.errors.maxlength">
+        *Teléfono invalido, más de 9 caracteres
       </div>
     </div>
 
     <ion-item>
-      <ion-label>Dirección:* </ion-label>
-      <ion-input type="text" formControlName="direccion" placeholder="Direccion:"></ion-input>
+      <ion-label color="primary" position="floating">Dirección</ion-label>
+      <ion-input type="text" formControlName="direccion" placeholder="Dirección"></ion-input>
     </ion-item>
     <div class="alertDanger" *ngIf="direccion.invalid && (direccion.dirty || direccion.touched)">
       <div class="mensajeError" *ngIf="direccion.errors.required">
@@ -107,7 +111,7 @@
 
 
     <ion-item>
-      <ion-label>E-mail:* </ion-label>
+      <ion-label color="primary" position="floating">E-mail</ion-label>
       <ion-input type="text" formControlName="email" placeholder="email@company.com"></ion-input>
     </ion-item>
     <div class="alertDanger" *ngIf="email.invalid && (email.dirty || email.touched)">
@@ -118,15 +122,13 @@
         *email invalido: email@company.com
       </div>
     </div>
-
-    <ion-button (click)="salirDeModal()"  >
-      cerrar
-    </ion-button>
-    <ion-button (click)="execFun()" [disabled]="proveedorModalForm.invalid">
-      {{tagInvoker}}
-    </ion-button>
-
   </form>
-
-
 </ion-content>
+
+<ion-footer>
+  <ion-item lines="none">
+    <ion-button slot="end" size="small" (click)="execFun()" [disabled]="proveedorModalForm.invalid">
+      <ion-label color="light">{{tagInvoker}}</ion-label>
+    </ion-button>
+  </ion-item>
+</ion-footer>

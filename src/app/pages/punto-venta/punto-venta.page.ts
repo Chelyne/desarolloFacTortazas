@@ -14,7 +14,7 @@ import { StorageService } from '../../services/storage.service';
 import { PoppoverClientesComponent } from '../../components/poppover-clientes/poppover-clientes.component';
 // import { TestServiceService } from 'src/app/services/test-service.service';
 
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { ConfirmarVentaService } from 'src/app/services/confirmar-venta.service';
 import { VentasCongeladasPage } from '../../modals/ventas-congeladas/ventas-congeladas.page';
 import { isNullOrUndefined } from 'util';
@@ -53,7 +53,8 @@ export class PuntoVentaPage implements OnInit {
               private popoverController: PopoverController,
               private testServ: ConfirmarVentaService,
               private rutaActiva: ActivatedRoute,
-              private modalController: ModalController
+              private modalController: ModalController,
+              private router: Router
               ) {
     this.menuCtrl.enable(true);
    }
@@ -100,6 +101,14 @@ export class PuntoVentaPage implements OnInit {
     this.categoria = categoria;
     // const propietario = this.storage.datosNegocio.correo;
     const sede1 = 'andahuaylas';
+    if (document.getElementById(this.categoria)) {
+      document.getElementById(this.categoria).scrollIntoView({
+        behavior: 'smooth',
+        block: 'center',
+        inline: 'center'
+      });
+
+    }
     this.dataApi.ObtenerProductosCategoria(sede1, categoria).subscribe(datos => {
       if (datos.length > 0) {
         this.listaProductos =  datos;
@@ -161,7 +170,7 @@ export class PuntoVentaPage implements OnInit {
     }
 
     if (!producExist){
-      this.listaItemsDeVenta.push( this.CrearItemDeVenta(prodItem));
+      this.listaItemsDeVenta.unshift( this.CrearItemDeVenta(prodItem));
     }
 
     this.calcularTotalaPagar();
@@ -176,18 +185,23 @@ export class PuntoVentaPage implements OnInit {
     };
   }
 
-  inputModificado(evento: {id: string, cantidad: number}){
+  inputModificado(evento: {id: string, cantidad: number, precioVenta: number}){
+    console.log('RRARY', this.listaItemsDeVenta);
     // console.log(evento);
-    this.ActualizarMonto(evento.id, evento.cantidad);
+    this.ActualizarMonto(evento.id, evento.cantidad, evento.precioVenta);
   }
 
-  ActualizarMonto(idProdItem: string, cantidad: number){
+  ActualizarMonto(idProdItem: string, cantidad: number, precioVenta: number){
     if (this.listaItemsDeVenta.length > 0) {
       for (const itemDeVenta of this.listaItemsDeVenta) {
         // console.log('ssssssssssssssssss')
         if (idProdItem === itemDeVenta.idProducto){
             itemDeVenta.cantidad = cantidad;
-            itemDeVenta.tatalxprod = itemDeVenta.cantidad * itemDeVenta.producto.precio;
+            if (isNullOrUndefined(precioVenta)) {
+              itemDeVenta.tatalxprod = itemDeVenta.cantidad * itemDeVenta.producto.precio;
+            } else {
+              itemDeVenta.tatalxprod = precioVenta;
+            }
             break;
         }
       }
@@ -248,6 +262,7 @@ export class PuntoVentaPage implements OnInit {
 
   CrearItemDeVentas(): VentaInterface{
     return {
+      cliente: this.cliente,
       listaItemsDeVenta: this.listaItemsDeVenta,
       totalaPagar: this.totalxPagar,
       idVenta: this.CrearVentaId()
@@ -289,9 +304,17 @@ export class PuntoVentaPage implements OnInit {
   }
 
   // TODO : Mejorar los nombre de este modulo
-  SaveOnService(){
-    this.testServ.setTextService('Buenos Días Beto');
-    this.testServ.setVenta(this.CrearItemDeVentas());
+  irPagar(){
+    if (this.cliente) {
+      if (this.listaItemsDeVenta.length > 0) {
+        this.testServ.setVenta(this.CrearItemDeVentas());
+        this.router.navigate(['/confirmar-venta']);
+      } else {
+        this.presentToast('Por favor agregue productos a vender', 'danger');
+      }
+    } else {
+      this.presentToast('Por favor seleccione un cliente', 'danger');
+    }
   }
 
 

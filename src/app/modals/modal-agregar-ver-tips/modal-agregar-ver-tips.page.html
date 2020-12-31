@@ -12,8 +12,8 @@
 
 <ion-content class="ion-padding" *ngIf="!data">
   <ion-card>
-    <img *ngIf="!image"(click)="SubirFoto()" style="width: 60%;" src="../../../assets/fondoImg.jpg" />
-    <img *ngIf="image"(click)="SubirFoto()" style="width: 60%;" [src]="image" />
+    <!-- <img *ngIf="!image"(click)="SubirFoto()" style="width: 60%;" src="../../../assets/fondoImg.jpg" />
+    <img *ngIf="image"(click)="SubirFoto()" style="width: 60%;" [src]="image" /> -->
 </ion-card>
 <form [formGroup]="tipForm">
   <ion-item>

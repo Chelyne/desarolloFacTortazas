@@ -13,16 +13,41 @@
         </div>
       </ion-header>
       <ion-content>
-        <ion-list>
+        <div class="contenido" *ngFor="let c of componentes | async">
+          <ion-menu-toggle *ngIf="c.redirecTo" autoHide="false" (click)="menuSelected(c)">
+            <ion-item [routerLink]="c.redirecTo" lines="none" routerDirection="root" routerLinkActive="active">
+              <ion-icon [name]="c.icon" color="primary"></ion-icon> &nbsp; &nbsp;
+              <ion-label>{{c.name}}</ion-label>
+            </ion-item>
+          </ion-menu-toggle>
+
+          <ion-item lines="none" *ngIf="c.sub?.length>0" (click)="c.open = !c.open" detail="false" [ngClass]="{'active-parent': c.open, 'desactive-parent': !c.open}">
+            <ion-icon [name]="c.icon" color="primary"></ion-icon> &nbsp; &nbsp;
+            <ion-icon size="small" slot="end" name="chevron-down-sharp" *ngIf="!c.open"></ion-icon>
+            <ion-icon size="small" slot="end" name="chevron-up-sharp" *ngIf="c.open"></ion-icon>
+            <ion-label>{{c.name}}</ion-label>
+          </ion-item>
+
+          <ion-list *ngIf="c.open">
+            <ion-menu-toggle autoHide="false">
+              <ion-item class="subItem" *ngFor="let sub of c.sub" [routerLink]="sub.redirecTo" lines="none" routerDirection="root" routerLinkActive="active">
+                <!-- <ion-icon slot="start" [name]="sub.icon" color="primary"></ion-icon> -->
+                <ion-label>{{sub.name}}</ion-label>
+              </ion-item>
+            </ion-menu-toggle>
+          </ion-list>
+        </div>
+
+
+        <!-- <ion-list>
           <ion-menu-toggle autoHide="false" *ngFor="let c of componentes | async" (click)="menuSelected(c)">
             <ion-item [routerLink]="c.redirecTo" lines="none" [ngClass]="{'seleccionado': menuSeleccionado===c.name, 'NOseleccionado': c.name!==menuSeleccionado}">
               <ion-icon slot="start" name="{{c.icon}}" color="primary"></ion-icon>
               <ion-label>{{c.name}}</ion-label>
             </ion-item>
           </ion-menu-toggle>
-              <ion-item  lines="none" (click)="ver(1)">  <!--[ngClass]="{'seleccionado': menuSeleccionado===c.name, 'NOseleccionado': c.name!==menuSeleccionado}"-->
+              <ion-item  lines="none" (click)="ver(1)"> 
               <ion-icon slot="start" name="reader" color="primary"></ion-icon>
-              <!-- <ion-icon slot="end"name="chevron-forward-circle-outline"></ion-icon> -->
               <ion-icon  slot="end" name="chevron-down-sharp" *ngIf="ocultarMenu === true"></ion-icon>
               <ion-icon  slot="end" name="chevron-up-sharp" *ngIf="ocultarMenu === false"></ion-icon>
 
@@ -30,28 +55,28 @@
             </ion-item>
               <div id="subseccion1">
                 <ion-menu-toggle autoHide="false">
-                  <ion-item  lines="none" >  <!--[ngClass]="{'seleccionado': menuSeleccionado===c.name, 'NOseleccionado': c.name!==menuSeleccionado}"-->
+                  <ion-item  lines="none" > 
                     <ion-label>Punto de Venta</ion-label>
                   </ion-item>
                 </ion-menu-toggle>
                 <ion-menu-toggle autoHide="false">
-                  <ion-item  lines="none" routerLink="/caja-chica">  <!--[ngClass]="{'seleccionado': menuSeleccionado===c.name, 'NOseleccionado': c.name!==menuSeleccionado}"-->
+                  <ion-item  lines="none" routerLink="/caja-chica"> 
                     <ion-label>Caja Chica POS</ion-label>
                   </ion-item>
                 </ion-menu-toggle>
                 <ion-menu-toggle autoHide="false">
-                  <ion-item  lines="none" routerLink="/productos-compuestos">  <!--[ngClass]="{'seleccionado': menuSeleccionado===c.name, 'NOseleccionado': c.name!==menuSeleccionado}"-->
+                  <ion-item  lines="none" routerLink="/productos-compuestos">  
                     <ion-label>Conjuntos/Packs/Promociones</ion-label>
                   </ion-item>
                 </ion-menu-toggle>
   
               </div>
-        </ion-list>
+        </ion-list> -->
       </ion-content>
       <ion-footer>
         <!-- <hr style="background-color: rgba(128, 128, 128, 0.548); height: 0.4px"> -->
         <ion-list>
-            <ion-item lines="none">
+            <ion-item class="cerrarSesion" lines="none">
               <ion-icon  (click)="cerrarSesion()" slot="start" color="primary" name="log-out-outline"></ion-icon>
               <ion-label  (click)="cerrarSesion()">Cerrar Sesión</ion-label>
               <ion-buttons slot="end" >
