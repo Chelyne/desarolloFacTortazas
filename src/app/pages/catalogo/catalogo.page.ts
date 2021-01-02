@@ -25,7 +25,6 @@ export class CatalogoPage implements OnInit {
   categoria;
 
   ultimaCategoria;
-  dataProducto: ProductoInterface;
   sinDatos;
   constructor(
     private dataApi: DbDataService,

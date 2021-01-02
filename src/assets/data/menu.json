@@ -62,6 +62,11 @@
                 "redirecTo": "#"
             },
             {
+                "icon": "document-text-outline",
+                "name": "Lista de ventas",
+                "redirecTo": "/lista-de-ventas"
+            },
+            {
                 "icon": "receipt-outline",
                 "name": "Comprobantes no enviados",
                 "redirecTo": "#"

@@ -9,5 +9,5 @@ export interface VentaInterface {
     tipoComprobante?: string;
     serieComprobante?: string;
     listaItemsDeVenta?: ItemDeVentaInterface[];
-    totalaPagar?: number;
+    total?: number;
 }
