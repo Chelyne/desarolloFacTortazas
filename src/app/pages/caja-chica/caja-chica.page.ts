@@ -13,7 +13,7 @@ import { ExportarPDFService } from '../../services/exportar-pdf.service';
 // import * as jspdf from 'jspdf';
 import 'jspdf-autotable';
 import {UserOptions} from 'jspdf-autotable';
-import domtoimage from 'dom-to-image';
+// import domtoimage from 'dom-to-image';
 import { PoppoverEditarComponent } from '../../components/poppover-editar/poppover-editar.component';
 import { isNullOrUndefined } from 'util';
 import { CajaChicaInterface } from '../../models/CajaChica';

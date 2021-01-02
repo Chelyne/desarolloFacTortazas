@@ -7,6 +7,7 @@ import { IonicModule } from '@ionic/angular';
 import { ConfirmarVentaPageRoutingModule } from './confirmar-venta-routing.module';
 
 import { ConfirmarVentaPage } from './confirmar-venta.page';
+import { NgxQRCodeModule } from '@techiediaries/ngx-qrcode';
 
 @NgModule({
   imports: [
@@ -14,7 +15,8 @@ import { ConfirmarVentaPage } from './confirmar-venta.page';
     FormsModule,
     IonicModule,
     ConfirmarVentaPageRoutingModule,
-    ReactiveFormsModule
+    ReactiveFormsModule,
+    NgxQRCodeModule
   ],
   declarations: [ConfirmarVentaPage]
 })

@@ -18,6 +18,8 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { ConfirmarVentaService } from 'src/app/services/confirmar-venta.service';
 import { VentasCongeladasPage } from '../../modals/ventas-congeladas/ventas-congeladas.page';
 import { isNullOrUndefined } from 'util';
+import { ClienteInterface } from '../../models/cliente-interface';
+import { AgregarEditarClientePage } from '../../modals/agregar-editar-cliente/agregar-editar-cliente.page';
 
 @Component({
   selector: 'app-punto-venta',
@@ -28,7 +30,6 @@ export class PuntoVentaPage implements OnInit {
   @ViewChild('search', {static: false}) search: any;
   productos: ProductoInterface[];
   buscando: boolean;
-  buscarNombre = true;
 
   sinResultados: string;
 
@@ -43,6 +44,14 @@ export class PuntoVentaPage implements OnInit {
   sinDatos;
 
   cliente;
+
+  buscarNombre = true;
+
+  // ADD NUEOV CLIENTE
+  modalEvento: string;
+  modalTitle: string;
+  modalTag: string;
+  modalDataCliente: ClienteInterface;
   constructor(private menuCtrl: MenuController,
               private categoriasService: CategoriasService,
               private pagination: PaginationProductosService,
@@ -54,7 +63,7 @@ export class PuntoVentaPage implements OnInit {
               private testServ: ConfirmarVentaService,
               private rutaActiva: ActivatedRoute,
               private modalController: ModalController,
-              private router: Router
+              private router: Router,
               ) {
     this.menuCtrl.enable(true);
    }
@@ -185,24 +194,35 @@ export class PuntoVentaPage implements OnInit {
     };
   }
 
-  inputModificado(evento: {id: string, cantidad: number, precioVenta: number}){
-    console.log('RRARY', this.listaItemsDeVenta);
-    // console.log(evento);
-    this.ActualizarMonto(evento.id, evento.cantidad, evento.precioVenta);
+  inputModificado(evento: {id: string, cantidad: number, precioVenta: number, porcentaje: number}){
+    console.log(evento);
+    this.ActualizarMonto(evento.id, evento.cantidad, evento.precioVenta, evento.porcentaje);
   }
 
-  ActualizarMonto(idProdItem: string, cantidad: number, precioVenta: number){
+  ActualizarMonto(idProdItem: string, cantidad: number, precioVenta: number, porcentaje: number){
     if (this.listaItemsDeVenta.length > 0) {
       for (const itemDeVenta of this.listaItemsDeVenta) {
         // console.log('ssssssssssssssssss')
         if (idProdItem === itemDeVenta.idProducto){
             itemDeVenta.cantidad = cantidad;
-            if (isNullOrUndefined(precioVenta)) {
-              itemDeVenta.totalxprod = itemDeVenta.cantidad * itemDeVenta.producto.precio;
+            if (isNullOrUndefined(porcentaje)) {
+              if (isNullOrUndefined(precioVenta)) {
+                itemDeVenta.totalxprod = itemDeVenta.cantidad * itemDeVenta.producto.precio;
+              } else {
+                itemDeVenta.totalxprod = precioVenta;
+              }
+              break;
+
             } else {
-              itemDeVenta.totalxprod = precioVenta;
+                itemDeVenta.totalxprod = itemDeVenta.cantidad * itemDeVenta.producto.precio;
+                itemDeVenta.totalxprod = itemDeVenta.totalxprod - (itemDeVenta.totalxprod * (porcentaje / 100));
+                break;
             }
-            break;
+            // if (isNullOrUndefined(precioVenta)) {
+            //   itemDeVenta.totalxprod = itemDeVenta.cantidad * itemDeVenta.producto.precio;
+            // } else {
+            //   itemDeVenta.totalxprod = precioVenta;
+            // }
         }
       }
     }
@@ -250,14 +270,17 @@ export class PuntoVentaPage implements OnInit {
     // anadir el array de itemsDeVenta a listaDeVentas
     // +totalapagar
     // NOTE - quizas necesitas; crearVenta
-    this.listaDeVentas.push(this.CrearItemDeVentas());
-    this.listaItemsDeVenta = [];
-    this.totalxPagar = 0;
-    console.log(this.listaDeVentas);
-
-    this.storage.congelarVenta(this.listaDeVentas).then(() => {
-      this.presentToast('Se guardo la lista de venta', 'success');
-    });
+    if (this.cliente) {
+      this.listaDeVentas.push(this.CrearItemDeVentas());
+      this.listaItemsDeVenta = [];
+      this.totalxPagar = 0;
+      console.log(this.listaDeVentas);
+      this.storage.congelarVenta(this.listaDeVentas).then(() => {
+        this.presentToast('Se guardo la lista de venta', 'success');
+      });
+    } else {
+      this.presentToast('Selecione un cliente', 'danger');
+    }
   }
 
   CrearItemDeVentas(): VentaInterface{
@@ -317,6 +340,10 @@ export class PuntoVentaPage implements OnInit {
     }
   }
 
+  buscarCodigo() {
+
+  }
+
 
    // implementacion de buscador ed productos
    Search(ev) {
@@ -331,9 +358,25 @@ export class PuntoVentaPage implements OnInit {
     // console.log(lowercaseKey);
     if ( lowercaseKey.length > 0) {
       // console.log('sede', this.sede);
-      console.log('lowercase> 0');
+      console.log('lowercase> 0', lowercaseKey);
+      let contador = 0;
+      for (let iterator of lowercaseKey) {
+        console.log(iterator);
+        iterator = parseInt(iterator, 10);
+        if (isNaN(iterator)) {
+          contador--;
+        } else {
+          contador++;
+        }
+        console.log('conbtador', contador);
+        if (contador >= 3) {
+          this.buscarNombre = false;
+          break;
+        } else {
+          this.buscarNombre = true;
+        }
+      }
       // tslint:disable-next-line:max-line-length
-      console.log(this.buscarNombre);
       if (this.buscarNombre) {
         // tslint:disable-next-line:max-line-length
         this.afs.collection('sedes').doc(this.storage.datosAdmi.sede.toLowerCase()).collection('productos', res => res.where('categoria', '==', 'petshop').orderBy('nombre').startAt(lowercaseKey).endAt(lowercaseKey + '\uf8ff')).snapshotChanges()
@@ -341,7 +384,6 @@ export class PuntoVentaPage implements OnInit {
           return changes.map(action => {
             const data = action.payload.doc.data();
             data.id = action.payload.doc.id;
-            console.log(data);
             return data;
           });
         }
@@ -366,7 +408,6 @@ export class PuntoVentaPage implements OnInit {
           return changes.map(action => {
             const data = action.payload.doc.data();
             data.id = action.payload.doc.id;
-            console.log(data);
             return data;
           });
         }
@@ -463,9 +504,36 @@ export class PuntoVentaPage implements OnInit {
     } else {
       console.log(data.data.dataVenta);
       this.moverAListaPrincipal(data.data.dataVenta);
+      if (data.data.dataVenta.cliente) {
+        this.cliente = data.data.dataVenta.cliente;
+      }
       this.storage.congelarVenta(this.listaDeVentas).then(() => {
         console.log('todo ok');
       });
     }
+  }
+
+  // AGREGAR NUEVO CLIENTE
+  AgregarNuevoCliente(){
+    this.modalEvento = 'guardarCliente';
+    this.modalTitle = 'Agregar Nuevo Cliente';
+    this.modalTag = 'Guardar';
+    this.abrirModal();
+  }
+
+  async abrirModal(){
+
+    const modal =  await this.modalController.create({
+      component: AgregarEditarClientePage,
+      componentProps: {
+        eventoInvoker: this.modalEvento,
+        titleInvoker: this.modalTitle,
+        tagInvoker: this.modalTag,
+        dataInvoker: this.modalDataCliente
+
+      }
+    });
+
+    await modal.present();
   }
 }

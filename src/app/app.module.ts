@@ -31,6 +31,8 @@ import { registerLocaleData } from '@angular/common';
 import { ModalDetallesServiciosPage } from './modals/modal-detalles-servicios/modal-detalles-servicios.page';
 // import { BuscarClientePipe } from './pipes/buscar-cliente.pipe';
 import { PipesModule } from './pipes/pipes.module';
+
+import { NgxQRCodeModule } from '@techiediaries/ngx-qrcode';
 registerLocaleData(localeEs);
 
 @NgModule({
@@ -45,7 +47,8 @@ registerLocaleData(localeEs);
     AngularFirestoreModule.enablePersistence(),
     AngularFireAuthModule,
     HttpClientModule,
-    PipesModule
+    PipesModule,
+    NgxQRCodeModule
   ],
   providers: [
     StatusBar,

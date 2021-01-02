@@ -6,4 +6,5 @@ export interface ItemDeVentaInterface {
     cantidad?: number;
     totalxprod?: number;
     precioVenta?: number;
+    porcentaje?: number;
 }

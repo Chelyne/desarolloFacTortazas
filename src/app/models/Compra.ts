@@ -1,5 +1,5 @@
-import { ProductoInterface } from "./ProductoInterface";
-import { ProveedorInterface } from "./proveedor";
+import { ProductoInterface } from './ProductoInterface';
+import { ProveedorInterface } from './proveedor';
 
 export interface CompraInterface {
     id?: string;
