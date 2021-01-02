@@ -10,16 +10,18 @@ import * as moment from 'moment';
 import { DatePipe, formatDate } from '@angular/common';
 import { ExportarPDFService } from '../../services/exportar-pdf.service';
 // pdf
-import * as jspdf from 'jspdf';
+// import * as jspdf from 'jspdf';
 import 'jspdf-autotable';
 import {UserOptions} from 'jspdf-autotable';
 import domtoimage from 'dom-to-image';
 import { PoppoverEditarComponent } from '../../components/poppover-editar/poppover-editar.component';
 import { isNullOrUndefined } from 'util';
 import { CajaChicaInterface } from '../../models/CajaChica';
+import { jsPDF } from 'jspdf';
 // tslint:disable-next-line:class-name
-interface jsPDFWithPlugin extends jspdf.jsPDF {
-  autoTable: (options: UserOptions) => jspdf.jsPDF;
+interface jsPDFWithPlugin extends jsPDF {
+
+  autoTable: (options: UserOptions) => jsPDF;
  }
 
 @Component({
@@ -69,7 +71,7 @@ export class CajaChicaPage implements OnInit {
   ReporteVentaDiaGeneral() {
     this.consultaVentaReporteGeneral().then(data => {
       console.log(data);
-      const doc = new jspdf.jsPDF('portrait', 'px', 'a4') as jsPDFWithPlugin;
+      const doc = new jsPDF('portrait', 'px', 'a4') as jsPDFWithPlugin;
       doc.setFontSize(16);
       doc.setFont('bold');
       doc.text('Reporte General de ventas POS', 120, 30);
@@ -138,7 +140,7 @@ export class CajaChicaPage implements OnInit {
     console.log('fecha consulta', datosCaja.FechaConsulta , ' dni', datosCaja.dniVendedor);
     this.ConsultaPuntoVentaVendedor(datosCaja.FechaConsulta, datosCaja.dniVendedor).then(data => {
       console.log(data);
-      const doc = new jspdf.jsPDF('portrait', 'px', 'a4') as jsPDFWithPlugin;
+      const doc = new jsPDF('portrait', 'px', 'a4') as jsPDFWithPlugin;
 
       doc.setFontSize(18);
       doc.setFont('bold');
@@ -254,7 +256,7 @@ export class CajaChicaPage implements OnInit {
   ReporteIngresoMetPagoVendedor(datosCaja: CajaChicaInterface) {
     console.log('fecha consulta', datosCaja.FechaConsulta , ' dni', datosCaja.dniVendedor);
     this.ConsultaRepIngresoMetPagoVendedor(datosCaja.FechaConsulta, datosCaja.dniVendedor).then(data => {
-      const doc = new jspdf.jsPDF('portrait', 'px', 'a4') as jsPDFWithPlugin;
+      const doc = new jsPDF('portrait', 'px', 'a4') as jsPDFWithPlugin;
       doc.setFontSize(16);
       doc.setFont('bold');
       doc.text('Resúmen de ingresos por métodos de pago', 100, 30);
@@ -408,7 +410,7 @@ export class CajaChicaPage implements OnInit {
   crearArchivoExportar(datosCaja: CajaChicaInterface, formato: string, productos: any) {
       if (formato === 'pdf') {
         console.log('formato pdf');
-        const doc = new jspdf.jsPDF('portrait', 'px', 'a4') as jsPDFWithPlugin;
+        const doc = new jsPDF('portrait', 'px', 'a4') as jsPDFWithPlugin;
         doc.setFontSize(16);
         doc.setFont('bold');
         doc.text('Resúmen de ingresos por métodos de pago', 100, 30);
@@ -711,10 +713,12 @@ export class CajaChicaPage implements OnInit {
     // }
     // );
 
-    const doc = new jspdf.jsPDF( 'p', 'mm', [45, 350]) as jsPDFWithPlugin;
+    const doc = new jsPDF( 'p', 'mm', [45, 350]) as jsPDFWithPlugin;
     doc.addImage(this.LogoEmpresa, 'JPEG', 18, 7, 10, 7);
     doc.setFontSize(6);
-    doc.setFont('Arial', 'B');
+    // doc.setFont('Arial', 'B');
+    doc.setFont('courier');
+    // doc.setFontType('normal');
     doc.text('Veterinarias Tooby', 12, 16);
     doc.text('Av. Peru 236 Parque Lampa de Oro ', 9, 18);
     doc.text('Telefono: 989898989', 12, 20);
