@@ -216,6 +216,10 @@ const routes: Routes = [
     loadChildren: () => import('./modals/agregar-editar-prod-compuestos/agregar-editar-prod-compuestos.module').then( m => m.AgregarEditarProdCompuestosPageModule)
   },
   {
+    path: 'test-page',
+    loadChildren: () => import('./pages/test-page/test-page.module').then( m => m.TestPagePageModule)
+  },
+  {
     path: 'comprobante',
     loadChildren: () => import('./modals/comprobante/comprobante.module').then( m => m.ComprobantePageModule)
   },

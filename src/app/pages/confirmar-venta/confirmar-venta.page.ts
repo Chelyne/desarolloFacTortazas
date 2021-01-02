@@ -243,7 +243,10 @@ export class ConfirmarVentaPage implements OnInit {
       console.log('guardado', data);
       this.loading.dismiss();
       this.presentToast('Venta exitosa');
+
     });
+
+
   }
 
 
