@@ -74,7 +74,7 @@
                             <ion-searchbar (ionClear)="limpiarBuscador()" (ionChange)="Search($event)" #search placeholder="Buscar" inputmode="text" debounce="1000" animated="true" mode="ios"></ion-searchbar>
                         </ion-item>
                         <ion-list>
-                            <ion-item *ngFor="let item of categorias">
+                            <ion-item *ngFor="let item of categorias" (click)="irLIstaProductos(item.categoria)">
                                 <ion-avatar slot="start">
                                     <img *ngIf="item.img" src="{{item.img}}" alt="">
                                     <img *ngIf="!item.img" src="../../../assets/img/pet chop.png" alt="">
