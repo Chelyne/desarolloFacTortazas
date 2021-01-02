@@ -64,7 +64,7 @@ export class ConfirmarVentaPage implements OnInit {
       this.router.navigate(['/punto-venta']);
     } else {
       if (Object.entries(this.venta).length !== 0){
-        this.subTotalDeVenta = this.venta.totalaPagar;
+        this.subTotalDeVenta = this.venta.total;
         this.IGVdeVenta = this.subTotalDeVenta * 18 / 100;
         this.totalAPagar = this.subTotalDeVenta;
         this.montoEntrante = this.totalAPagar;

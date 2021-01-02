@@ -218,6 +218,10 @@ const routes: Routes = [
   {
     path: 'comprobante',
     loadChildren: () => import('./modals/comprobante/comprobante.module').then( m => m.ComprobantePageModule)
+  },
+  {
+    path: 'lista-de-ventas',
+    loadChildren: () => import('./pages/lista-de-ventas/lista-de-ventas.module').then( m => m.ListaDeVentasPageModule)
   }
 
 

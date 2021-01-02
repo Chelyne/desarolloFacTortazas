@@ -12,4 +12,5 @@ export interface VentaInterface {
     totalaPagar?: number;
     bolsa?: boolean;
     tipoPago?: string;
+    total?: number;
 }

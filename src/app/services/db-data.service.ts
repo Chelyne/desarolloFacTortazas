@@ -48,6 +48,9 @@ export class DbDataService {
   private compraDoc: AngularFirestoreDocument<ProductoInterface>;
   private compra: Observable<ProductoInterface>;
 
+  private ventaCollection: AngularFirestoreCollection<VentaInterface>;
+  private ventas: Observable<VentaInterface[]>;
+
 
   constructor(private afs: AngularFirestore) { }
 
@@ -162,6 +165,22 @@ export class DbDataService {
         return changes.map(action => {
           const data = action.payload.doc.data() as ProductoInterface;
           data.id = action.payload.doc.id;
+          return data;
+        });
+      }));
+  }
+
+  ObtenerListaDeVentas(sede: string, fachaventas: string) {
+    const sede1 = sede.toLocaleLowerCase();
+    // tslint:disable-next-line:max-line-length
+    this.ventaCollection = this.afs.collection('sedes').doc(sede1).collection('ventas').doc(fachaventas).collection('ventasDia');
+    // tslint:disable-next-line:max-line-length
+    // this.productoCollection = this.afs.collection<ProductoInterface>('frutas', ref => ref.where('propietario', '==', propietario).orderBy('fechaRegistro', 'desc'));
+    return this.ventas = this.ventaCollection.snapshotChanges()
+      .pipe(map(changes => {
+        return changes.map(action => {
+          const data = action.payload.doc.data() as VentaInterface;
+          data.idVenta = action.payload.doc.id;
           return data;
         });
       }));
@@ -657,28 +676,42 @@ export class DbDataService {
   EditarCajaChica(id: string, dato: any){
     const montoInicial = dato.saldoInicial;
     const vendedor = dato.nombreVendedor;
+    const dni = dato.dniVendedor;
     const promesa =  new Promise<void>( (resolve, reject) => {
         this.afs.collection('CajaChica').doc(id).update({
           saldoInicial: montoInicial,
           nombreVendedor: vendedor,
+          dniVendedor: dni
         });
         resolve();
       });
     return promesa;
   }
-  VerificarCajaChicaVendedor(estadoCaja: string, nombre: string) {
-    console.log('obteniedno caja de: ', nombre, ' con el estado ABIERTO: ', estadoCaja);
+  VerificarCajaChicaVendedor(estadoCaja: string, dni: string) {
+    console.log('obteniedno caja de: ', dni, ' con el estado ABIERTO: ', estadoCaja);
     // tslint:disable-next-line:max-line-length
-    return this.afs.collection('CajaChica').ref.where('estado', '==', estadoCaja).where( 'nombreVendedor', '==', nombre).limit(1).get();
-    // return cajaCollection.snapshotChanges()
-    // .pipe(map(changes => {
-    //   return changes.map(action => {
-    //     console.log('datos obtenidos', action.payload.doc.data());
-    //     const data = action.payload.doc.data() as any;
-    //     data.id = action.payload.doc.id;
-    //     return data;
-    //     });
-    //   }));
+    return this.afs.collection('CajaChica').ref.where('estado', '==', estadoCaja).where( 'dniVendedor', '==', dni).limit(1).get();
+  }
+  ObtenerReporteVentaGeneralDia(sede: string, dia: string) {
+    console.log('service dia', dia);
+    return this.afs.collection('sedes').doc(sede).collection('ventas').doc(dia).collection('ventasDia').ref.get();
+  }
+  ObtenerReporteVentaDiaVendedor(sede: string, dia: string, dniVendedor: string) {
+    // console.log('service dia', dia);
+    // tslint:disable-next-line:max-line-length
+    return this.afs.collection('sedes').doc(sede).collection('ventas').doc(dia).collection('ventasDia').ref.where('vendedor.dni', '==', dniVendedor).get();
+  }
+  ObtenerDetallesProdVentas(sede: string, id: string) {
+    console.log('id', id);
+    const datos = this.afs.collection('sedes').doc(sede).collection('productosVenta').doc(id);
+    return datos.snapshotChanges().pipe(map(action => {
+      if (action.payload.exists === false) {
+        return null;
+      } else {
+        const data = action.payload.data();
+        return data;
+      }
+    }));
   }
 
 
@@ -787,7 +820,7 @@ export class DbDataService {
           idListaProductos: guardado.id,
           cliente: venta.cliente,
           vendedor: venta.vendedor,
-          total: venta.totalaPagar,
+          total: venta.total,
           tipoComprobante: venta.tipoComprobante,
           serieComprobante: venta.serieComprobante,
           fechaEmision: new Date(),

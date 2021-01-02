@@ -172,7 +172,7 @@ export class PuntoVentaPage implements OnInit {
         if (idProdItem === item.idProducto){
             producExist = true;
             item.cantidad += 1;
-            item.tatalxprod = item.cantidad * item.producto.precio;
+            item.totalxprod = item.cantidad * item.producto.precio;
             break;
         }
       }
@@ -190,7 +190,7 @@ export class PuntoVentaPage implements OnInit {
       producto: prodItem,
       idProducto: prodItem.id,
       cantidad: 1,
-      tatalxprod: prodItem.precio
+      totalxprod: prodItem.precio
     };
   }
 
@@ -207,21 +207,21 @@ export class PuntoVentaPage implements OnInit {
             itemDeVenta.cantidad = cantidad;
             if (isNullOrUndefined(porcentaje)) {
               if (isNullOrUndefined(precioVenta)) {
-                itemDeVenta.tatalxprod = itemDeVenta.cantidad * itemDeVenta.producto.precio;
+                itemDeVenta.totalxprod = itemDeVenta.cantidad * itemDeVenta.producto.precio;
               } else {
-                itemDeVenta.tatalxprod = precioVenta;
+                itemDeVenta.totalxprod = precioVenta;
               }
               break;
 
             } else {
-                itemDeVenta.tatalxprod = itemDeVenta.cantidad * itemDeVenta.producto.precio;
-                itemDeVenta.tatalxprod = itemDeVenta.tatalxprod - (itemDeVenta.tatalxprod * (porcentaje / 100));
+                itemDeVenta.totalxprod = itemDeVenta.cantidad * itemDeVenta.producto.precio;
+                itemDeVenta.totalxprod = itemDeVenta.totalxprod - (itemDeVenta.totalxprod * (porcentaje / 100));
                 break;
             }
             // if (isNullOrUndefined(precioVenta)) {
-            //   itemDeVenta.tatalxprod = itemDeVenta.cantidad * itemDeVenta.producto.precio;
+            //   itemDeVenta.totalxprod = itemDeVenta.cantidad * itemDeVenta.producto.precio;
             // } else {
-            //   itemDeVenta.tatalxprod = precioVenta;
+            //   itemDeVenta.totalxprod = precioVenta;
             // }
         }
       }
@@ -255,7 +255,7 @@ export class PuntoVentaPage implements OnInit {
     let totalxpagar = 0;
 
     for (const item of this.listaItemsDeVenta) {
-      totalxpagar += item.tatalxprod;
+      totalxpagar += item.totalxprod;
     }
     // console.log(totalxpagar);
 
@@ -287,7 +287,7 @@ export class PuntoVentaPage implements OnInit {
     return {
       cliente: this.cliente,
       listaItemsDeVenta: this.listaItemsDeVenta,
-      totalaPagar: this.totalxPagar,
+      total: this.totalxPagar,
       idVenta: this.CrearVentaId()
     };
   }

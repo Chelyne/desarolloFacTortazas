@@ -41,7 +41,7 @@ export class ProductoVentaComponent implements OnInit {
   updateFormVenta() {
     return new FormGroup({
       cantidad: new FormControl(this.itemDeVenta.cantidad, [Validators.required, Validators.pattern('[0-9]+')]),
-      precioVenta: new FormControl(this.itemDeVenta.tatalxprod, [Validators.required]),
+      precioVenta: new FormControl(this.itemDeVenta.totalxprod, [Validators.required]),
       porcentaje: new FormControl(this.itemDeVenta.porcentaje ? this.itemDeVenta.porcentaje : 0, [Validators.required])
     });
   }

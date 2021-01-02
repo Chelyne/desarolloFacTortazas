@@ -4,7 +4,7 @@ export interface ItemDeVentaInterface {
     producto?: ProductoInterface;
     idProducto?: string;
     cantidad?: number;
+    totalxprod?: number;
     precioVenta?: number;
-    tatalxprod?: number;
     porcentaje?: number;
 }

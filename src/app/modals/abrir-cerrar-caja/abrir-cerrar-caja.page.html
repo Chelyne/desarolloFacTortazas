@@ -15,11 +15,11 @@
       </ion-card-header>
       <ion-card-content>
         <form [formGroup]="cajaChicaForm" autocomplete="off">
-          <ion-item>
+          <ion-item *ngIf="listaUsuarios">
             <ion-label color="primary">Vendedor</ion-label>
-            <ion-select okText="Aceptar" cancelText="Cancelar" [value]="listaUsuarios ? listaUsuarios[0].nombre : ''" mode="ios" formControlName="nombreUsuario">
+            <ion-select  okText="Aceptar" cancelText="Cancelar"[value]="listaUsuarios ? listaUsuarios[0].dni : ''" mode="ios" formControlName="dniUsuario">
               <div *ngFor="let item of listaUsuarios">
-                <ion-select-option value="{{item.nombre}}">{{item.nombre | titlecase}} </ion-select-option>
+                <ion-select-option value="{{item.dni}}">{{item.nombre | titlecase}} </ion-select-option>
               </div>
             </ion-select>
           </ion-item>
@@ -58,9 +58,9 @@
         <form [formGroup]="cajaChicaEditForm" autocomplete="off">
           <ion-item *ngIf="listaUsuarios && listaUsuarios.length>0">
             <ion-label color="primary">Vendedor</ion-label>
-            <ion-select okText="Aceptar" cancelText="Cancelar" [value]="datosCaja ? datosCaja.nombreVendedor : ''" mode="ios" formControlName="nombreUsuarioEdit">
+            <ion-select okText="Aceptar" cancelText="Cancelar" [value]="datosCaja ? datosCaja.nombreVendedor : ''" mode="ios" formControlName="dniUsuarioEdit">
               <div *ngFor="let item of listaUsuarios">
-                <ion-select-option value="{{item.nombre}}">{{item.nombre | titlecase}} </ion-select-option>
+                <ion-select-option value="{{item.dni}}">{{item.nombre | titlecase}} </ion-select-option>
               </div>
             </ion-select>
           </ion-item>
@@ -76,9 +76,9 @@
         <ion-col size-lg="6" size-md="6" size-sm="12" size-xs="12">
           <ion-item lines="none" style="width: 6  0%;"  *ngIf="listaUsuarios && listaUsuarios.length>0">
             <ion-label position="stacked">Vendedor: </ion-label>
-            <ion-select [value]="datosCaja ? datosCaja.nombreVendedor : ''" mode="ios" formControlName="nombreUsuarioEdit">
+            <ion-select [value]="datosCaja ? datosCaja.dniVendedor : ''" mode="ios" formControlName="dniUsuarioEdit">
               <div *ngFor="let item of listaUsuarios">
-                <ion-select-option value="{{item.nombre}}">{{item.nombre}} </ion-select-option>
+                <ion-select-option value="{{item.dni}}">{{item.nombre}} </ion-select-option>
               </div>
             </ion-select>
           </ion-item>
