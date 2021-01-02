@@ -25,16 +25,16 @@ export class TestPagePage implements OnInit {
   }
 
   async obtenerEmpresaPorRuc(){
-    await this.apisPeru.obtenerEmpresaByRUC('20722440881');
+    await this.apisPeru.obtenerEmpresaByRUC('20601831032');
   }
 
   async obtenerTokenDeEmpresa(){
-    const tokenEmprersa = await this.apisPeru.obtenerTokenDeEmpresa('20722440881');
+    const tokenEmprersa = await this.apisPeru.obtenerTokenDeEmpresa('20601831032');
     console.log('tokenEmprersaaaaaaaaaaa', tokenEmprersa);
   }
 
   async guardarDatosDeEmpresa(){
-    await this.apisPeru.guardarDatosEmpresaFirebase('20722440881');
+    await this.apisPeru.guardarDatosEmpresaFirebase('20601831032');
   }
 
   async obtenerDatosDeEmpresa(){

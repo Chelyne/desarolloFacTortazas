@@ -6,6 +6,7 @@ import { ItemDeVentaInterface } from './item-de-venta';
 export interface VentaInterface {
     fechaEmision?: Date;
     idVenta?: string;
+    idListaProductos?: string;
     cliente?: ClienteInterface;
     vendedor?: {};
     tipoComprobante?: string;

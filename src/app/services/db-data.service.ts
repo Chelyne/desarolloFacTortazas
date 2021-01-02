@@ -13,6 +13,9 @@ import { EmpresaInterface } from '../models/api-peru/empresa';
 import { VentaInterface } from '../models/venta/venta';
 import { formatDate } from '@angular/common';
 import { CDRInterface } from '../models/api-peru/cdr-interface';
+import { ItemDeVentaInterface } from '../models/venta/item-de-venta';
+import * as moment from 'moment';
+// import { Console } from 'console';
 
 @Injectable({
   providedIn: 'root'
@@ -54,6 +57,11 @@ export class DbDataService {
   private ventaCollection: AngularFirestoreCollection<VentaInterface>;
   private ventas: Observable<VentaInterface[]>;
 
+  private itemsDeVentaCollection: AngularFirestoreCollection<ItemDeVentaInterface>;
+  private itemsDeVenta: Observable<ItemDeVentaInterface[]>;
+
+  private itemDeventaDoc: AngularFirestoreDocument<ItemDeVentaInterface>;
+  private itemDeventa: Observable<ItemDeVentaInterface>;
 
   constructor(private afs: AngularFirestore) { }
 
@@ -841,9 +849,22 @@ export class DbDataService {
   }
 
   guardarCDR(venta: VentaInterface, sede: string, cdrVenta: CDRInterface){
-    const idFecha = venta.fechaEmision.getDay() + '-' + venta.fechaEmision.getMonth() + '-' + venta.fechaEmision.getFullYear();
-    this.afs.collection('sedes').doc(sede.toLocaleLowerCase()).collection('ventas').doc(idFecha)
-    .collection('ventasDia').doc(venta.idVenta).update({cdr: cdrVenta});
+    console.log('guuuuuuuuuuuuuuuardadr cdr');
+    //const idFecha = venta.fechaEmision.getDay() + '-' + venta.fechaEmision.getMonth() + '-' + venta.fechaEmision.getFullYear();
+    console.log('ffffffffffffffffffffffffffffff',  venta.fechaEmision);
+    let fecha: any = venta.fechaEmision;
+    const fechaFormateada = new Date(moment.unix(fecha.seconds).format('D MMM YYYY H:mm'));
+    const fechaString = formatDate(fechaFormateada, 'dd-MM-yyyy', 'en');
+
+    console.log('ffffffffeeeeeeeeeecha', fechaString, cdrVenta);
+
+    const promesa =  new Promise<void>( (resolve, reject) => {
+      this.afs.collection('sedes').doc(sede.toLocaleLowerCase()).collection('ventas').doc(fechaString)
+      .collection('ventasDia').doc(venta.idVenta).update({cdr: cdrVenta});
+      resolve();
+    });
+
+    return promesa;
   }
 
 
@@ -878,4 +899,32 @@ export class DbDataService {
     });
     return promesa;
   }
+
+
+
+  obtenerProductosDeVenta(idProductoVenta: string, sede: string){
+    console.log('PPPPPPPPPPPPPPPPPPPPPRODUCTOvENTA', idProductoVenta);
+    this.itemDeventaDoc = this.afs.collection('sedes').doc(sede.toLocaleLowerCase())
+    .collection('productosVenta').doc(idProductoVenta); //, ref => ref.where('id', '==', idProductoVenta));
+
+    return  this.itemDeventaDoc.snapshotChanges()
+      .pipe(map(
+        action => {
+          if (action.payload.exists === false) {
+            return null;
+          } else {
+            const data = action.payload.data();
+            return data;
+          }
+          // return changes.map(action => {
+          //   const data = action.payload.doc.data() as ItemDeVentaInterface;
+          //   // data.id = action.payload.doc.id;
+          //   console.log('yyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyy', data);
+          //   return data;
+          //   });
+          }
+      ));
+  }
+
+
 }
