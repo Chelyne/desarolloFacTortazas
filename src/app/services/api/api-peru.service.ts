@@ -5,6 +5,7 @@ import { ClientInterface, CompanyInterface, ComprobanteInterface, SaleDetailInte
 import { ItemDeVentaInterface } from 'src/app/models/venta/item-de-venta';
 import { VentaInterface } from 'src/app/models/venta/venta';
 import { DbDataService } from '../db-data.service';
+import { StorageService } from '../storage.service';
 
 @Injectable({
   providedIn: 'root'
@@ -13,11 +14,13 @@ export class ApiPeruService {
 
   token: string;
   datosDeEmpresa: EmpresaInterface;
+  sede = this.storage.datosAdmi.sede;
   constructor(
-    private dataApi: DbDataService
+    private dataApi: DbDataService,
+    private storage: StorageService
   ) {
     this.obtenerDatosDeLaEmpresa();
-   }
+  }
 
 
   login(){
@@ -62,7 +65,6 @@ export class ApiPeruService {
       .then(response => response.json())
       //.then(result => result)
       .catch(error => console.log('error', error));
-
   }
 
   async obtenerEmpresaByRUC(rucEnter: string){
@@ -194,7 +196,6 @@ export class ApiPeruService {
         }
       ]
     };
-
   }
 
   formtearFecha(dateTime: Date): string{
@@ -216,6 +217,34 @@ export class ApiPeruService {
     } else {
       console.log('Comprobante no valido');
     }
+  }
+
+  enviarComprobanteASunat(venta: VentaInterface){
+    const myHeaders = new Headers();
+    // TODO: en caso de que no exita el token ver si emprea tiene el token
+    myHeaders.append('Authorization', 'Bearer '.concat(this.datosDeEmpresa.token.code));
+    myHeaders.append('Content-Type', 'application/json');
+
+    const raw = JSON.stringify(
+      this.formatearVenta(venta)
+    );
+
+    const requestOptions: RequestInit = {
+      method: 'POST',
+      headers: myHeaders,
+      body: raw,
+      redirect: 'follow'
+    };
+
+    fetch('https://facturacion.apisperu.com/api/v1/invoice/send', requestOptions)
+      .then(response => response.json())
+      .then(cdr =>{
+
+        console.log(cdr);
+        // TODO: Guardar resultado en la base de datos
+        this.dataApi.guardarCDR(venta, this.sede, cdr);
+      } )
+      .catch(error => console.log('error', error));
   }
 
 }

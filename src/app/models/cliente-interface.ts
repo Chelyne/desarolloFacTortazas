@@ -8,4 +8,6 @@ export interface ClienteInterface {
     telefono?: string;
     direccion?: string;
     email?: string;
+    celular?: string;
+    documento?: string;
 }

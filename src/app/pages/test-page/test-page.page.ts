@@ -41,4 +41,8 @@ export class TestPagePage implements OnInit {
     await this.apisPeru.obtenerDatosDeLaEmpresa();
   }
 
+  async enviarASunat(){
+    await this.apisPeru.enviarComprobanteASunat({});
+  }
+
 }

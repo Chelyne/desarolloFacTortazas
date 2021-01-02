@@ -12,6 +12,7 @@ import { CompraInterface } from '../models/Compra';
 import { EmpresaInterface } from '../models/api-peru/empresa';
 import { VentaInterface } from '../models/venta/venta';
 import { formatDate } from '@angular/common';
+import { CDRInterface } from '../models/api-peru/cdr-interface';
 
 @Injectable({
   providedIn: 'root'
@@ -819,6 +820,12 @@ export class DbDataService {
           }
       ));
 
+  }
+
+  guardarCDR(venta: VentaInterface, sede: string, cdrVenta: CDRInterface){
+    const idFecha = venta.fechaEmision.getDay() + '-' + venta.fechaEmision.getMonth() + '-' + venta.fechaEmision.getFullYear();
+    this.afs.collection('sedes').doc(sede.toLocaleLowerCase()).collection('ventas').doc(idFecha)
+    .collection('ventasDia').doc(venta.idVenta).update({cdr: cdrVenta});
   }
 
 

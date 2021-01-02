@@ -48,7 +48,8 @@ export class ConfirmarVentaPage implements OnInit {
     private dataApi: DbDataService,
     private storage: StorageService,
     private loadingController: LoadingController,
-    private toastController: ToastController
+    private toastController: ToastController,
+    // private apiPeru: d
   ) {
     this.formPago = this.createFormPago();
    }
@@ -184,11 +185,15 @@ export class ConfirmarVentaPage implements OnInit {
     this.venta.vendedor = this.storage.datosAdmi;
     console.log('Se generó el pago');
     this.dataApi.confirmarVenta(this.venta, this.storage.datosAdmi.sede).then(data => {
+
       this.router.navigate(['/punto-venta', 'true']);
       console.log('guardado', data);
       this.loading.dismiss();
       this.presentToast('Venta exitosa');
+
     });
+
+
   }
 
 
