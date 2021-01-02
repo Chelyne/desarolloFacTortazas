@@ -752,11 +752,11 @@ export class DbDataService {
     return promesa;
   }
 
-  toggleAnularCompra(idCompra: string, esAnulado: boolean) {
+  toggleAnularCompra(idCompra: string, esAnulado: boolean, sede: string) {
     // console.log( idProveedor, newProveedor);
 
     const promesa =  new Promise( (resolve, reject) => {
-      this.afs.collection('compras').doc(idCompra).update({anulado: !esAnulado});
+      this.afs.collection('sedes').doc(sede.toLocaleLowerCase()).collection('compras').doc(idCompra).update({anulado: !esAnulado});
       resolve(resolve);
     });
     return promesa;
@@ -790,7 +790,9 @@ export class DbDataService {
           total: venta.totalaPagar,
           tipoComprobante: venta.tipoComprobante,
           serieComprobante: venta.serieComprobante,
-          fechaEmision: new Date()
+          fechaEmision: new Date(),
+          bolsa: venta.bolsa,
+          tipoPago: venta.tipoPago,
         };
         // tslint:disable-next-line:max-line-length
         this.afs.collection('sedes').doc(sede.toLocaleLowerCase()).collection('ventas').doc(id).collection('ventasDia').add(dataVenta).then(ventas => {

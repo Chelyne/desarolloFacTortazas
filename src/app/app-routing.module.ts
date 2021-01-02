@@ -214,6 +214,10 @@ const routes: Routes = [
     path: 'agregar-editar-prod-compuestos',
     // tslint:disable-next-line:max-line-length
     loadChildren: () => import('./modals/agregar-editar-prod-compuestos/agregar-editar-prod-compuestos.module').then( m => m.AgregarEditarProdCompuestosPageModule)
+  },
+  {
+    path: 'comprobante',
+    loadChildren: () => import('./modals/comprobante/comprobante.module').then( m => m.ComprobantePageModule)
   }
 
 

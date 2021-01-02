@@ -10,4 +10,6 @@ export interface VentaInterface {
     serieComprobante?: string;
     listaItemsDeVenta?: ItemDeVentaInterface[];
     totalaPagar?: number;
+    bolsa?: boolean;
+    tipoPago?: string;
 }

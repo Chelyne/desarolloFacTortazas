@@ -19,6 +19,9 @@ export class ListaDeComprasPage implements OnInit {
   compraItem: CompraInterface;
 
   //
+  // sede: string;
+  sede = this.storage.datosAdmi.sede;
+
 
   // modalEvento: string;
   // modalTitle: String;
@@ -128,9 +131,9 @@ export class ListaDeComprasPage implements OnInit {
 
     // console.log(compraSelect.anulado);
     if (typeof(compraSelect.anulado) === 'undefined'){
-      this.dataApi.toggleAnularCompra(compraSelect.id, false);
+      this.dataApi.toggleAnularCompra(compraSelect.id, false, this.sede);
     } else {
-      this.dataApi.toggleAnularCompra(compraSelect.id, compraSelect.anulado);
+      this.dataApi.toggleAnularCompra(compraSelect.id, compraSelect.anulado, this.sede);
     }
   }
 

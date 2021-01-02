@@ -11,7 +11,7 @@ export class ProductoVentaComponent implements OnInit {
 
   @Input() itemDeVenta: ItemDeVentaInterface;
 
-  @Output()  cambiarCantidadProd = new EventEmitter<{id: string, cantidad: number, precioVenta: number}>();
+  @Output()  cambiarCantidadProd = new EventEmitter<{id: string, cantidad: number, precioVenta: number, porcentaje: number}>();
   @Output()  quitarItemDeVenta = new EventEmitter<{id: string}>();
 
   formVenta: FormGroup;
@@ -33,19 +33,22 @@ export class ProductoVentaComponent implements OnInit {
   createFormVenta() {
     return new FormGroup({
       cantidad: new FormControl('', [Validators.required, Validators.pattern('[0-9]+')]),
-      precioVenta: new FormControl('', [Validators.required, Validators.pattern('[0-9]+')])
+      precioVenta: new FormControl('', [Validators.required]),
+      porcentaje: new FormControl('', [Validators.required])
     });
   }
 
   updateFormVenta() {
     return new FormGroup({
       cantidad: new FormControl(this.itemDeVenta.cantidad, [Validators.required, Validators.pattern('[0-9]+')]),
-      precioVenta: new FormControl(this.itemDeVenta.tatalxprod, [Validators.required])
+      precioVenta: new FormControl(this.itemDeVenta.tatalxprod, [Validators.required]),
+      porcentaje: new FormControl(this.itemDeVenta.porcentaje ? this.itemDeVenta.porcentaje : 0, [Validators.required])
     });
   }
 
   get cantidad() { return this.formVenta.get('cantidad'); }
   get precioVenta() { return this.formVenta.get('precioVenta'); }
+  get porcentaje() { return this.formVenta.get('porcentaje'); }
 
 
 
@@ -61,6 +64,7 @@ export class ProductoVentaComponent implements OnInit {
         id: this.itemDeVenta.idProducto,
         cantidad: parseInt(this.formVenta.value.cantidad, 10),
         precioVenta: null,
+        porcentaje: null
       });
     } else {
       if (this.cantidad.errors.required){
@@ -68,6 +72,7 @@ export class ProductoVentaComponent implements OnInit {
           id: this.itemDeVenta.idProducto,
           cantidad: 0,
         precioVenta: null,
+        porcentaje: null
         });
       }
     }
@@ -84,6 +89,7 @@ export class ProductoVentaComponent implements OnInit {
         id: this.itemDeVenta.idProducto,
         cantidad: parseInt(this.formVenta.value.cantidad, 10),
         precioVenta: this.formVenta.value.precioVenta ? parseInt(this.formVenta.value.precioVenta, 10) : null,
+        porcentaje: null
       });
     } else {
       if (this.cantidad.errors.required){
@@ -91,6 +97,28 @@ export class ProductoVentaComponent implements OnInit {
           id: this.itemDeVenta.idProducto,
           cantidad: 0,
           precioVenta: this.formVenta.value.precioVenta ? parseInt(this.formVenta.value.precioVenta, 10) : null,
+          porcentaje: null
+        });
+      }
+    }
+  }
+
+  cambioPorcentaje(){
+    console.log('cambio porcentaje', parseInt(this.formVenta.value.porcentaje, 10));
+    if (!this.cantidad.errors) {
+      this.cambiarCantidadProd.emit({
+        id: this.itemDeVenta.idProducto,
+        cantidad: parseInt(this.formVenta.value.cantidad, 10),
+        precioVenta: this.formVenta.value.precioVenta ? parseInt(this.formVenta.value.precioVenta, 10) : null,
+        porcentaje: this.formVenta.value.porcentaje ? parseInt(this.formVenta.value.porcentaje, 10) : null,
+      });
+    } else {
+      if (this.cantidad.errors.required){
+        this.cambiarCantidadProd.emit({
+          id: this.itemDeVenta.idProducto,
+          cantidad: 0,
+          precioVenta: this.formVenta.value.precioVenta ? parseInt(this.formVenta.value.precioVenta, 10) : null,
+          porcentaje: this.formVenta.value.porcentaje ? parseInt(this.formVenta.value.porcentaje, 10) : null,
         });
       }
     }
