@@ -41,7 +41,7 @@ export class AbrirCerrarCajaPage implements OnInit {
         console.log('datos devuetos:', [this.storage.datosAdmi] );
       }else {
         this.listaUsuarios = [this.storage.datosAdmi];
-        this.cajaChicaForm.addControl('nombreUsuario' , new FormControl( this.listaUsuarios[0].nombre, [Validators.required]));
+        this.cajaChicaForm.addControl('dniUsuario' , new FormControl( this.listaUsuarios[0].dni, [Validators.required]));
       }
       console.log('abrir caja');
     }else if (this.modo === 'editar') {
@@ -53,16 +53,15 @@ export class AbrirCerrarCajaPage implements OnInit {
   createFormGroupCajaChicaEdit() {
     return new FormGroup({
       montoInicialEdit: new FormControl(this.datosCaja ? this.datosCaja.saldoInicial : '', [Validators.required]),
-      nombreUsuarioEdit: new FormControl(  this.datosCaja ? this.datosCaja.nombreVendedor : '', [Validators.required]),
+      dniUsuarioEdit: new FormControl(  this.datosCaja ? this.datosCaja.dniVendedor : '', [Validators.required]),
     });
   }
   get montoInicialEdit() { return this.cajaChicaForm.get('montoInicialEdit'); }
-  get nombreUsuarioEdit() { return this.cajaChicaForm.get('nombreUsuarioEdit'); }
+  get dniUsuarioEdit() { return this.cajaChicaForm.get('dniUsuarioEdit'); }
 
   createFormGroupCerrarCajaChica() {
     return new FormGroup({
       montoFinal: new FormControl('', [Validators.required]),
-      // nombreUsuario: new FormControl( this.listaUsuarios ? this.listaUsuarios[0].nombre : '', [Validators.required]),
     });
   }
   get montoFinal() { return this.CerrarCajaChicaForm.get('montoFinal'); }
@@ -70,23 +69,30 @@ export class AbrirCerrarCajaPage implements OnInit {
   createFormGroupCajaChica() {
     return new FormGroup({
       montoInicial: new FormControl(isNullOrUndefined(this.datosCaja) ? '' : this.datosCaja.saldoInicial , [Validators.required]),
-      // nombreUsuario: new FormControl( this.listaUsuarios ? this.listaUsuarios[0].nombre : '', [Validators.required]),
     });
   }
   get montoInicial() { return this.cajaChicaForm.get('montoInicial'); }
-  get nombreUsuario() { return this.cajaChicaForm.get('nombreUsuario'); }
+  get dniUsuario() { return this.cajaChicaForm.get('dniUsuario'); }
 
   ObtenerUsuarios(sede: string){
     this.dataApi.ObtenerListaDeUsuariosSede(sede).subscribe(data => {
       this.listaUsuarios = data;
       console.log('lista', this.listaUsuarios);
-      this.cajaChicaForm.addControl('nombreUsuario' , new FormControl( this.listaUsuarios[0].nombre, [Validators.required]));
+      this.cajaChicaForm.addControl('dniUsuario' , new FormControl( this.listaUsuarios[0].dni, [Validators.required]));
     });
   }
   GuardarCaja(){
+    let nombreVend ;
     console.log('guardar caja', this.cajaChicaForm.value);
+    for (const datos of this.listaUsuarios) {
+      if (datos.dni === this.cajaChicaForm.value.dniUsuario) {
+        nombreVend = datos.nombre;
+        break;
+      }
+    }
     const cajaApertura = {
-      nombreVendedor: this.cajaChicaForm.value.nombreUsuario.toLocaleLowerCase(),
+      dniVendedor: this.cajaChicaForm.value.dniUsuario,
+      nombreVendedor: nombreVend.toLocaleLowerCase(),
       saldoInicial: this.cajaChicaForm.value.montoInicial,
       saldoFinal: 0,
       FechaApertura: new Date(),
@@ -94,7 +100,7 @@ export class AbrirCerrarCajaPage implements OnInit {
       sede: this.sede
     };
     console.log('datos a guardar', cajaApertura);
-    this.dataApi.VerificarCajaChicaVendedor('Aperturado', this.cajaChicaForm.value.nombreUsuario).then(snapshot => {
+    this.dataApi.VerificarCajaChicaVendedor('Aperturado', this.cajaChicaForm.value.dniUsuario).then(snapshot => {
       if (snapshot.empty) {
         // si esta vacio
         console.log('deja ingresar');
@@ -103,7 +109,7 @@ export class AbrirCerrarCajaPage implements OnInit {
       } else {
         console.log('no deja entrar', snapshot);
         // tslint:disable-next-line:max-line-length
-        this.presentToast('No se pudo crear Caja Chica.Por favor cierre Caja Chica para el usuario: ' + this.cajaChicaForm.value.nombreUsuario, 'warning', 'alert-circle-outline');
+        this.presentToast('No se pudo crear Caja Chica.Por favor cierre Caja Chica para el usuario: ' + cajaApertura.nombreVendedor, 'warning', 'alert-circle-outline');
 
       }
     });
@@ -153,8 +159,16 @@ export class AbrirCerrarCajaPage implements OnInit {
     console.log('cerramos caja', this.CerrarCajaChicaForm.value.montoFinal, new Date());
   }
   EditarCajaChica(){
+    let  nombreVendEditado;
+    for (const data of this.listaUsuarios) {
+      if (data.dni === this.cajaChicaEditForm.value.dniUsuarioEdit) {
+        nombreVendEditado = data.nombre;
+        break;
+      }
+    }
     const datos = {
-      nombreVendedor: this.cajaChicaEditForm.value.nombreUsuarioEdit.toLocaleLowerCase(),
+      dniVendedor: this.cajaChicaEditForm.value.dniUsuarioEdit,
+      nombreVendedor: nombreVendEditado.toLocaleLowerCase(),
       saldoInicial: this.cajaChicaEditForm.value.montoInicialEdit,
     };
     console.log('Editar', this.cajaChicaEditForm.value);

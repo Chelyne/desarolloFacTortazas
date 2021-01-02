@@ -154,7 +154,7 @@ export class PuntoVentaPage implements OnInit {
         if (idProdItem === item.idProducto){
             producExist = true;
             item.cantidad += 1;
-            item.tatalxprod = item.cantidad * item.producto.precio;
+            item.totalxprod = item.cantidad * item.producto.precio;
             break;
         }
       }
@@ -172,7 +172,7 @@ export class PuntoVentaPage implements OnInit {
       producto: prodItem,
       idProducto: prodItem.id,
       cantidad: 1,
-      tatalxprod: prodItem.precio
+      totalxprod: prodItem.precio
     };
   }
 
@@ -187,7 +187,7 @@ export class PuntoVentaPage implements OnInit {
         // console.log('ssssssssssssssssss')
         if (idProdItem === itemDeVenta.idProducto){
             itemDeVenta.cantidad = cantidad;
-            itemDeVenta.tatalxprod = itemDeVenta.cantidad * itemDeVenta.producto.precio;
+            itemDeVenta.totalxprod = itemDeVenta.cantidad * itemDeVenta.producto.precio;
             break;
         }
       }
@@ -221,7 +221,7 @@ export class PuntoVentaPage implements OnInit {
     let totalxpagar = 0;
 
     for (const item of this.listaItemsDeVenta) {
-      totalxpagar += item.tatalxprod;
+      totalxpagar += item.totalxprod;
     }
     // console.log(totalxpagar);
 
