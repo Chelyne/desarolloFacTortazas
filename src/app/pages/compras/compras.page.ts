@@ -325,7 +325,7 @@ export class ComprasPage implements OnInit {
 
     };
 
-    this.dataApi.guardarCompra(compra).then(
+    this.dataApi.guardarCompra(compra, this.sede).then(
       () => {
         console.log('Se ingreso Correctamente');
         this.limpiarListaDeCompras();
@@ -353,7 +353,7 @@ export class ComprasPage implements OnInit {
 
     };
 
-    this.dataApi.actualizarCompra(this.compra.id, compra).then(
+    this.dataApi.actualizarCompra(this.compra.id, compra, this.sede).then(
       () => {
         console.log('Se ingreso Correctamente');
         // this.presentToast("Se ingreso correctamente");

@@ -4,6 +4,7 @@ import { AgregarEditarClientePage } from 'src/app/modals/agregar-editar-cliente/
 import { ClienteInterface } from 'src/app/models/cliente-interface';
 import { DbDataService } from 'src/app/services/db-data.service';
 // import { RegistrarClienteService } from 'src/app/services/registrar-cliente.service';
+import { StorageService } from '../../services/storage.service';
 
 @Component({
   selector: 'app-lista-de-clientes',
@@ -23,7 +24,8 @@ export class ListaDeClientesPage implements OnInit {
 
   constructor(private dataApi: DbDataService,
               private modalCtlr: ModalController,
-              private menuCtrl: MenuController) {
+              private menuCtrl: MenuController,
+              private storage: StorageService) {
     // this.usuarioForm = this.createFormGroupUsuario();
     this.ObtenerClientes();
   }

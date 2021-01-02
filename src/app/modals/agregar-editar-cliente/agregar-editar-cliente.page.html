@@ -14,7 +14,7 @@
   <form [formGroup]="clienteModalForm" autocomplete="off">
 
     <ion-item>
-      <ion-label position="floating" color="primary">Nombres</ion-label>
+      <ion-label position="floating" color="primary">Nombres / Razón social</ion-label>
       <ion-input maxlength="40" type="text" formControlName="nombre" placeholder="Nombres" class="capital" (keypress)="stringOnlyValidation($event)"></ion-input>
     </ion-item>
     <div class="alertDanger" *ngIf="nombre.invalid && (nombre.dirty || nombre.touched)">
@@ -29,7 +29,7 @@
       </div>
     </div>
 
-    <ion-item>
+    <!-- <ion-item>
       <ion-label color="primary" position="floating">Apellidos</ion-label>
       <ion-input maxlength="60" type="text" formControlName="apellidos" placeholder="Apellidos" (keypress)="stringOnlyValidation($event)"></ion-input>
     </ion-item>
@@ -43,21 +43,21 @@
       <div class="mensajeError" *ngIf="apellidos.errors.pattern">
         *No puede ingresar números en el apellido del cliente
       </div>
-    </div>
+    </div> -->
 
     <ion-item>
-      <ion-label color="primary" position="floating">DNI</ion-label>
-      <ion-input maxlength="8" type="text" (keypress)="numberOnlyValidation($event)" formControlName="dni" placeholder="DNI"></ion-input>
+      <ion-label color="primary" position="floating">DNI / RUC</ion-label>
+      <ion-input maxlength="8" type="text" (keypress)="numberOnlyValidation($event)" formControlName="documento" placeholder="DNI"></ion-input>
     </ion-item>
-    <div class="alertDanger" *ngIf="dni.invalid && (dni.dirty || dni.touched)">
-      <div class="mensajeError" *ngIf="dni.errors.required">
+    <div class="alertDanger" *ngIf="documento.invalid && (documento.dirty || documento.touched)">
+      <div class="mensajeError" *ngIf="documento.errors.required">
         *Complete su DNI
       </div>
-      <div class="mensajeError" *ngIf="dni.errors.minlength">
+      <div class="mensajeError" *ngIf="documento.errors.minlength">
         *Ingrese 8 dígitos
       </div>
-      <div class="mensajeError" *ngIf="dni.errors.maxlength">
-        *Ingresó más de 8 dígitos
+      <div class="mensajeError" *ngIf="documento.errors.maxlength">
+        *Ingresó más de 11 dígitos
       </div>
     </div>
 

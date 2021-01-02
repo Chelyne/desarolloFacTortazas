@@ -27,7 +27,7 @@
         <ion-col size="4">
           <ion-item style="border-radius: 10px;" lines="none">
             <ion-icon slot="start" color="primary" name="person"></ion-icon>
-            <ion-input [value]="cliente?(cliente.nombre | titlecase) + ' ' + (cliente.apellidos | titlecase): null" (ionFocus)="abrirPoppoverClientes($event)" type="text" placeholder="Cliente"></ion-input>
+            <ion-input [value]="cliente?(cliente.nombre | titlecase): null" (ionFocus)="abrirPoppoverClientes($event)" type="text" placeholder="Cliente"></ion-input>
           </ion-item>
         </ion-col>
       </ion-row>
@@ -290,7 +290,7 @@
           </div>
           <ion-grid>
             <ion-row>
-              <ion-col size="12" *ngFor="let item of listaItemsDeVenta.reverse(); let i = index">
+              <ion-col size="12" *ngFor="let item of listaItemsDeVenta; let i = index">
                 <!-- <ion-item> -->
                   <!-- <span slot="start">{{i+1}}</span> -->
                   <app-producto-venta

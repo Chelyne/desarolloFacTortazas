@@ -170,7 +170,7 @@ export class PuntoVentaPage implements OnInit {
     }
 
     if (!producExist){
-      this.listaItemsDeVenta.push( this.CrearItemDeVenta(prodItem));
+      this.listaItemsDeVenta.unshift( this.CrearItemDeVenta(prodItem));
     }
 
     this.calcularTotalaPagar();
@@ -186,6 +186,7 @@ export class PuntoVentaPage implements OnInit {
   }
 
   inputModificado(evento: {id: string, cantidad: number, precioVenta: number}){
+    console.log('RRARY', this.listaItemsDeVenta);
     // console.log(evento);
     this.ActualizarMonto(evento.id, evento.cantidad, evento.precioVenta);
   }

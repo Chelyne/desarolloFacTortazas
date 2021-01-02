@@ -18,11 +18,11 @@
   <ion-grid>
     <ion-row class="headClientes">
       <ion-col>
-        <ion-label color="light">Nombre</ion-label>
+        <ion-label color="light">Nombres</ion-label>
       </ion-col>
-      <ion-col>
+      <!-- <ion-col>
         <ion-label color="light">Apellidos</ion-label>
-      </ion-col>
+      </ion-col> -->
       <ion-col>
         <ion-label color="light">DNI</ion-label>
       </ion-col>
@@ -42,8 +42,8 @@
 
     <ion-row class="ion-justify-content-center ion-align-items-center contentClientes" *ngFor="let cliente of listaDeclientes">
       <ion-col>{{cliente.nombre | titlecase}}</ion-col>
-      <ion-col>{{cliente.apellidos | titlecase}}</ion-col>
-      <ion-col>{{cliente.dni}}</ion-col>
+      <!-- <ion-col>{{cliente.apellidos | titlecase}}</ion-col> -->
+      <ion-col>{{cliente.documento}}</ion-col>
       <ion-col>{{cliente.celular}}</ion-col>
       <ion-col>{{cliente.direccion | titlecase}}</ion-col>
       <ion-col>{{cliente.email}}</ion-col>

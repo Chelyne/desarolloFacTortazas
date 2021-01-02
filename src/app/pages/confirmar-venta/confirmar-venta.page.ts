@@ -3,7 +3,7 @@ import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { VentaInterface } from 'src/app/models/venta/venta';
 import { ConfirmarVentaService } from 'src/app/services/confirmar-venta.service';
 // import { TestServiceService } from 'src/app/services/test-service.service';
-import { MenuController } from '@ionic/angular';
+import { MenuController, LoadingController, ToastController } from '@ionic/angular';
 import { isNullOrUndefined } from 'util';
 import { Router } from '@angular/router';
 import { DbDataService } from '../../services/db-data.service';
@@ -40,12 +40,15 @@ export class ConfirmarVentaPage implements OnInit {
   descuentoDeVenta: number;
 
   venta: VentaInterface;
+  loading;
   constructor(
     private testServ: ConfirmarVentaService,
     private menuCtrl: MenuController,
     private router: Router,
     private dataApi: DbDataService,
-    private storage: StorageService
+    private storage: StorageService,
+    private loadingController: LoadingController,
+    private toastController: ToastController
   ) {
     this.formPago = this.createFormPago();
    }
@@ -175,14 +178,34 @@ export class ConfirmarVentaPage implements OnInit {
   }
 
   generarPago(){
+    this.presentLoading('Generando Venta');
     this.venta.tipoComprobante = this.tipoComprobante;
     this.venta.serieComprobante = this.serieComprobante;
     this.venta.vendedor = this.storage.datosAdmi;
     console.log('Se generó el pago');
-    this.dataApi.confirmarVenta(this.venta).then(data => {
+    this.dataApi.confirmarVenta(this.venta, this.storage.datosAdmi.sede).then(data => {
       this.router.navigate(['/punto-venta', 'true']);
       console.log('guardado', data);
+      this.loading.dismiss();
+      this.presentToast('Venta exitosa');
     });
   }
 
+
+  async presentLoading(mensaje: string) {
+    this.loading = await this.loadingController.create({
+      cssClass: 'my-custom-class',
+      message: mensaje,
+      duration: 5000
+    });
+    await this.loading.present();
+  }
+
+  async presentToast(mensaje: string) {
+    const toast = await this.toastController.create({
+      message: mensaje,
+      duration: 1000
+    });
+    toast.present();
+  }
 }

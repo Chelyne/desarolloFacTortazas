@@ -3,6 +3,7 @@ import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { ModalController, ToastController } from '@ionic/angular';
 import { ProveedorInterface } from 'src/app/models/proveedor';
 import { DbDataService } from 'src/app/services/db-data.service';
+import { StorageService } from '../../services/storage.service';
 
 @Component({
   selector: 'app-agregar-editar-proveedor',
@@ -23,7 +24,8 @@ export class AgregarEditarProveedorPage implements OnInit {
   constructor(
     private dataApi: DbDataService,
     private modalCtlr: ModalController,
-    private toastCtrl: ToastController
+    private toastCtrl: ToastController,
+    private storage: StorageService
   ) {
     this.proveedorModalForm = this.createFormProveedor();
     // console.log(this.eventoInvoker, this.tagInvoker, this.dataInvoker);
