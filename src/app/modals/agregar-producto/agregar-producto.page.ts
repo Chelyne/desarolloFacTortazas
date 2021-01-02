@@ -194,34 +194,34 @@ export class AgregarProductoPage implements OnInit {
   //   }, (err) => { });
   // }
 
-  // async SubirFoto() {
-  //   const actionSheet = await this.actionSheetController.create({
-  //     buttons: [{
-  //       text: 'Cargar desde Galería',
-  //       icon: 'images',
-  //       handler: () => {
-  //         this.image = null;
-  //         this.sinFoto = null;
-  //         this.Openalbum();
-  //       }
-  //     },
-  //     {
-  //       text: 'Usar la Cámara',
-  //       icon: 'camera',
-  //       handler: () => {
-  //         this.image = null;
-  //         this.sinFoto = null;
-  //         this.Opencamera();
-  //       }
-  //     },
-  //     {
-  //       text: 'Cancelar',
-  //       icon: 'close-circle-outline',
-  //       role: 'cancel'
-  //     }]
-  //   });
-  //   await actionSheet.present();
-  // }
+  async SubirFoto() {
+    const actionSheet = await this.actionSheetController.create({
+      buttons: [{
+        text: 'Cargar desde Galería',
+        icon: 'images',
+        handler: () => {
+          this.image = null;
+          this.sinFoto = null;
+          // this.Openalbum();
+        }
+      },
+      {
+        text: 'Usar la Cámara',
+        icon: 'camera',
+        handler: () => {
+          this.image = null;
+          this.sinFoto = null;
+          // this.Opencamera();
+        }
+      },
+      {
+        text: 'Cancelar',
+        icon: 'close-circle-outline',
+        role: 'cancel'
+      }]
+    });
+    await actionSheet.present();
+  }
 
   // Opencamera() {
   //   this.camera.getPicture({

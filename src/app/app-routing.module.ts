@@ -175,10 +175,6 @@ const routes: Routes = [
     loadChildren: () => import('./pages/catalogo/catalogo.module').then( m => m.CatalogoPageModule)
   },
   {
-    path: 'refactor-compra',
-    loadChildren: () => import('./pages/refactor-compra/refactor-compra.module').then( m => m.RefactorCompraPageModule)
-  },
-  {
     path: 'lista-de-compras',
     loadChildren: () => import('./pages/lista-de-compras/lista-de-compras.module').then( m => m.ListaDeComprasPageModule)
   },
@@ -218,6 +214,10 @@ const routes: Routes = [
     path: 'agregar-editar-prod-compuestos',
     // tslint:disable-next-line:max-line-length
     loadChildren: () => import('./modals/agregar-editar-prod-compuestos/agregar-editar-prod-compuestos.module').then( m => m.AgregarEditarProdCompuestosPageModule)
+  },
+  {
+    path: 'lista-de-ventas',
+    loadChildren: () => import('./pages/lista-de-ventas/lista-de-ventas.module').then( m => m.ListaDeVentasPageModule)
   }
 
 

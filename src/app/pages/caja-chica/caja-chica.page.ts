@@ -121,7 +121,7 @@ export class CajaChicaPage implements OnInit {
              datos.serieComprobante || null,
              datos.fechaEmision ? this.datePipe.transform(new Date(moment.unix(datos.fechaEmision.seconds).format('D MMM YYYY H:mm')), 'short') : null,
              datos.cliente.nombre || null,
-             datos.cliente.dni || datos.cliente.ruc || 'null',
+             datos.cliente.dni || datos.cliente.ruc || null,
              'PEN',
              datos.total
             ];

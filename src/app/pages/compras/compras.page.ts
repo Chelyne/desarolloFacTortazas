@@ -13,7 +13,7 @@ import { ModalProveedoresPage } from '../../modals/modal-proveedores/modal-prove
 import { ModalProductoCompraPage } from '../../modals/modal-producto-compra/modal-producto-compra.page';
 import { isNullOrUndefined } from 'util';
 
-import { GlobalService } from "../../global/global.service";
+import { GlobalService } from '../../global/global.service';
 
 
 @Component({
@@ -41,7 +41,7 @@ export class ComprasPage implements OnInit {
   // TODO - Subir a la parte superior
   // NOTE - parece no ser necesario
   // COMPRA
-  ACTUALIZAR_COMPRA: boolean = false;
+  ACTUALIZAR_COMPRA = false;
   compra: CompraInterface = {};
   listaItemsDeCompra: ItemDeCompraInterface[] = [];
   totalxCompra = 0;
@@ -62,7 +62,7 @@ export class ComprasPage implements OnInit {
   ngOnInit() {
     this.menuCtrl.enable(true);
       // Pass a custom class to each select interface for styling
-    const selects = document.querySelectorAll('.custom-options');
+    // const selects = document.querySelectorAll('.custom-options');
     // tslint:disable-next-line:prefer-for-of
     // for (let i = 0; i < selects.length; i++) {
     //   selects[i].interfaceOptions = {
@@ -73,7 +73,7 @@ export class ComprasPage implements OnInit {
     this.ObtenerCompra();
     if (Object.entries(this.compra).length !== 0){
       this.ACTUALIZAR_COMPRA = true;
-      //this.formItemDeCompras = {};
+      // this.formItemDeCompras = {};
       this.formComprobante = new FormGroup({
         tipoComp: new FormControl(this.compra.typoComprobante, [Validators.required]),
         serieComp: new FormControl(this.compra.serieComprobante, [Validators.required]),
@@ -325,7 +325,7 @@ export class ComprasPage implements OnInit {
 
     };
 
-    this.dataApi.guardarCompra(compra).then(
+    this.dataApi.guardarCompra(compra, this.sede).then(
       () => {
         console.log('Se ingreso Correctamente');
         this.limpiarListaDeCompras();
@@ -353,7 +353,7 @@ export class ComprasPage implements OnInit {
 
     };
 
-    this.dataApi.actualizarCompra(this.compra.id, compra).then(
+    this.dataApi.actualizarCompra(this.compra.id, compra, this.sede).then(
       () => {
         console.log('Se ingreso Correctamente');
         // this.presentToast("Se ingreso correctamente");
@@ -363,7 +363,7 @@ export class ComprasPage implements OnInit {
     );
 
     // this.limpiarListaDeCompras();
-    //this.formComprobante = this.createFormComprobante();
+    // this.formComprobante = this.createFormComprobante();
     this.presentToast('Actualizó con exito la compra.');
     this.editCompra.setCompra({});
   }

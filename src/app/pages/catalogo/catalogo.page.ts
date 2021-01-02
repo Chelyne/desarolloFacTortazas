@@ -5,7 +5,7 @@ import { CategoriasService } from '../../services/categorias.service';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ModalController, MenuController, AlertController } from '@ionic/angular';
 import { StorageService } from '../../services/storage.service';
-import { AgregarProductoPage } from '../../modals/agregar-producto/agregar-producto.page';
+import { ModalAgregarProductoPage } from '../../modals/modal-agregar-producto/modal-agregar-producto.page';
 import { AngularFirestore } from '@angular/fire/firestore';
 import { EditarProductoPage } from '../../modals/editar-producto/editar-producto.page';
 
@@ -16,18 +16,15 @@ import { EditarProductoPage } from '../../modals/editar-producto/editar-producto
   styleUrls: ['./catalogo.page.scss'],
 })
 export class CatalogoPage implements OnInit {
-  //-------------
   sedes = this.storage.datosAdmi.sede;
-  listaDeProductos:ProductoInterface[] = [];
-  buscando: boolean=false;
+  listaDeProductos: ProductoInterface[] = [];
+  buscando = false;
   id: any;
 
-  //-------------
   categorias = [];
   categoria;
-  
+
   ultimaCategoria;
-  dataProducto: ProductoInterface;
   sinDatos;
   constructor(
     private dataApi: DbDataService,
@@ -51,8 +48,10 @@ export class CatalogoPage implements OnInit {
     console.log(this.categorias);
     this.categorias = this.categoriasService.getcategoriasNegocio(this.categoria);
     this.ultimaCategoria = 4;
-    console.log('adri', this.categoria);
-    console.log('sedes', this.sedes);
+
+    console.log('categorias', this.categorias);
+    console.log('sede', this.sedes);
+    console.log('categoria', this.categoria);
   }
 
   // ======================================================================================
@@ -75,7 +74,7 @@ export class CatalogoPage implements OnInit {
     if (lowercaseKey.length) {
       this.dataApi.ObtenerListaProductosByName(this.sedes, lowercaseKey, 5).subscribe(data => {
         this.listaDeProductos = data;
-        console.log("love", data);
+        console.log('love', data);
 
       });
     } else  {
@@ -91,12 +90,31 @@ export class CatalogoPage implements OnInit {
   /*                           agregar nuevo producto                           */
   /* -------------------------------------------------------------------------- */
 
- 
 
-
-  //==========================================================================================
-  agregarProducto() {
+  // ==========================================================================================
+  agregarProductoPrueba() {
     this.router.navigate(['/agregar-producto', this.sedes, this.categoria]);
+  }
+
+
+  // ==========================================================================================
+  agregarProducto() {
+    // this.router.navigate(['/agregar-producto', this.sedes, this.categoria]);
+    this.abrirModalNuevoProducto();
+  }
+
+  async abrirModalNuevoProducto(){
+
+    const modal =  await this.modalCtlr.create({
+      component: ModalAgregarProductoPage,
+      cssClass: 'modal-fullscreen',
+      componentProps: {
+        sede: this.sedes,
+        categoria: this.categoria,
+      }
+    });
+
+    await modal.present();
   }
 
   async borrarProducto(item: ProductoInterface) {
@@ -146,5 +164,11 @@ export class CatalogoPage implements OnInit {
       }
       }
 
+
+      irLIstaProductos(categoria: string) {
+        console.log('ojo', categoria, this.sedes);
+        console.log('ESTMOS', this.categoria, this.sedes);
+        this.router.navigate(['/productos-lista', categoria, this.sedes]);
+      }
 
 }

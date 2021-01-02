@@ -43,14 +43,14 @@
       </ion-item>
       <ion-grid fixed>
         <ion-row class="header">
-          <ion-col size="0.3"><ion-label>#</ion-label></ion-col>
-          <ion-col size ="1.5"><ion-label>Vendedor</ion-label></ion-col>
-          <ion-col size ="1.5"><ion-label>Apertura</ion-label></ion-col>
-          <ion-col size ="1.5"><ion-label>Cierre</ion-label></ion-col>
-          <ion-col size ="1"><ion-label>Saldo Inicial</ion-label></ion-col>
-          <ion-col size ="1"><ion-label>Saldo Final</ion-label></ion-col>
-          <ion-col size ="1.5"><ion-label>Estado</ion-label></ion-col>
-          <ion-col size ="3.7"><ion-label>Acciones</ion-label></ion-col>
+          <ion-col size="0.3"><ion-label color="light">#</ion-label></ion-col>
+          <ion-col size ="1.5"><ion-label color="light">Vendedor</ion-label></ion-col>
+          <ion-col size ="1.5"><ion-label color="light">Apertura</ion-label></ion-col>
+          <ion-col size ="1.5"><ion-label color="light">Cierre</ion-label></ion-col>
+          <ion-col size ="1"><ion-label color="light">Saldo Inicial</ion-label></ion-col>
+          <ion-col size ="1"><ion-label color="light">Saldo Final</ion-label></ion-col>
+          <ion-col size ="1.5"><ion-label color="light">Estado</ion-label></ion-col>
+          <ion-col size ="3.7"><ion-label color="light">Acciones</ion-label></ion-col>
         </ion-row>
         <ion-row style="text-align: center;" *ngFor="let item of listaCajaChica; let i=index ">
           <ion-col size="0.3"><ion-label>{{i+1}}</ion-label></ion-col>
@@ -106,22 +106,7 @@
     </ion-card-content>
   </ion-card>
 </ion-content>
-<div class="containerComprobante">
-  <div id="pdf">
-      <h1>Este es un título</h1>
-      <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Repellat facere inventore accusantium. Quaerat, maxime fugiat vero eos praesentium nulla perspiciatis pariatur modi blanditiis ipsa consectetur ipsam dolores accusantium? Nam, nemo?</p>
-      <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Repellat facere inventore accusantium. Quaerat, maxime fugiat vero eos praesentium nulla perspiciatis pariatur modi blanditiis ipsa consectetur ipsam dolores accusantium? Nam, nemo?</p>
-      <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Repellat facere inventore accusantium. Quaerat, maxime fugiat vero eos praesentium nulla perspiciatis pariatur modi blanditiis ipsa consectetur ipsam dolores accusantium? Nam, nemo?</p>
-      <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Repellat facere inventore accusantium. Quaerat, maxime fugiat vero eos praesentium nulla perspiciatis pariatur modi blanditiis ipsa consectetur ipsam dolores accusantium? Nam, nemo?</p>
-      <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Repellat facere inventore accusantium. Quaerat, maxime fugiat vero eos praesentium nulla perspiciatis pariatur modi blanditiis ipsa consectetur ipsam dolores accusantium? Nam, nemo?</p>
-      <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Repellat facere inventore accusantium. Quaerat, maxime fugiat vero eos praesentium nulla perspiciatis pariatur modi blanditiis ipsa consectetur ipsam dolores accusantium? Nam, nemo?</p>
-      <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Repellat facere inventore accusantium. Quaerat, maxime fugiat vero eos praesentium nulla perspiciatis pariatur modi blanditiis ipsa consectetur ipsam dolores accusantium? Nam, nemo?</p>
-      <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Repellat facere inventore accusantium. Quaerat, maxime fugiat vero eos praesentium nulla perspiciatis pariatur modi blanditiis ipsa consectetur ipsam dolores accusantium? Nam, nemo?</p>
-      <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Repellat facere inventore accusantium. Quaerat, maxime fugiat vero eos praesentium nulla perspiciatis pariatur modi blanditiis ipsa consectetur ipsam dolores accusantium? Nam, nemo?</p>
-      <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Repellat facere inventore accusantium. Quaerat, maxime fugiat vero eos praesentium nulla perspiciatis pariatur modi blanditiis ipsa consectetur ipsam dolores accusantium? Nam, nemo?</p>
-  
-  </div>
-</div>
+
 <!-- <ion-footer>
   <ion-toolbar>
     <ion-button (click)="pruebaPaginacion()" expand="block" fill="clear" shape="round">

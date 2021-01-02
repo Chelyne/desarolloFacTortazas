@@ -1,0 +1,83 @@
+<ion-header>
+    <ion-toolbar>
+        <ion-title>lista-de-ventas</ion-title>
+    </ion-toolbar>
+</ion-header>
+
+<ion-content>
+    <form [formGroup]="ventasForm">
+        <ion-grid>
+            <ion-row>
+                <ion-col size="12 " size-xs="12" size-sm="12" size-md="6" size-lg="3">
+
+                </ion-col>
+                <ion-col size="12 " size-xs="12" size-sm="12" size-md="6" size-lg="6">
+                    <ion-item lines="none">
+                        <ion-label position="stacked">Seleccione dia de venta:</ion-label>
+                        <ion-input type="date" formControlName="fechadeventa" value="1994-12-1"></ion-input>
+                    </ion-item>
+                </ion-col>
+                <ion-col size="12 " size-xs="12" size-sm="12" size-md="6" size-lg="3">
+
+                </ion-col>
+            </ion-row>
+
+
+
+            <ion-row>
+                <ion-col size="12 " size-xs="12" size-sm="12" size-md="6" size-lg="3">
+
+                </ion-col>
+                <ion-col size="12 " size-xs="12" size-sm="12" size-md="6" size-lg="6">
+                    <ion-button color="primary" (click)="NoEnviados()">No enviados</ion-button>
+                    <ion-button color="danger">Rechazados</ion-button>
+                    <ion-button color="warning">Observados</ion-button>
+                    <ion-button color="success">Exitosos</ion-button>
+                </ion-col>
+                <ion-col size="12 " size-xs="12" size-sm="12" size-md="6" size-lg="3">
+
+                </ion-col>
+            </ion-row>
+
+
+            <ion-row>
+                <ion-col>
+                    <ion-card>
+                        <ion-list>
+                            <ion-item>
+                                <ion-label>
+                                    Lista de no enviados
+                                </ion-label>
+                                <ion-button slot="end">Enviar</ion-button>
+
+                            </ion-item>
+                            <ion-list-header>
+                            </ion-list-header>
+                            <ion-item *ngFor="let venta of listaDeVentas">
+                                <ion-label>
+                                    <ion-grid>
+                                        <ion-row>
+                                            <ion-col>
+                                                <h2><b>Nombre: </b>{{venta.cliente.nombre | titlecase}}</h2>
+                                                <h3><b>Vendedor: </b>{{venta.vendedor.nombre | titlecase}}</h3>
+                                                <h3><b>{{venta.tipoComprobante}}: </b>{{venta.serieComprobante}} - 00000001</h3>
+                                            </ion-col>
+                                            <ion-col style=" display: flex; justify-content: center; align-content: center; align-items: center;">
+                                                <h1><b>Pago total: </b>S/. {{venta.total}}</h1>
+                                            </ion-col>
+                                        </ion-row>
+                                    </ion-grid>
+                                </ion-label>
+                                <ion-buttons slot="end">
+                                    <ion-button>
+                                        <ion-icon slot="icon-only" color="primary" name="reload-outline"></ion-icon>
+                                    </ion-button>
+                                </ion-buttons>
+                            </ion-item>
+                        </ion-list>
+                    </ion-card>
+                </ion-col>
+            </ion-row>
+        </ion-grid>
+    </form>
+</ion-content>

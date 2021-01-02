@@ -1,7 +1,13 @@
 import { ItemDeVentaInterface } from './item-de-venta';
+import { ClienteInterface } from '../cliente-interface';
 
 export interface VentaInterface {
-    idVenta?:string;
+    fechaEmision?: Date;
+    idVenta?: string;
+    cliente?: ClienteInterface;
+    vendedor?: {};
+    tipoComprobante?: string;
+    serieComprobante?: string;
     listaItemsDeVenta?: ItemDeVentaInterface[];
-    totalaPagar?: number;
+    total?: number;
 }

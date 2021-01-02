@@ -2,6 +2,7 @@ import { Component, OnInit, Input, ViewChild, AfterViewInit } from '@angular/cor
 import { DbDataService } from '../../services/db-data.service';
 import { PopoverController } from '@ionic/angular';
 import { timer } from 'rxjs';
+import { StorageService } from '../../services/storage.service';
 
 @Component({
   selector: 'app-poppover-clientes',
@@ -12,12 +13,13 @@ export class PoppoverClientesComponent implements OnInit, AfterViewInit {
   @ViewChild('search', {static: false}) search: any;
 
   @Input() listaClientes: any = [];
-  @Input() seleccionado: string;
+  @Input() seleccionado: any;
   // listaClientes = [];
 
   textoBuscar = '';
   constructor(private dataApi: DbDataService,
-              private popoverController: PopoverController) { }
+              private popoverController: PopoverController,
+              private storage: StorageService) { }
 
   ngOnInit() {
     console.log(this.seleccionado);

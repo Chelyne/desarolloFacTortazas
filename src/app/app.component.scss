@@ -4,11 +4,15 @@
 }
 
 * {
-    ion-item{
-        ion-label {
-            font-family: Nunito;
-        }
-    } 
+    ion-label {
+        font-family: Nunito;
+    }
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -khtml-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
  }
  
  ion-header {
@@ -17,7 +21,15 @@
      // url('https://image.freepik.com/vector-gratis/ilustracion-vegetales-frutas-patrones-fisuras_123207-212.jpg')!important;
      object-fit: cover;
  }
- 
+ ion-content {
+    // overwrite inline styles
+    --offset-bottom: auto!important;
+    --overflow: hidden;
+    overflow: auto;
+    &::-webkit-scrollbar {
+      display: none;
+    }
+  }
  .menuHeader {
      display:table;
      height:100%; 
@@ -60,22 +72,37 @@
      // color: var(--ion-color-primary);
      font-size: 16px;
      transition: color 2ms, font-size 0.2s;
-     --ion-item-background: var(--ion-color-light);;
+     --ion-item-background: var(--ion-color-light);
  }
 
+.active {
+    --ion-text-color: var(--ion-color-primary);
+    --ion-item-background: var(--ion-color-light);
+    ion-icon{
+        --ion-text-color-rgb: var(--ion-color-primary);
+    }
+}
+.active-parent{
+    cursor: pointer;
+}
+.desactive-parent {
+    cursor: pointer;
+}
+.desactive-parent:hover {
+    --ion-item-background: var(--ion-color-light);
+}
 
- // desplegable menu
-#subseccion1 {
-    // position: absolute;
-    // top: 100%;
-    // left: 0px;  
-    // background-color: #41338b;
-    // font:normal 0.8em arial;  
-    // padding: 0.2em 0.5em ;
-    padding-left: 2em;
-    display: none;
+.active-parent:hover {
+    --ion-item-background: var(--ion-color-light);
 }
-#splitpane {
-    display: none;
+.subItem {
+    padding-left: 2.5em;
 }
-  
+
+.cerrarSesion {
+    cursor: pointer;
+}
+
+.cerrarSesion:hover {
+    --ion-item-background: var(--ion-color-light);
+}

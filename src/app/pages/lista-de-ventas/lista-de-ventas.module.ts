@@ -4,18 +4,18 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 
 import { IonicModule } from '@ionic/angular';
 
-import { RefactorCompraPageRoutingModule } from './refactor-compra-routing.module';
+import { ListaDeVentasPageRoutingModule } from './lista-de-ventas-routing.module';
 
-import { RefactorCompraPage } from './refactor-compra.page';
+import { ListaDeVentasPage } from './lista-de-ventas.page';
 
 @NgModule({
   imports: [
     CommonModule,
     FormsModule,
+    ReactiveFormsModule,
     IonicModule,
-    RefactorCompraPageRoutingModule,
-    ReactiveFormsModule
+    ListaDeVentasPageRoutingModule
   ],
-  declarations: [RefactorCompraPage]
+  declarations: [ListaDeVentasPage]
 })
-export class RefactorCompraPageModule {}
+export class ListaDeVentasPageModule {}

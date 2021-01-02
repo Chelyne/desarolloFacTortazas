@@ -1,9 +1,10 @@
 import { Component, Input, OnInit } from '@angular/core';
-import { AlertController, ModalController, ToastController } from '@ionic/angular';
+import { AlertController, ModalController, ToastController, MenuController } from '@ionic/angular';
 import { AgregarEditarProveedorPage } from 'src/app/modals/agregar-editar-proveedor/agregar-editar-proveedor.page';
 import { ProveedorInterface } from 'src/app/models/proveedor';
 import { DbDataService } from 'src/app/services/db-data.service';
 // import { ProveedorRegistroService } from 'src/app/services/proveedor-registro.service';
+import { StorageService } from '../../services/storage.service';
 
 @Component({
   selector: 'app-lista-de-proveedores',
@@ -30,13 +31,16 @@ export class ListaDeProveedoresPage implements OnInit {
     private dataApi: DbDataService,
     private modalCtlr: ModalController,
     private toastCtrl: ToastController,
-    public alertController: AlertController
+    public alertController: AlertController,
+    private menuCtrl: MenuController,
+    private storage: StorageService
   ) {
     // this.proveedoresForm = this.createFormGroupProveedor();
     this.ObtenerProveedores();
   }
 
   ngOnInit() {
+    this.menuCtrl.enable(true);
   }
 
 
@@ -71,7 +75,7 @@ export class ListaDeProveedoresPage implements OnInit {
 
     setTimeout(() => {
       this.abrirModal();
-    }, 500);
+    }, 10);
 
   }
 

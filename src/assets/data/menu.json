@@ -7,27 +7,102 @@
     },
 
     {
-        "icon": "receipt-outline",
-        "name": "Punto de venta",
-        "redirecTo": "/punto-venta"
+        "icon": "calculator-outline",
+        "name": "POS",
+        "sub": [{
+                "icon": "receipt-outline",
+                "name": "Punto de Venta",
+                "redirecTo": "/punto-venta"
+            },
+            {
+                "icon": "receipt-outline",
+                "name": "Caja chica POS",
+                "redirecTo": "/caja-chica"
+            },
+            {
+                "icon": "receipt-outline",
+                "name": "Promociones",
+                "redirecTo": "/productos-compuestos"
+            }
+        ]
     },
 
     {
-        "icon": "document-text-outline",
-        "name": "Catalogo",
-        "redirecTo": "/catalogo"
+        "icon": "cart-outline",
+        "name": "Compras",
+        "sub": [{
+                "icon": "receipt-outline",
+                "name": "Nuevo",
+                "redirecTo": "/compras"
+            },
+            {
+                "icon": "receipt-outline",
+                "name": "Lista de Compras",
+                "redirecTo": "/lista-de-compras"
+            },
+            {
+                "icon": "receipt-outline",
+                "name": "Proveedores",
+                "redirecTo": "/lista-de-proveedores"
+            }
+        ]
     },
 
     {
-        "icon": "newspaper-outline",
-        "name": "Pedidos",
-        "redirecTo": "/pedidos"
+        "icon": "cash-outline",
+        "name": "Ventas",
+        "sub": [{
+                "icon": "receipt-outline",
+                "name": "Nuevo Comprobante",
+                "redirecTo": "#"
+            },
+            {
+                "icon": "receipt-outline",
+                "name": "Lista de Comprobantes",
+                "redirecTo": "#"
+            },
+            {
+                "icon": "document-text-outline",
+                "name": "Lista de ventas",
+                "redirecTo": "/lista-de-ventas"
+            },
+            {
+                "icon": "receipt-outline",
+                "name": "Comprobantes no enviados",
+                "redirecTo": "#"
+            },
+            {
+                "icon": "receipt-outline",
+                "name": "Resumenes y anulaciones",
+                "redirecTo": "#"
+            }
+        ]
     },
 
     {
-        "icon": "people-outline",
-        "name": "Clientes",
-        "redirecTo": "/clientes"
+        "icon": "storefront-outline",
+        "name": "Inventario",
+        "sub": [{
+                "icon": "receipt-outline",
+                "name": "Productos",
+                "redirecTo": "/catalogo"
+            },
+            {
+                "icon": "receipt-outline",
+                "name": "Categorias",
+                "redirecTo": "/catalogo"
+            },
+            {
+                "icon": "receipt-outline",
+                "name": "Marcas",
+                "redirecTo": "#"
+            },
+            {
+                "icon": "receipt-outline",
+                "name": "Clientes",
+                "redirecTo": "/lista-de-clientes"
+            }
+        ]
     },
 
     {
@@ -37,8 +112,24 @@
     },
 
     {
-        "icon": "storefront-outline",
-        "name": "Compras",
-        "redirecTo": "/compras"
+        "icon": "stats-chart-outline",
+        "name": "Reportes",
+        "sub": [{
+                "icon": "receipt-outline",
+                "name": "Compras",
+                "redirecTo": "#"
+            },
+            {
+                "icon": "receipt-outline",
+                "name": "Ventas",
+                "redirecTo": "#"
+            }
+        ]
+    },
+
+    {
+        "icon": "newspaper-outline",
+        "name": "Pedidos",
+        "redirecTo": "/pedidos"
     }
 ]

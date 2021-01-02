@@ -11,7 +11,7 @@ import { AgregarEditarClientePage } from 'src/app/modals/agregar-editar-cliente/
 import { AgregarEditarClientePageModule } from 'src/app/modals/agregar-editar-cliente/agregar-editar-cliente.module';
 
 @NgModule({
-  entryComponents:[
+  entryComponents: [
     AgregarEditarClientePage
   ],
   imports: [
