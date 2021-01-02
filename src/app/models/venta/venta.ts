@@ -16,6 +16,9 @@ export interface VentaInterface {
     enviado?: boolean; // true o false
     cdrStatus?: string;
     cdr?: CDRInterface;
+    totalaPagar?: number;
+    bolsa?: boolean;
+    tipoPago?: string;
     total?: number;
 }
 

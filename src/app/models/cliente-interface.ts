@@ -10,4 +10,5 @@ export interface ClienteInterface {
     email?: string;
     celular?: string;
     documento?: string;
+    tipoDocumento?: string;
 }

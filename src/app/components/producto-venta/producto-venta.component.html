@@ -1,6 +1,6 @@
 <form [formGroup]="formVenta" autocomplete="off">
 <ion-row class="ion-justify-content-center ion-align-items-center">
-  <ion-col size="2">
+  <ion-col size="1">
       <ion-input type="text" formControlName="cantidad" placeholder="Cantidad" [value]="itemDeVenta.cantidad==0?'':itemDeVenta.cantidad" maxlength="5"
         (ionChange)="cambioCantidad()" ></ion-input>
       <div class="alertDanger" *ngIf="cantidad.invalid && (cantidad.dirty || cantidad.touched)">
@@ -15,11 +15,19 @@
   <ion-col size="6.5">
     <ion-label class="ion-text-wrap"> {{itemDeVenta.producto.nombre | titlecase}} </ion-label>
   </ion-col>
-  <ion-col size="0.5">
-    <ion-label color="dark">S/</ion-label>
+  <ion-col size="1">
+    <ion-input (ionChange)="cambioPorcentaje()"  formControlName="porcentaje" placeholder="%" value="{{itemDeVenta.porcentaje}}" maxlength="3"></ion-input>
+    <div class="alertDanger" *ngIf="porcentaje.invalid && (porcentaje.dirty || porcentaje.touched)">
+      <div class="mensajeError" *ngIf="porcentaje.errors.required">
+        *Complete
+      </div>
+    </div>
   </ion-col>
-  <ion-col size="2">
-    <ion-input (ionChange)="cambioPrecio()"  formControlName="precioVenta" placeholder="Precio" value="{{itemDeVenta.tatalxprod}}" maxlength="5"></ion-input>
+  <ion-col size="1" style="text-align: center;">
+    <ion-label color="dark" style="font-weight: bold;">S/</ion-label>
+  </ion-col>
+  <ion-col size="1.5">
+    <ion-input (ionChange)="cambioPrecio()"  formControlName="precioVenta" placeholder="Precio" value="{{itemDeVenta.totalxprod}}" maxlength="5"></ion-input>
     <div class="alertDanger" *ngIf="precioVenta.invalid && (precioVenta.dirty || precioVenta.touched)">
       <div class="mensajeError" *ngIf="precioVenta.errors.required">
         *Complete el precio

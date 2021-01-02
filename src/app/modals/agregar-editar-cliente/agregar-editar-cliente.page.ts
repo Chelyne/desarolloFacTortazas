@@ -4,6 +4,8 @@ import { ModalController, ToastController } from '@ionic/angular';
 import { ClienteInterface } from 'src/app/models/cliente-interface';
 import { DbDataService } from 'src/app/services/db-data.service';
 import { StorageService } from '../../services/storage.service';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { isNullOrUndefined } from 'util';
 
 @Component({
   selector: 'app-agregar-editar-cliente',
@@ -19,12 +21,14 @@ export class AgregarEditarClientePage implements OnInit {
   @Input() titleInvoker: string;
   @Input() tagInvoker: string;
   @Input() dataInvoker: ClienteInterface;
+  typoDocumento = 'dni';
 
   constructor(
     private dataApi: DbDataService,
     private modalCtlr: ModalController,
     private toastCtrl: ToastController,
-    private storage: StorageService
+    private storage: StorageService,
+    private http: HttpClient
   ) {
 
     this.clienteModalForm = this.createFormCliente();
@@ -41,7 +45,8 @@ export class AgregarEditarClientePage implements OnInit {
 
   createFormCliente(){
     return new FormGroup({
-      nombre: new FormControl('', [Validators.required, Validators.minLength(3), Validators.pattern('^[a-zA-ZÀ-ÿ\u00f1\u00d1 ]+$')]),
+      nombre: new FormControl('', [Validators.required, Validators.minLength(3)]),
+      tipoDocumento: new FormControl('dni', [Validators.required]),
       // apellidos: new FormControl('', [Validators.required, Validators.minLength(3), Validators.pattern('^[a-zA-ZÀ-ÿ\u00f1\u00d1 ]+$')]),
       documento: new FormControl('', [Validators.required, Validators.minLength(8), Validators.maxLength(11)]),
       celular: new FormControl('', [Validators.required, Validators.minLength(9), Validators.maxLength(9)]),
@@ -60,6 +65,7 @@ export class AgregarEditarClientePage implements OnInit {
   formForUpdate() {
     return new FormGroup({
       nombre: new FormControl(this.dataInvoker.nombre, [Validators.required, Validators.minLength(3), Validators.pattern('^[a-zA-ZÀ-ÿ\u00f1\u00d1 ]+$')]),
+      tipoDocumento: new FormControl(this.dataInvoker.tipoDocumento, [Validators.required]),
       // tslint:disable-next-line:max-line-length
       // apellidos: new FormControl(this.dataInvoker.apellidos, [Validators.required, Validators.minLength(3), Validators.pattern('^[a-zA-ZÀ-ÿ\u00f1\u00d1 ]+$')]),
       documento: new FormControl(this.dataInvoker.documento, [Validators.required, Validators.minLength(8), Validators.maxLength(11)]),
@@ -69,7 +75,26 @@ export class AgregarEditarClientePage implements OnInit {
     });
   }
 
+  siRucoDni(){
+    const typeDoc = this.clienteModalForm.value.tipoDocumento;
+    if (typeDoc === 'ruc'){
+      this.clienteModalForm.setControl(
+        'documento',
+        new FormControl('', [Validators.required, Validators.minLength(11), Validators.maxLength(11)])
+      );
 
+      this.typoDocumento = 'ruc';
+    } else if (typeDoc === 'dni'){
+      this.clienteModalForm.setControl(
+        'documento',
+        new FormControl('', [Validators.required, Validators.minLength(8), Validators.maxLength(8)])
+      );
+
+      this.typoDocumento = 'dni';
+    } else {
+      console.log('Documento no valido');
+    }
+  }
 
   execFun(){
     if (this.eventoInvoker === 'guardarCliente'){
@@ -147,6 +172,47 @@ export class AgregarEditarClientePage implements OnInit {
     if (!pattern.test(inputChar)) {
       // invalid character, prevent input
       event.preventDefault();
+    }
+  }
+
+  // CONSULTA DATOS SUNAT
+
+  consultaSunat(event) {
+    console.log(event.detail.value);
+    if (this.typoDocumento === 'dni') {
+      if (event.detail.value.length === 8) {
+        const httpOptions = {
+          headers: new HttpHeaders({
+            // 'Content-Type':  'application/json',
+            // tslint:disable-next-line:object-literal-key-quotes
+            'Authorization': 'token k4d2956bd531ab61d44f4fa07304b20e13913815'
+          })
+        };
+        this.http.get('https://dni.optimizeperu.com/api/persons/' + event.detail.value).subscribe((data: any) => {
+          console.log(data);
+          if (!isNullOrUndefined(data) && data !== 'Peticiones diarias excedidas') {
+            this.clienteModalForm.value.nombre = data.name + ' ' + data.first_name + ' ' + data.last_name;
+          }
+        });
+      }
+    } else {
+      if (event.detail.value.length === 11) {
+        const httpOptions = {
+          headers: new HttpHeaders({
+            // 'Content-Type':  'application/json',
+            // tslint:disable-next-line:object-literal-key-quotes
+            'Authorization': 'token k4d2956bd531ab61d44f4fa07304b20e13913815'
+          })
+        };
+        this.http.get('https://dni.optimizeperu.com/api/company/' + event.detail.value).subscribe((data: any) => {
+          if (!isNullOrUndefined(data) && data !== 'Peticiones diarias excedidas') {
+            console.log(data);
+            this.clienteModalForm.value.direccion = data.domicilio_fiscal;
+            this.clienteModalForm.value.nombre = data.razon_social;
+            console.log(this.clienteModalForm.value);
+          }
+        });
+      }
     }
   }
 

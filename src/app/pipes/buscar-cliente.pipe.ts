@@ -14,13 +14,11 @@ export class BuscarClientePipe implements PipeTransform {
     }
     texto = texto.toLocaleLowerCase();
     return clientes.filter( cliente => {
-      if (cliente.dni) {
-        return cliente.nombre.toLocaleLowerCase().includes(texto) ||
-        cliente.apellidos.toLocaleLowerCase().includes(texto)
-        || cliente.dni.toLocaleLowerCase().includes(texto);
+      if (cliente.documento) {
+        return cliente.nombre.toLocaleLowerCase().includes(texto)
+        || cliente.documento.toLocaleLowerCase().includes(texto);
       } else {
-        return cliente.nombre.toLocaleLowerCase().includes(texto) ||
-        cliente.apellidos.toLocaleLowerCase().includes(texto);
+        return cliente.nombre.toLocaleLowerCase().includes(texto);
       }
     });
   }

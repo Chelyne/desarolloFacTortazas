@@ -14,15 +14,49 @@
   <form [formGroup]="clienteModalForm" autocomplete="off">
 
     <ion-item>
+      <ion-label color="primary">Tipo de Documento</ion-label>
+      <ion-select  multiple="false" interface="popover" formControlName="tipoDocumento" (ionChange)="siRucoDni()">
+        <ion-select-option value="ruc">RUC</ion-select-option>
+        <ion-select-option value="dni">DNI</ion-select-option>
+      </ion-select>
+    </ion-item>
+
+    <ion-item>
+      <ion-label color="primary" position="floating">Nro Documento</ion-label>
+      <ion-input (ionChange)="consultaSunat($event)" maxlength="11" type="text" (keypress)="numberOnlyValidation($event)" formControlName="documento" placeholder="DNI"></ion-input>
+    </ion-item>
+    <div class="alertDanger" *ngIf="documento.invalid && (documento.dirty || documento.touched)">
+      <div *ngIf="typoDocumento==='ruc'">
+        <div class="mensajeError" *ngIf="documento.errors.required">
+          *Ingrese el Número del Documento
+        </div>
+        <div class="mensajeError" *ngIf="documento.errors.minlength">
+          *Ingrese al menos 8 carácteres
+        </div>
+        <div class="mensajeError" *ngIf="documento.errors.maxlength">
+          *Ingrese máximo 11 caracteres
+        </div>
+      </div>
+      <div *ngIf="typoDocumento==='dni'">
+        <div class="mensajeError" *ngIf="documento.errors.required">
+          *Ingrese el Número del Documento
+        </div>
+        <div class="mensajeError" *ngIf="documento.errors.minlength">
+          *Ingrese al menos 8 carácteres
+        </div>
+        <div class="mensajeError" *ngIf="documento.errors.maxlength">
+          *Ingrese máximo 8 caracteres
+        </div>
+      </div>
+    </div>
+
+    <ion-item>
       <ion-label position="floating" color="primary">Nombres / Razón social</ion-label>
-      <ion-input maxlength="40" type="text" formControlName="nombre" placeholder="Nombres" class="capital" (keypress)="stringOnlyValidation($event)"></ion-input>
+      <ion-input value="{{this.clienteModalForm.value.nombre}}" maxlength="40" type="text" formControlName="nombre" placeholder="Nombres" class="capital" (keypress)="stringOnlyValidation($event)"></ion-input>
     </ion-item>
     <div class="alertDanger" *ngIf="nombre.invalid && (nombre.dirty || nombre.touched)">
       <div class="mensajeError" *ngIf="nombre.errors.required">
         *Complete el nombre del cliente
-      </div>
-      <div class="mensajeError" *ngIf="nombre.errors.pattern">
-        *No puede ingresar números en el nombre del cliente
       </div>
       <div #elseBlock class="mensajeError" *ngIf="nombre.errors.minlength">
         *Ingrese mínimo 3 caracteres
@@ -46,22 +80,6 @@
     </div> -->
 
     <ion-item>
-      <ion-label color="primary" position="floating">DNI / RUC</ion-label>
-      <ion-input maxlength="8" type="text" (keypress)="numberOnlyValidation($event)" formControlName="documento" placeholder="DNI"></ion-input>
-    </ion-item>
-    <div class="alertDanger" *ngIf="documento.invalid && (documento.dirty || documento.touched)">
-      <div class="mensajeError" *ngIf="documento.errors.required">
-        *Complete su DNI
-      </div>
-      <div class="mensajeError" *ngIf="documento.errors.minlength">
-        *Ingrese 8 dígitos
-      </div>
-      <div class="mensajeError" *ngIf="documento.errors.maxlength">
-        *Ingresó más de 11 dígitos
-      </div>
-    </div>
-
-    <ion-item>
       <ion-label color="primary" position="floating">Celular</ion-label>
       <ion-input maxlength="9" type="text" (keypress)="numberOnlyValidation($event)" formControlName="celular" placeholder="Celular"></ion-input>
     </ion-item>
@@ -79,7 +97,7 @@
 
     <ion-item>
       <ion-label color="primary" position="floating">Dirección</ion-label>
-      <ion-input maxlength="60" type="text" formControlName="direccion" placeholder="Dirección"></ion-input>
+      <ion-input value="{{this.clienteModalForm.value.direccion}}" maxlength="100" type="text" formControlName="direccion" placeholder="Dirección"></ion-input>
     </ion-item>
     <div class="alertDanger" *ngIf="direccion.invalid && (direccion.dirty || direccion.touched)">
       <div class="mensajeError" *ngIf="direccion.errors.required">

@@ -4,7 +4,9 @@ export interface CajaChicaInterface {
     FechaCierre?: any;
     estado?: string;
     nombreVendedor?: string;
+    dniVendedor?: string;
     saldoFinal?: number;
     saldoInicial?: number;
     sede?: string;
+    FechaConsulta?: any;
 }

@@ -3,11 +3,12 @@ import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { VentaInterface } from 'src/app/models/venta/venta';
 import { ConfirmarVentaService } from 'src/app/services/confirmar-venta.service';
 // import { TestServiceService } from 'src/app/services/test-service.service';
-import { MenuController, LoadingController, ToastController } from '@ionic/angular';
+import { MenuController, LoadingController, ToastController, ModalController } from '@ionic/angular';
 import { isNullOrUndefined } from 'util';
 import { Router } from '@angular/router';
 import { DbDataService } from '../../services/db-data.service';
 import { StorageService } from '../../services/storage.service';
+import { ComprobantePage } from '../../modals/comprobante/comprobante.page';
 
 @Component({
   selector: 'app-confirmar-venta',
@@ -37,10 +38,13 @@ export class ConfirmarVentaPage implements OnInit {
   vuelto: number = 0;
   // tslint:disable-next-line: no-inferrable-types
   montoEntrante: number = 0;
-  descuentoDeVenta: number;
+  descuentoDeVentaMonto = 0;
+  descuentoDeVentaPorcentaje = 0;
 
   venta: VentaInterface;
   loading;
+  bolsa = false;
+  tipoPago = 'efectivo';
   constructor(
     private testServ: ConfirmarVentaService,
     private menuCtrl: MenuController,
@@ -49,7 +53,7 @@ export class ConfirmarVentaPage implements OnInit {
     private storage: StorageService,
     private loadingController: LoadingController,
     private toastController: ToastController,
-    // private apiPeru: d
+    private modalController: ModalController
   ) {
     this.formPago = this.createFormPago();
    }
@@ -62,7 +66,7 @@ export class ConfirmarVentaPage implements OnInit {
       if (Object.entries(this.venta).length !== 0){
         this.subTotalDeVenta = this.venta.total;
         this.IGVdeVenta = this.subTotalDeVenta * 18 / 100;
-        this.totalAPagar = this.subTotalDeVenta + this.IGVdeVenta;
+        this.totalAPagar = this.subTotalDeVenta;
         this.montoEntrante = this.totalAPagar;
         this.totalconDescuento = this.totalAPagar;
       } else {
@@ -83,8 +87,12 @@ export class ConfirmarVentaPage implements OnInit {
       new FormControl(this.totalAPagar, [Validators.required, Validators.pattern('^[0-9]*\.?[0-9]*$')])
     );
 
-    this.formPago.setControl('descuento',
-      new FormControl(this.descuentoDeVenta, [ Validators.pattern('^[0-9]*\.?[0-9]*$')])
+    this.formPago.setControl('descuentoMonto',
+      new FormControl(this.descuentoDeVentaMonto, [ Validators.pattern('^[0-9]*\.?[0-9]*$')])
+    );
+
+    this.formPago.setControl('descuentoPorcentaje',
+      new FormControl(this.descuentoDeVentaPorcentaje, [ Validators.pattern('^[0-9]*\.?[0-9]*$')])
     );
 
     // console.log('sssssssssssss', this.venta);
@@ -94,23 +102,50 @@ export class ConfirmarVentaPage implements OnInit {
   createFormPago(){
     return new FormGroup({
       montoIngreso: new FormControl(0, [Validators.required, Validators.pattern('^[0-9]*\.?[0-9]*$')]),
-      descuento: new FormControl('', [Validators.pattern('^[0-9]*\.?[0-9]*$')])
+      descuentoMonto: new FormControl('', [Validators.pattern('^[0-9]*\.?[0-9]*$')]),
+      descuentoPorcentaje: new FormControl('', [Validators.pattern('^[0-9]*\.?[0-9]*$')])
     });
   }
 
   get montoIngreso() { return this.formPago.get('montoIngreso'); }
-  get descuento() { return this.formPago.get('descuento'); }
+  get descuentoMonto() { return this.formPago.get('descuentoMonto'); }
+  get descuentoPorcentaje() { return this.formPago.get('descuentoPorcentaje'); }
 
-
-  realizarDescuento(){
+  resetFormPago() {
+    this.formPago.reset();
+  }
+  realizarDescuentoMonto(){
+    this.descuentoDeVentaPorcentaje = null;
     console.log('Realizar descuento');
-    this.descuentoDeVenta =  parseFloat(this.formPago.value.descuento);
+    this.descuentoDeVentaMonto =  parseFloat(this.formPago.value.descuentoMonto);
 
-    if (isNaN(this.descuentoDeVenta)) {
-      this.descuentoDeVenta = 0;
+    if (isNaN(this.descuentoDeVentaMonto)) {
+      this.descuentoDeVentaMonto = 0;
     }
-    this.totalconDescuento = this.totalAPagar - this.descuentoDeVenta;
-    console.log(this.totalconDescuento, this.totalAPagar, this.descuentoDeVenta);
+    this.totalconDescuento = this.totalAPagar - this.descuentoDeVentaMonto;
+    console.log(this.totalconDescuento, this.totalAPagar, this.descuentoDeVentaMonto);
+
+    // tslint:disable-next-line:max-line-length
+    // this.formPago.setControl('descuento', new FormControl(this.totalconDescuento, [Validators.required, Validators.pattern('^[0-9]*\.?[0-9]*$')]));
+    // this.modificarMontoEntrante(this.totalconDescuento);
+    // this.calcularVuelto();
+
+    // modificar el campo: montoEntrante
+    this.modificarMontoEntrante(this.totalconDescuento);
+    this.calcularVuelto();
+    //
+  }
+
+  realizarDescuentoPorcentaje(){
+    this.descuentoDeVentaMonto = null;
+    console.log('Realizar descuento %');
+    this.descuentoDeVentaPorcentaje =  parseFloat(this.formPago.value.descuentoPorcentaje);
+
+    if (isNaN(this.descuentoDeVentaPorcentaje)) {
+      this.descuentoDeVentaPorcentaje = 0;
+    }
+    this.totalconDescuento = this.totalAPagar - (this.totalAPagar * this.descuentoDeVentaPorcentaje / 100);
+    console.log(this.totalconDescuento, this.totalAPagar, this.descuentoDeVentaPorcentaje);
 
     // tslint:disable-next-line:max-line-length
     // this.formPago.setControl('descuento', new FormControl(this.totalconDescuento, [Validators.required, Validators.pattern('^[0-9]*\.?[0-9]*$')]));
@@ -147,7 +182,7 @@ export class ConfirmarVentaPage implements OnInit {
 
   sumarAMontoEntrante(montoAdd: number){
     console.log(montoAdd);
-    this.montoEntrante = this.montoEntrante + montoAdd;
+    this.montoEntrante =  montoAdd;
     this.formPago.setControl('montoIngreso', new FormControl(this.montoEntrante, [Validators.required, Validators.pattern('^[0-9]*\.?[0-9]*$')]));
     this.calcularVuelto();
   }
@@ -163,6 +198,9 @@ export class ConfirmarVentaPage implements OnInit {
   cancelarVenta(){
     console.log('cancelar venta');
     this.testServ.cleanData();
+    this.resetFormPago();
+    this.bolsa = false;
+    this.router.navigate(['/punto-venta', 'true']);
   }
 
   SeleccionarComprobante(comprobante: string){
@@ -183,9 +221,11 @@ export class ConfirmarVentaPage implements OnInit {
     this.venta.tipoComprobante = this.tipoComprobante;
     this.venta.serieComprobante = this.serieComprobante;
     this.venta.vendedor = this.storage.datosAdmi;
+    this.venta.bolsa = this.bolsa;
+    this.venta.tipoPago = this.tipoPago;
     console.log('Se generó el pago');
     this.dataApi.confirmarVenta(this.venta, this.storage.datosAdmi.sede).then(data => {
-
+      this.resetFormPago();
       this.router.navigate(['/punto-venta', 'true']);
       console.log('guardado', data);
       this.loading.dismiss();
@@ -212,5 +252,39 @@ export class ConfirmarVentaPage implements OnInit {
       duration: 1000
     });
     toast.present();
+  }
+
+  changeBolsa() {
+    // this.bolsa = !this.bolsa;
+    console.log('bolsa', this.bolsa);
+    if (this.bolsa === true) {
+      this.presentToast('Bolsa agregada');
+      this.totalAPagar = this.totalAPagar + 0.3;
+      this.totalconDescuento = this.totalconDescuento + 0.3;
+      this.calcularVuelto();
+    } else {
+      this.presentToast('Bolsa quitada');
+      this.totalAPagar = this.totalAPagar - 0.3;
+      this.totalconDescuento = this.totalconDescuento - 0.3;
+      this.calcularVuelto();
+    }
+  }
+  seleccionTipoPago(tipo: string) {
+    this.tipoPago = tipo;
+  }
+
+  volver() {
+    this.router.navigate(['/punto-venta', 'false']);
+  }
+
+  async presentModalComprobante() {
+    const modal = await this.modalController.create({
+      component: ComprobantePage,
+      cssClass: 'modalComprobante',
+      componentProps: {
+        data: this.venta
+      }
+    });
+    return await modal.present();
   }
 }
