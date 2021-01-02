@@ -30,8 +30,16 @@
                 <ion-label>{{itemDeventa.cantidad}}</ion-label>
               </ion-col>
               <ion-col size="3">
-                <ion-label>S/. {{itemDeventa.tatalxprod | number: '1.2'}}</ion-label>
+                <ion-label>S/ {{itemDeventa.totalxprod | number: '1.2'}}</ion-label>
               </ion-col>
+            </ion-row>
+            <ion-row [ngStyle]="{'display': 'none'}">
+              <ion-label (click)="getImage()">qr</ion-label>
+              <ngx-qrcode id="qrcode" #canvas
+              [elementType]="elementType"
+              [errorCorrectionLevel]="correctionLevel"
+              [value]="valueQR"
+              cssClass="bshadow"></ngx-qrcode>
             </ion-row>
           </ion-grid>
         </ion-content>
@@ -99,7 +107,7 @@
               </ion-item>
             </ion-col> -->
             <ion-col size="2" >
-              <ion-item lines="none" >
+              <ion-item lines="none">
                 <ion-label>{{serieComprobante}}</ion-label>
               </ion-item>
             </ion-col>
