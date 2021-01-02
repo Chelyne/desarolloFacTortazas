@@ -169,7 +169,7 @@ export class ApiPeruService {
   }
 
   formatearVenta(venta: VentaInterface): ComprobanteInterface{
-    const totalaPagar = venta.totalaPagar;
+    const totalaPagar = venta.total;
     const igv = totalaPagar * 18 / 100;
     const totalaPagarMasIgv = totalaPagar + igv;
 

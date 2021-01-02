@@ -51,6 +51,8 @@ export class DbDataService {
   private compra: Observable<ProductoInterface>;
 
   private datosEmpresa: EmpresaInterface[] = [];
+  private ventaCollection: AngularFirestoreCollection<VentaInterface>;
+  private ventas: Observable<VentaInterface[]>;
 
 
   constructor(private afs: AngularFirestore) { }
@@ -166,6 +168,22 @@ export class DbDataService {
         return changes.map(action => {
           const data = action.payload.doc.data() as ProductoInterface;
           data.id = action.payload.doc.id;
+          return data;
+        });
+      }));
+  }
+
+  ObtenerListaDeVentas(sede: string, fachaventas: string) {
+    const sede1 = sede.toLocaleLowerCase();
+    // tslint:disable-next-line:max-line-length
+    this.ventaCollection = this.afs.collection('sedes').doc(sede1).collection('ventas').doc(fachaventas).collection('ventasDia');
+    // tslint:disable-next-line:max-line-length
+    // this.productoCollection = this.afs.collection<ProductoInterface>('frutas', ref => ref.where('propietario', '==', propietario).orderBy('fechaRegistro', 'desc'));
+    return this.ventas = this.ventaCollection.snapshotChanges()
+      .pipe(map(changes => {
+        return changes.map(action => {
+          const data = action.payload.doc.data() as VentaInterface;
+          data.idVenta = action.payload.doc.id;
           return data;
         });
       }));
@@ -847,7 +865,7 @@ export class DbDataService {
           idListaProductos: guardado.id,
           cliente: venta.cliente,
           vendedor: venta.vendedor,
-          total: venta.totalaPagar,
+          total: venta.total,
           tipoComprobante: venta.tipoComprobante,
           serieComprobante: venta.serieComprobante,
           fechaEmision: new Date()

@@ -25,7 +25,6 @@ export class CatalogoPage implements OnInit {
   categoria;
 
   ultimaCategoria;
-  dataProducto: ProductoInterface;
   sinDatos;
   constructor(
     private dataApi: DbDataService,
@@ -165,5 +164,11 @@ export class CatalogoPage implements OnInit {
       }
       }
 
+
+      irLIstaProductos(categoria: string) {
+        console.log('ojo', categoria, this.sedes);
+        console.log('ESTMOS', this.categoria, this.sedes);
+        this.router.navigate(['/productos-lista', categoria, this.sedes]);
+      }
 
 }

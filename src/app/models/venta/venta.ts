@@ -12,9 +12,9 @@ export interface VentaInterface {
     serieComprobante?: string;
     numeroComprobante?: string;
     listaItemsDeVenta?: ItemDeVentaInterface[];
-    totalaPagar?: number;
     enviado?: boolean; // true o false
     cdrStatus?: string;
     cdr?: CDRInterface;
+    total?: number;
 }
 
