@@ -14,9 +14,9 @@ export class BuscarClientePipe implements PipeTransform {
     }
     texto = texto.toLocaleLowerCase();
     return clientes.filter( cliente => {
-      if (cliente.documento) {
+      if (cliente.numDoc) {
         return cliente.nombre.toLocaleLowerCase().includes(texto)
-        || cliente.documento.toLocaleLowerCase().includes(texto);
+        || cliente.numDoc.toLocaleLowerCase().includes(texto);
       } else {
         return cliente.nombre.toLocaleLowerCase().includes(texto);
       }
