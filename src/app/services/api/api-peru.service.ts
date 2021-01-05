@@ -121,8 +121,10 @@ export class ApiPeruService {
     // TODO - Adaptar al nueva ClienteInterface
     return {
       tipoDoc: '1', // el catalogo N6, DNI = 1
-      numDoc: cliente.documento,
-      rznSocial: cliente.nombre + ' ' + cliente.apellidos,
+      numDoc: cliente.numDoc,
+      rznSocial: cliente.nombre,
+
+      //rznSocial: cliente.nombre + ' ' + cliente.apellidos,
       address: {
         direccion: cliente.direccion
       },
@@ -214,7 +216,7 @@ export class ApiPeruService {
     // const productFormat: SaleDetailInterface[] = this.formatearDetalles(venta);
     let productFormat;
 
-    const totalaPagar = venta.total;
+    const totalaPagar = venta.totalPagarVenta;
     const igv = totalaPagar * 18 / 100;
     const totalaPagarMasIgv = totalaPagar + igv;
     console.log('wwwwwwwwwwwwwwwwwwwwwwwwwww', venta.fechaEmision);
