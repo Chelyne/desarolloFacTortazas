@@ -3,6 +3,7 @@ import { AngularFirestoreCollection, AngularFirestore, AngularFirestoreDocument 
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { ProductoInterface } from '../models/ProductoInterface';
+import { CategoriaInterface } from '../models/CategoriaInterface';
 import { AdmiInterface } from '../models/AdmiInterface';
 import { UsuarioInterface } from '../models/usuario';
 import { ClienteInterface } from '../models/cliente-interface';
@@ -63,12 +64,24 @@ export class DbDataService {
   private itemDeventaDoc: AngularFirestoreDocument<ItemDeVentaInterface>;
   private itemDeventa: Observable<ItemDeVentaInterface>;
 
+  private categoriaCollection: AngularFirestoreCollection<CategoriaInterface>;
+  private categorias: Observable<CategoriaInterface[]>;
+
+  private categoriaDoc: AngularFirestoreDocument<CategoriaInterface>;
+  private categoria: Observable<CategoriaInterface>;
+
   constructor(private afs: AngularFirestore) { }
 
   guardarProducto(newProducto: ProductoInterface, sede: string): void {
     const sede1 =  sede.toLocaleLowerCase();
     this.afs.collection('sedes').doc(sede1).collection('productos').add(newProducto);
   }
+
+  guardarCategoria(newCategoria: CategoriaInterface, sede: string): void {
+    const sede1 =  sede.toLocaleLowerCase();
+    this.afs.collection('sedes').doc(sede1).collection('categorias').add(newCategoria);
+  }
+
   guardarNotificcion(notificacion): void {
     // const sede1 =  sede.toLocaleLowerCase();
     this.afs.collection('notificaciones').add(notificacion);
