@@ -828,7 +828,8 @@ export class DbDataService {
       // Actualizar empresa
       const id = this.datosEmpresa[0].id;
       const promesa =  new Promise( (resolve) => {
-        this.afs.collection('empresa').doc(id).update(empresa);
+        // NOTE: Si hay una empresa entonces remplazarlo
+        this.afs.collection('empresa').doc(id).set(empresa);
         // tslint:disable-next-line: no-unused-expression
         resolve;
       });
@@ -919,9 +920,9 @@ export class DbDataService {
 
 
   obtenerProductosDeVenta(idProductoVenta: string, sede: string){
-    console.log('PPPPPPPPPPPPPPPPPPPPPRODUCTOvENTA', idProductoVenta);
+    console.log('Id de un producto de venta en productVEnta', idProductoVenta);
     this.itemDeventaDoc = this.afs.collection('sedes').doc(sede.toLocaleLowerCase())
-    .collection('productosVenta').doc(idProductoVenta); //, ref => ref.where('id', '==', idProductoVenta));
+    .collection('productosVenta').doc(idProductoVenta); // , ref => ref.where('id', '==', idProductoVenta));
 
     return  this.itemDeventaDoc.snapshotChanges()
       .pipe(map(
@@ -932,6 +933,7 @@ export class DbDataService {
             const data = action.payload.data();
             return data;
           }
+          // CLEAN
           // return changes.map(action => {
           //   const data = action.payload.doc.data() as ItemDeVentaInterface;
           //   // data.id = action.payload.doc.id;

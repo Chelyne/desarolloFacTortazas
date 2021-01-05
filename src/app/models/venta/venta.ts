@@ -4,21 +4,23 @@ import { ItemDeVentaInterface } from './item-de-venta';
 
 
 export interface VentaInterface {
-    fechaEmision?: Date;
     idVenta?: string;
-    idListaProductos?: string;
-    cliente?: ClienteInterface;
-    vendedor?: {};
+    fechaEmision?: Date;
     tipoComprobante?: string;
     serieComprobante?: string;
     numeroComprobante?: string;
+    tipoPago?: string;
+    bolsa?: boolean;
+    cliente?: ClienteInterface;
+    vendedor?: {};
+    idListaProductos?: string;
     listaItemsDeVenta?: ItemDeVentaInterface[];
     enviado?: boolean; // true o false
-    cdrStatus?: string;
+    cdrStatus?: string; // ? NOTE: Este item esta en el cdr
     cdr?: CDRInterface;
+
+    // QUEST: debe elegir entre uno de estos dos
     totalaPagar?: number;
-    bolsa?: boolean;
-    tipoPago?: string;
     total?: number;
 }
 
