@@ -418,7 +418,7 @@ export class ConfirmarVentaPage implements OnInit {
           index = index + 3;
         }
         doc.text('OP. GRAVADAS:', 2, index + 3, {align: 'left'});
-        doc.text( (this.venta.total - (this.venta.total * 0.18)).toFixed(2), 43, index + 3, {align: 'right'});
+        doc.text( (this.venta.totalPagarVenta - (this.venta.totalPagarVenta * 0.18)).toFixed(2), 43, index + 3, {align: 'right'});
         doc.text('OP. INAFECTA:', 2, index + 5, {align: 'left'});
         doc.text( (0).toFixed(2), 43, index + 5, {align: 'right'});
         doc.text('OP. EXONERADA:', 2, index + 7, {align: 'left'});
@@ -430,7 +430,7 @@ export class ConfirmarVentaPage implements OnInit {
         doc.text('DESCUENTO', 2, index + 13, {align: 'left'});
         doc.text( (0).toFixed(2), 43, index + 13, {align: 'right'});
         doc.text('I.G.V. (18%)', 2, index + 15, {align: 'left'});
-        doc.text( (this.venta.total * 0.18).toFixed(2), 43, index + 15, {align: 'right'});
+        doc.text( (this.venta.totalPagarVenta * 0.18).toFixed(2), 43, index + 15, {align: 'right'});
         doc.text('ICBP(0.20)', 2, index + 17, {align: 'left'});
         doc.text( (0).toFixed(2), 43, index + 17, {align: 'right'});
         doc.text('I.S.C.', 2, index + 19, {align: 'left'});
@@ -439,9 +439,9 @@ export class ConfirmarVentaPage implements OnInit {
 
         index = index + 19;
         doc.text('TOTAL IMPORTE:', 2, index + 3, {align: 'left'});
-        doc.text('s/ ' + this.venta.total.toFixed(2), 43, index + 3, {align: 'right'});
+        doc.text('s/ ' + this.venta.totalPagarVenta.toFixed(2), 43, index + 3, {align: 'right'});
         doc.setFontSize(3);
-        doc.text('SON ' + this.NumeroALetras(this.venta.total), 2, index + 5, {align: 'left'});
+        doc.text('SON ' + this.NumeroALetras(this.venta.totalPagarVenta), 2, index + 5, {align: 'left'});
         doc.addImage(qr, 'JPEG', 15, index + 6, 15, 15);
         index = index + 20;
         doc.setFontSize(4);
