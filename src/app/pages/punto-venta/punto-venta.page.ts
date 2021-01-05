@@ -52,6 +52,8 @@ export class PuntoVentaPage implements OnInit {
   modalTitle: string;
   modalTag: string;
   modalDataCliente: ClienteInterface;
+
+  cajaChica = false;
   constructor(private menuCtrl: MenuController,
               private categoriasService: CategoriasService,
               private pagination: PaginationProductosService,
@@ -99,6 +101,14 @@ export class PuntoVentaPage implements OnInit {
     if (!isNullOrUndefined(this.storage.listaVenta)) {
       this.listaDeVentas = this.storage.listaVenta;
     }
+
+    this.dataApi.EstadoCajaChicaVendedor('Aperturado', this.storage.datosAdmi.dni).subscribe(data => {
+      if (data.length > 0) {
+        this.cajaChica = true;
+      } else {
+        this.cajaChica = false;
+      }
+    });
   }
 
   listaProductosCategoria(categoria: string) {
@@ -333,8 +343,12 @@ export class PuntoVentaPage implements OnInit {
   irPagar(){
     if (this.cliente) {
       if (this.listaItemsDeVenta.length > 0) {
-        this.testServ.setVenta(this.CrearItemDeVentas());
-        this.router.navigate(['/confirmar-venta']);
+        if (this.cajaChica) {
+          this.testServ.setVenta(this.CrearItemDeVentas());
+          this.router.navigate(['/confirmar-venta']);
+        } else {
+          this.presentToast('Por favor aperture su caja chica para vender', 'danger');
+        }
       } else {
         this.presentToast('Por favor agregue productos a vender', 'danger');
       }

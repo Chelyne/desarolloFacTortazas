@@ -3,6 +3,7 @@ import { AngularFirestoreCollection, AngularFirestore, AngularFirestoreDocument 
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { ProductoInterface } from '../models/ProductoInterface';
+import { CategoriaInterface } from '../models/CategoriaInterface';
 import { AdmiInterface } from '../models/AdmiInterface';
 import { ClienteInterface } from '../models/cliente-interface';
 import { ProveedorInterface } from '../models/proveedor';
@@ -61,12 +62,24 @@ export class DbDataService {
   private itemDeventaDoc: AngularFirestoreDocument<ItemDeVentaInterface>;
   private itemDeventa: Observable<ItemDeVentaInterface>;
 
+  private categoriaCollection: AngularFirestoreCollection<CategoriaInterface>;
+  private categorias: Observable<CategoriaInterface[]>;
+
+  private categoriaDoc: AngularFirestoreDocument<CategoriaInterface>;
+  private categoria: Observable<CategoriaInterface>;
+
   constructor(private afs: AngularFirestore) { }
 
   guardarProducto(newProducto: ProductoInterface, sede: string): void {
     const sede1 =  sede.toLocaleLowerCase();
     this.afs.collection('sedes').doc(sede1).collection('productos').add(newProducto);
   }
+
+  guardarCategoria(newCategoria: CategoriaInterface, sede: string): void {
+    const sede1 =  sede.toLocaleLowerCase();
+    this.afs.collection('sedes').doc(sede1).collection('categorias').add(newCategoria);
+  }
+
   guardarNotificcion(notificacion): void {
     // const sede1 =  sede.toLocaleLowerCase();
     this.afs.collection('notificaciones').add(notificacion);
@@ -902,6 +915,7 @@ export class DbDataService {
           totalPagarVenta: venta.totalPagarVenta,
           tipoComprobante: venta.tipoComprobante,
           serieComprobante: venta.serieComprobante,
+          numeroComprobante: venta.numeroComprobante,
           fechaEmision: new Date(),
           bolsa: venta.bolsa,
           tipoPago: venta.tipoPago,
@@ -942,5 +956,46 @@ export class DbDataService {
       ));
   }
 
+
+  // ESTADO DE CAJA CHICA
+
+  EstadoCajaChicaVendedor(estadoCaja: string, dni: string) {
+    console.log('obteniedno caja de: ', dni, ' con el estado ABIERTO: ', estadoCaja);
+    // tslint:disable-next-line:max-line-length
+    const consulta = this.afs.collection('CajaChica', ref => ref.where('estado', '==', estadoCaja).where( 'dniVendedor', '==', dni).limit(1));
+    return consulta.snapshotChanges().pipe(map(changes => {
+      return changes.map(action => {
+        const data = action.payload.doc.data() as CompraInterface;
+        data.id = action.payload.doc.id;
+        return data;
+      });
+    }));
+  }
+
+  // CORRELCION DE COMPROBANTE
+
+  obtenerCorrelacion(serie: string, sede: string) {
+    // tslint:disable-next-line:max-line-length
+    const consulta = this.afs.collection('sedes').doc(sede.toLocaleLowerCase()).collection('serie', ref => ref.where('serie', '==', serie).limit(1));
+    return consulta.snapshotChanges().pipe(map(changes => {
+      return changes.map(action => {
+        const data = action.payload.doc.data() as CompraInterface;
+        data.id = action.payload.doc.id;
+        return data;
+      });
+    }));
+  }
+
+  // ACTUALIZAR CORRELACION
+
+  ActualizarCorrelacion(id: string, sede: string, correlacion1: number){
+    console.log('ACTUALIZA CORRELACIN ' + correlacion1);
+    const promesa =  new Promise( (resolve, reject) => {
+      this.afs.collection('sedes').doc(sede.toLocaleLowerCase()).collection('serie').doc(id).update({correlacion: correlacion1});
+      resolve(resolve);
+    });
+
+    return promesa;
+  }
 
 }
