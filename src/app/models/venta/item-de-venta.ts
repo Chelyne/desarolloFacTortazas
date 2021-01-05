@@ -5,6 +5,7 @@ export interface ItemDeVentaInterface {
     idProducto?: string;
     cantidad?: number;
     totalxprod?: number;
-    precioVenta?: number;
+    descuentoProducto?: number;
     porcentaje?: number;
+    precioVenta?: number;
 }

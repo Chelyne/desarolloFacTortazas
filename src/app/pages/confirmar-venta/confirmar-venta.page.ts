@@ -76,7 +76,7 @@ export class ConfirmarVentaPage implements OnInit {
     } else {
       this.generarQR('20331066703' +  '|'  + '03' + 'B001' + '000626' + '40.00' + '2-01-21' + '987654321');
       if (Object.entries(this.venta).length !== 0){
-        this.subTotalDeVenta = this.venta.total;
+        this.subTotalDeVenta = this.venta.totalPagarVenta;
         this.IGVdeVenta = this.subTotalDeVenta * 18 / 100;
         this.totalAPagar = this.subTotalDeVenta;
         this.montoEntrante = this.totalAPagar;
@@ -362,9 +362,9 @@ export class ConfirmarVentaPage implements OnInit {
           index = index + 3;
         }
         doc.text('Importe Total:', 2, index + 3, {align: 'left'});
-        doc.text('s/ ' + this.venta.total.toFixed(2), 43, index + 3, {align: 'right'});
+        doc.text('s/ ' + this.venta.totalPagarVenta.toFixed(2), 43, index + 3, {align: 'right'});
         doc.setFontSize(3);
-        doc.text('SON ' + this.NumeroALetras(this.venta.total), 2, index + 5, {align: 'left'});
+        doc.text('SON ' + this.NumeroALetras(this.venta.totalPagarVenta), 2, index + 5, {align: 'left'});
         doc.addImage(qr, 'JPEG', 15, index + 6, 15, 15);
         index = index + 20;
         doc.setFontSize(4);
