@@ -13,6 +13,9 @@ import jsPDF from 'jspdf';
 import { formatDate } from '@angular/common';
 
 import { NgxQrcodeElementTypes, NgxQrcodeErrorCorrectionLevels, QrcodeComponent } from '@techiediaries/ngx-qrcode';
+import { promise } from 'protractor';
+import { error } from '@angular/compiler/src/util';
+import { ContadorDeSerieInterface } from '../../models/serie';
 
 @Component({
   selector: 'app-confirmar-venta',
@@ -35,7 +38,7 @@ export class ConfirmarVentaPage implements OnInit {
 
   // tslint:disable-next-line: no-inferrable-types
   tipoComprobante: string = 'factura';
-  serieComprobante = 'F002';
+  serieComprobante: string;
 
 
   // tslint:disable-next-line: no-inferrable-types
@@ -69,6 +72,7 @@ export class ConfirmarVentaPage implements OnInit {
    }
 
   ionViewWillEnter() {
+    this.comprobarSerieComprobante();
     this.venta = this.testServ.getVentaService();
     if (isNullOrUndefined(this.venta)) {
       this.router.navigate(['/punto-venta']);
@@ -87,6 +91,32 @@ export class ConfirmarVentaPage implements OnInit {
         this.totalconDescuento = 0;
       }
       console.log('venta', this.venta);
+    }
+  }
+
+  comprobarSerieComprobante() {
+    if (this.storage.datosAdmi) {
+      if (this.storage.datosAdmi.sede === 'Andahuaylas') {
+        console.log('Andahuaylas');
+        if (this.tipoComprobante === 'boleta') {
+          this.serieComprobante  = 'B001';
+        } else if (this.tipoComprobante === 'factura') {
+          this.serieComprobante  = 'F001';
+        } else if (this.tipoComprobante === 'n. venta') {
+          this.serieComprobante = 'NV001';
+        }
+      } else if (this.storage.datosAdmi.sede === 'Abancay') {
+        console.log('Abancay');
+        if (this.tipoComprobante === 'boleta') {
+          this.serieComprobante  = 'B002';
+        } else if (this.tipoComprobante === 'factura') {
+          this.serieComprobante  = 'F002';
+        } else if (this.tipoComprobante === 'n. venta') {
+          this.serieComprobante = 'NV002';
+        }
+      }
+    } else {
+      this.presentToast('Por favor vuelva a iniciar sesion y pruebe la sede de usuario');
     }
   }
 
@@ -219,12 +249,11 @@ export class ConfirmarVentaPage implements OnInit {
     this.tipoComprobante = comprobante;
 
     if (comprobante === 'factura'){
-      this.serieComprobante = 'F002';
+      this.comprobarSerieComprobante();
     } else if (comprobante === 'boleta'){
-      this.serieComprobante = 'B002';
-
+      this.comprobarSerieComprobante();
     }else if (comprobante === 'n. venta'){
-      this.serieComprobante = 'NV01';
+      this.comprobarSerieComprobante();
     }
   }
 
@@ -236,17 +265,23 @@ export class ConfirmarVentaPage implements OnInit {
     this.venta.bolsa = this.bolsa;
     this.venta.tipoPago = this.tipoPago;
     console.log('Se generó el pago');
-    this.dataApi.confirmarVenta(this.venta, this.storage.datosAdmi.sede).then(data => {
-      this.generarComprobante();
-      this.resetFormPago();
-      this.router.navigate(['/punto-venta', 'true']);
-      console.log('guardado', data);
-      this.loading.dismiss();
-      this.presentToast('Venta exitosa');
-
+    this.obtenerCorrelacionComprobante().then((numero: ContadorDeSerieInterface[]) => {
+      console.log(numero);
+      console.log('numero de comprobnte', this.tipoComprobante, numero[0].correlacion + 1);
+      this.venta.numeroComprobante = (numero[0].correlacion + 1).toString();
+      this.dataApi.confirmarVenta(this.venta, this.storage.datosAdmi.sede).then(data => {
+        this.dataApi.ActualizarCorrelacion(numero[0].id, this.storage.datosAdmi.sede, numero[0].correlacion + 1);
+        this.generarComprobante();
+        this.resetFormPago();
+        this.router.navigate(['/punto-venta', 'true']);
+        console.log('guardado', data);
+        this.loading.dismiss();
+        this.presentToast('Venta exitosa');
+      });
+    // tslint:disable-next-line:no-shadowed-variable
+    }).catch(error => {
+      this.presentToast('Ocurrio un error' + error);
     });
-
-
   }
 
 
@@ -540,5 +575,25 @@ NumeroALetras(num) {
 
   generarQR(value: string) {
     this.valueQR = value;
+  }
+
+  finalizarNotaVenta() {
+    this.tipoComprobante = 'n. venta';
+    this.comprobarSerieComprobante();
+    this.generarPago();
+  }
+
+  obtenerCorrelacionComprobante() {
+    const promesa = new Promise((resolve, reject) => {
+      const suscripcion = this.dataApi.obtenerCorrelacion(this.serieComprobante, this.storage.datosAdmi.sede).subscribe(datos => {
+        suscripcion.unsubscribe();
+        if (datos.length > 0) {
+          resolve(datos);
+        } else {
+          reject(datos);
+        }
+      });
+    });
+    return promesa;
   }
 }

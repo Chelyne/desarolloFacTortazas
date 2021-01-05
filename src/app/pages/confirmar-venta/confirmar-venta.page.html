@@ -69,7 +69,7 @@
       <ion-col class="detallesVenta" size="12" size-lg="7" size-md="7" size-sm="12" size-xs="12">
         <ion-grid>
           <ion-row>
-            <ion-col>
+            <ion-col size="4">
               <ion-item>
                 <ion-button *ngIf="tipoComprobante!=='factura'" fill="outline" (click)="SeleccionarComprobante('factura')">
                   <ion-label color="primary">Factura</ion-label>
@@ -83,12 +83,12 @@
                 <ion-button *ngIf="tipoComprobante==='boleta'" (click)="SeleccionarComprobante('boleta')">
                   <ion-label color="light">Boleta</ion-label>
                 </ion-button>
-                <ion-button color="light" *ngIf="tipoComprobante!=='n. venta'" fill="outline" (click)="SeleccionarComprobante('n. venta')">
+                <!-- <ion-button color="light" *ngIf="tipoComprobante!=='n. venta'" fill="outline" (click)="SeleccionarComprobante('n. venta')">
                   <ion-label color="light">N. Venta</ion-label>
                 </ion-button>
                 <ion-button color="light" *ngIf="tipoComprobante==='n. venta'" (click)="SeleccionarComprobante('n. venta')">
                   <ion-label color="light">N. Venta</ion-label>
-                </ion-button>
+                </ion-button> -->
               </ion-item>
             </ion-col>
             <!-- <ion-col size="2" >
@@ -106,9 +106,14 @@
                 <ion-label>NOTA DE VENTA</ion-label>
               </ion-item>
             </ion-col> -->
-            <ion-col size="2" >
+            <ion-col size="4" >
               <ion-item lines="none">
                 <ion-label>{{serieComprobante}}</ion-label>
+                <!-- <ion-buttons> -->
+                  <!-- <ion-button style="cursor: unset;" expand="block"> -->
+                    <ion-label (click)="finalizarNotaVenta()">&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;</ion-label>
+                  <!-- </ion-button> -->
+                <!-- </ion-buttons> -->
               </ion-item>
             </ion-col>
             <ion-col size="4" >
