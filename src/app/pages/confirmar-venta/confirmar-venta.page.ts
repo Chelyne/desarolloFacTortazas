@@ -75,7 +75,7 @@ export class ConfirmarVentaPage implements OnInit {
     } else {
       this.generarQR('20331066703' +  '|'  + '03' + 'B001' + '000626' + '40.00' + '2-01-21' + '987654321');
       if (Object.entries(this.venta).length !== 0){
-        this.subTotalDeVenta = this.venta.total;
+        this.subTotalDeVenta = this.venta.totalPagarVenta;
         this.IGVdeVenta = this.subTotalDeVenta * 18 / 100;
         this.totalAPagar = this.subTotalDeVenta;
         this.montoEntrante = this.totalAPagar;
@@ -331,7 +331,7 @@ export class ConfirmarVentaPage implements OnInit {
         doc.text('Boleta de Venta electronica', 22.5, 26, {align: 'center'});
         doc.text('B0000378', 22.5, 28, {align: 'center'});
         doc.text('Ruc o Razon social:', 22.5, 32, {align: 'center'});
-        doc.text( this.venta.cliente.documento + ' - ' + this.venta.cliente.nombre, 22.5, 34, {align: 'center'});
+        doc.text( this.venta.cliente.numDoc + ' - ' + this.venta.cliente.nombre, 22.5, 34, {align: 'center'});
         // tslint:disable-next-line:max-line-length
         doc.text('Fecha: ' + formatDate(new Date(), 'dd/MM/yyyy', 'en') + '  ' + 'Hora: ' + formatDate(new Date(), 'HH:mm aa', 'en'), 22.5, 36, {align: 'center'});
         doc.setFontSize(5);
@@ -355,9 +355,9 @@ export class ConfirmarVentaPage implements OnInit {
           index = index + 3;
         }
         doc.text('Importe Total:', 2, index + 3, {align: 'left'});
-        doc.text('s/ ' + this.venta.total.toFixed(2), 43, index + 3, {align: 'right'});
+        doc.text('s/ ' + this.venta.totalPagarVenta.toFixed(2), 43, index + 3, {align: 'right'});
         doc.setFontSize(3);
-        doc.text('SON ' + this.NumeroALetras(this.venta.total), 2, index + 5, {align: 'left'});
+        doc.text('SON ' + this.NumeroALetras(this.venta.totalPagarVenta), 2, index + 5, {align: 'left'});
         doc.addImage(qr, 'JPEG', 15, index + 6, 15, 15);
         index = index + 20;
         doc.setFontSize(4);

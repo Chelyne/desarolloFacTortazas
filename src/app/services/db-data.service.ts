@@ -4,10 +4,8 @@ import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { ProductoInterface } from '../models/ProductoInterface';
 import { AdmiInterface } from '../models/AdmiInterface';
-import { UsuarioInterface } from '../models/usuario';
 import { ClienteInterface } from '../models/cliente-interface';
 import { ProveedorInterface } from '../models/proveedor';
-import { UsuarioInterfce } from '../models/User';
 import { CompraInterface } from '../models/Compra';
 import { EmpresaInterface } from '../models/api-peru/empresa';
 import { VentaInterface } from '../models/venta/venta';
@@ -37,11 +35,11 @@ export class DbDataService {
   private administradorDoc: AngularFirestoreDocument<AdmiInterface>;
   private administrador: Observable<AdmiInterface>;
 
-  private usuariosCollection: AngularFirestoreCollection<UsuarioInterface>;
-  private usuarios: Observable<UsuarioInterface[]>;
+  private usuariosCollection: AngularFirestoreCollection<AdmiInterface>;
+  private usuarios: Observable<AdmiInterface[]>;
 
-  private usuarioDoc: AngularFirestoreDocument<UsuarioInterface>;
-  private usuario: Observable<UsuarioInterface>;
+  private usuarioDoc: AngularFirestoreDocument<AdmiInterface>;
+  private usuario: Observable<AdmiInterface>;
 
   private proveedoresCollection: AngularFirestoreCollection<ProveedorInterface>;
   private proveedores: Observable<ProveedorInterface[]>;
@@ -455,7 +453,7 @@ export class DbDataService {
 
 
   // Guardar Nuevo USURARIO / VENDEDOR
-  guardarUsuario(newUser: UsuarioInterface) {
+  guardarUsuario(newUser: AdmiInterface) {
     const promesa =  new Promise<void>( (resolve, reject) => {
       this.afs.collection('Roles').doc(newUser.correo).set(newUser);
       resolve();
@@ -465,7 +463,7 @@ export class DbDataService {
   }
 
 
-  actualizarUsuario(idUser: string, newUser: UsuarioInterface) {
+  actualizarUsuario(idUser: string, newUser: AdmiInterface) {
     // console.log( idUser, newUser);
 
     const promesa =  new Promise<void>( (resolve, reject) => {
@@ -485,7 +483,7 @@ export class DbDataService {
     .pipe(map(
       changes => {
         return changes.map(action => {
-          const data = action.payload.doc.data() as UsuarioInterface;
+          const data = action.payload.doc.data() as AdmiInterface;
           data.id = action.payload.doc.id;
           return data;
           });
@@ -503,7 +501,7 @@ export class DbDataService {
       .pipe(map(
         changes => {
           return changes.map(action => {
-            const data = action.payload.doc.data() as UsuarioInterface;
+            const data = action.payload.doc.data() as AdmiInterface;
             data.id = action.payload.doc.id;
             return data;
             });
@@ -628,7 +626,7 @@ export class DbDataService {
       .pipe(map(
         changes => {
           return changes.map(action => {
-            const data = action.payload.doc.data() as UsuarioInterface;
+            const data = action.payload.doc.data() as AdmiInterface;
             data.id = action.payload.doc.id;
             return data;
             });
@@ -653,7 +651,7 @@ export class DbDataService {
       .pipe(map(
         changes => {
           return changes.map(action => {
-            const data = action.payload.doc.data() as UsuarioInterface;
+            const data = action.payload.doc.data() as AdmiInterface;
             data.id = action.payload.doc.id;
             return data;
             });
@@ -864,9 +862,9 @@ export class DbDataService {
 
   guardarCDR(venta: VentaInterface, sede: string, cdrVenta: CDRInterface){
     console.log('guuuuuuuuuuuuuuuardadr cdr');
-    //const idFecha = venta.fechaEmision.getDay() + '-' + venta.fechaEmision.getMonth() + '-' + venta.fechaEmision.getFullYear();
+    // const idFecha = venta.fechaEmision.getDay() + '-' + venta.fechaEmision.getMonth() + '-' + venta.fechaEmision.getFullYear();
     console.log('ffffffffffffffffffffffffffffff',  venta.fechaEmision);
-    let fecha: any = venta.fechaEmision;
+    const fecha: any = venta.fechaEmision;
     const fechaFormateada = new Date(moment.unix(fecha.seconds).format('D MMM YYYY H:mm'));
     const fechaString = formatDate(fechaFormateada, 'dd-MM-yyyy', 'en');
 
@@ -900,7 +898,7 @@ export class DbDataService {
           idListaProductos: guardado.id,
           cliente: venta.cliente,
           vendedor: venta.vendedor,
-          total: venta.total,
+          totalPagarVenta: venta.totalPagarVenta,
           tipoComprobante: venta.tipoComprobante,
           serieComprobante: venta.serieComprobante,
           fechaEmision: new Date(),
@@ -921,7 +919,7 @@ export class DbDataService {
   obtenerProductosDeVenta(idProductoVenta: string, sede: string){
     console.log('PPPPPPPPPPPPPPPPPPPPPRODUCTOvENTA', idProductoVenta);
     this.itemDeventaDoc = this.afs.collection('sedes').doc(sede.toLocaleLowerCase())
-    .collection('productosVenta').doc(idProductoVenta); //, ref => ref.where('id', '==', idProductoVenta));
+    .collection('productosVenta').doc(idProductoVenta); // , ref => ref.where('id', '==', idProductoVenta));
 
     return  this.itemDeventaDoc.snapshotChanges()
       .pipe(map(
