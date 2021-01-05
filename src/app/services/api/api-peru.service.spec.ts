@@ -26,7 +26,7 @@ describe('test de venta', () => {
     // const fixture = TestBed.createComponent(StartComponent);
     // const app = fixture.debugElement.componentInstance;
     // expect(app).toHaveMember('h');
-    
+
   });
 });
 

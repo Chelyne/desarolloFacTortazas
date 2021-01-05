@@ -11,7 +11,13 @@ export class ProductoVentaComponent implements OnInit {
 
   @Input() itemDeVenta: ItemDeVentaInterface;
 
-  @Output()  cambiarCantidadProd = new EventEmitter<{id: string, cantidad: number, precioVenta: number, porcentaje: number}>();
+  @Output()  cambiarCantidadProd = new EventEmitter<{
+    id: string,
+    cantidad: number,
+    precioVenta: number, // ! quitar
+    porcentaje: number, // ! quitar
+    descuento: number
+  }>();
   @Output()  quitarItemDeVenta = new EventEmitter<{id: string}>();
 
   formVenta: FormGroup;
@@ -64,18 +70,24 @@ export class ProductoVentaComponent implements OnInit {
         id: this.itemDeVenta.idProducto,
         cantidad: parseInt(this.formVenta.value.cantidad, 10),
         precioVenta: null,
-        porcentaje: null
+        porcentaje: null,
+        descuento: null
       });
     } else {
       if (this.cantidad.errors.required){
         this.cambiarCantidadProd.emit({
           id: this.itemDeVenta.idProducto,
           cantidad: 0,
-        precioVenta: null,
-        porcentaje: null
+          precioVenta: null,
+          porcentaje: null,
+          descuento: null
+
         });
       }
     }
+    console.log('cantidad***********************************');
+    console.log('cantidad', this.formVenta.value);
+    console.log('____________________________________');
   }
 
   // event Emitters
@@ -89,7 +101,9 @@ export class ProductoVentaComponent implements OnInit {
         id: this.itemDeVenta.idProducto,
         cantidad: parseInt(this.formVenta.value.cantidad, 10),
         precioVenta: this.formVenta.value.precioVenta ? parseInt(this.formVenta.value.precioVenta, 10) : null,
-        porcentaje: null
+        porcentaje: null,
+        descuento: null
+
       });
     } else {
       if (this.cantidad.errors.required){
@@ -97,10 +111,17 @@ export class ProductoVentaComponent implements OnInit {
           id: this.itemDeVenta.idProducto,
           cantidad: 0,
           precioVenta: this.formVenta.value.precioVenta ? parseInt(this.formVenta.value.precioVenta, 10) : null,
-          porcentaje: null
+          porcentaje: null,
+          descuento: null
         });
       }
     }
+
+    // console.log('cambio de precio', this.formVenta.value);
+    console.log('precio***********************************');
+    console.log('cantidad', this.formVenta.value);
+    console.log('____________________________________');
+
   }
 
   cambioPorcentaje(){
@@ -111,6 +132,8 @@ export class ProductoVentaComponent implements OnInit {
         cantidad: parseInt(this.formVenta.value.cantidad, 10),
         precioVenta: this.formVenta.value.precioVenta ? parseInt(this.formVenta.value.precioVenta, 10) : null,
         porcentaje: this.formVenta.value.porcentaje ? parseInt(this.formVenta.value.porcentaje, 10) : null,
+        descuento: null
+
       });
     } else {
       if (this.cantidad.errors.required){
@@ -119,9 +142,15 @@ export class ProductoVentaComponent implements OnInit {
           cantidad: 0,
           precioVenta: this.formVenta.value.precioVenta ? parseInt(this.formVenta.value.precioVenta, 10) : null,
           porcentaje: this.formVenta.value.porcentaje ? parseInt(this.formVenta.value.porcentaje, 10) : null,
+          descuento: null
+
         });
       }
     }
+
+    console.log('porcentaje***********************************');
+    console.log('cantidad', this.formVenta.value);
+    console.log('____________________________________');
   }
 
 

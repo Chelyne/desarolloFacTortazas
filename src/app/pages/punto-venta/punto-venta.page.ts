@@ -194,12 +194,15 @@ export class PuntoVentaPage implements OnInit {
     };
   }
 
-  inputModificado(evento: {id: string, cantidad: number, precioVenta: number, porcentaje: number}){
+  inputModificado(evento: {id: string, cantidad: number, precioVenta: number,
+     porcentaje: number, descuento: number}){
     console.log(evento);
-    this.ActualizarMonto(evento.id, evento.cantidad, evento.precioVenta, evento.porcentaje);
+    this.ActualizarMonto(evento.id, evento.cantidad, evento.precioVenta,
+       evento.porcentaje, evento.descuento);
   }
 
-  ActualizarMonto(idProdItem: string, cantidad: number, precioVenta: number, porcentaje: number){
+  ActualizarMonto(idProdItem: string, cantidad: number, precioVenta: number,
+    porcentaje: number, descuento: number){
     if (this.listaItemsDeVenta.length > 0) {
       for (const itemDeVenta of this.listaItemsDeVenta) {
         // console.log('ssssssssssssssssss')
