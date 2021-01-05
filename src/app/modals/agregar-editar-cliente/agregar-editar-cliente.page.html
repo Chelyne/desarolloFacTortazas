@@ -15,7 +15,7 @@
 
     <ion-item>
       <ion-label color="primary">Tipo de Documento</ion-label>
-      <ion-select  multiple="false" interface="popover" formControlName="tipoDocumento" (ionChange)="siRucoDni()">
+      <ion-select  multiple="false" interface="popover" formControlName="tipoDoc" (ionChange)="siRucoDni()">
         <ion-select-option value="ruc">RUC</ion-select-option>
         <ion-select-option value="dni">DNI</ion-select-option>
       </ion-select>
@@ -23,28 +23,28 @@
 
     <ion-item>
       <ion-label color="primary" position="floating">Nro Documento</ion-label>
-      <ion-input (ionChange)="consultaSunat($event)" maxlength="11" type="text" (keypress)="numberOnlyValidation($event)" formControlName="documento" placeholder="DNI"></ion-input>
+      <ion-input (ionChange)="consultaSunat($event)" maxlength="11" type="text" (keypress)="numberOnlyValidation($event)" formControlName="numDoc" placeholder="DNI"></ion-input>
     </ion-item>
-    <div class="alertDanger" *ngIf="documento.invalid && (documento.dirty || documento.touched)">
+    <div class="alertDanger" *ngIf="numDoc.invalid && (numDoc.dirty || numDoc.touched)">
       <div *ngIf="typoDocumento==='ruc'">
-        <div class="mensajeError" *ngIf="documento.errors.required">
+        <div class="mensajeError" *ngIf="numDoc.errors.required">
           *Ingrese el Número del Documento
         </div>
-        <div class="mensajeError" *ngIf="documento.errors.minlength">
+        <div class="mensajeError" *ngIf="numDoc.errors.minlength">
           *Ingrese al menos 11 carácteres
         </div>
-        <div class="mensajeError" *ngIf="documento.errors.maxlength">
+        <div class="mensajeError" *ngIf="numDoc.errors.maxlength">
           *Ingrese máximo 11 caracteres
         </div>
       </div>
       <div *ngIf="typoDocumento==='dni'">
-        <div class="mensajeError" *ngIf="documento.errors.required">
+        <div class="mensajeError" *ngIf="numDoc.errors.required">
           *Ingrese el Número del Documento
         </div>
-        <div class="mensajeError" *ngIf="documento.errors.minlength">
+        <div class="mensajeError" *ngIf="numDoc.errors.minlength">
           *Ingrese al menos 8 carácteres
         </div>
-        <div class="mensajeError" *ngIf="documento.errors.maxlength">
+        <div class="mensajeError" *ngIf="numDoc.errors.maxlength">
           *Ingrese máximo 8 caracteres
         </div>
       </div>

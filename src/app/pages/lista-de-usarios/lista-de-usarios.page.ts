@@ -2,10 +2,10 @@ import { Component, OnInit } from '@angular/core';
 import { ModalController, MenuController, ToastController } from '@ionic/angular';
 import { AgregarEditarUsuarioPage } from 'src/app/modals/agregar-editar-usuario/agregar-editar-usuario.page';
 // import { AgregarEditarUsuarioPage } from 'src/app/modals/agregar-editar-usuario/agregar-editar-usuario.page';
-import { UsuarioInterface } from 'src/app/models/usuario';
 import { DbDataService } from 'src/app/services/db-data.service';
 // import { UserRegistroService } from 'src/app/services/user-registro.service';
 import { AuthServiceService } from '../../services/auth-service.service';
+import { AdmiInterface } from '../../models/AdmiInterface';
 
 @Component({
   selector: 'app-lista-de-usarios',
@@ -15,13 +15,13 @@ import { AuthServiceService } from '../../services/auth-service.service';
 export class ListaDeUsariosPage implements OnInit {
 
 
-  listaDeUsuarios: UsuarioInterface[];
-  usuarioItem: UsuarioInterface;
+  listaDeUsuarios: AdmiInterface[];
+  usuarioItem: AdmiInterface;
 
   modalEvento: string;
   modalTitle: string;
   modalTag: string;
-  modalDataUsuario: UsuarioInterface;
+  modalDataUsuario: AdmiInterface;
 
   sinDatos;
   constructor(private dataApi: DbDataService,
@@ -56,7 +56,7 @@ export class ListaDeUsariosPage implements OnInit {
   }
 
 
-  ActualizarDataUsuario(usuario: UsuarioInterface){
+  ActualizarDataUsuario(usuario: AdmiInterface){
     this.modalEvento = 'actualizarUsuario';
     this.modalTitle = 'Actualizar datos del usuario';
     this.modalTag = 'Actualizar';

@@ -287,7 +287,7 @@ export class PuntoVentaPage implements OnInit {
     return {
       cliente: this.cliente,
       listaItemsDeVenta: this.listaItemsDeVenta,
-      total: this.totalxPagar,
+      totalPagarVenta: this.totalxPagar,
       idVenta: this.CrearVentaId()
     };
   }

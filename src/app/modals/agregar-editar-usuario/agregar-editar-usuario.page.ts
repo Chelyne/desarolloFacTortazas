@@ -1,8 +1,8 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { ModalController, ToastController } from '@ionic/angular';
-import { UsuarioInterface } from 'src/app/models/usuario';
 import { DbDataService } from 'src/app/services/db-data.service';
+import { AdmiInterface } from '../../models/AdmiInterface';
 
 @Component({
   selector: 'app-agregar-editar-usuario',
@@ -18,7 +18,7 @@ export class AgregarEditarUsuarioPage implements OnInit {
   @Input() eventoInvoker: string;
   @Input() titleInvoker: string;
   @Input() tagInvoker: string;
-  @Input() dataInvoker: UsuarioInterface;
+  @Input() dataInvoker: AdmiInterface;
 
   emailPattern: any = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
 
