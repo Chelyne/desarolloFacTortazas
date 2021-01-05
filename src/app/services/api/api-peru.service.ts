@@ -213,7 +213,7 @@ export class ApiPeruService {
     console.log('Fecha de emision de la venta', venta.fechaEmision);
     let productFormat;
 
-    const totalaPagar = venta.total;
+    const totalaPagar = venta.totalPagarVenta;
     const igv = totalaPagar * 18 / 100;
     const totalaPagarMasIgv = totalaPagar + igv;
 
@@ -349,7 +349,7 @@ export class ApiPeruService {
     // TODO - Adaptar al nueva ClienteInterface
     return {
       tipoDoc: '1', // el catalogo N6, DNI = 1, Tambien obtener el ruc
-      numDoc: cliente.documento,
+      numDoc: cliente.numDoc,
       rznSocial: cliente.nombre,
       address: {
         direccion: cliente.direccion
