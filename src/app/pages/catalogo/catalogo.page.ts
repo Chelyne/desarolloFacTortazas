@@ -8,6 +8,8 @@ import { StorageService } from '../../services/storage.service';
 import { ModalAgregarProductoPage } from '../../modals/modal-agregar-producto/modal-agregar-producto.page';
 import { AngularFirestore } from '@angular/fire/firestore';
 import { EditarProductoPage } from '../../modals/editar-producto/editar-producto.page';
+import { ModalAgregarCategoriasPage } from '../../modals/modal-agregar-categorias/modal-agregar-categorias.page';
+import { CategoriaInterface } from '../../models/CategoriaInterface';
 
 
 @Component({
@@ -20,6 +22,8 @@ export class CatalogoPage implements OnInit {
   listaDeProductos: ProductoInterface[] = [];
   buscando = false;
   id: any;
+
+  listaDeCategorias: CategoriaInterface[] = [];
 
   categorias = [];
   categoria;
@@ -49,7 +53,6 @@ export class CatalogoPage implements OnInit {
     this.categorias = this.categoriasService.getcategoriasNegocio(this.categoria);
     this.ultimaCategoria = 4;
 
-    console.log('categorias', this.categorias);
     console.log('sede', this.sedes);
     console.log('categoria', this.categoria);
   }
@@ -61,6 +64,7 @@ export class CatalogoPage implements OnInit {
       this.listaDeProductos = data;
     });
   }
+
 
   /* -------------------------------------------------------------------------- */
   /*                                 //Buscador                                 */
@@ -111,6 +115,23 @@ export class CatalogoPage implements OnInit {
       componentProps: {
         sede: this.sedes,
         categoria: this.categoria,
+      }
+    });
+
+    await modal.present();
+  }
+
+  agregarCategoria(){
+    this.abrirModalNuevoCategoria();
+  }
+
+  async abrirModalNuevoCategoria(){
+
+    const modal =  await this.modalCtlr.create({
+      component: ModalAgregarCategoriasPage,
+      cssClass: 'modal-fullscreen',
+      componentProps: {
+        sede: this.sedes,
       }
     });
 

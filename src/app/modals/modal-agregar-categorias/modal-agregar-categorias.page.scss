@@ -1,0 +1,120 @@
+form {
+    // height: 100%;
+    margin: 0px;
+    padding: 0px;
+    .datos {
+        // height: 95%;
+        .fotoProducto {
+            height: 47%;
+            display: flex;
+            justify-content: center;
+            align-content: center;
+            align-items: center;
+            img {
+                height: 250px;
+                width: 100%;
+                margin: 5px;
+                object-fit: contain;
+                object-position: center center;
+            }
+        }
+        .badge {
+            text-align: right;
+            margin-left: 5%;
+            margin-right: 5%;
+            margin-bottom: 2%;
+            ion-badge {
+                // color: black;
+                // background-color: white;
+                border-radius: 10px;
+                letter-spacing: 2px;
+                margin: 3px;
+            }
+        }
+        .datosProducto {
+            height: 50%;
+            background-color: white;
+            padding: 5%;
+            box-shadow: 2px -2px 2px 2px var(--ion-color-light);
+            // border-top: solid 2px var(--ion-color-light);
+            ion-item {
+                ion-label {
+                    font-family: Sniglet;
+                }
+            }
+            .cantidad {
+                color: gray;
+                margin-left: 5%;
+                margin-right: 5%;
+            }
+            .nombre {
+                font-size: 2vw;
+                font-weight: bold;
+            }
+            .marca {
+                //font-size: 1vw;
+                font-weight: bold;
+            }
+            .precio {
+                color: var(--ion-color-primary);
+                font-weight: bold;
+                span {
+                    font-size: 18px;
+                }
+            }
+            .tienda {
+                border-radius: 10px;
+            }
+        }
+    }
+}
+
+.imagenes {
+    width: 60%;
+}
+
+.alertDanger {
+    color: var(--ion-color-danger);
+    // background-color: rgb(248, 172, 172);
+    // border-radius: 3px;
+    // width: 100%;
+}
+
+.mensajeError {
+    margin-left: 10px;
+    font-size: 13px;
+    padding: 5px;
+    text-align: center;
+}
+
+ion-label {
+    font-family: Nunito;
+}
+
+ion-input {
+    font-family: Nunito;
+    border: solid 1px var(--ion-color-primary);
+    border-radius: 5px;
+    margin-top: 5px;
+    --padding-start: 12px;
+}
+
+ion-textarea {
+    font-family: Nunito;
+    border: solid 1px var(--ion-color-primary);
+    border-radius: 5px;
+    margin-top: 5px;
+    --padding-start: 12px;
+}
+
+ion-input[type=date] {
+    margin-top: 5px;
+    border: solid 1px var(--ion-color-primary);
+}
+
+.custom-options {
+    border: solid 1px var(--ion-color-primary);
+    border-radius: 5px;
+    margin-top: 5px;
+    --padding-start: 12px;
+}
