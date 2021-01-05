@@ -25,6 +25,7 @@ import { ContadorDeSerieInterface } from '../../models/serie';
 export class ConfirmarVentaPage implements OnInit {
 
   formPago: FormGroup;
+  RUC = '20601831032';
 
   // subTotalDeVenta
   subTotalDeVenta: number;
@@ -360,10 +361,16 @@ export class ConfirmarVentaPage implements OnInit {
         doc.setFontSize(6);
         doc.setFont('courier');
         doc.text('Veterinarias Tooby E.I.R.L.', 22.5, 16, {align: 'center'});
+        if (this.storage.datosAdmi.sede === 'Andahuaylas') {
         doc.text('Av. Peru 236 Parque Lampa de Oro ', 22.5, 18, {align: 'center'});
-        doc.text('Telefono: 989898989', 22.5, 20, {align: 'center'});
-        doc.text('Ruc: 20706679362', 22.5, 22, {align: 'center'});
-        doc.text('Boleta de Venta electronica', 22.5, 26, {align: 'center'});
+        doc.text('Telefono: 983905066', 22.5, 20, {align: 'center'});
+        }
+        if (this.storage.datosAdmi.sede === 'Abancay') {
+          doc.text('Av. Seoane 100 Parque el olivo ', 22.5, 18, {align: 'center'});
+          doc.text('Telefono: 988907777', 22.5, 20, {align: 'center'});
+          }
+        doc.text('Ruc: ' + this.RUC, 22.5, 22, {align: 'center'});
+        doc.text('Boleta de Venta electrónica', 22.5, 26, {align: 'center'});
         doc.text('B0000378', 22.5, 28, {align: 'center'});
         doc.text('Ruc o Razon social:', 22.5, 32, {align: 'center'});
         doc.text( this.venta.cliente.numDoc + ' - ' + this.venta.cliente.nombre, 22.5, 34, {align: 'center'});
@@ -403,6 +410,83 @@ export class ConfirmarVentaPage implements OnInit {
         // doc.output('dataurlnewwindow');
         const canvas = document.getElementById('pdf');
         break;
+      case'factura': {
+        let index = 38;
+        const doc = new jsPDF( 'p', 'mm', [45, index  + (this.venta.listaItemsDeVenta.length * 7) + 18 + 6 + 20 + 6]);
+        doc.addImage(this.LogoEmpresa, 'JPEG', 15, 5, 15, 7);
+        doc.setFontSize(6);
+        doc.setFont('courier');
+        doc.text('Veterinarias Tooby E.I.R.L.', 22.5, 16, {align: 'center'});
+        if (this.storage.datosAdmi.sede === 'Andahuaylas') {
+          doc.text('Av. Peru 236 Parque Lampa de Oro ', 22.5, 18, {align: 'center'});
+          doc.text('Telefono: 983905066', 22.5, 20, {align: 'center'});
+          }
+        if (this.storage.datosAdmi.sede === 'Abancay') {
+            doc.text('Av. Seoane 100 Parque el olivo ', 22.5, 18, {align: 'center'});
+            doc.text('Telefono: 988907777', 22.5, 20, {align: 'center'});
+            }
+        doc.text('Ruc: ' + this.RUC, 22.5, 22, {align: 'center'});
+        doc.text('Factura de Venta electrónica', 22.5, 26, {align: 'center'});
+        doc.text('F0000378', 22.5, 28, {align: 'center'});
+        doc.text('Ruc o Razon social:', 22.5, 32, {align: 'center'});
+        doc.text( this.venta.cliente.numDoc + ' - ' + this.venta.cliente.nombre, 22.5, 34, {align: 'center'});
+        // tslint:disable-next-line:max-line-length
+        doc.text('Fecha: ' + formatDate(new Date(), 'dd/MM/yyyy', 'en') + '  ' + 'Hora: ' + formatDate(new Date(), 'HH:mm aa', 'en'), 22.5, 36, {align: 'center'});
+        doc.setFontSize(5);
+
+        for (const c of this.venta.listaItemsDeVenta) {
+          doc.text( '________________________________________', 22.5, index, {align: 'center'});
+          index = index + 3;
+          if (c.producto.nombre.length > 40) {
+            doc.text(c.producto.nombre.toUpperCase().slice(0, 38), 2, index);
+            doc.text(c.producto.nombre.toUpperCase().slice(38, -1), 2, index + 2);
+            index = index + 2;
+          } else {
+            doc.text(c.producto.nombre.toUpperCase(), 2, index);
+          }
+          // tslint:disable-next-line:max-line-length
+          // tslint:disable-next-line:max-line-length
+          doc.text( c.producto.cantidad + '.00    ' + 'UND' + '      ' + c.producto.precio.toFixed(2), 2, index + 3, {align: 'justify'});
+          doc.text((c.producto.precio * c.producto.cantidad).toFixed(2), 43, index + 3, {align: 'right'} );
+
+          doc.text( '________________________________________', 22.5, index +  3, {align: 'center'});
+          index = index + 3;
+        }
+        doc.text('OP. GRAVADAS:', 2, index + 3, {align: 'left'});
+        doc.text( (this.venta.totalPagarVenta - (this.venta.totalPagarVenta * 0.18)).toFixed(2), 43, index + 3, {align: 'right'});
+        doc.text('OP. INAFECTA:', 2, index + 5, {align: 'left'});
+        doc.text( (0).toFixed(2), 43, index + 5, {align: 'right'});
+        doc.text('OP. EXONERADA:', 2, index + 7, {align: 'left'});
+        doc.text( (0).toFixed(2), 43, index + 7, {align: 'right'});
+        doc.text('OP. GRATUITA', 2, index + 9, {align: 'left'});
+        doc.text( (0).toFixed(2), 43, index + 9, {align: 'right'});
+        doc.text('OP. EXPORTACIÓN', 2, index + 11, {align: 'left'});
+        doc.text( (0).toFixed(2), 43, index + 11, {align: 'right'});
+        doc.text('DESCUENTO', 2, index + 13, {align: 'left'});
+        doc.text( (0).toFixed(2), 43, index + 13, {align: 'right'});
+        doc.text('I.G.V. (18%)', 2, index + 15, {align: 'left'});
+        doc.text( (this.venta.totalPagarVenta * 0.18).toFixed(2), 43, index + 15, {align: 'right'});
+        doc.text('ICBP(0.20)', 2, index + 17, {align: 'left'});
+        doc.text( (0).toFixed(2), 43, index + 17, {align: 'right'});
+        doc.text('I.S.C.', 2, index + 19, {align: 'left'});
+        doc.text( (0).toFixed(2), 43, index + 19, {align: 'right'});
+        doc.text( '________________________________________', 22.5, index + 19, {align: 'center'});
+
+        index = index + 19;
+        doc.text('TOTAL IMPORTE:', 2, index + 3, {align: 'left'});
+        doc.text('s/ ' + this.venta.totalPagarVenta.toFixed(2), 43, index + 3, {align: 'right'});
+        doc.setFontSize(3);
+        doc.text('SON ' + this.NumeroALetras(this.venta.totalPagarVenta), 2, index + 5, {align: 'left'});
+        doc.addImage(qr, 'JPEG', 15, index + 6, 15, 15);
+        index = index + 20;
+        doc.setFontSize(4);
+        doc.text('Representación impresa del comprobante de pago\r de Factura Electrónica, esta puede ser consultada en\r www.tooby.com\rNO ACEPTAMOS DEVOLUCIONES', 22.5, index + 3, {align: 'center'});
+        doc.text('GRACIAS POR SU COMPRA', 22.5, index + 10, {align: 'center'});
+        doc.save('tiket' + '.pdf');
+        doc.autoPrint();
+        // doc.output('dataurlnewwindow');
+        break;
+      }
     }
   }
 
