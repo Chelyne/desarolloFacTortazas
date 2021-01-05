@@ -1,6 +1,7 @@
 import { CDRInterface } from '../api-peru/cdr-interface';
 import { ClienteInterface } from '../cliente-interface';
 import { ItemDeVentaInterface } from './item-de-venta';
+import { AdmiInterface } from '../AdmiInterface';
 
 
 export interface VentaInterface {
@@ -8,7 +9,7 @@ export interface VentaInterface {
     idVenta?: string;
     idListaProductos?: string;
     cliente?: ClienteInterface;
-    vendedor?: {};
+    vendedor?: AdmiInterface;
     tipoComprobante?: string;
     serieComprobante?: string;
     numeroComprobante?: string;
@@ -16,9 +17,9 @@ export interface VentaInterface {
     enviado?: boolean; // true o false
     cdrStatus?: string;
     cdr?: CDRInterface;
-    totalaPagar?: number;
     bolsa?: boolean;
     tipoPago?: string;
-    total?: number;
+    totalPagarVenta?: number;
+    descuentoVenta?: number;
 }
 
