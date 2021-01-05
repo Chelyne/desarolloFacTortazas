@@ -290,7 +290,7 @@ export class CajaChicaPage implements OnInit {
       doc.text( datosCaja.sede, 247, 70);
       doc.text( datosCaja.FechaApertura, 267, 80);
       doc.text( datosCaja.FechaCierre, 258, 90);
-      if (isNullOrUndefined(this.datosReporteIngresoPagoVendedorDia)) {
+      if (isNullOrUndefined(data)) {
         doc.text( 'No se encontraron registros.', 35, 150);
         } else {
           doc.autoTable({
@@ -324,7 +324,7 @@ export class CajaChicaPage implements OnInit {
               datos.fechaEmision ? this.datePipe.transform(new Date(moment.unix(datos.fechaEmision.seconds).format('D MMM YYYY H:mm')), 'short') : null,
               datos.tipoComprobante.toUpperCase() || null,
               datos.serieComprobante || null,
-              datos.metodoPago ? datos.metodoPago.toUpperCase() : null,
+              datos.tipoPago ? datos.tipoPago.toUpperCase() : null,
               'PEN',
               1,
               0.00,
