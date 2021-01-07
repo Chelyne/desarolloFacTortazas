@@ -104,7 +104,7 @@ export class ConfirmarVentaPage implements OnInit {
         } else if (this.tipoComprobante === 'factura') {
           this.serieComprobante  = 'F001';
         } else if (this.tipoComprobante === 'n. venta') {
-          this.serieComprobante = 'NV001';
+          this.serieComprobante = 'NV01';
         }
       } else if (this.storage.datosAdmi.sede === 'Abancay') {
         console.log('Abancay');
@@ -113,7 +113,7 @@ export class ConfirmarVentaPage implements OnInit {
         } else if (this.tipoComprobante === 'factura') {
           this.serieComprobante  = 'F002';
         } else if (this.tipoComprobante === 'n. venta') {
-          this.serieComprobante = 'NV002';
+          this.serieComprobante = 'NV02';
         }
       }
     } else {
@@ -343,6 +343,13 @@ export class ConfirmarVentaPage implements OnInit {
     return imageData;
     }
 
+    digitosFaltantes(caracter: string, num: number) {
+      let final = '';
+      for ( let i = 0; i < num; i++) {
+        final = final + caracter;
+      }
+      return final;
+    }
 
   generarComprobante() {
     const qr = this.getImage();
@@ -355,31 +362,32 @@ export class ConfirmarVentaPage implements OnInit {
     // console.log(imageData);
     switch (this.tipoComprobante) {
       case 'boleta':
-        let index = 38;
+        let index = 35;
         const doc = new jsPDF( 'p', 'mm', [45, index  + (this.venta.listaItemsDeVenta.length * 7) + 6 + 20 + 6]);
-        doc.addImage(this.LogoEmpresa, 'JPEG', 15, 5, 15, 7);
+        doc.addImage(this.LogoEmpresa, 'JPEG', 15, 1, 15, 7);
         doc.setFontSize(6);
-        doc.setFont('courier');
-        doc.text('Veterinarias Tooby E.I.R.L.', 22.5, 16, {align: 'center'});
+        doc.setFont('helvetica');
+        doc.text('Veterinarias Tooby E.I.R.L.', 22.5, 12, {align: 'center'});
         if (this.storage.datosAdmi.sede === 'Andahuaylas') {
-        doc.text('Av. Peru 236 Parque Lampa de Oro ', 22.5, 18, {align: 'center'});
-        doc.text('Telefono: 983905066', 22.5, 20, {align: 'center'});
+        doc.text('Av. Peru 236 Parque Lampa de Oro ', 22.5, 14, {align: 'center'});
+        doc.text('Telefono: 983905066', 22.5, 17, {align: 'center'});
         }
         if (this.storage.datosAdmi.sede === 'Abancay') {
-          doc.text('Av. Seoane 100 Parque el olivo ', 22.5, 18, {align: 'center'});
-          doc.text('Telefono: 988907777', 22.5, 20, {align: 'center'});
+          doc.text('Av. Seoane 100 Parque el olivo ', 22.5, 14, {align: 'center'});
+          doc.text('Telefono: 988907777', 22.5, 17, {align: 'center'});
           }
-        doc.text('Ruc: ' + this.RUC, 22.5, 22, {align: 'center'});
-        doc.text('Boleta de Venta electrónica', 22.5, 26, {align: 'center'});
-        doc.text('B0000378', 22.5, 28, {align: 'center'});
-        doc.text('Ruc o Razon social:', 22.5, 32, {align: 'center'});
-        doc.text( this.venta.cliente.numDoc + ' - ' + this.venta.cliente.nombre, 22.5, 34, {align: 'center'});
+        doc.text('Ruc: ' + this.RUC, 22.5, 19, {align: 'center'});
+        doc.text('Boleta de Venta electrónica', 22.5, 23, {align: 'center'});
         // tslint:disable-next-line:max-line-length
-        doc.text('Fecha: ' + formatDate(new Date(), 'dd/MM/yyyy', 'en') + '  ' + 'Hora: ' + formatDate(new Date(), 'HH:mm aa', 'en'), 22.5, 36, {align: 'center'});
+        doc.text(this.venta.serieComprobante + '-' + this.digitosFaltantes('0', (8 - this.venta.numeroComprobante.length)) + this.venta.numeroComprobante, 22.5, 25, {align: 'center'});
+        doc.text('Ruc o Razon social:', 22.5, 29, {align: 'center'});
+        doc.text( this.venta.cliente.numDoc + ' - ' + this.venta.cliente.nombre, 22.5, 31, {align: 'center'});
+        // tslint:disable-next-line:max-line-length
+        doc.text('Fecha: ' + formatDate(new Date(), 'dd/MM/yyyy', 'en') + '  ' + 'Hora: ' + formatDate(new Date(), 'HH:mm aa', 'en'), 22.5, 33, {align: 'center'});
         doc.setFontSize(5);
 
         for (const c of this.venta.listaItemsDeVenta) {
-          doc.text( '________________________________________', 22.5, index, {align: 'center'});
+          doc.text( '__________________________________________', 22.5, index, {align: 'center'});
           index = index + 3;
           if (c.producto.nombre.length > 40) {
             doc.text(c.producto.nombre.toUpperCase().slice(0, 38), 2, index);
@@ -393,49 +401,55 @@ export class ConfirmarVentaPage implements OnInit {
           doc.text( c.producto.cantidad + '.00    ' + 'UND' + '      ' + c.producto.precio.toFixed(2), 2, index + 3, {align: 'justify'});
           doc.text((c.producto.precio * c.producto.cantidad).toFixed(2), 43, index + 3, {align: 'right'} );
 
-          doc.text( '________________________________________', 22.5, index +  3, {align: 'center'});
+          doc.text( '__________________________________________', 22.5, index +  3, {align: 'center'});
           index = index + 3;
         }
         doc.text('Importe Total:', 2, index + 3, {align: 'left'});
         doc.text('s/ ' + this.venta.totalPagarVenta.toFixed(2), 43, index + 3, {align: 'right'});
         doc.setFontSize(3);
         doc.text('SON ' + this.NumeroALetras(this.venta.totalPagarVenta), 2, index + 5, {align: 'left'});
-        doc.addImage(qr, 'JPEG', 15, index + 6, 15, 15);
-        index = index + 20;
+        doc.setFontSize(4);
+        doc.text('Vendedor: ' + this.venta.vendedor.nombre, 2, index + 7, {align: 'left'});
+        doc.addImage(qr, 'JPEG', 15, index + 8, 15, 15);
+        index = index + 21;
         doc.setFontSize(4);
         doc.text('Representación impresa del comprobante de pago\r de Venta Electrónica, esta puede ser consultada en\r www.tooby.com\rNO ACEPTAMOS DEVOLUCIONES', 22.5, index + 3, {align: 'center'});
         doc.text('GRACIAS POR SU COMPRA', 22.5, index + 10, {align: 'center'});
-        doc.save('tiket' + '.pdf');
+        // doc.save('tiket' + '.pdf');
         doc.autoPrint();
+        window.open(doc.output('bloburl'), '_blank');
+
         // doc.output('dataurlnewwindow');
         const canvas = document.getElementById('pdf');
         break;
       case'factura': {
-        let index = 38;
+        // tslint:disable-next-line:no-shadowed-variable
+        let index = 35;
+        // tslint:disable-next-line:no-shadowed-variable
         const doc = new jsPDF( 'p', 'mm', [45, index  + (this.venta.listaItemsDeVenta.length * 7) + 18 + 6 + 20 + 6]);
-        doc.addImage(this.LogoEmpresa, 'JPEG', 15, 5, 15, 7);
+        doc.addImage(this.LogoEmpresa, 'JPEG', 15, 1, 15, 7);
         doc.setFontSize(6);
-        doc.setFont('courier');
-        doc.text('Veterinarias Tooby E.I.R.L.', 22.5, 16, {align: 'center'});
+        doc.setFont('helvetica');
+        doc.text('Veterinarias Tooby E.I.R.L.', 22.5, 12, {align: 'center'});
         if (this.storage.datosAdmi.sede === 'Andahuaylas') {
-          doc.text('Av. Peru 236 Parque Lampa de Oro ', 22.5, 18, {align: 'center'});
-          doc.text('Telefono: 983905066', 22.5, 20, {align: 'center'});
-          }
+        doc.text('Av. Peru 236 Parque Lampa de Oro ', 22.5, 14, {align: 'center'});
+        doc.text('Telefono: 983905066', 22.5, 17, {align: 'center'});
+        }
         if (this.storage.datosAdmi.sede === 'Abancay') {
-            doc.text('Av. Seoane 100 Parque el olivo ', 22.5, 18, {align: 'center'});
-            doc.text('Telefono: 988907777', 22.5, 20, {align: 'center'});
-            }
-        doc.text('Ruc: ' + this.RUC, 22.5, 22, {align: 'center'});
-        doc.text('Factura de Venta electrónica', 22.5, 26, {align: 'center'});
-        doc.text('F0000378', 22.5, 28, {align: 'center'});
-        doc.text('Ruc o Razon social:', 22.5, 32, {align: 'center'});
-        doc.text( this.venta.cliente.numDoc + ' - ' + this.venta.cliente.nombre, 22.5, 34, {align: 'center'});
+          doc.text('Av. Seoane 100 Parque el olivo ', 22.5, 14, {align: 'center'});
+          doc.text('Telefono: 988907777', 22.5, 17, {align: 'center'});
+          }
+        doc.text('Ruc: ' + this.RUC, 22.5, 19, {align: 'center'});
+        doc.text('Factura de Venta electrónica', 22.5, 23, {align: 'center'});
         // tslint:disable-next-line:max-line-length
-        doc.text('Fecha: ' + formatDate(new Date(), 'dd/MM/yyyy', 'en') + '  ' + 'Hora: ' + formatDate(new Date(), 'HH:mm aa', 'en'), 22.5, 36, {align: 'center'});
+        doc.text(this.venta.serieComprobante + '-' + this.digitosFaltantes('0', (8 - this.venta.numeroComprobante.length)) + this.venta.numeroComprobante, 22.5, 25, {align: 'center'});
+        doc.text('Ruc o Razon social:', 22.5, 29, {align: 'center'});
+        doc.text( this.venta.cliente.numDoc + ' - ' + this.venta.cliente.nombre, 22.5, 31, {align: 'center'});
+        // tslint:disable-next-line:max-line-length
+        doc.text('Fecha: ' + formatDate(new Date(), 'dd/MM/yyyy', 'en') + '  ' + 'Hora: ' + formatDate(new Date(), 'HH:mm aa', 'en'), 22.5, 33, {align: 'center'});
         doc.setFontSize(5);
-
         for (const c of this.venta.listaItemsDeVenta) {
-          doc.text( '________________________________________', 22.5, index, {align: 'center'});
+          doc.text( '__________________________________________', 22.5, index, {align: 'center'});
           index = index + 3;
           if (c.producto.nombre.length > 40) {
             doc.text(c.producto.nombre.toUpperCase().slice(0, 38), 2, index);
@@ -449,7 +463,7 @@ export class ConfirmarVentaPage implements OnInit {
           doc.text( c.producto.cantidad + '.00    ' + 'UND' + '      ' + c.producto.precio.toFixed(2), 2, index + 3, {align: 'justify'});
           doc.text((c.producto.precio * c.producto.cantidad).toFixed(2), 43, index + 3, {align: 'right'} );
 
-          doc.text( '________________________________________', 22.5, index +  3, {align: 'center'});
+          doc.text( '__________________________________________', 22.5, index +  3, {align: 'center'});
           index = index + 3;
         }
         doc.text('OP. GRAVADAS:', 2, index + 3, {align: 'left'});
@@ -470,23 +484,105 @@ export class ConfirmarVentaPage implements OnInit {
         doc.text( (0).toFixed(2), 43, index + 17, {align: 'right'});
         doc.text('I.S.C.', 2, index + 19, {align: 'left'});
         doc.text( (0).toFixed(2), 43, index + 19, {align: 'right'});
-        doc.text( '________________________________________', 22.5, index + 19, {align: 'center'});
+        doc.text( '__________________________________________', 22.5, index + 19, {align: 'center'});
 
         index = index + 19;
         doc.text('TOTAL IMPORTE:', 2, index + 3, {align: 'left'});
         doc.text('s/ ' + this.venta.totalPagarVenta.toFixed(2), 43, index + 3, {align: 'right'});
         doc.setFontSize(3);
         doc.text('SON ' + this.NumeroALetras(this.venta.totalPagarVenta), 2, index + 5, {align: 'left'});
-        doc.addImage(qr, 'JPEG', 15, index + 6, 15, 15);
-        index = index + 20;
+        doc.setFontSize(4);
+        doc.text('Vendedor: ' + this.venta.vendedor.nombre, 2, index + 7, {align: 'left'});
+        doc.addImage(qr, 'JPEG', 15, index + 8, 15, 15);
+        index = index + 21;
         doc.setFontSize(4);
         doc.text('Representación impresa del comprobante de pago\r de Factura Electrónica, esta puede ser consultada en\r www.tooby.com\rNO ACEPTAMOS DEVOLUCIONES', 22.5, index + 3, {align: 'center'});
         doc.text('GRACIAS POR SU COMPRA', 22.5, index + 10, {align: 'center'});
-        doc.save('tiket' + '.pdf');
+        // doc.save('tiket' + '.pdf');
         doc.autoPrint();
+        window.open(doc.output('bloburl'), '_blank');
         // doc.output('dataurlnewwindow');
         break;
       }
+      case 'n. venta': {
+        // tslint:disable-next-line:no-shadowed-variable
+        let index = 35;
+        // tslint:disable-next-line:no-shadowed-variable
+        const doc = new jsPDF( 'p', 'mm', [45, index  + (this.venta.listaItemsDeVenta.length * 7) + 19 + 12]);
+        doc.addImage(this.LogoEmpresa, 'JPEG', 15, 1, 15, 7);
+        doc.setFontSize(6);
+        doc.setFont('helvetica');
+        doc.text('Veterinarias Tooby E.I.R.L.', 22.5, 12, {align: 'center'});
+        if (this.storage.datosAdmi.sede === 'Andahuaylas') {
+        doc.text('Av. Peru 236 Parque Lampa de Oro ', 22.5, 14, {align: 'center'});
+        doc.text('Telefono: 983905066', 22.5, 17, {align: 'center'});
+        }
+        if (this.storage.datosAdmi.sede === 'Abancay') {
+          doc.text('Av. Seoane 100 Parque el olivo ', 22.5, 14, {align: 'center'});
+          doc.text('Telefono: 988907777', 22.5, 17, {align: 'center'});
+          }
+        doc.text('Ruc: ' + this.RUC, 22.5, 19, {align: 'center'});
+        doc.text('Nota de Venta electrónica', 22.5, 23, {align: 'center'});
+        // tslint:disable-next-line:max-line-length
+        doc.text(this.venta.serieComprobante + '-' + this.digitosFaltantes('0', (8 - this.venta.numeroComprobante.length)) + this.venta.numeroComprobante, 22.5, 25, {align: 'center'});
+        doc.text('Ruc o Razon social:', 22.5, 29, {align: 'center'});
+        doc.text( this.venta.cliente.numDoc + ' - ' + this.venta.cliente.nombre, 22.5, 31, {align: 'center'});
+        // tslint:disable-next-line:max-line-length
+        doc.text('Fecha: ' + formatDate(new Date(), 'dd/MM/yyyy', 'en') + '  ' + 'Hora: ' + formatDate(new Date(), 'HH:mm aa', 'en'), 22.5, 33, {align: 'center'});
+
+        for (const c of this.venta.listaItemsDeVenta) {
+          doc.text( '________________________________________', 22.5, index, {align: 'center'});
+          index = index + 3;
+          if (c.producto.nombre.length > 40) {
+            doc.text(c.producto.nombre.toUpperCase().slice(0, 38), 2, index);
+            doc.text(c.producto.nombre.toUpperCase().slice(38, -1), 2, index + 2);
+            index = index + 2;
+          } else {
+            doc.text(c.producto.nombre.toUpperCase(), 2, index);
+          }
+          // tslint:disable-next-line:max-line-length
+          // tslint:disable-next-line:max-line-length
+          doc.text( c.producto.cantidad + '.00    ' + 'UND' + '      ' + c.producto.precio.toFixed(2), 2, index + 3, {align: 'justify'});
+          doc.text((c.producto.precio * c.producto.cantidad).toFixed(2), 43, index + 3, {align: 'right'} );
+
+          doc.text( '________________________________________', 22.5, index +  3, {align: 'center'});
+          index = index + 3;
+        }
+        doc.text('Descuento', 2, index + 3, {align: 'left'});
+        doc.text( (0).toFixed(2), 43, index + 3, {align: 'right'});
+        doc.text('Total Venta', 2, index + 5, {align: 'left'});
+        doc.text( (this.venta.totalPagarVenta).toFixed(2), 43, index + 5, {align: 'right'});
+        doc.text( '________________________________________', 22.5, index + 5, {align: 'center'});
+
+        doc.text('Importe Total :', 2, index + 8, {align: 'left'});
+        doc.text('s/ ' + this.venta.totalPagarVenta.toFixed(2), 43, index + 8, {align: 'right'});
+        doc.setFontSize(3);
+        doc.text('SON ' + this.NumeroALetras(this.venta.totalPagarVenta), 2, index + 10, {align: 'left'});
+        doc.setFontSize(4);
+        doc.text('Forma de pago:', 2, index + 12, {align: 'left'});
+        doc.text( this.venta.tipoPago.toUpperCase(), 43, index + 12, {align: 'right'});
+        doc.text('Vendedor:', 2, index + 14, {align: 'left'});
+        doc.text( this.venta.vendedor.nombre.toUpperCase(), 43, index + 14, {align: 'right'});
+
+        doc.setFontSize(5);
+        doc.text('GRACIAS POR SU PREFERENCIA', 22.5, index + 18, {align: 'center'});
+        doc.text('DOCUMENTO NO VALIDO PARA SUNAT', 22.5, index + 20, {align: 'center'});
+        doc.text('RECLAME SU COMPROBANTE', 22.5, index + 22, {align: 'center'});
+        doc.text( '________________________________________', 22.5, index + 23, {align: 'center'});
+        index = index + 23;
+        doc.text('EL VETERINARIO TE RECUERDA:', 2, index + 3, {align: 'left'});
+        doc.text('-Desparasitar a tu mascota cada 2 meses', 2, index + 6, {align: 'left'});
+        doc.text('-Completar todas sus vacunas', 2, index + 8, {align: 'left'});
+        doc.text('-Cuida el aseo e higiene de tu engreido', 2, index + 10, {align: 'left'});
+
+        doc.autoPrint();
+        // doc.output('datauristring');
+        window.open(doc.output('bloburl'), '_blank');
+        // doc.save('notaVenta ' + '.pdf');
+        break;
+      }
+
+
     }
   }
 

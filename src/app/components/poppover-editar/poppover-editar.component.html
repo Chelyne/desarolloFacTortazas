@@ -1,4 +1,4 @@
-<ion-list *ngIf="!exportar && !importarProductosCompuestos">
+<ion-list *ngIf="!exportar && !importarProductosCompuestos && !formato">
   <ion-item (click)="popAction('Editar')">
     <ion-icon slot="start" name="create-outline" color="primary"></ion-icon>
     <ion-label>Editar</ion-label>
@@ -17,6 +17,16 @@
   <ion-item lines="none" (click)="popAction('excel')">
     <ion-icon slot="start" name="archive-outline" color="primary"></ion-icon>
     <ion-label>Excel</ion-label>
+  </ion-item>
+</ion-list>
+<ion-list *ngIf="formato">
+  <ion-item (click)="popAction('a4')" lines="none">
+    <ion-icon slot="start"name="archive-outline" color="primary"></ion-icon>
+    <ion-label>Pdf</ion-label>
+  </ion-item>
+  <ion-item lines="none" (click)="popAction('ticked')">
+    <ion-icon slot="start" name="archive-outline" color="primary"></ion-icon>
+    <ion-label>Ticked</ion-label>
   </ion-item>
 </ion-list>
 <ion-list *ngIf="importarProductosCompuestos">
