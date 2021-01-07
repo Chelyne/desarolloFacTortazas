@@ -204,33 +204,41 @@ export class PuntoVentaPage implements OnInit {
     };
   }
 
-  inputModificado(evento: {id: string, cantidad: number, precioVenta: number,
-     porcentaje: number, descuento: number}){
+  inputModificado(
+    evento: {id: string, cantidad: number, precioVenta: number, porcentaje: number, descuento: number}
+  ){
     console.log(evento);
     this.ActualizarMonto(evento.id, evento.cantidad, evento.precioVenta,
-       evento.porcentaje, evento.descuento);
+    evento.porcentaje, evento.descuento);
   }
 
-  ActualizarMonto(idProdItem: string, cantidad: number, precioVenta: number,
-    porcentaje: number, descuento: number){
+  ActualizarMonto(
+    idProdItem: string, cantidad: number, precioVenta: number,
+    porcentaje: number, descuento: number
+  ){
     if (this.listaItemsDeVenta.length > 0) {
       for (const itemDeVenta of this.listaItemsDeVenta) {
         // console.log('ssssssssssssssssss')
         if (idProdItem === itemDeVenta.idProducto){
             itemDeVenta.cantidad = cantidad;
-            if (isNullOrUndefined(porcentaje)) {
-              if (isNullOrUndefined(precioVenta)) {
-                itemDeVenta.totalxprod = itemDeVenta.cantidad * itemDeVenta.producto.precio;
-              } else {
-                itemDeVenta.totalxprod = precioVenta;
-              }
-              break;
+            itemDeVenta.porcentaje = porcentaje;
+            itemDeVenta.descuentoProducto = descuento;
+            itemDeVenta.totalxprod = cantidad * itemDeVenta.producto.precio; // - descuento;
+            itemDeVenta.precioVenta = precioVenta;
+            // if (isNullOrUndefined(porcentaje)) {
+            //   if (isNullOrUndefined(precioVenta)) {
+            //     itemDeVenta.totalxprod = itemDeVenta.cantidad * itemDeVenta.producto.precio;
+            //   } else {
+            //     itemDeVenta.totalxprod = precioVenta;
+            //   }
+            //   break;
 
-            } else {
-                itemDeVenta.totalxprod = itemDeVenta.cantidad * itemDeVenta.producto.precio;
-                itemDeVenta.totalxprod = itemDeVenta.totalxprod - (itemDeVenta.totalxprod * (porcentaje / 100));
-                break;
-            }
+            // } else {
+            //     itemDeVenta.totalxprod = itemDeVenta.cantidad * itemDeVenta.producto.precio;
+            //     itemDeVenta.totalxprod = itemDeVenta.totalxprod - (itemDeVenta.totalxprod * (porcentaje / 100));
+            //     break;
+            // }
+
             // if (isNullOrUndefined(precioVenta)) {
             //   itemDeVenta.totalxprod = itemDeVenta.cantidad * itemDeVenta.producto.precio;
             // } else {
@@ -267,8 +275,14 @@ export class PuntoVentaPage implements OnInit {
   calcularTotalaPagar(){
     let totalxpagar = 0;
 
+    // Si el precio de venta es mayor a 0 entonces
+    // el preDeventa debe sumarse no el total
     for (const item of this.listaItemsDeVenta) {
-      totalxpagar += item.totalxprod;
+      if (typeof item.precioVenta === 'undefined' || item.precioVenta <= 0){
+        totalxpagar += item.totalxprod;
+      } else {
+        totalxpagar += item.precioVenta;
+      }
     }
     // console.log(totalxpagar);
 

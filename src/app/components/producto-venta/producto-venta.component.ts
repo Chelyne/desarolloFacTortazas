@@ -14,8 +14,8 @@ export class ProductoVentaComponent implements OnInit {
   @Output()  cambiarCantidadProd = new EventEmitter<{
     id: string,
     cantidad: number,
-    precioVenta: number, // ! quitar
-    porcentaje: number, // ! quitar
+    precioVenta: number,
+    porcentaje: number,
     descuento: number
   }>();
   @Output()  quitarItemDeVenta = new EventEmitter<{id: string}>();
@@ -47,7 +47,7 @@ export class ProductoVentaComponent implements OnInit {
   updateFormVenta() {
     return new FormGroup({
       cantidad: new FormControl(this.itemDeVenta.cantidad, [Validators.required, Validators.pattern('[0-9]+')]),
-      precioVenta: new FormControl(this.itemDeVenta.totalxprod, [Validators.required]),
+      precioVenta: new FormControl(this.obtenerPrecioVenta(), [Validators.required]),
       porcentaje: new FormControl(this.itemDeVenta.porcentaje ? this.itemDeVenta.porcentaje : 0, [Validators.required])
     });
   }
@@ -56,101 +56,119 @@ export class ProductoVentaComponent implements OnInit {
   get precioVenta() { return this.formVenta.get('precioVenta'); }
   get porcentaje() { return this.formVenta.get('porcentaje'); }
 
+  obtenerPrecioVenta(): number{
+    if (typeof this.itemDeVenta.precioVenta === 'undefined' || this.itemDeVenta.precioVenta < 0){
+      console.log('El precio de vena no esta definido-------------------------------');
+      if (typeof(this.itemDeVenta.descuentoProducto) === 'undefined'){
+        return this.itemDeVenta.totalxprod;
+      }
+      return this.itemDeVenta.totalxprod - this.itemDeVenta.descuentoProducto;
+
+    }
+    console.log('El precio de venta esta definido------------------------------');
+
+    return this.itemDeVenta.precioVenta;
+  }
+
+  obtenerPorcentajeVenta(): number{
+    if (typeof this.itemDeVenta.porcentaje === 'undefined'){
+      return 0;
+    } else{
+      return this.itemDeVenta.porcentaje;
+    }
+  }
+
+  obtenerDescuentoVenta(){
+    return parseInt(this.formVenta.value.cantidad, 10) * this.itemDeVenta.producto.precio * this.obtenerPorcentajeVenta() / 100;
+  }
 
 
 
   // event Emitters
   cambioCantidad(){
-
-    // console.log(this.formVenta.value.cantidad);
-    // console.log('sdfsdfsdf', this.cantidad.errors);
-
     if (!this.cantidad.errors) {
       this.cambiarCantidadProd.emit({
         id: this.itemDeVenta.idProducto,
         cantidad: parseInt(this.formVenta.value.cantidad, 10),
-        precioVenta: null,
-        porcentaje: null,
-        descuento: null
+        precioVenta: undefined, // TODO no enviar
+        porcentaje: this.obtenerPorcentajeVenta(),
+        descuento: parseInt(this.formVenta.value.cantidad, 10) * this.itemDeVenta.producto.precio * this.obtenerPorcentajeVenta() / 100
       });
     } else {
       if (this.cantidad.errors.required){
         this.cambiarCantidadProd.emit({
           id: this.itemDeVenta.idProducto,
           cantidad: 0,
-          precioVenta: null,
-          porcentaje: null,
-          descuento: null
-
+          precioVenta: undefined, // TODO no enviar
+          porcentaje: this.obtenerPorcentajeVenta(),
+          descuento: 0
         });
       }
     }
-    console.log('cantidad***********************************');
-    console.log('cantidad', this.formVenta.value);
-    console.log('____________________________________');
-  }
-
-  // event Emitters
-  cambioPrecio(){
-
-    // console.log(this.formVenta.value.cantidad);
-    // console.log('sdfsdfsdf', this.cantidad.errors);
-
-    if (!this.cantidad.errors) {
-      this.cambiarCantidadProd.emit({
-        id: this.itemDeVenta.idProducto,
-        cantidad: parseInt(this.formVenta.value.cantidad, 10),
-        precioVenta: this.formVenta.value.precioVenta ? parseInt(this.formVenta.value.precioVenta, 10) : null,
-        porcentaje: null,
-        descuento: null
-
-      });
-    } else {
-      if (this.cantidad.errors.required){
-        this.cambiarCantidadProd.emit({
-          id: this.itemDeVenta.idProducto,
-          cantidad: 0,
-          precioVenta: this.formVenta.value.precioVenta ? parseInt(this.formVenta.value.precioVenta, 10) : null,
-          porcentaje: null,
-          descuento: null
-        });
-      }
-    }
-
-    // console.log('cambio de precio', this.formVenta.value);
-    console.log('precio***********************************');
-    console.log('cantidad', this.formVenta.value);
-    console.log('____________________________________');
-
   }
 
   cambioPorcentaje(){
     console.log('cambio porcentaje', parseInt(this.formVenta.value.porcentaje, 10));
-    if (!this.cantidad.errors) {
+    if (!this.porcentaje.errors) {
       this.cambiarCantidadProd.emit({
         id: this.itemDeVenta.idProducto,
-        cantidad: parseInt(this.formVenta.value.cantidad, 10),
-        precioVenta: this.formVenta.value.precioVenta ? parseInt(this.formVenta.value.precioVenta, 10) : null,
-        porcentaje: this.formVenta.value.porcentaje ? parseInt(this.formVenta.value.porcentaje, 10) : null,
-        descuento: null
+        cantidad: this.itemDeVenta.cantidad,
+        precioVenta: undefined, // this.formVenta.value.precioVenta ? parseInt(this.formVenta.value.precioVenta, 10) : null, // no se nvia
+        porcentaje: this.formVenta.value.porcentaje ? parseFloat(this.formVenta.value.porcentaje) : 0,
+        descuento: (this.itemDeVenta.cantidad * this.itemDeVenta.producto.precio) *
+        (this.formVenta.value.porcentaje ? parseFloat(this.formVenta.value.porcentaje) : 0) / 100
 
       });
     } else {
-      if (this.cantidad.errors.required){
+      if (this.porcentaje.errors.required){
         this.cambiarCantidadProd.emit({
           id: this.itemDeVenta.idProducto,
-          cantidad: 0,
-          precioVenta: this.formVenta.value.precioVenta ? parseInt(this.formVenta.value.precioVenta, 10) : null,
-          porcentaje: this.formVenta.value.porcentaje ? parseInt(this.formVenta.value.porcentaje, 10) : null,
-          descuento: null
-
+          cantidad: this.itemDeVenta.cantidad,
+          precioVenta: undefined, // this.formVenta.value.precioVenta ? parseInt(this.formVenta.value.precioVenta, 10) : null,
+          porcentaje: 0,
+          descuento: 0
         });
       }
     }
+  }
 
-    console.log('porcentaje***********************************');
-    console.log('cantidad', this.formVenta.value);
-    console.log('____________________________________');
+
+  cambioPrecio(){
+    // console.log(this.formVenta.value.cantidad);
+    // console.log('sdfsdfsdf', this.cantidad.errors);
+    console.log('El precio cambio');
+    if (!this.precioVenta.errors) {
+      console.log('eL PRECIO DE VENTA NO TIENE ERRORES');
+      this.calcularPorcentajeDescuento();
+      this.cambiarCantidadProd.emit({
+        id: this.itemDeVenta.idProducto,
+        cantidad: this.itemDeVenta.cantidad,
+        precioVenta:  this.formVenta.value.precioVenta ? parseFloat(this.formVenta.value.precioVenta) : 0,
+        porcentaje: 0,
+        descuento: this.itemDeVenta.descuentoProducto
+
+      });
+    } else {
+      console.log('eL PRECIO DE VENTA TIENE ERRORES');
+      if (this.precioVenta.errors.required){
+        console.log('eMITIR CUANDO EL PRECIO DE VENTA TIENE ERRORES');
+
+        this.cambiarCantidadProd.emit({
+          id: this.itemDeVenta.idProducto,
+          cantidad: this.itemDeVenta.cantidad,
+          precioVenta: 0, // this.formVenta.value.precioVenta ? parseInt(this.formVenta.value.precioVenta, 10) : null,
+          porcentaje: 0,
+          descuento: 0
+        });
+      }
+    }
+  }
+
+  calcularPorcentajeDescuento(){
+    let monto = this.formVenta.value.precioVenta ? parseInt(this.formVenta.value.precioVenta, 10) : 0;
+    monto = this.itemDeVenta.totalxprod - monto;
+    this.itemDeVenta.porcentaje = (100 * monto) / this.itemDeVenta.totalxprod;
+    this.itemDeVenta.descuentoProducto = monto;
   }
 
 
@@ -159,5 +177,7 @@ export class ProductoVentaComponent implements OnInit {
       id : this.itemDeVenta.idProducto,
     });
   }
+
+
 
 }

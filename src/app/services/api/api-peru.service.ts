@@ -3,7 +3,7 @@ import { Injectable } from '@angular/core';
 import * as moment from 'moment';
 import { EmpresaInterface } from 'src/app/models/api-peru/empresa';
 import { ClienteInterface } from 'src/app/models/cliente-interface';
-import { ClientInterface, CompanyInterface, ComprobanteInterface, SaleDetailInterface } from 'src/app/models/comprobante/comprobante';
+import { ClientInterface, CompanyInterface, SaleDetailInterface } from 'src/app/models/comprobante/comprobante';
 import { ItemDeVentaInterface } from 'src/app/models/venta/item-de-venta';
 import { VentaInterface } from 'src/app/models/venta/venta';
 import { isNullOrUndefined } from 'util';
@@ -21,8 +21,8 @@ export class ApiPeruService {
 
 
   constructor(
-    private dataApi: DbDataService,
-    private storage: StorageService
+    private dataApi?: DbDataService,
+    private storage?: StorageService
   ) {
     this.obtenerDatosDeLaEmpresa();
   }
@@ -39,7 +39,7 @@ export class ApiPeruService {
     const raw = JSON.stringify({
       "username": "friendscode",
       "password": "friends2019peru"
-      });
+    });
 
     const requestOptions: RequestInit = {
       method: 'POST',
@@ -48,8 +48,6 @@ export class ApiPeruService {
       redirect: 'follow'
     };
 
-    // tslint:disable-next-line: no-inferrable-types
-    // let token: string = '';
     return fetch('https://facturacion.apisperu.com/api/v1/auth/login', requestOptions)
       .then(response => response.json())
       .then(result => result.token)
@@ -60,7 +58,7 @@ export class ApiPeruService {
 
     const myHeaders = new Headers();
     const userToken = await this.login();
-    console.log('Bearerrrrrrrrrrrrrrrrrrrrr ', 'Bearer '.concat(userToken));
+    // console.log('Bearerrrrrrrrrrrrrrrrrrrrr ', 'Bearer '.concat(userToken));
     myHeaders.append('Authorization', 'Bearer '.concat(userToken));
 
     // const raw = JSON.stringify({});
@@ -81,44 +79,50 @@ export class ApiPeruService {
 
   async obtenerEmpresaByRUC(rucEnter: string){
     const listaDeEmpresas = await this.listarEmprasas();
-    console.log('lista de empresas', listaDeEmpresas);
+    // console.log('lista de empresas', listaDeEmpresas);
 
     for (const empresa of listaDeEmpresas) {
-      console.log('sssssssssssssssssssssss', empresa);
-      console.log(empresa.ruc);
+      // console.log('sssssssssssssssssssssss', empresa);
+      // console.log(empresa.ruc);
       if (empresa.ruc === rucEnter){
-        console.log('ruccccccccccccccccccccccccccccc', rucEnter, empresa);
+        // console.log('ruccccccccccccccccccccccccccccc', rucEnter, empresa);
         return empresa;
       }
     }
-    console.log('ruc failllllllllllllllllllllllllllllll');
+    // console.log('ruc failllllllllllllllllllllllllllllll');
     return '';
   }
 
   async obtenerTokenDeEmpresa(rucEnter: string){
     const empresa = await this.obtenerEmpresaByRUC(rucEnter);
-    console.log(empresa.token.code);
+    // console.log(empresa.token.code);
     return empresa.token.code;
   }
 
- async guardarDatosEmpresaFirebase(rucEnter: string){
-  const empresa = await this.obtenerEmpresaByRUC(rucEnter);
-  this.dataApi.guardarDatosEmpresa(empresa);
- }
+  async guardarDatosEmpresaFirebase(rucEnter: string){
+    const empresa = await this.obtenerEmpresaByRUC(rucEnter);
+    this.dataApi.guardarDatosEmpresa(empresa);
+  }
 
-
+  // REFACTOR: renombrar a un nombre más descriptivo
   obtenerDatosDeLaEmpresa(){
+    // TODO: Debe intentar obtener los datos de la empresa de fisebase
+    // Si no hubieran datos entonces obtenerlos de apiPeru y guardarlo en firebase
+
+    // La solución actual supone que siempre existirá los datos de la empresa en firebase
     this.dataApi.obtenerEmpresa().subscribe(data => {
-      console.log('esto debería imprimirse primero');
+      // console.log('esto debería imprimirse primero');
       this.datosDeEmpresa = data[0];
-      console.log(this.datosDeEmpresa);
+      // console.log(this.datosDeEmpresa);
     });
   }
 
+  // REFACTOR: renombrar a un nombre más descriptivo
   getDatosEmpresa(){
     return this.datosDeEmpresa;
   }
 
+  // NOTE - Esta es la función más importante que se encarga de enviar una factura a sunat
   enviarComprobanteASunat(venta: VentaInterface){
     const myHeaders = new Headers();
     // TODO: en caso de que no exita el token ver si emprea tiene el token
@@ -126,11 +130,11 @@ export class ApiPeruService {
     myHeaders.append('Content-Type', 'application/json');
 
     // TODO: Poner el tipo de dato a raw
-    let raw;
+    let raw: string;
 
-    this.formatearVenta(venta).then(data => {
-      console.log('Objeto venta formateadaaaaaaaaaaa: ', data);
-      raw = JSON.stringify(data);
+    this.formatearVenta(venta).then(comprobante => {
+      console.log('Objeto venta formateadaaaaaaaaaaa: ', comprobante);
+      raw = JSON.stringify(comprobante);
 
       // console.log('imprimiendo el rawwwwwwwww', data);
       // console.log('_____________________________________________________________________________');
@@ -339,6 +343,7 @@ export class ApiPeruService {
       return '03';
     } else {
       console.log('Comprobante no valido');
+      return 'TYPO COMPROBANTE INVALID';
     }
   }
 
