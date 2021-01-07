@@ -5,17 +5,17 @@ import { AdmiInterface } from '../AdmiInterface';
 
 
 export interface VentaInterface {
-    fechaEmision?: Date;
     idVenta?: string;
-    idListaProductos?: string;
-    cliente?: ClienteInterface;
-    vendedor?: AdmiInterface;
+    fechaEmision?: Date;
     tipoComprobante?: string;
     serieComprobante?: string;
     numeroComprobante?: string;
+    cliente?: ClienteInterface;
+    vendedor?: AdmiInterface;
+    idListaProductos?: string;
     listaItemsDeVenta?: ItemDeVentaInterface[];
     enviado?: boolean; // true o false
-    cdrStatus?: string;
+    cdrStatus?: string; // ? NOTE: Este item esta en el cdr
     cdr?: CDRInterface;
     bolsa?: boolean;
     tipoPago?: string;

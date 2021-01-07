@@ -2,7 +2,7 @@
 <ion-row class="ion-justify-content-center ion-align-items-center">
   <ion-col size="1">
       <ion-input type="text" formControlName="cantidad" placeholder="Cantidad" [value]="itemDeVenta.cantidad==0?'':itemDeVenta.cantidad" maxlength="5"
-        (ionChange)="cambioCantidad()" ></ion-input>
+        (keyup)="cambioCantidad()" ></ion-input>
       <div class="alertDanger" *ngIf="cantidad.invalid && (cantidad.dirty || cantidad.touched)">
         <div class="mensajeError" *ngIf="cantidad.errors.required">
           *Complete la cantidad
@@ -16,7 +16,7 @@
     <ion-label class="ion-text-wrap"> {{itemDeVenta.producto.nombre | titlecase}} </ion-label>
   </ion-col>
   <ion-col size="1">
-    <ion-input (ionChange)="cambioPorcentaje()"  formControlName="porcentaje" placeholder="%" value="{{itemDeVenta.porcentaje}}" maxlength="3"></ion-input>
+    <ion-input (keyup)="cambioPorcentaje()"  formControlName="porcentaje" placeholder="%" value="{{itemDeVenta.porcentaje}}" maxlength="3"></ion-input>
     <div class="alertDanger" *ngIf="porcentaje.invalid && (porcentaje.dirty || porcentaje.touched)">
       <div class="mensajeError" *ngIf="porcentaje.errors.required">
         *Complete
@@ -27,7 +27,9 @@
     <ion-label color="dark" style="font-weight: bold;">S/</ion-label>
   </ion-col>
   <ion-col size="1.5">
-    <ion-input (ionChange)="cambioPrecio()"  formControlName="precioVenta" placeholder="Precio" value="{{itemDeVenta.totalxprod}}" maxlength="5"></ion-input>
+    <ion-input (keyup)="cambioPrecio()"  formControlName="precioVenta" placeholder="Precio"
+    value="{{itemDeVenta.precioVenta === undefined?itemDeVenta.totalxprod:itemDeVenta.precioVenta}}"
+    maxlength="5"></ion-input>
     <div class="alertDanger" *ngIf="precioVenta.invalid && (precioVenta.dirty || precioVenta.touched)">
       <div class="mensajeError" *ngIf="precioVenta.errors.required">
         *Complete el precio
