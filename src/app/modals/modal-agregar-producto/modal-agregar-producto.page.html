@@ -5,7 +5,7 @@
                 <ion-icon color="primary" slot="icon-only" name="arrow-back-outline"></ion-icon>
             </ion-button>
         </ion-buttons>
-        <ion-title>Agregar {{subCategoria | titlecase}}</ion-title>
+        <ion-title>Agregar productosVenta{{subCategoria | titlecase}}</ion-title>
         <!-- <ion-toggle slot="end" color="primary"></ion-toggle>  GUARDADO PARA SUBIR IMAGENES PNG CON COLOR DE FONDO DINAMICO-->
     </ion-toolbar>
 </ion-header>
@@ -53,7 +53,7 @@
                         <ion-row>
                             <ion-col>
                                 <ion-item lines="none">
-                                    <ion-label position="floating">Nombre del producto o servicio</ion-label>
+                                    <ion-label color="primary" position="floating">Nombre del producto o servicio</ion-label>
                                     <ion-input maxLength="35" formControlName="nombre" class="nombre" placeholder="Ingrese nombre"></ion-input>
                                 </ion-item>
                                 <div class="alertDanger" *ngIf="nombre.invalid && (nombre.dirty || nombre.touched)">
@@ -70,7 +70,7 @@
                             </ion-col>
                             <ion-col>
                                 <ion-item lines="none">
-                                    <ion-label position="stacked">Categorias</ion-label>
+                                    <ion-label color="primary" position="stacked">Categoria</ion-label>
                                     <ion-select class="custom-options" value="item.categoria" interface="popover" formControlName="categoriass" placeholder="categorias" cancelText="Cancelar" okText="Aceptar" mode="ios">
                                         <ion-select-option *ngFor="let item of listaDeCategorias" [value]="item.categoria">{{item.categoria}}</ion-select-option>
                                     </ion-select>
@@ -85,7 +85,7 @@
                         <ion-row>
                             <ion-col>
                                 <ion-item lines="none">
-                                    <ion-label position="floating">Cantidad</ion-label>
+                                    <ion-label color="primary" position="floating">Cantidad</ion-label>
                                     <ion-input formControlName="cantidad" type="number" placeholder="Ingrese cantidad"></ion-input>
                                 </ion-item>
                                 <div class="alertDanger" *ngIf="cantidad.invalid && (cantidad.dirty || cantidad.touched)">
@@ -99,7 +99,7 @@
                             </ion-col>
                             <ion-col>
                                 <ion-item lines="none">
-                                    <ion-label position="stacked">Medida</ion-label>
+                                    <ion-label color="primary" position="stacked">Medida</ion-label>
                                     <ion-select class="custom-options" interface="popover" formControlName="medida" placeholder="medida" cancelText="Cancelar" okText="Aceptar" mode="ios">
                                         <ion-select-option value="Gramos">Gramos</ion-select-option>
                                         <ion-select-option value="Kilogramo">Kilogramo</ion-select-option>
@@ -120,7 +120,7 @@
                         <ion-row>
                             <ion-col>
                                 <ion-item lines="none">
-                                    <ion-label position="floating">Ingrese la marca</ion-label>
+                                    <ion-label color="primary" position="floating">Ingrese la marca</ion-label>
                                     <ion-input maxLength="35" formControlName="marca" class="marca" placeholder="Ingrese marca del producto"></ion-input>
                                 </ion-item>
                                 <div class="alertDanger" *ngIf="marca.invalid && (marca.dirty || marca.touched)">
@@ -159,7 +159,7 @@
             <ion-row>
                 <ion-col size="12 " size-xs="12" size-sm="12" size-md="6" size-lg="4">
                     <ion-item *ngIf="subCategoria !== 'farmacia'" lines="none">
-                        <ion-label position="floating">Precio</ion-label>
+                        <ion-label color="primary" position="floating">Precio</ion-label>
                         <ion-input [readonly]="tallas && tallas.length>0" formControlName="precio" type="number" placeholder="Ingrese precio del producto"></ion-input>
                     </ion-item>
                     <div class="alertDanger" *ngIf="precio.invalid && (precio.dirty || precio.touched)">
@@ -170,7 +170,7 @@
                 </ion-col>
                 <ion-col size="12 " size-xs="12" size-sm="12" size-md="6" size-lg="4">
                     <ion-item lines="none">
-                        <ion-label position="floating">Cantidad de stock:</ion-label>
+                        <ion-label color="primary" position="floating">Cantidad de stock:</ion-label>
                         <ion-input [readonly]="tallas && tallas.length>0" formControlName="cantStock" type="number" placeholder="Ingrese la cantidad de Stock"></ion-input>
                     </ion-item>
                     <div class="alertDanger" *ngIf="cantStock.invalid && (cantStock.dirty || cantStock.touched)">
@@ -184,7 +184,7 @@
                 </ion-col>
                 <ion-col size="12 " size-xs="12" size-sm="12" size-md="6" size-lg="4">
                     <ion-item lines="none">
-                        <ion-label position="stacked">Fecha de vencimiento:</ion-label>
+                        <ion-label color="primary" position="stacked">Fecha de vencimiento:</ion-label>
                         <ion-input type="date" formControlName="fechaDeVencimiento" class="form-control"></ion-input>
                     </ion-item>
                     <div class="alertDanger" *ngIf="fechaDeVencimiento && fechaDeVencimiento.invalid && (fechaDeVencimiento.dirty || fechaDeVencimiento.touched)">
@@ -197,7 +197,7 @@
             <ion-row>
                 <ion-col size="12 " size-xs="12" size-sm="12" size-md="6" size-lg="8">
                     <ion-item lines="none">
-                        <ion-label position="stacked">Descripción</ion-label>
+                        <ion-label color="primary" position="stacked">Descripción</ion-label>
                         <ion-textarea rows="5" cols="20" formControlName="descripcionProducto"></ion-textarea>
                     </ion-item>
                 </ion-col>

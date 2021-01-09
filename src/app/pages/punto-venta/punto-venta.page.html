@@ -6,6 +6,10 @@
         </ion-buttons>
         <ion-title color="primary">Punto de Venta</ion-title>
         <ion-item lines="none" slot="end">
+            <ion-button (click)="modalVentas()" size="small" fill="outline">
+                <ion-icon name="clipboard-outline"></ion-icon> &nbsp;
+                <ion-label>Ventas</ion-label>
+            </ion-button>
             <ion-button (click)="AgregarNuevoCliente()" size="small" fill="outline">
                 <ion-icon name="person-outline"></ion-icon> &nbsp;
                 <ion-label>Agregar Cliente</ion-label>
@@ -157,7 +161,7 @@
 </ion-content> -->
 
 <ion-content>
-    <ion-grid class="gridPrincipal">
+    <<<<<<< HEAD <ion-grid class="gridPrincipal">
         <ion-row>
             <ion-col size="8">
                 <ion-content class="scroll" color="light" *ngIf="productos">
@@ -220,6 +224,73 @@
                 <ion-content class="productosContent" *ngIf="categoria && !productos">
                     <ion-segment scrollable value="{{categoria}}">
                         <!-- <ion-segment-button value="categoria" (click)="resetListaCa">
+=======
+  <ion-grid class="gridPrincipal">
+    <ion-row>
+      <ion-col size="8">
+        <ion-content class="scroll" color="light"  *ngIf="productos">
+          <div class="ion-padding custom-skeleton productos" *ngIf="buscando">
+            <ion-card *ngFor="let number of [0,1,2,3,4,5,6,7,8,9,10]">
+              <ion-row>
+                <ion-col size-xs="4">
+                  <ion-skeleton-text animated style="height: 100%"></ion-skeleton-text>
+                </ion-col>
+                <ion-col>
+                  <ion-skeleton-text animated style="width: 88%"></ion-skeleton-text>
+                  <ion-skeleton-text animated style="width: 70%"></ion-skeleton-text>
+                  <ion-skeleton-text animated style="width: 60%"></ion-skeleton-text>
+                </ion-col>
+              </ion-row><br>
+            </ion-card>
+          </div>
+          <div class="productos" *ngIf="productos">
+            <ion-card class="cardBuscador" *ngFor="let prod of productos"   (click)="AgregarItemDeVenta(prod)" >
+              <ion-row class="ion-justify-content-center ion-align-items-center">
+                <ion-col size-xs="3" class="colImg">
+                  <img *ngIf="prod.img" [src]='prod.img' alt="">
+                  <img *ngIf="!prod.img" src='../../../../../assets/img/pet chop.png' alt="">
+                </ion-col>
+                <ion-col size-xs="5" class="colDatos">
+                  <ion-label style="font-size: 17px; font-weight: bold;">{{prod.nombre | titlecase}}</ion-label><br>
+                  <ion-label >{{prod.cantidad}} {{prod.medida}}</ion-label><br>
+                  <ion-badge>
+                    <ion-label color="light">{{prod.subCategoria | titlecase}}</ion-label>
+                  </ion-badge>
+                </ion-col>
+                <ion-col size-xs="4" class="ion-text-center" style="border-left: solid 1px grey;">
+                  <ion-label style="font-size: 3vh;"><span style="font-size: 15px;">S/.</span>{{prod.precio | number: '1.2'}}</ion-label><br>
+                </ion-col>
+              </ion-row>
+            </ion-card>
+          </div>
+          <div class="sinResultado" *ngIf="sinResultados">
+            <ion-icon color="danger" name="sad-outline"></ion-icon><br>
+            <ion-label>{{sinResultados}}</ion-label>
+          </div>
+          <div class="sinBuscar" *ngIf="buscando===null || buscando===undefined">
+            <form>
+              <ion-icon color="primary" name="search"></ion-icon><br>
+              <ion-label>Realiza la busqueda de cualquier producto</ion-label>
+            </form>
+          </div>
+          <!-- <img src="https://images.vexels.com/media/users/3/153874/isolated/preview/5147b9d69f00249a07732a905bcb251e-buscar-configuraci--n-icono-de-trazo-de-color-by-vexels.png" alt=""> -->
+                </ion-content>
+                <ion-content class="categoriasContent" *ngIf="!listaProductos.length && !this.categoria && !productos">
+                    <ion-grid class="categorias">
+                        <ion-row>
+                            <ion-col size-lg="3" size-md="3" size-sm="6" size-xs="6" *ngFor="let categoria of categorias">
+                                <ion-card (click)="listaProductosCategoria(categoria.categoria)">
+                                    <img [src]="categoria.img" alt="">
+                                    <ion-label [style.color]="categoria.color">{{categoria.categoria | uppercase}}</ion-label>
+                                </ion-card>
+                            </ion-col>
+                        </ion-row>
+                    </ion-grid>
+                </ion-content>
+                <ion-content class="productosContent" *ngIf="categoria && !productos">
+                    <ion-segment scrollable value="{{categoria}}">
+                        <!-- <ion-segment-button value="categoria" (click)="resetListaCa">
+>>>>>>> 6e4c419406d719ee893459a0a1c2a9c66b79cdbb
               <ion-label>Categorias</ion-label>
             </ion-segment-button> -->
                         <ion-segment-button [id]="categoria.categoria" value="{{categoria.categoria}}" *ngFor="let categoria of categorias" (click)="listaProductosCategoria(categoria.categoria)">
@@ -407,5 +478,5 @@
         </ion-content>
       </ion-col>
     </ion-row> -->
-    </ion-grid>
+        </ion-grid>
 </ion-content>

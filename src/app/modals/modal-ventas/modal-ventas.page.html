@@ -1,0 +1,49 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title>Lista de Ventas</ion-title>
+    <ion-buttons slot="end">
+      <ion-button (click)="cerrarModal()">
+        <ion-icon slot="icon-only" color="primary" name="close-outline"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding">
+  <ion-grid>
+    <ion-row class="headerVentas">
+      <ion-col>
+        <ion-label>Serie</ion-label>
+      </ion-col>
+      <ion-col>
+        <ion-label>Numero</ion-label>
+      </ion-col>
+      <ion-col>
+        <ion-label>Cliente</ion-label>
+      </ion-col>
+      <ion-col>
+        <ion-label>Tip. Pago</ion-label>
+      </ion-col>
+      <ion-col>
+        <ion-label>Monto</ion-label>
+      </ion-col>
+    </ion-row>
+    <ion-row *ngFor="let venta of listaVentas">
+      <ion-col>
+        <ion-label>{{venta.serieComprobante}}</ion-label>
+      </ion-col>
+      <ion-col>
+        <ion-label>{{venta.numeroComprobante}}</ion-label>
+      </ion-col>
+      <ion-col>
+        <ion-label>{{venta.cliente.nombre}}</ion-label>
+      </ion-col>
+      <ion-col>
+        <ion-label>{{venta.tipoPago}}</ion-label>
+      </ion-col>
+      <ion-col>
+        <ion-label>{{venta.totalPagarVenta | number:'1.2'}}</ion-label>
+      </ion-col>
+    </ion-row>
+  </ion-grid>
+</ion-content>

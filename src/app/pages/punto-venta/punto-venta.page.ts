@@ -21,6 +21,7 @@ import { isNullOrUndefined } from 'util';
 import { ClienteInterface } from '../../models/cliente-interface';
 import { AgregarEditarClientePage } from '../../modals/agregar-editar-cliente/agregar-editar-cliente.page';
 import { ModalAgregarProductoPage } from '../../modals/modal-agregar-producto/modal-agregar-producto.page';
+import { ModalVentasPage } from '../../modals/modal-ventas/modal-ventas.page';
 
 @Component({
   selector: 'app-punto-venta',
@@ -446,7 +447,7 @@ export class PuntoVentaPage implements OnInit {
       // tslint:disable-next-line:max-line-length
       if (this.buscarNombre) {
         // tslint:disable-next-line:max-line-length
-        this.afs.collection('sedes').doc(this.storage.datosAdmi.sede.toLowerCase()).collection('productos', res => res.where('categoria', '==', 'petshop').orderBy('nombre').startAt(lowercaseKey).endAt(lowercaseKey + '\uf8ff')).snapshotChanges()
+        this.afs.collection('sedes').doc(this.storage.datosAdmi.sede.toLowerCase()).collection('productos', res => res.orderBy('nombre').startAt(lowercaseKey).endAt(lowercaseKey + '\uf8ff')).snapshotChanges()
         .pipe(map(changes => {
           return changes.map(action => {
             const data = action.payload.doc.data();
@@ -470,7 +471,7 @@ export class PuntoVentaPage implements OnInit {
         );
       } else {
         // tslint:disable-next-line:max-line-length
-        this.afs.collection('sedes').doc(this.storage.datosAdmi.sede.toLowerCase()).collection('productos', res => res.where('categoria', '==', 'petshop').orderBy('codigoBarra').startAt(lowercaseKey).endAt(lowercaseKey + '\uf8ff')).snapshotChanges()
+        this.afs.collection('sedes').doc(this.storage.datosAdmi.sede.toLowerCase()).collection('productos', res => res.orderBy('codigoBarra').startAt(lowercaseKey).endAt(lowercaseKey + '\uf8ff')).snapshotChanges()
         .pipe(map(changes => {
           return changes.map(action => {
             const data = action.payload.doc.data();
@@ -602,7 +603,14 @@ export class PuntoVentaPage implements OnInit {
 
       }
     });
-
     await modal.present();
+  }
+
+  async modalVentas() {
+    const modal = await this.modalController.create({
+      component: ModalVentasPage,
+      cssClass: 'modal-fullscreen'
+    });
+    return await modal.present();
   }
 }
