@@ -16,5 +16,5 @@ export interface ProductoInterface {
     codigoBarra?: string;
     fechaTimeRegistro?: Date;
     fechaDeVencimiento?: Date;
-
+    codigoBarra?: string;
 }

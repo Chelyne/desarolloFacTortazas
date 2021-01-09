@@ -27,6 +27,7 @@ import { AgregarEditarClientePage } from '../../modals/agregar-editar-cliente/ag
   styleUrls: ['./punto-venta.page.scss'],
 })
 export class PuntoVentaPage implements OnInit {
+
   @ViewChild('search', {static: false}) search: any;
   productos: ProductoInterface[];
   buscando: boolean;
@@ -53,29 +54,14 @@ export class PuntoVentaPage implements OnInit {
   modalTag: string;
   modalDataCliente: ClienteInterface;
 
-  cajaChica = false;
-  constructor(private menuCtrl: MenuController,
-              private categoriasService: CategoriasService,
-              private pagination: PaginationProductosService,
-              private dataApi: DbDataService,
-              private afs: AngularFirestore,
-              private storage: StorageService,
-              private toastController: ToastController,
-              private popoverController: PopoverController,
-              private testServ: ConfirmarVentaService,
-              private rutaActiva: ActivatedRoute,
-              private modalController: ModalController,
-              private router: Router,
-              ) {
-    this.menuCtrl.enable(true);
-   }
+
 
   // Ventas
     listaDeVentas: VentaInterface[] = [];
 
     venta: VentaInterface;
 
-    totalxPagar: number;
+    importeTotalPagar: number;
 
 
   // ObjetoVentas o ItemsDeVenta
@@ -88,7 +74,23 @@ export class PuntoVentaPage implements OnInit {
     listaDeProductos: ProductoInterface[];
     productoItem: ProductoInterface;
 
+    cajaChica = false;
 
+  constructor(private menuCtrl: MenuController,
+              private categoriasService: CategoriasService,
+              private pagination: PaginationProductosService,
+              private dataApi: DbDataService,
+              private afs: AngularFirestore,
+              private storage: StorageService,
+              private toastController: ToastController,
+              private popoverController: PopoverController,
+              private testServ: ConfirmarVentaService,
+              private rutaActiva: ActivatedRoute,
+              private modalController: ModalController,
+              private router: Router,
+  ) {
+    this.menuCtrl.enable(true);
+  }
 
   ngOnInit() {
     this.categorias = this.categoriasService.getcategoriasNegocio('petshop');
@@ -201,31 +203,40 @@ export class PuntoVentaPage implements OnInit {
       producto: prodItem,
       idProducto: prodItem.id,
       cantidad: 1,
-      totalxprod: prodItem.precio
+      montoNeto: prodItem.precio,
+      descuentoProducto: 0,
+      porcentajeDescuento: 0,
+      totalxprod: prodItem.precio // ya que descuento es 0;
     };
   }
 
   inputModificado(
-    evento: {id: string, cantidad: number, precioVenta: number, porcentaje: number, descuento: number}
+    evento: {id: string, cantidad: number, porcentaje: number, descuento: number,
+    montoNeto: number, totalxprod: number}
   ){
     console.log(evento);
-    this.ActualizarMonto(evento.id, evento.cantidad, evento.precioVenta,
-    evento.porcentaje, evento.descuento);
+    this.ActualizarMonto(evento.id, evento.cantidad,
+    evento.porcentaje, evento.descuento, evento.montoNeto, evento.totalxprod);
   }
 
   ActualizarMonto(
-    idProdItem: string, cantidad: number, precioVenta: number,
-    porcentaje: number, descuento: number
+    idProdItem: string, cantidad: number, porcentaje: number, descuento: number,
+    montoNeto: number, totalxprod: number
   ){
     if (this.listaItemsDeVenta.length > 0) {
       for (const itemDeVenta of this.listaItemsDeVenta) {
         // console.log('ssssssssssssssssss')
         if (idProdItem === itemDeVenta.idProducto){
             itemDeVenta.cantidad = cantidad;
-            itemDeVenta.porcentaje = porcentaje;
             itemDeVenta.descuentoProducto = descuento;
-            itemDeVenta.totalxprod = cantidad * itemDeVenta.producto.precio; // - descuento;
-            itemDeVenta.precioVenta = precioVenta;
+            itemDeVenta.porcentajeDescuento = porcentaje;
+            itemDeVenta.montoNeto = montoNeto;
+            itemDeVenta.totalxprod = totalxprod;
+            // itemDeVenta.totalxprod = cantidad * itemDeVenta.producto.precio; // - descuento;
+            // itemDeVenta.precioVenta = precioVenta;
+
+
+
             // if (isNullOrUndefined(porcentaje)) {
             //   if (isNullOrUndefined(precioVenta)) {
             //     itemDeVenta.totalxprod = itemDeVenta.cantidad * itemDeVenta.producto.precio;
@@ -276,18 +287,12 @@ export class PuntoVentaPage implements OnInit {
   calcularTotalaPagar(){
     let totalxpagar = 0;
 
-    // Si el precio de venta es mayor a 0 entonces
-    // el preDeventa debe sumarse no el total
     for (const item of this.listaItemsDeVenta) {
-      if (typeof item.precioVenta === 'undefined' || item.precioVenta <= 0){
-        totalxpagar += item.totalxprod;
-      } else {
-        totalxpagar += item.precioVenta;
-      }
+      totalxpagar += item.totalxprod;
     }
     // console.log(totalxpagar);
 
-    this.totalxPagar = totalxpagar;
+    this.importeTotalPagar = totalxpagar;
   }
 
   // ......................................
@@ -296,12 +301,10 @@ export class PuntoVentaPage implements OnInit {
   AgregaraListaDeEspera(){
     // poner la venta en la lista de espera
     // anadir el array de itemsDeVenta a listaDeVentas
-    // +totalapagar
-    // NOTE - quizas necesitas; crearVenta
     if (this.cliente) {
       this.listaDeVentas.push(this.CrearItemDeVentas());
       this.listaItemsDeVenta = [];
-      this.totalxPagar = 0;
+      this.importeTotalPagar = 0;
       console.log(this.listaDeVentas);
       this.storage.congelarVenta(this.listaDeVentas).then(() => {
         this.presentToast('Se guardo la lista de venta', 'success');
@@ -315,22 +318,23 @@ export class PuntoVentaPage implements OnInit {
     return {
       cliente: this.cliente,
       listaItemsDeVenta: this.listaItemsDeVenta,
-      // totalPagarVenta: this.totalxPagar,
-      montoNeto: this.totalxPagar,
-      idVenta: this.CrearVentaId()
+      idVenta: this.CrearVentaId(),
+      montoNeto: this.importeTotalPagar,
+      // totalPagarVenta: this.importeTotalPagar // Descuento 0;
     };
   }
 
-  // sacar de espera
-  // moverAListaPrincipal
+  // sacar de la lista de espera
   moverAListaPrincipal(venta: VentaInterface){
 
     this.listaItemsDeVenta = venta.listaItemsDeVenta;
 
     const idVenta = venta.idVenta;
+
     let index = 0;
     for (const ventaItem of this.listaDeVentas) {
       if (idVenta === ventaItem.idVenta) {
+        // eliminar de lista de espera
         this.listaDeVentas.splice(index, 1);
         break;
       }
@@ -342,7 +346,7 @@ export class PuntoVentaPage implements OnInit {
 
   QuitarListaDeVenta(){
     this.listaItemsDeVenta = [];
-    this.totalxPagar = 0;
+    this.importeTotalPagar = 0;
   }
 
   CrearVentaId(): string{
@@ -355,7 +359,6 @@ export class PuntoVentaPage implements OnInit {
     this.listaDeVentas = [];
   }
 
-  // TODO : Mejorar los nombre de este modulo
   irPagar(){
     if (this.cliente) {
       if (this.listaItemsDeVenta.length > 0) {
@@ -465,13 +468,15 @@ export class PuntoVentaPage implements OnInit {
       this.buscando = null;
      }
   }
-  limpiar() {
+
+  // limpia el buscador
+  limpiarBuscador() {
     this.buscando = null;
   }
 
   cambiarModoBusqueda() {
     this.buscarNombre = !this.buscarNombre;
-    this.limpiar();
+    this.limpiarBuscador();
     this.productos = null;
     this.search.value = null;
     this.search.setFocus();
@@ -480,7 +485,7 @@ export class PuntoVentaPage implements OnInit {
    // FIN BUSCADOR DE PRODUCTOS
 
 
-   async presentToast(mensaje: string, color1: string) {
+  async presentToast(mensaje: string, color1: string) {
     const toast = await this.toastController.create({
       message: mensaje,
       duration: 2000,
