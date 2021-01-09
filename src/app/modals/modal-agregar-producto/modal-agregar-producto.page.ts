@@ -199,6 +199,7 @@ resetOrientation(srcBase64, srcOrientation, callback) {
       cantidad: new FormControl('', [Validators.required, Validators.min(1)]),
       medida: new FormControl('', [Validators.required]),
       marca: new FormControl('', [Validators.required, Validators.minLength(3), Validators.maxLength(45)]),
+      codigoBarra: new FormControl('', [Validators.required, Validators.minLength(3), Validators.maxLength(45)]),
       precio: new FormControl('', [Validators.required]),
       cantStock: new FormControl('', [Validators.required, Validators.min(1)]),
       fechaDeVencimiento: new FormControl('', [Validators.required]),
@@ -217,6 +218,7 @@ resetOrientation(srcBase64, srcOrientation, callback) {
   get cantidad() {return this.productoForm.get('cantidad'); }
   get medida() {return this.productoForm.get('medida'); }
   get marca() {return this.productoForm.get('marca'); }
+  get codigoBarra() {return this.productoForm.get('codigoBarra'); }
   get precio() {return this.productoForm.get('precio'); }
   get cantStock() {return this.productoForm.get('cantStock'); }
   get fechaDeVencimiento() {return this.productoForm.get('fechaDeVencimiento'); }

@@ -161,6 +161,7 @@ export class EditarProductoPage implements OnInit {
       cantidad: new FormControl(this.dataProducto.cantidad, [Validators.required, Validators.min(1)]),
       medida: new FormControl(this.dataProducto.medida, [Validators.required]),
       marca: new FormControl(this.dataProducto.marca, [Validators.required, Validators.minLength(3), Validators.maxLength(65)]),
+      codigoBarra: new FormControl(this.dataProducto.codigoBarra, [Validators.required, Validators.minLength(3), Validators.maxLength(65)]),
       precio: new FormControl(this.dataProducto.precio, [Validators.required]),
       cantStock: new FormControl(this.dataProducto.cantStock, [Validators.required, Validators.min(0)]),
       fechaDeVencimiento: new FormControl(this.dataProducto.fechaDeVencimiento, [Validators.required]),
@@ -171,11 +172,12 @@ export class EditarProductoPage implements OnInit {
     });
   }
 
-  
+
   get nombre() {return this.updateForm.get('nombre'); }
   get cantidad() {return this.updateForm.get('cantidad'); }
   get medida() {return this.updateForm.get('medida'); }
   get marca() {return this.updateForm.get('marca'); }
+  get codigoBarra() {return this.updateForm.get('codigoBarra'); }
   get precio() {return this.updateForm.get('precio'); }
   get cantStock() {return this.updateForm.get('cantStock'); }
   get fechaDeVencimiento() {return this.updateForm.get('fechaDeVencimiento'); }

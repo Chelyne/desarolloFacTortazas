@@ -26,7 +26,7 @@
           </ion-item>
         </ion-col> -->
         <ion-col size="8">
-          <ion-searchbar (ionClear)="limpiar()" (ionChange)="Search($event)" #search placeholder="Buscar producto" inputmode="text" debounce="300" animated="true"></ion-searchbar>
+          <ion-searchbar (ionClear)="limpiarBuscador()" (ionChange)="Search($event)" #search placeholder="Buscar producto" inputmode="text" debounce="300" animated="true"></ion-searchbar>
         </ion-col>
         <ion-col size="4">
           <ion-item style="border-radius: 10px;" lines="none">
@@ -58,7 +58,7 @@
               </ion-col>
               <ion-col size="12">
                 <ion-list-header >
-                  <ion-label >Total a pagar: {{totalxPagar}} </ion-label>
+                  <ion-label >Total a pagar: {{importeTotalPagar}} </ion-label>
                   <ion-button (click)="AgregaraListaDeEspera()" expand="block" fill="clear" shape="round">
                     Agregar a lista de espera
                   </ion-button>
@@ -328,7 +328,7 @@
               </ion-col>
               <!-- CONGELAR BOTONES -->
               <!-- <ion-col size="12">
-                <ion-label >Total a pagar: {{totalxPagar}} </ion-label>
+                <ion-label >Total a pagar: {{importeTotalPagar}} </ion-label>
                 <ion-button (click)="AgregaraListaDeEspera()" expand="block" fill="clear" shape="round">
                   Agregar a lista de espera
                 </ion-button>
@@ -361,10 +361,10 @@
           </ion-grid>
         </ion-content>
         <div style=" height: 10%; width: 100%; position: absolute;">
-          <ion-button [disabled]="!totalxPagar" style="height: 100%;" expand="block" (click)="irPagar()">
+          <ion-button [disabled]="!importeTotalPagar" style="height: 100%;" expand="block" (click)="irPagar()">
               <ion-icon  color="light"name="caret-forward-outline"></ion-icon>
               <ion-label color="light">PAGAR</ion-label> &nbsp;&nbsp;
-              <ion-label color="light">S/. {{totalxPagar | number: '1.2'}}</ion-label>
+              <ion-label color="light">S/. {{importeTotalPagar | number: '1.2'}}</ion-label>
           </ion-button>
         </div>
       </ion-col>
