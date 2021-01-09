@@ -20,6 +20,7 @@ import { VentasCongeladasPage } from '../../modals/ventas-congeladas/ventas-cong
 import { isNullOrUndefined } from 'util';
 import { ClienteInterface } from '../../models/cliente-interface';
 import { AgregarEditarClientePage } from '../../modals/agregar-editar-cliente/agregar-editar-cliente.page';
+import { ModalVentasPage } from '../../modals/modal-ventas/modal-ventas.page';
 
 @Component({
   selector: 'app-punto-venta',
@@ -571,7 +572,14 @@ export class PuntoVentaPage implements OnInit {
 
       }
     });
-
     await modal.present();
+  }
+
+  async modalVentas() {
+    const modal = await this.modalController.create({
+      component: ModalVentasPage,
+      cssClass: 'modal-fullscreen'
+    });
+    return await modal.present();
   }
 }

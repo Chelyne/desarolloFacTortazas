@@ -300,22 +300,26 @@ export class ConfirmarVentaPage implements OnInit {
     this.venta.montoBase = this.importeBase;
     console.log('Se generó el pago');
     this.obtenerCorrelacionComprobante().then((numero: ContadorDeSerieInterface[]) => {
-      console.log(numero);
-      console.log('numero de comprobnte', this.tipoComprobante, numero[0].correlacion + 1);
-      this.venta.numeroComprobante = (numero[0].correlacion + 1).toString();
-      this.dataApi.confirmarVenta(this.venta, this.storage.datosAdmi.sede).then(data => {
-        this.dataApi.ActualizarCorrelacion(numero[0].id, this.storage.datosAdmi.sede, numero[0].correlacion + 1);
-        this.resetFormPago();
-        this.tipoComprobante = 'boleta';
-        this.cantidadBolsa = 0;
-        this.bolsa = false;
-        this.tipoPago = 'efectivo';
-        this.router.navigate(['/punto-venta', 'true']);
-        this.generarComprobante();
-        console.log('guardado', data);
-        this.loading.dismiss();
-        this.presentToast('Venta exitosa');
-      });
+      if (numero[0].disponible) {
+        this.dataApi.ActualizarEstadoCorrelacion(numero[0].id, this.storage.datosAdmi.sede, false);
+        console.log(numero);
+        console.log('numero de comprobante', this.tipoComprobante, numero[0].correlacion + 1);
+        this.venta.numeroComprobante = (numero[0].correlacion + 1).toString();
+        this.dataApi.confirmarVenta(this.venta, this.storage.datosAdmi.sede).then(data => {
+          this.dataApi.ActualizarCorrelacion(numero[0].id, this.storage.datosAdmi.sede, numero[0].correlacion + 1);
+          this.dataApi.ActualizarEstadoCorrelacion(numero[0].id, this.storage.datosAdmi.sede, true);
+          this.resetFormPago();
+          this.tipoComprobante = 'boleta';
+          this.cantidadBolsa = 0;
+          this.bolsa = false;
+          this.tipoPago = 'efectivo';
+          this.router.navigate(['/punto-venta', 'true']);
+          this.generarComprobante();
+          console.log('guardado', data);
+          this.loading.dismiss();
+          this.presentToast('Venta exitosa');
+        });
+      }
     // tslint:disable-next-line:no-shadowed-variable
     }).catch(error => {
       this.presentToast('Ocurrio un error' + error);
@@ -823,7 +827,7 @@ NumeroALetras(num) {
   obtenerCorrelacionComprobante() {
     const promesa = new Promise((resolve, reject) => {
       const suscripcion = this.dataApi.obtenerCorrelacion(this.serieComprobante, this.storage.datosAdmi.sede).subscribe(datos => {
-        suscripcion.unsubscribe();
+        // suscripcion.unsubscribe();
         if (datos.length > 0) {
           resolve(datos);
         } else {

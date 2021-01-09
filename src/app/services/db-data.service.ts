@@ -197,7 +197,7 @@ export class DbDataService {
   ObtenerListaDeVentas(sede: string, fachaventas: string) {
     const sede1 = sede.toLocaleLowerCase();
     // tslint:disable-next-line:max-line-length
-    this.ventaCollection = this.afs.collection('sedes').doc(sede1).collection('ventas').doc(fachaventas).collection('ventasDia');
+    this.ventaCollection = this.afs.collection('sedes').doc(sede1).collection('ventas').doc(fachaventas).collection('ventasDia', ref => ref.orderBy('numeroComprobante', 'asc'));
     // tslint:disable-next-line:max-line-length
     // this.productoCollection = this.afs.collection<ProductoInterface>('frutas', ref => ref.where('propietario', '==', propietario).orderBy('fechaRegistro', 'desc'));
     return this.ventas = this.ventaCollection.snapshotChanges()
@@ -996,6 +996,17 @@ export class DbDataService {
     console.log('ACTUALIZA CORRELACIN ' + correlacion1);
     const promesa =  new Promise( (resolve, reject) => {
       this.afs.collection('sedes').doc(sede.toLocaleLowerCase()).collection('serie').doc(id).update({correlacion: correlacion1});
+      resolve(resolve);
+    });
+
+    return promesa;
+  }
+
+  // ACTUALIZAR ESTADO CORRELACION
+  ActualizarEstadoCorrelacion(id: string, sede: string, estado1: boolean){
+    console.log('Estado CORRELACIN ' + estado1);
+    const promesa =  new Promise( (resolve, reject) => {
+      this.afs.collection('sedes').doc(sede.toLocaleLowerCase()).collection('serie').doc(id).update({disponible: estado1});
       resolve(resolve);
     });
 
