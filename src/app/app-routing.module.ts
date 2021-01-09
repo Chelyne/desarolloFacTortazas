@@ -234,6 +234,10 @@ const routes: Routes = [
   {
     path: 'modal-agregar-categorias',
     loadChildren: () => import('./modals/modal-agregar-categorias/modal-agregar-categorias.module').then( m => m.ModalAgregarCategoriasPageModule)
+  },
+  {
+    path: 'modal-ventas',
+    loadChildren: () => import('./modals/modal-ventas/modal-ventas.module').then( m => m.ModalVentasPageModule)
   }
 
 

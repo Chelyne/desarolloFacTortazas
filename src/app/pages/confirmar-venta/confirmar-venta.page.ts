@@ -42,7 +42,7 @@ export class ConfirmarVentaPage implements OnInit {
 
 
   // tslint:disable-next-line: no-inferrable-types
-  tipoComprobante: string = 'factura';
+  tipoComprobante: string = 'boleta';
   serieComprobante: string;
 
 
@@ -201,7 +201,7 @@ export class ConfirmarVentaPage implements OnInit {
     // this.calcularVuelto();
 
     // modificar el campo: montoEntrante
-    this.modificarMontoEntrante(this.importeDescuento);
+    // this.modificarMontoEntrante(this.importeDescuento); // para luego
     this.calcularVuelto();
     //
   }
@@ -223,7 +223,7 @@ export class ConfirmarVentaPage implements OnInit {
     console.log(this.importeDescuento, this.importeTotal, this.descuentoDeVentaMonto);
 
     // modificar el campo: montoEntrante
-    this.modificarMontoEntrante(this.importeDescuento);
+    // this.modificarMontoEntrante(this.importeDescuento); //PA LUEGO
     this.calcularVuelto();
     //
   }
@@ -300,18 +300,26 @@ export class ConfirmarVentaPage implements OnInit {
     this.venta.montoBase = this.importeBase;
     console.log('Se generó el pago');
     this.obtenerCorrelacionComprobante().then((numero: ContadorDeSerieInterface[]) => {
-      console.log(numero);
-      console.log('numero de comprobnte', this.tipoComprobante, numero[0].correlacion + 1);
-      this.venta.numeroComprobante = (numero[0].correlacion + 1).toString();
-      this.dataApi.confirmarVenta(this.venta, this.storage.datosAdmi.sede).then(data => {
-        this.dataApi.ActualizarCorrelacion(numero[0].id, this.storage.datosAdmi.sede, numero[0].correlacion + 1);
-        this.generarComprobante();
-        this.resetFormPago();
-        this.router.navigate(['/punto-venta', 'true']);
-        console.log('guardado', data);
-        this.loading.dismiss();
-        this.presentToast('Venta exitosa');
-      });
+      if (numero[0].disponible) {
+        this.dataApi.ActualizarEstadoCorrelacion(numero[0].id, this.storage.datosAdmi.sede, false);
+        console.log(numero);
+        console.log('numero de comprobante', this.tipoComprobante, numero[0].correlacion + 1);
+        this.venta.numeroComprobante = (numero[0].correlacion + 1).toString();
+        this.dataApi.confirmarVenta(this.venta, this.storage.datosAdmi.sede).then(data => {
+          this.dataApi.ActualizarCorrelacion(numero[0].id, this.storage.datosAdmi.sede, numero[0].correlacion + 1);
+          this.dataApi.ActualizarEstadoCorrelacion(numero[0].id, this.storage.datosAdmi.sede, true);
+          this.resetFormPago();
+          this.tipoComprobante = 'boleta';
+          this.cantidadBolsa = 0;
+          this.bolsa = false;
+          this.tipoPago = 'efectivo';
+          this.router.navigate(['/punto-venta', 'true']);
+          this.generarComprobante();
+          console.log('guardado', data);
+          this.loading.dismiss();
+          this.presentToast('Venta exitosa');
+        });
+      }
     // tslint:disable-next-line:no-shadowed-variable
     }).catch(error => {
       this.presentToast('Ocurrio un error' + error);
@@ -344,10 +352,16 @@ export class ConfirmarVentaPage implements OnInit {
       this.presentToast('Bolsa agregada');
       this.importeTotal = this.importeTotal + 0.3;
       // this.importeDescuento = this.importeDescuento + 0.3;
+      if (this.tipoPago === 'tarjeta') {
+        this.ponerMontoExacto();
+      }
       this.calcularVuelto();
     } else {
       this.presentToast('Bolsa quitada');
       this.importeTotal = this.importeTotal - (0.3 * this.cantidadBolsa);
+      if (this.tipoPago === 'tarjeta') {
+        this.ponerMontoExacto();
+      }
       // this.importeDescuento = this.importeDescuento - (0.3 * this.cantidadBolsa);
       this.calcularVuelto();
       this.cantidadBolsa = 0;
@@ -355,6 +369,9 @@ export class ConfirmarVentaPage implements OnInit {
   }
   seleccionTipoPago(tipo: string) {
     this.tipoPago = tipo;
+    if (this.tipoPago === 'tarjeta') {
+      this.ponerMontoExacto();
+    }
   }
 
   volver() {
@@ -810,7 +827,7 @@ NumeroALetras(num) {
   obtenerCorrelacionComprobante() {
     const promesa = new Promise((resolve, reject) => {
       const suscripcion = this.dataApi.obtenerCorrelacion(this.serieComprobante, this.storage.datosAdmi.sede).subscribe(datos => {
-        suscripcion.unsubscribe();
+        // suscripcion.unsubscribe();
         if (datos.length > 0) {
           resolve(datos);
         } else {
@@ -825,6 +842,9 @@ NumeroALetras(num) {
     this.cantidadBolsa++;
     this.importeTotal = this.importeTotal + 0.3;
     // this.importeDescuento = this.importeDescuento + 0.3;
+    if (this.tipoPago === 'tarjeta') {
+      this.ponerMontoExacto();
+    }
     this.calcularVuelto();
   }
 
@@ -833,6 +853,9 @@ NumeroALetras(num) {
       this.cantidadBolsa--;
       this.importeTotal = this.importeTotal - 0.3;
       // this.importeDescuento = this.importeDescuento - 0.3;
+      if (this.tipoPago === 'tarjeta') {
+        this.ponerMontoExacto();
+      }
       this.calcularVuelto();
     } else {
       this.presentToast('Minimo 0');

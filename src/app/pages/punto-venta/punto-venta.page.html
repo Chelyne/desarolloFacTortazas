@@ -6,6 +6,10 @@
     </ion-buttons>
     <ion-title color="primary">Punto de Venta</ion-title>
     <ion-item lines="none" slot="end">
+      <ion-button (click)="modalVentas()" size="small" fill="outline">
+        <ion-icon name="clipboard-outline"></ion-icon> &nbsp;
+        <ion-label>Ventas</ion-label>
+      </ion-button>
       <ion-button (click)="AgregarNuevoCliente()" size="small" fill="outline">
         <ion-icon name="person-outline"></ion-icon> &nbsp;
         <ion-label>Agregar Cliente</ion-label>
@@ -185,9 +189,11 @@
                 <ion-col size-xs="5" class="colDatos">
                   <ion-label style="font-size: 17px; font-weight: bold;">{{prod.nombre | titlecase}}</ion-label><br>
                   <ion-label >{{prod.cantidad}} {{prod.medida}}</ion-label><br>
-                  <ion-badge>{{prod.subCategoria}}</ion-badge>
+                  <ion-badge>
+                    <ion-label color="light">{{prod.subCategoria | titlecase}}</ion-label>
+                  </ion-badge>
                 </ion-col>
-                <ion-col size-xs="4" class="ion-text-center" style="border-left: solid 1px grey;" *ngIf="prod.categoria !== 'farmacia'">
+                <ion-col size-xs="4" class="ion-text-center" style="border-left: solid 1px grey;">
                   <ion-label style="font-size: 3vh;"><span style="font-size: 15px;">S/.</span>{{prod.precio | number: '1.2'}}</ion-label><br>
                 </ion-col>
               </ion-row>

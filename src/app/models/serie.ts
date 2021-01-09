@@ -3,6 +3,7 @@ export interface ContadorDeSerieInterface {
     tipoComprobante?: string;
     serie?: string;
     numero?: string;
+    disponible?: boolean;
     correlacion?: number; // Entero
     sede?: number;
 }
