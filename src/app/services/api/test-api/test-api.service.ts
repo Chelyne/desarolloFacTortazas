@@ -75,8 +75,9 @@ export class TestApiService {
         case 'tubos': return 'TU';
         case 'yarda': return 'YRD';
         case 'yarda cuadrada': return 'YDK';
-        default: return 'MEDIDA NO REGISTRADA';
+        default: return 'NIU';
+        // default: return 'MEDIDA NO REGISTRADA';
     }
-}
+  }
 
 }

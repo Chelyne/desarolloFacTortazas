@@ -21,7 +21,6 @@ describe('TestApiService', () => {
     expect(service.saludo()).toEqual('hola');
   });
   it('Test de obtener medida', () => {
-
     expect(service.ObtenerCodigoMedida('botellas')).toEqual('BG');
     expect(service.ObtenerCodigoMedida('caja')).toEqual('BO');
     expect(service.ObtenerCodigoMedida('docena')).toEqual('BX');
@@ -84,7 +83,7 @@ describe('TestApiService', () => {
     expect(service.ObtenerCodigoMedida('tubos')).toEqual('TU');
     expect(service.ObtenerCodigoMedida('yarda')).toEqual('YRD');
     expect(service.ObtenerCodigoMedida('yarda cuadrada')).toEqual('YDK');
-
+    expect(service.ObtenerCodigoMedida('otra medida')).toEqual('NIU');
   });
 
 
