@@ -51,9 +51,9 @@ export class AgregarEditarClientePage implements OnInit {
       tipoDoc: new FormControl('dni', [Validators.required]),
       // apellidos: new FormControl('', [Validators.required, Validators.minLength(3), Validators.pattern('^[a-zA-ZÀ-ÿ\u00f1\u00d1 ]+$')]),
       numDoc: new FormControl('', [Validators.required, Validators.minLength(8), Validators.maxLength(11)]),
-      celular: new FormControl('', [Validators.required, Validators.minLength(9), Validators.maxLength(9)]),
-      direccion: new FormControl('', [Validators.required, Validators.minLength(3)]),
-      email: new FormControl('', [Validators.required, Validators.minLength(3), Validators.pattern('^[_a-z0-9]+(\.[_a-z0-9]+)*@[a-z0-9-]+(\.[_a-z0-9]+)*\.([a-z]{2,4})$')])
+      celular: new FormControl('', [Validators.minLength(9), Validators.maxLength(9)]),
+      direccion: new FormControl('', [Validators.minLength(3)]),
+      email: new FormControl('', [Validators.minLength(3), Validators.pattern('^[_a-z0-9]+(\.[_a-z0-9]+)*@[a-z0-9-]+(\.[_a-z0-9]+)*\.([a-z]{2,4})$')])
     });
   }
 
@@ -71,9 +71,9 @@ export class AgregarEditarClientePage implements OnInit {
       // tslint:disable-next-line:max-line-length
       // apellidos: new FormControl(this.dataInvoker.apellidos, [Validators.required, Validators.minLength(3), Validators.pattern('^[a-zA-ZÀ-ÿ\u00f1\u00d1 ]+$')]),
       numDoc: new FormControl(this.dataInvoker.numDoc, [Validators.required, Validators.minLength(8), Validators.maxLength(11)]),
-      celular: new FormControl(this.dataInvoker.celular, [Validators.required, Validators.minLength(9), Validators.maxLength(9)]),
-      direccion: new FormControl(this.dataInvoker.direccion, [Validators.required, Validators.minLength(3)]),
-      email: new FormControl(this.dataInvoker.email, [Validators.required, Validators.minLength(3), Validators.pattern('^[_a-z0-9]+(\.[_a-z0-9]+)*@[a-z0-9-]+(\.[_a-z0-9]+)*\.([a-z]{2,4})$')])
+      celular: new FormControl(this.dataInvoker.celular, [Validators.minLength(9), Validators.maxLength(9)]),
+      direccion: new FormControl(this.dataInvoker.direccion, [Validators.minLength(3)]),
+      email: new FormControl(this.dataInvoker.email, [Validators.minLength(3), Validators.pattern('^[_a-z0-9]+(\.[_a-z0-9]+)*@[a-z0-9-]+(\.[_a-z0-9]+)*\.([a-z]{2,4})$')])
     });
   }
 
@@ -129,7 +129,6 @@ export class AgregarEditarClientePage implements OnInit {
 
 
   actualizarCliente(){
-
     this.clienteModalForm.value.nombre = this.nombre.value.toLowerCase();
     // this.clienteModalForm.value.apellidos = this.apellidos.value.toLowerCase();
 

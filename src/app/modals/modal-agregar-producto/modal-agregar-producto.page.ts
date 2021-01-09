@@ -27,9 +27,9 @@ export class ModalAgregarProductoPage implements OnInit {
   @Input() sede: string;
   @Input() categoria: string;
   @Input() subCategoria: string;
-  
+
 // ----------------
-  processing:boolean;
+  processing: boolean;
   uploadImage: string | ArrayBuffer;
 
 // ----------------
@@ -44,8 +44,8 @@ export class ModalAgregarProductoPage implements OnInit {
   descripcion;
   loading;
 
-  variable;
-  variante = [];
+  constiable;
+  constiante = [];
   // ----------
   categorias = [];
   constructor(
@@ -66,7 +66,7 @@ export class ModalAgregarProductoPage implements OnInit {
 
   ngOnInit() {
     console.log(this.sede, this.categoria, this.subCategoria);
-    console.log("foto", this.uploadImage);
+    console.log('foto', this.uploadImage);
 
     this.categorias = this.categoriaService.getcategoriasNegocio(this.categoria);
     console.log('categorias', this.categorias);
@@ -76,18 +76,18 @@ export class ModalAgregarProductoPage implements OnInit {
   // --------------------------
    presentActionSheet(fileLoader) {
     fileLoader.click();
-    var that = this;
-    fileLoader.onchange = function () {
-      var file = fileLoader.files[0];
-      var reader = new FileReader();
+    const that = this;
+    fileLoader.onchange = () => {
+      const file = fileLoader.files[0];
+      const reader = new FileReader();
 
-      reader.addEventListener("load", function () {
+      reader.addEventListener('load', () => {
         that.processing = true;
         that.uploadImage = reader.result;
 
-        that.getOrientation(fileLoader.files[0], function (orientation) {
+        that.getOrientation(fileLoader.files[0], (orientation) => {
           if (orientation > 1) {
-            that.resetOrientation(reader.result, orientation, function (resetBase64Image) {
+            that.resetOrientation(reader.result, orientation, (resetBase64Image) => {
               that.uploadImage = resetBase64Image;
             });
           } else {
@@ -107,43 +107,52 @@ imageLoaded(){
 
 
 getOrientation(file, callback) {
-  var reader = new FileReader();
-  reader.onload = function (e:any) {
+  const reader = new FileReader();
+  reader.onload = (e: any) =>  {
 
-    var view = new DataView(e.target.result);
-    if (view.getUint16(0, false) != 0xFFD8) return callback(-2);
-    var length = view.byteLength, offset = 2;
+    const view = new DataView(e.target.result);
+    if (view.getUint16(0, false) !== 0xFFD8) {
+      return callback(-2);
+    }
+    const length = view.byteLength;
+    let offset = 2;
     while (offset < length) {
-      var marker = view.getUint16(offset, false);
+      const marker = view.getUint16(offset, false);
       offset += 2;
-      if (marker == 0xFFE1) {
-        if (view.getUint32(offset += 2, false) != 0x45786966) return callback(-1);
-        var little = view.getUint16(offset += 6, false) == 0x4949;
+      if (marker === 0xFFE1) {
+        if (view.getUint32(offset += 2, false) !== 0x45786966){
+          return callback(-1);
+        }
+        const little = view.getUint16(offset += 6, false) === 0x4949;
         offset += view.getUint32(offset + 4, little);
-        var tags = view.getUint16(offset, little);
+        const tags = view.getUint16(offset, little);
         offset += 2;
-        for (var i = 0; i < tags; i++)
-          if (view.getUint16(offset + (i * 12), little) == 0x0112)
+        for (let i = 0; i < tags; i++) {
+          if (view.getUint16(offset + (i * 12), little) === 0x0112) {
             return callback(view.getUint16(offset + (i * 12) + 8, little));
+          }
+        }
+      } else if ((marker && 0xFF00) !== 0xFF00) {
+        break;
+      } else {
+        offset += view.getUint16(offset, false);
       }
-      else if ((marker & 0xFF00) != 0xFF00) break;
-      else offset += view.getUint16(offset, false);
     }
     return callback(-1);
   };
   reader.readAsArrayBuffer(file);
-  console.log("fotobase100", this.uploadImage);
+  console.log('fotobase100', this.uploadImage);
 
   this.image = this.uploadImage;
 }
 resetOrientation(srcBase64, srcOrientation, callback) {
-  var img = new Image();
+  const img = new Image();
 
-  img.onload = function () {
-    var width = img.width,
-      height = img.height,
-      canvas = document.createElement('canvas'),
-      ctx = canvas.getContext("2d");
+  img.onload = () => {
+    const width = img.width;
+    const  height = img.height;
+    const  canvas = document.createElement('canvas');
+    const  ctx = canvas.getContext('2d');
 
     // set proper canvas dimensions before transform & export
     if (4 < srcOrientation && srcOrientation < 9) {
@@ -287,8 +296,8 @@ resetOrientation(srcBase64, srcOrientation, callback) {
     this.mensaje = null;
     console.log(this.productoForm.value);
     console.log('vemos: ', this.precioTalla, this.inventario);
-    //this.image = this.uploadImage; 
-    //this.image = 'https://i.ya-webdesign.com/images/imagenes-de-frutas-png-14.png';
+    // this.image = this.uploadImage;
+    // this.image = 'https://i.ya-webdesign.com/images/imagenes-de-frutas-png-14.png';
     if (isNullOrUndefined(this.image)) {
       this.sinFoto = 'Por favor suba una foto';
     }
@@ -330,7 +339,7 @@ resetOrientation(srcBase64, srcOrientation, callback) {
     }
   }
 
-  // subir varias imagenes
+  // subir constias imagenes
   // getImages() {
   //   this.listaImgenes = [];
   //   const options = {
@@ -378,8 +387,6 @@ resetOrientation(srcBase64, srcOrientation, callback) {
     await actionSheet.present();
   }
 
- 
-
   // Opencamera() {
   //   this.camera.getPicture({
   //     destinationType: this.camera.DestinationType.DATA_URL,
@@ -418,7 +425,7 @@ resetOrientation(srcBase64, srcOrientation, callback) {
   //     // window.alert(error);
   //   });
   // }
-  //TODO - modificar subir imagen a firebase
+  // TODO - modificar subir imagen a firebase
   uploadImages(image) {
     console.log('subir imagen');
     return new Promise<any>((resolve, reject) => {

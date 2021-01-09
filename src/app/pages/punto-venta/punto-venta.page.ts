@@ -52,6 +52,8 @@ export class PuntoVentaPage implements OnInit {
   modalTitle: string;
   modalTag: string;
   modalDataCliente: ClienteInterface;
+
+  cajaChica = false;
   constructor(private menuCtrl: MenuController,
               private categoriasService: CategoriasService,
               private pagination: PaginationProductosService,
@@ -101,6 +103,15 @@ export class PuntoVentaPage implements OnInit {
     }
   }
 
+  ionViewDidEnter() {
+    this.dataApi.EstadoCajaChicaVendedor('Aperturado', this.storage.datosAdmi.dni).subscribe(data => {
+      if (data.length > 0) {
+        this.cajaChica = true;
+      } else {
+        this.cajaChica = false;
+      }
+    });
+  }
   listaProductosCategoria(categoria: string) {
     this.sinDatos = null;
     if (this.categoria !== categoria) {
@@ -194,30 +205,41 @@ export class PuntoVentaPage implements OnInit {
     };
   }
 
-  inputModificado(evento: {id: string, cantidad: number, precioVenta: number, porcentaje: number}){
+  inputModificado(
+    evento: {id: string, cantidad: number, precioVenta: number, porcentaje: number, descuento: number}
+  ){
     console.log(evento);
-    this.ActualizarMonto(evento.id, evento.cantidad, evento.precioVenta, evento.porcentaje);
+    this.ActualizarMonto(evento.id, evento.cantidad, evento.precioVenta,
+    evento.porcentaje, evento.descuento);
   }
 
-  ActualizarMonto(idProdItem: string, cantidad: number, precioVenta: number, porcentaje: number){
+  ActualizarMonto(
+    idProdItem: string, cantidad: number, precioVenta: number,
+    porcentaje: number, descuento: number
+  ){
     if (this.listaItemsDeVenta.length > 0) {
       for (const itemDeVenta of this.listaItemsDeVenta) {
         // console.log('ssssssssssssssssss')
         if (idProdItem === itemDeVenta.idProducto){
             itemDeVenta.cantidad = cantidad;
-            if (isNullOrUndefined(porcentaje)) {
-              if (isNullOrUndefined(precioVenta)) {
-                itemDeVenta.totalxprod = itemDeVenta.cantidad * itemDeVenta.producto.precio;
-              } else {
-                itemDeVenta.totalxprod = precioVenta;
-              }
-              break;
+            itemDeVenta.porcentaje = porcentaje;
+            itemDeVenta.descuentoProducto = descuento;
+            itemDeVenta.totalxprod = cantidad * itemDeVenta.producto.precio; // - descuento;
+            itemDeVenta.precioVenta = precioVenta;
+            // if (isNullOrUndefined(porcentaje)) {
+            //   if (isNullOrUndefined(precioVenta)) {
+            //     itemDeVenta.totalxprod = itemDeVenta.cantidad * itemDeVenta.producto.precio;
+            //   } else {
+            //     itemDeVenta.totalxprod = precioVenta;
+            //   }
+            //   break;
 
-            } else {
-                itemDeVenta.totalxprod = itemDeVenta.cantidad * itemDeVenta.producto.precio;
-                itemDeVenta.totalxprod = itemDeVenta.totalxprod - (itemDeVenta.totalxprod * (porcentaje / 100));
-                break;
-            }
+            // } else {
+            //     itemDeVenta.totalxprod = itemDeVenta.cantidad * itemDeVenta.producto.precio;
+            //     itemDeVenta.totalxprod = itemDeVenta.totalxprod - (itemDeVenta.totalxprod * (porcentaje / 100));
+            //     break;
+            // }
+
             // if (isNullOrUndefined(precioVenta)) {
             //   itemDeVenta.totalxprod = itemDeVenta.cantidad * itemDeVenta.producto.precio;
             // } else {
@@ -254,8 +276,14 @@ export class PuntoVentaPage implements OnInit {
   calcularTotalaPagar(){
     let totalxpagar = 0;
 
+    // Si el precio de venta es mayor a 0 entonces
+    // el preDeventa debe sumarse no el total
     for (const item of this.listaItemsDeVenta) {
-      totalxpagar += item.totalxprod;
+      if (typeof item.precioVenta === 'undefined' || item.precioVenta <= 0){
+        totalxpagar += item.totalxprod;
+      } else {
+        totalxpagar += item.precioVenta;
+      }
     }
     // console.log(totalxpagar);
 
@@ -287,7 +315,8 @@ export class PuntoVentaPage implements OnInit {
     return {
       cliente: this.cliente,
       listaItemsDeVenta: this.listaItemsDeVenta,
-      totalPagarVenta: this.totalxPagar,
+      // totalPagarVenta: this.totalxPagar,
+      montoNeto: this.totalxPagar,
       idVenta: this.CrearVentaId()
     };
   }
@@ -330,8 +359,12 @@ export class PuntoVentaPage implements OnInit {
   irPagar(){
     if (this.cliente) {
       if (this.listaItemsDeVenta.length > 0) {
-        this.testServ.setVenta(this.CrearItemDeVentas());
-        this.router.navigate(['/confirmar-venta']);
+        if (this.cajaChica) {
+          this.testServ.setVenta(this.CrearItemDeVentas());
+          this.router.navigate(['/confirmar-venta']);
+        } else {
+          this.presentToast('Por favor aperture su caja chica para vender', 'danger');
+        }
       } else {
         this.presentToast('Por favor agregue productos a vender', 'danger');
       }
@@ -369,7 +402,7 @@ export class PuntoVentaPage implements OnInit {
           contador++;
         }
         console.log('conbtador', contador);
-        if (contador >= 3) {
+        if (contador >= 1) {
           this.buscarNombre = false;
           break;
         } else {

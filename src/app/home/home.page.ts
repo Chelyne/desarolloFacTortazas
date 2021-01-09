@@ -189,8 +189,7 @@ export class HomePage {
   }
 
   consultar(nombre) {
-    // tslint:disable-next-line:max-line-length
-    const consulta = this.afs.collection('sedes').doc('andahuaylas').collection('productos', ref => ref.where('categoria', '==', 'farmacia').where('nombre', '==', nombre)
+    const consulta = this.afs.collection('sedes').doc('abancay').collection('productos', ref => ref.where('nombre', '==', nombre)
     .limit(1));
     return consulta.snapshotChanges()
             .pipe(map(changes => {
@@ -218,13 +217,14 @@ export class HomePage {
 //             element.nombre = element.nombre.toLocaleLowerCase();
 //             console.log(element);
 //               // tslint:disable-next-line:no-shadowed-variable
-//             this.consultar(element.nombre).subscribe((data: any) => {
+//             const sus = this.consultar(element.nombre).subscribe((data: any) => {
+//               // sus.unsubscribe();
 //               if (data.length > 0) {
-//                 console.log(data[0].id, element.descripcionProducto);
-//                 this.afs.collection('sedes').doc('andahuaylas').collection('productos')
-//                 .doc(data[0].id).update({precio: element.precio}).then(() => {
+//                 console.log(data[0].id, element.codigoBarra);
+//                 this.afs.collection('sedes').doc('abancay').collection('productos')
+//                 .doc(data[0].id).update({codigoBarra: element.codigoBarra.toString()}).then(() => {
 //                   contador++;
-//                   console.log('Actualizado' + contador);
+//                   console.log('Actualizado ' + contador + ' ' + element.codigoBarra.toString());
 //                 });
 //               } else {
 //                 contadorFallos++;
