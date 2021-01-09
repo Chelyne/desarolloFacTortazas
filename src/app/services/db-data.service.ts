@@ -65,8 +65,6 @@ export class DbDataService {
   private categoriaCollection: AngularFirestoreCollection<CategoriaInterface>;
   private categorias: Observable<CategoriaInterface[]>;
 
-  private categoriaDoc: AngularFirestoreDocument<CategoriaInterface>;
-  private categoria: Observable<CategoriaInterface>;
 
   constructor(private afs: AngularFirestore) { }
 
@@ -188,6 +186,22 @@ export class DbDataService {
       .pipe(map(changes => {
         return changes.map(action => {
           const data = action.payload.doc.data() as ProductoInterface;
+          data.id = action.payload.doc.id;
+          return data;
+        });
+      }));
+  }
+
+  ObtenerListaCategorias(sede: string, limit: number) {
+    const sede1 = sede.toLocaleLowerCase();
+    // tslint:disable-next-line:max-line-length
+    this.categoriaCollection = this.afs.collection('sedes').doc(sede1).collection('categorias', ref => ref.orderBy('fechaRegistro', 'desc').limit(limit));
+    // tslint:disable-next-line:max-line-length
+    // this.productoCollection = this.afs.collection<ProductoInterface>('frutas', ref => ref.where('propietario', '==', propietario).orderBy('fechaRegistro', 'desc'));
+    return this.categorias = this.categoriaCollection.snapshotChanges()
+      .pipe(map(changes => {
+        return changes.map(action => {
+          const data = action.payload.doc.data() as CategoriaInterface;
           data.id = action.payload.doc.id;
           return data;
         });

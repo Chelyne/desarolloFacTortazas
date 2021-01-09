@@ -20,6 +20,7 @@ import { VentasCongeladasPage } from '../../modals/ventas-congeladas/ventas-cong
 import { isNullOrUndefined } from 'util';
 import { ClienteInterface } from '../../models/cliente-interface';
 import { AgregarEditarClientePage } from '../../modals/agregar-editar-cliente/agregar-editar-cliente.page';
+import { ModalAgregarProductoPage } from '../../modals/modal-agregar-producto/modal-agregar-producto.page';
 
 @Component({
   selector: 'app-punto-venta',
@@ -27,6 +28,7 @@ import { AgregarEditarClientePage } from '../../modals/agregar-editar-cliente/ag
   styleUrls: ['./punto-venta.page.scss'],
 })
 export class PuntoVentaPage implements OnInit {
+  sede = this.storage.datosAdmi.sede;
 
   @ViewChild('search', {static: false}) search: any;
   productos: ProductoInterface[];
@@ -38,6 +40,7 @@ export class PuntoVentaPage implements OnInit {
   categorias = [];
   listaProductos = [];
   categoria: string;
+  categoriaP;
 
   listaVenta = [];
   private suscripcionProducto: Subscription;
@@ -88,8 +91,13 @@ export class PuntoVentaPage implements OnInit {
               private rutaActiva: ActivatedRoute,
               private modalController: ModalController,
               private router: Router,
+              private modalCtlr: ModalController
   ) {
     this.menuCtrl.enable(true);
+
+    this.rutaActiva.queryParams.subscribe(params => {
+      this.categoriaP = 'petshop';
+    });
   }
 
   ngOnInit() {
@@ -103,6 +111,8 @@ export class PuntoVentaPage implements OnInit {
     if (!isNullOrUndefined(this.storage.listaVenta)) {
       this.listaDeVentas = this.storage.listaVenta;
     }
+    console.log('sede', this.sede);
+    console.log('categoria', this.categoriaP);
   }
 
   ionViewDidEnter() {
@@ -114,6 +124,27 @@ export class PuntoVentaPage implements OnInit {
       }
     });
   }
+
+  // agregar producto
+  agregarProducto() {
+    this.abrirModalNuevoProducto();
+  }
+
+  async abrirModalNuevoProducto(){
+
+    const modal =  await this.modalCtlr.create({
+      component: ModalAgregarProductoPage,
+      cssClass: 'modal-fullscreen',
+      componentProps: {
+        sede: this.sede,
+        categoria: this.categoriaP,
+      }
+    });
+
+    await modal.present();
+  }
+
+
   listaProductosCategoria(categoria: string) {
     this.sinDatos = null;
     if (this.categoria !== categoria) {

@@ -72,7 +72,7 @@
                                 <ion-item lines="none">
                                     <ion-label position="stacked">Categorias</ion-label>
                                     <ion-select class="custom-options" value="item.categoria" interface="popover" formControlName="categoriass" placeholder="categorias" cancelText="Cancelar" okText="Aceptar" mode="ios">
-                                        <ion-select-option *ngFor="let item of categorias" [value]="item.categoria">{{item.categoria}}</ion-select-option>
+                                        <ion-select-option *ngFor="let item of listaDeCategorias" [value]="item.categoria">{{item.categoria}}</ion-select-option>
                                     </ion-select>
                                 </ion-item>
                                 <div class="alertDanger" *ngIf="categoriass.invalid && (categoriass.dirty || categoriass.touched)">
