@@ -70,10 +70,25 @@ export class CajaChicaPage implements OnInit {
     this.menuCtrl.enable(true);
   }
   ReporteVentaDiaGeneral(formato: string) {
-    this.consultaVentaReporteGeneral(formato).then(data => {
+    this.consultaVentaReporteGeneral(formato).then( (data: any) => {
       if (formato === 'ticked') {
         // this.ReporteTiket();
         console.log('datos ticked', data);
+        let totalEfectivo = 0;
+        let totalTargeta = 0;
+        let totalGeneral = 0;
+
+        data.forEach(element => {
+          totalGeneral = totalGeneral + element.totalPagarVenta;
+          if (element.tipoPago === 'efectivo') {
+          totalEfectivo = totalEfectivo + element.totalPagarVenta;
+          }
+          if (element.tipoPago === 'tarjeta') {
+            totalTargeta = totalTargeta + element.totalPagarVenta;
+            }
+        });
+        console.log('dtos de efectivo: ', totalEfectivo , 'total tarjeta: ', totalTargeta , 'total general: ', totalGeneral );
+
       }
       if (formato === 'a4') {
         console.log(data);
@@ -142,7 +157,16 @@ export class CajaChicaPage implements OnInit {
 
           }
           if (format === 'ticked') {
-            this.datosReporteVentaGeneral = snapshot.docs;
+            // this.datosReporteVentaGeneral = snapshot;
+            let contador = 0;
+
+            snapshot.forEach(doc => {
+              contador++;
+              console.log(doc.id, '=>', doc.data());
+              const datos = doc.data();
+              datos.numeracion = contador;
+              this.datosReporteVentaGeneral.push(datos);
+            });
           }
 
         }

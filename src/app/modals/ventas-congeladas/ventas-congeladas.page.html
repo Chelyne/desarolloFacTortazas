@@ -23,7 +23,7 @@
     <ion-item (click)="seleccionarVenta(venta)" class="itemVenta" *ngFor="let venta of this.storage.listaVenta">
       <ion-icon color="primary" slot="start" name="gift"></ion-icon>
       <ion-label>{{venta.cliente?(venta.cliente.nombre |titlecase):venta.idVenta}}</ion-label>
-      <ion-label slot="end" class="ion-text-end">S/. {{venta.total | number:'1.2'}}</ion-label>
+      <ion-label slot="end" class="ion-text-end">S/. {{venta.totalPagarVenta | number:'1.2'}}</ion-label>
     </ion-item>
   </ion-list>
 </ion-content>

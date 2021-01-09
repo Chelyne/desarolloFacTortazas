@@ -23,7 +23,7 @@
 
     <ion-item>
       <ion-label color="primary" position="floating">Nro Documento</ion-label>
-      <ion-input (ionChange)="consultaSunat($event)" maxlength="11" type="text" (keypress)="numberOnlyValidation($event)" formControlName="numDoc" placeholder="DNI"></ion-input>
+      <ion-input (ionChange)="consultaSunat($event)" maxlength="11" type="text" (keypress)="numberOnlyValidation($event)" formControlName="numDoc" placeholder="{{clienteModalForm.value.tipoDoc | uppercase}}"></ion-input>
     </ion-item>
     <div class="alertDanger" *ngIf="numDoc.invalid && (numDoc.dirty || numDoc.touched)">
       <div *ngIf="typoDocumento==='ruc'">

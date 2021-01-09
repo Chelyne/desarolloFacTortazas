@@ -21,5 +21,8 @@ export interface VentaInterface {
     tipoPago?: string;
     totalPagarVenta?: number;
     descuentoVenta?: number;
+    montoNeto?: number;
+    igv?: number;
+    montoBase?: number;
 }
 

@@ -541,7 +541,7 @@ export class DbDataService {
     // console.log( idCliente, newCliente);
 
     const promesa =  new Promise<void>( (resolve, reject) => {
-      this.afs.doc(idCliente).update(newCliente);
+      this.afs.collection('clientes').doc(idCliente).update(newCliente);
       resolve();
     });
 

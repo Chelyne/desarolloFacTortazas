@@ -101,7 +101,9 @@ export class PuntoVentaPage implements OnInit {
     if (!isNullOrUndefined(this.storage.listaVenta)) {
       this.listaDeVentas = this.storage.listaVenta;
     }
+  }
 
+  ionViewDidEnter() {
     this.dataApi.EstadoCajaChicaVendedor('Aperturado', this.storage.datosAdmi.dni).subscribe(data => {
       if (data.length > 0) {
         this.cajaChica = true;
@@ -110,7 +112,6 @@ export class PuntoVentaPage implements OnInit {
       }
     });
   }
-
   listaProductosCategoria(categoria: string) {
     this.sinDatos = null;
     if (this.categoria !== categoria) {
@@ -314,7 +315,8 @@ export class PuntoVentaPage implements OnInit {
     return {
       cliente: this.cliente,
       listaItemsDeVenta: this.listaItemsDeVenta,
-      totalPagarVenta: this.totalxPagar,
+      // totalPagarVenta: this.totalxPagar,
+      montoNeto: this.totalxPagar,
       idVenta: this.CrearVentaId()
     };
   }
@@ -400,7 +402,7 @@ export class PuntoVentaPage implements OnInit {
           contador++;
         }
         console.log('conbtador', contador);
-        if (contador >= 3) {
+        if (contador >= 1) {
           this.buscarNombre = false;
           break;
         } else {
