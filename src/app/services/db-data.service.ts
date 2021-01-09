@@ -742,6 +742,7 @@ export class DbDataService {
   // ObtenerProductos por categoria
   ObtenerProductosCategoria(sede: string, subCategoria: string) {
     const sede1 = sede.toLocaleLowerCase();
+    // this.afs.collection('sedes').whereGreaterThanOrEqualTo("name", 'celine');
     // tslint:disable-next-line:max-line-length
     this.productoCollection = this.afs.collection('sedes').doc(sede1).collection('productos' , ref => ref.where('subCategoria', '==', subCategoria).orderBy('fechaRegistro', 'desc'));
     // tslint:disable-next-line:max-line-length

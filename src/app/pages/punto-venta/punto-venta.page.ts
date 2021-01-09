@@ -415,7 +415,7 @@ export class PuntoVentaPage implements OnInit {
       // tslint:disable-next-line:max-line-length
       if (this.buscarNombre) {
         // tslint:disable-next-line:max-line-length
-        this.afs.collection('sedes').doc(this.storage.datosAdmi.sede.toLowerCase()).collection('productos', res => res.where('categoria', '==', 'petshop').orderBy('nombre').startAt(lowercaseKey).endAt(lowercaseKey + '\uf8ff')).snapshotChanges()
+        this.afs.collection('sedes').doc(this.storage.datosAdmi.sede.toLowerCase()).collection('productos', res => res.orderBy('nombre').startAt(lowercaseKey).endAt(lowercaseKey + '\uf8ff')).snapshotChanges()
         .pipe(map(changes => {
           return changes.map(action => {
             const data = action.payload.doc.data();
@@ -439,7 +439,7 @@ export class PuntoVentaPage implements OnInit {
         );
       } else {
         // tslint:disable-next-line:max-line-length
-        this.afs.collection('sedes').doc(this.storage.datosAdmi.sede.toLowerCase()).collection('productos', res => res.where('categoria', '==', 'petshop').orderBy('codigoBarra').startAt(lowercaseKey).endAt(lowercaseKey + '\uf8ff')).snapshotChanges()
+        this.afs.collection('sedes').doc(this.storage.datosAdmi.sede.toLowerCase()).collection('productos', res => res.orderBy('codigoBarra').startAt(lowercaseKey).endAt(lowercaseKey + '\uf8ff')).snapshotChanges()
         .pipe(map(changes => {
           return changes.map(action => {
             const data = action.payload.doc.data();

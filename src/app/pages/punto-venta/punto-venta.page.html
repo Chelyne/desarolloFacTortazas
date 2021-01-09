@@ -185,9 +185,11 @@
                 <ion-col size-xs="5" class="colDatos">
                   <ion-label style="font-size: 17px; font-weight: bold;">{{prod.nombre | titlecase}}</ion-label><br>
                   <ion-label >{{prod.cantidad}} {{prod.medida}}</ion-label><br>
-                  <ion-badge>{{prod.subCategoria}}</ion-badge>
+                  <ion-badge>
+                    <ion-label color="light">{{prod.subCategoria | titlecase}}</ion-label>
+                  </ion-badge>
                 </ion-col>
-                <ion-col size-xs="4" class="ion-text-center" style="border-left: solid 1px grey;" *ngIf="prod.categoria !== 'farmacia'">
+                <ion-col size-xs="4" class="ion-text-center" style="border-left: solid 1px grey;">
                   <ion-label style="font-size: 3vh;"><span style="font-size: 15px;">S/.</span>{{prod.precio | number: '1.2'}}</ion-label><br>
                 </ion-col>
               </ion-row>
