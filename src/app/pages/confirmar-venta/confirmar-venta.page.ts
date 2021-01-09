@@ -93,7 +93,7 @@ export class ConfirmarVentaPage implements OnInit {
     this.comprobarSerieComprobante();
 
     this.venta = this.confirmarVentaServ.getVentaService();
-    // console.log('Ventainterfaceeeeeeeeeeeeeeee', this.venta);
+    console.log('Ventainterfaceeeeeeeeeeeeeeee', this.venta);
     if (isNullOrUndefined(this.venta)) {
       this.router.navigate(['/punto-venta']);
     } else {
@@ -343,12 +343,12 @@ export class ConfirmarVentaPage implements OnInit {
       this.cantidadBolsa = 1;
       this.presentToast('Bolsa agregada');
       this.importeTotal = this.importeTotal + 0.3;
-      this.importeDescuento = this.importeDescuento + 0.3;
+      // this.importeDescuento = this.importeDescuento + 0.3;
       this.calcularVuelto();
     } else {
       this.presentToast('Bolsa quitada');
       this.importeTotal = this.importeTotal - (0.3 * this.cantidadBolsa);
-      this.importeDescuento = this.importeDescuento - (0.3 * this.cantidadBolsa);
+      // this.importeDescuento = this.importeDescuento - (0.3 * this.cantidadBolsa);
       this.calcularVuelto();
       this.cantidadBolsa = 0;
     }
@@ -397,28 +397,32 @@ export class ConfirmarVentaPage implements OnInit {
     // console.log(imageData);
     switch (this.tipoComprobante) {
       case 'boleta':
-        let index = 35;
-        const doc = new jsPDF( 'p', 'mm', [45, index  + (this.venta.listaItemsDeVenta.length * 7) + 21 + 12]);
-        doc.addImage(this.LogoEmpresa, 'JPEG', 15, 1, 15, 7);
+        let index = 37;
+        const doc = new jsPDF( 'p', 'mm', [45, index  + (this.venta.listaItemsDeVenta.length * 7) + 5 + 24 + 12]);
+        doc.addImage(this.LogoEmpresa, 'JPEG', 11, 1, 22, 8);
         doc.setFontSize(6);
         doc.setFont('helvetica');
         doc.text('CLÍNICA VETERINARIA TOOBY E.I.R.L', 22.5, 12, {align: 'center'});
         if (this.storage.datosAdmi.sede === 'Andahuaylas') {
-        doc.text('Av. Peru 236 Parque Lampa de Oro ', 22.5, 14, {align: 'center'});
-        doc.text('Telefono: 983905066', 22.5, 17, {align: 'center'});
+        doc.text('Av. Peru 236 Andahuaylas Apurimac ', 22.5, 14, {align: 'center'});
+        doc.text('Parque Lampa de Oro ', 22.5, 16, {align: 'center'});
+
+        doc.text('Telefono: 983905066', 22.5, 19, {align: 'center'});
         }
         if (this.storage.datosAdmi.sede === 'Abancay') {
-          doc.text('Av. Seoane 100 Parque el olivo ', 22.5, 14, {align: 'center'});
-          doc.text('Telefono: 988907777', 22.5, 17, {align: 'center'});
+          doc.text('Av. Seoane 100 Abancay Apurimac', 22.5, 14, {align: 'center'});
+          doc.text('Parque el Olivo', 22.5, 16, {align: 'center'});
+
+          doc.text('Telefono: 988907777', 22.5, 19, {align: 'center'});
           }
-        doc.text('Ruc: ' + this.RUC, 22.5, 19, {align: 'center'});
-        doc.text('Boleta de Venta electrónica', 22.5, 23, {align: 'center'});
+        doc.text('Ruc: ' + this.RUC, 22.5, 21, {align: 'center'});
+        doc.text('Boleta de Venta electrónica', 22.5, 25, {align: 'center'});
         // tslint:disable-next-line:max-line-length
-        doc.text(this.venta.serieComprobante + '-' + this.digitosFaltantes('0', (8 - this.venta.numeroComprobante.length)) + this.venta.numeroComprobante, 22.5, 25, {align: 'center'});
-        doc.text('Ruc o Razon social:', 22.5, 29, {align: 'center'});
-        doc.text( this.venta.cliente.numDoc + ' - ' + this.venta.cliente.nombre, 22.5, 31, {align: 'center'});
+        doc.text(this.venta.serieComprobante + '-' + this.digitosFaltantes('0', (8 - this.venta.numeroComprobante.length)) + this.venta.numeroComprobante, 22.5, 27, {align: 'center'});
+        doc.text('Ruc o Razon social:', 22.5, 31, {align: 'center'});
+        doc.text( this.venta.cliente.numDoc + ' - ' + this.venta.cliente.nombre, 22.5, 33, {align: 'center'});
         // tslint:disable-next-line:max-line-length
-        doc.text('Fecha: ' + formatDate(new Date(), 'dd/MM/yyyy', 'en') + '  ' + 'Hora: ' + formatDate(new Date(), 'HH:mm aa', 'en'), 22.5, 33, {align: 'center'});
+        doc.text('Fecha: ' + formatDate(new Date(), 'dd/MM/yyyy', 'en') + '  ' + 'Hora: ' + formatDate(new Date(), 'HH:mm aa', 'en'), 22.5, 35, {align: 'center'});
         doc.setFontSize(5);
 
         for (const c of this.venta.listaItemsDeVenta) {
@@ -433,14 +437,14 @@ export class ConfirmarVentaPage implements OnInit {
           }
           // tslint:disable-next-line:max-line-length
           // tslint:disable-next-line:max-line-length
-          doc.text( c.producto.cantidad + '.00    ' + 'UND' + '      ' + c.producto.precio.toFixed(2), 2, index + 3, {align: 'justify'});
-          doc.text((c.producto.precio * c.producto.cantidad).toFixed(2), 43, index + 3, {align: 'right'} );
+          doc.text( c.cantidad.toFixed(2) + '    ' + c.producto.medida + '      ' + c.producto.precio.toFixed(2), 2, index + 3, {align: 'justify'});
+          doc.text((c.totalxprod).toFixed(2), 43, index + 3, {align: 'right'} );
 
           doc.text( '__________________________________________', 22.5, index +  3, {align: 'center'});
           index = index + 3;
         }
         doc.text('Descuento:', 2, index + 3, {align: 'left'});
-        doc.text('s/ ' + this.descuentoDeVentaMonto, 43, index + 3, {align: 'right'});
+        doc.text('s/ ' + this.venta.descuentoVenta.toFixed(2), 43, index + 3, {align: 'right'});
         index = index + 2;
         doc.text('ICBP(0.30):', 2, index + 3, {align: 'left'});
         doc.text((this.cantidadBolsa * 0.3).toFixed(2), 43, index + 3, {align: 'right'});
@@ -467,7 +471,7 @@ export class ConfirmarVentaPage implements OnInit {
         let index = 35;
         // tslint:disable-next-line:no-shadowed-variable
         const doc = new jsPDF( 'p', 'mm', [45, index  + (this.venta.listaItemsDeVenta.length * 7) + 19 + 21 + 12]);
-        doc.addImage(this.LogoEmpresa, 'JPEG', 15, 1, 15, 7);
+        doc.addImage(this.LogoEmpresa, 'JPEG', 11, 1, 22, 8);
         doc.setFontSize(6);
         doc.setFont('helvetica');
         doc.text('CLÍNICA VETERINARIA TOOBY E.I.R.L', 22.5, 12, {align: 'center'});
@@ -549,7 +553,7 @@ export class ConfirmarVentaPage implements OnInit {
         let index = 35;
         // tslint:disable-next-line:no-shadowed-variable
         const doc = new jsPDF( 'p', 'mm', [45, index  + (this.venta.listaItemsDeVenta.length * 7) + 23 + 12]);
-        doc.addImage(this.LogoEmpresa, 'JPEG', 15, 1, 15, 7);
+        doc.addImage(this.LogoEmpresa, 'JPEG', 11, 1, 22, 8);
         doc.setFontSize(6);
         doc.setFont('helvetica');
         doc.text('CLÍNICA VETERINARIA TOOBY E.I.R.L', 22.5, 12, {align: 'center'});
@@ -820,7 +824,7 @@ NumeroALetras(num) {
   agregarBolsa() {
     this.cantidadBolsa++;
     this.importeTotal = this.importeTotal + 0.3;
-    this.importeDescuento = this.importeDescuento + 0.3;
+    // this.importeDescuento = this.importeDescuento + 0.3;
     this.calcularVuelto();
   }
 
@@ -828,7 +832,7 @@ NumeroALetras(num) {
     if (this.cantidadBolsa > 1) {
       this.cantidadBolsa--;
       this.importeTotal = this.importeTotal - 0.3;
-      this.importeDescuento = this.importeDescuento - 0.3;
+      // this.importeDescuento = this.importeDescuento - 0.3;
       this.calcularVuelto();
     } else {
       this.presentToast('Minimo 0');

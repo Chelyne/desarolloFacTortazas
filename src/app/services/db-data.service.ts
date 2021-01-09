@@ -908,6 +908,7 @@ export class DbDataService {
     const id = formatDate(new Date(), 'dd-MM-yyyy', 'en');
     const promesa = new Promise( (resolve, reject) => {
       this.afs.collection('sedes').doc(sede.toLocaleLowerCase()).collection('productosVenta').add(data).then( guardado => {
+        console.log(guardado);
         const dataVenta = {
           idListaProductos: guardado.id,
           cliente: venta.cliente,
