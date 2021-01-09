@@ -10,16 +10,18 @@ import * as moment from 'moment';
 import { DatePipe, formatDate } from '@angular/common';
 import { ExportarPDFService } from '../../services/exportar-pdf.service';
 // pdf
-import * as jspdf from 'jspdf';
+// import * as jspdf from 'jspdf';
 import 'jspdf-autotable';
 import {UserOptions} from 'jspdf-autotable';
 // import domtoimage from 'dom-to-image';
 import { PoppoverEditarComponent } from '../../components/poppover-editar/poppover-editar.component';
 import { isNullOrUndefined } from 'util';
 import { CajaChicaInterface } from '../../models/CajaChica';
+import { jsPDF } from 'jspdf';
 // tslint:disable-next-line:class-name
-interface jsPDFWithPlugin extends jspdf.jsPDF {
-  autoTable: (options: UserOptions) => jspdf.jsPDF;
+interface jsPDFWithPlugin extends jsPDF {
+
+  autoTable: (options: UserOptions) => jsPDF;
  }
 
 @Component({
@@ -34,6 +36,7 @@ export class CajaChicaPage implements OnInit {
   buscando: boolean;
   sede;
   LogoEmpresa = '../../../assets/img/TOOBY LOGO.png';
+  RUC = '20601831032';
   listaCajaChica;
 
   sinResultados: string;
@@ -66,67 +69,106 @@ export class CajaChicaPage implements OnInit {
   ngOnInit() {
     this.menuCtrl.enable(true);
   }
-  ReporteVentaDiaGeneral() {
-    this.consultaVentaReporteGeneral().then(data => {
-      console.log(data);
-      const doc = new jspdf.jsPDF('portrait', 'px', 'a4') as jsPDFWithPlugin;
-      doc.setFontSize(16);
-      doc.setFont('bold');
-      doc.text('Reporte General de ventas POS', 120, 30);
-      doc.addImage(this.LogoEmpresa, 'JPEG', 370, 20, 30, 15);
-      doc.setLineWidth(0.5);
-      doc.line(120, 35, 290, 35);
-      doc.rect(30, 40, 387, 40); // empty square
-      doc.setFontSize(12);
-      doc.text( 'Empresa:', 40, 55);
-      doc.text( 'RUC:', 40, 70);
-      doc.text( 'Veterinarias Tooby ,' + this.sede, 75, 55);
-      doc.text( '10232323235', 64, 70);
-      doc.setFontSize(12);
-      doc.text( 'Fecha reporte:', 220, 55);
-      doc.text( formatDate(new Date(), 'dd-MM-yyyy', 'en'), 275, 55);
-      if (isNullOrUndefined(data)) {
-      doc.text( 'No se encontraron registros.', 35, 100);
-      } else {
-        doc.autoTable({
-          head: [['#', 'Tipo transacción', 'Tipo documento', 'Documento', 'Fecha emisión', 'Cliente' , 'N. Documento', 'Moneda', 'Total']],
-          body: this.datosReporteVentaGeneral,
-          startY: 90,
-          theme: 'grid',
-          // foot:  [['ID', 'Name', 'Country']],
+  ReporteVentaDiaGeneral(formato: string) {
+    this.consultaVentaReporteGeneral(formato).then( (data: any) => {
+      if (formato === 'ticked') {
+        // this.ReporteTiket();
+        console.log('datos ticked', data);
+        let totalEfectivo = 0;
+        let totalTargeta = 0;
+        let totalGeneral = 0;
+
+        data.forEach(element => {
+          totalGeneral = totalGeneral + element.totalPagarVenta;
+          if (element.tipoPago === 'efectivo') {
+          totalEfectivo = totalEfectivo + element.totalPagarVenta;
+          }
+          if (element.tipoPago === 'tarjeta') {
+            totalTargeta = totalTargeta + element.totalPagarVenta;
+            }
         });
+        console.log('dtos de efectivo: ', totalEfectivo , 'total tarjeta: ', totalTargeta , 'total general: ', totalGeneral );
+
       }
-      doc.save('reporte General Ventas ' + formatDate(new Date(), 'dd-MM-yyyy', 'en') + '.pdf');
+      if (formato === 'a4') {
+        console.log(data);
+        const doc = new jsPDF('portrait', 'px', 'a4') as jsPDFWithPlugin;
+        doc.setFontSize(16);
+        doc.setFont('bold');
+        doc.text('Reporte General de ventas POS', 120, 30);
+        doc.addImage(this.LogoEmpresa, 'JPEG', 370, 20, 30, 15);
+        doc.setLineWidth(0.5);
+        doc.line(120, 35, 290, 35);
+        doc.rect(30, 40, 387, 40); // empty square
+        doc.setFontSize(12);
+        doc.text( 'Empresa:', 40, 55);
+        doc.text( 'RUC:', 40, 70);
+        doc.text( 'Veterinarias Tooby ,' + this.sede, 75, 55);
+        doc.text( this.RUC, 64, 70);
+        doc.setFontSize(12);
+        doc.text( 'Fecha reporte:', 220, 55);
+        doc.text( formatDate(new Date(), 'dd-MM-yyyy', 'en'), 275, 55);
+        if (isNullOrUndefined(data)) {
+        doc.text( 'No se encontraron registros.', 35, 100);
+        } else {
+          doc.autoTable({
+            // tslint:disable-next-line:max-line-length
+            head: [['#', 'Tipo transacción', 'Tipo documento', 'Documento', 'Fecha emisión', 'Cliente' , 'N. Documento', 'Moneda', 'Total']],
+            body: this.datosReporteVentaGeneral,
+            startY: 90,
+            theme: 'grid',
+            // foot:  [['ID', 'Name', 'Country']],
+          });
+        }
+        doc.save('reporte General Ventas ' + formatDate(new Date(), 'dd-MM-yyyy', 'en') + '.pdf');
+      }
     });
   }
-  consultaVentaReporteGeneral() {
+  consultaVentaReporteGeneral(format: string) {
     const dia = formatDate(new Date(), 'dd-MM-yyyy', 'en');
     const promesa = new Promise((resolve, reject) => {
       this.dataApi.ObtenerReporteVentaGeneralDia (this.sede.toLowerCase(), dia).then( snapshot => {
-        this.datosReporteVentaGeneral = [];
         if (snapshot.empty) {
           this.datosReporteVentaGeneral = null;
         } else {
-          let contador = 0;
-          // tslint:disable-next-line:no-shadowed-variable
-          snapshot.forEach(doc => {
-            contador++;
-            console.log(doc.id, '=>', doc.data());
-            const datos = doc.data();
-            let formato: any;
-            formato = [
-              contador,
-             'Venta',
-             datos.tipoComprobante || null,
-             datos.serieComprobante || null,
-             datos.fechaEmision ? this.datePipe.transform(new Date(moment.unix(datos.fechaEmision.seconds).format('D MMM YYYY H:mm')), 'short') : null,
-             datos.cliente.nombre || null,
-             datos.cliente.dni || datos.cliente.ruc || null,
-             'PEN',
-             datos.total
-            ];
-            this.datosReporteVentaGeneral.push(formato);
-          });
+          if (format === 'a4') {
+            this.datosReporteVentaGeneral = [];
+            let contador = 0;
+            // tslint:disable-next-line:no-shadowed-variable
+            snapshot.forEach(doc => {
+              contador++;
+              console.log(doc.id, '=>', doc.data());
+              const datos = doc.data();
+              let formato: any;
+              formato = [
+                contador,
+               'Venta',
+               datos.tipoComprobante.toUpperCase() || null,
+               datos.serieComprobante + '-' + this.digitosFaltantes('0', (8 - datos.numeroComprobante.length)) + datos.numeroComprobante,
+               datos.fechaEmision ? this.datePipe.transform(new Date(moment.unix(datos.fechaEmision.seconds).format('D MMM YYYY H:mm')), 'short') : null,
+               datos.cliente.nombre.toUpperCase() || null,
+               datos.cliente.numDoc || null,
+               'PEN',
+               datos.totalPagarVenta.toFixed(2)
+              ];
+              this.datosReporteVentaGeneral.push(formato);
+            });
+
+
+          }
+          if (format === 'ticked') {
+            // this.datosReporteVentaGeneral = snapshot;
+            let contador = 0;
+
+            snapshot.forEach(doc => {
+              contador++;
+              console.log(doc.id, '=>', doc.data());
+              const datos = doc.data();
+              datos.numeracion = contador;
+              this.datosReporteVentaGeneral.push(datos);
+            });
+          }
+
         }
         console.log('datos generales a meter', this.datosReporteVentaGeneral);
         resolve(this.datosReporteVentaGeneral);
@@ -138,7 +180,7 @@ export class CajaChicaPage implements OnInit {
     console.log('fecha consulta', datosCaja.FechaConsulta , ' dni', datosCaja.dniVendedor);
     this.ConsultaPuntoVentaVendedor(datosCaja.FechaConsulta, datosCaja.dniVendedor).then(data => {
       console.log(data);
-      const doc = new jspdf.jsPDF('portrait', 'px', 'a4') as jsPDFWithPlugin;
+      const doc = new jsPDF('portrait', 'px', 'a4') as jsPDFWithPlugin;
 
       doc.setFontSize(18);
       doc.setFont('bold');
@@ -160,8 +202,8 @@ export class CajaChicaPage implements OnInit {
       doc.setFontSize(11);
       // doc.setFont('default');
       doc.text( 'Veterinarias Tooby', 75, 60);
-      doc.text( '10232323235', 64, 70);
-      doc.text( datosCaja.nombreVendedor, 81, 80);
+      doc.text( this.RUC, 64, 70);
+      doc.text( datosCaja.nombreVendedor.toUpperCase(), 81, 80);
       doc.text( datosCaja.estado, 98, 90);
       doc.text( 'S./ ' + datosCaja.saldoInicial, 90, 110);
       doc.text( 'S./ ' + datosCaja.saldoFinal, 90, 120);
@@ -233,13 +275,14 @@ export class CajaChicaPage implements OnInit {
             formato = [
               contador,
              'Venta',
-             datos.tipoComprobante || null,
-             datos.serieComprobante || null,
+             datos.tipoComprobante.toUpperCase() || null,
+            //  datos.serieComprobante || null,
+            datos.serieComprobante + '-' + this.digitosFaltantes('0', (8 - datos.numeroComprobante.length)) + datos.numeroComprobante,
              datos.fechaEmision ? this.datePipe.transform(new Date(moment.unix(datos.fechaEmision.seconds).format('D MMM YYYY H:mm')), 'short') : null,
-             datos.cliente.nombre || null,
-             datos.cliente.dni || datos.cliente.ruc || null,
+             datos.cliente.nombre.toUpperCase() || null,
+             datos.cliente.numDoc || null,
              'PEN',
-             datos.total
+             datos.totalPagarVenta
             ];
             this.datosReportePuntoVentaVendedor.push(formato);
           });
@@ -254,7 +297,7 @@ export class CajaChicaPage implements OnInit {
   ReporteIngresoMetPagoVendedor(datosCaja: CajaChicaInterface) {
     console.log('fecha consulta', datosCaja.FechaConsulta , ' dni', datosCaja.dniVendedor);
     this.ConsultaRepIngresoMetPagoVendedor(datosCaja.FechaConsulta, datosCaja.dniVendedor).then(data => {
-      const doc = new jspdf.jsPDF('portrait', 'px', 'a4') as jsPDFWithPlugin;
+      const doc = new jsPDF('portrait', 'px', 'a4') as jsPDFWithPlugin;
       doc.setFontSize(16);
       doc.setFont('bold');
       doc.text('Resúmen de ingresos por métodos de pago', 100, 30);
@@ -272,8 +315,8 @@ export class CajaChicaPage implements OnInit {
       doc.setFontSize(11);
       // doc.setFont('default');
       doc.text( 'Veterinarias Tooby', 75, 60);
-      doc.text( '10232323235', 64, 70);
-      doc.text( datosCaja.nombreVendedor, 81, 80);
+      doc.text( this.RUC, 64, 70);
+      doc.text( datosCaja.nombreVendedor.toUpperCase(), 81, 80);
       doc.text( datosCaja.estado, 98, 90);
 
       doc.setFontSize(12);
@@ -302,6 +345,13 @@ export class CajaChicaPage implements OnInit {
       doc.save('reporteIngresos' + datosCaja.FechaConsulta + '.pdf');
       });
   }
+  digitosFaltantes(caracter: string, num: number) {
+    let final = '';
+    for ( let i = 0; i < num; i++) {
+      final = final + caracter;
+    }
+    return final;
+  }
   ConsultaRepIngresoMetPagoVendedor(dia: string, dniVendedor: string) {
     const promesa = new Promise((resolve, reject) => {
       this.dataApi.ObtenerReporteVentaDiaVendedor(this.sede.toLowerCase(), dia, dniVendedor).then( snapshot => {
@@ -319,13 +369,15 @@ export class CajaChicaPage implements OnInit {
             formato = [
               contador,
               datos.fechaEmision ? this.datePipe.transform(new Date(moment.unix(datos.fechaEmision.seconds).format('D MMM YYYY H:mm')), 'short') : null,
-              datos.tipoComprobante || null,
-              datos.serieComprobante || null,
-              datos.metodoPago || null,
+              datos.tipoComprobante.toUpperCase() || null,
+              datos.serieComprobante + '-' + this.digitosFaltantes('0', (8 - datos.numeroComprobante.length)) + datos.numeroComprobante,
+
+              // datos.serieComprobante || null,
+              datos.tipoPago ? datos.tipoPago.toUpperCase() : null,
               'PEN',
               1,
               0.00,
-              datos.total || null
+              datos.totalPagarVenta || null
             ];
             this.datosReporteIngresoPagoVendedorDia.push(formato);
           });
@@ -408,7 +460,7 @@ export class CajaChicaPage implements OnInit {
   crearArchivoExportar(datosCaja: CajaChicaInterface, formato: string, productos: any) {
       if (formato === 'pdf') {
         console.log('formato pdf');
-        const doc = new jspdf.jsPDF('portrait', 'px', 'a4') as jsPDFWithPlugin;
+        const doc = new jsPDF('portrait', 'px', 'a4') as jsPDFWithPlugin;
         doc.setFontSize(16);
         doc.setFont('bold');
         doc.text('Resúmen de ingresos por métodos de pago', 100, 30);
@@ -424,7 +476,7 @@ export class CajaChicaPage implements OnInit {
         doc.setFontSize(11);
         // doc.setFont('default');
         doc.text( 'Veterinarias Tooby', 75, 60);
-        doc.text( '10232323235', 64, 70);
+        doc.text( this.RUC, 64, 70);
         doc.text( datosCaja.nombreVendedor, 81, 80);
         doc.text( datosCaja.estado, 98, 90);
         doc.setFontSize(12);
@@ -448,7 +500,7 @@ export class CajaChicaPage implements OnInit {
               let formato: any;
               formato = [
                 contador,
-                datos.producto.nombre || null,
+                datos.producto.nombre.toUpperCase() || null,
                 datos.cantidad || null,
                 datos.serieComprobante || null,
               ];
@@ -483,11 +535,11 @@ export class CajaChicaPage implements OnInit {
             // tslint:disable-next-line:no-shadowed-variable
             const formato: any = {
               '#': contador,
-              Producto: datos.producto.nombre,
+              Producto: datos.producto.nombre.toUpperCase(),
               Cantidad: datos.cantidad,
               Comprobante: datos.serieComprobante,
               Fecha: datosCaja.FechaConsulta,
-              Caja: datosCaja.nombreVendedor
+              Caja: datosCaja.nombreVendedor.toUpperCase()
             };
             dataExcel.push(formato);
             });
@@ -654,6 +706,28 @@ export class CajaChicaPage implements OnInit {
     });
     toast.present();
   }
+  async ReporteVentaGeneralDia(ev: any){
+    const popover = await this.popoverCtrl.create({
+      component: PoppoverEditarComponent,
+      event: ev,
+      translucent: true,
+      mode: 'ios',
+      componentProps: {
+        formato: true
+      }
+    });
+    await popover.present();
+
+    const { data } = await popover.onWillDismiss();
+    console.log(data);
+    if (data) {
+      switch (data.action) {
+        case 'a4': console.log('a4'); this.ReporteVentaDiaGeneral('a4'); break;
+        case 'ticked': console.log('ticked'); this.ReporteVentaDiaGeneral('ticked'); break;
+      }
+    }
+
+  }
   async ReporteProductos(ev: any, item: CajaChicaInterface) {
     const popover = await this.popoverCtrl.create({
       component: PoppoverEditarComponent,
@@ -675,72 +749,34 @@ export class CajaChicaPage implements OnInit {
       }
     }
   }
-  tiket() {
-    // const opciones = {
-    //   orientation: 'p',
-    //   unit: 'mm',
-    //   format: [240, 300]
-    // };
-
-    // const doc = new jspdf.jsPDF( 'p', 'mm', [45, 350]) as jsPDFWithPlugin;
-    // doc.setFontSize(6);
-    // doc.setFont('Arial', 'B');
-    // doc.text('CUADRE PARCIAL NRO. ' + '30-12', 8, 10);
-    // doc.text('Hora.' + '20:02:03', 15, 12);
-    // doc.text('-------------------------------------------------------------', 1, 14);
-    // doc.text('CAJERO.% CAJA.% TNO.%', 2, 16);
-    // doc.text('fECHAI. 30-12-2020 FECHAF.30-12-2020', 2, 18);
-    // doc.text('-------------------------------------------------------------', 1, 20);
-    // doc.save('tiket' + '.pdf');
-    // doc.autoPrint();
-    // doc.output('dataurlnewwindow');
-    // const canvas = document.getElementById('pdf');
-
-    // domtoimage.toPng(canvas).then((dataUrl) => {
-    //     // tslint:disable-next-line:prefer-const
-    //     let imagen = new Image(350);
-    //     imagen.src = dataUrl; /*obtengo el screenshot*/
-    //     // const doc = new jspdf.jsPDF( 'p', 'mm', [45, 350]) as jsPDFWithPlugin;
-
-    //     const  doc = new jspdf.jsPDF( 'p', 'mm', [45, 350]);
-    //     /* creamos el pdf con jspdf, l es de landscape, mm: medidas en milímetros, y A4 el formato*/
-    //     // tslint:disable-next-line:max-line-length
-    // tslint:disable-next-line:max-line-length
-    //     doc.addImage( imagen, 18, 10, 260, 189); /*imagen: es la captura que insertaremos en el pdf, 18: margen izquierdo, 10: margen superior, 260:ancho, 189:alto, pueden jugar con estos valores, de esta forma me quedó prolijo en A4 horizontal*/
-    //     doc.save( 'documento.pdf' ); /* descargamos el pdf con ese nombre.*/
-    // }
-    // );
-
-    const doc = new jspdf.jsPDF( 'p', 'mm', [45, 350]) as jsPDFWithPlugin;
-    doc.addImage(this.LogoEmpresa, 'JPEG', 18, 7, 10, 7);
+  ReporteTiket() {
+    const doc = new jsPDF( 'p', 'mm', [45, 60]);
+    doc.addImage(this.LogoEmpresa, 'JPEG', 15, 5, 15, 7);
     doc.setFontSize(6);
-    doc.setFont('Arial', 'B');
-    doc.text('Veterinarias Tooby', 12, 16);
-    doc.text('Av. Peru 236 Parque Lampa de Oro ', 9, 18);
-    doc.text('Telefono: 989898989', 12, 20);
-    doc.text('Ruc: 20706679362', 15, 22);
-    doc.text('Boleta de Venta electronica', 8, 24);
-    doc.text('B0000378', 2, 28);
-    doc.text('Fecha:12/12/2020', 2, 30);
-    doc.text('Ruc o Rason social: 00000000 clientevarios', 1, 32);
-    let index = 34;
-    for (const c of ['papel higienico', 'papel higienico', 'papel higienico', ]) {
-      doc.text( '______________________________________', 2, index);
-      index = index + 3;
-      doc.text( c, 2, index);
-      doc.text( '4' + '.000    ' + 'UND' + '         ' + '10.00                  ' + '40' + '.00' , 2, index + 3);
+    doc.setFont('courier');
+    doc.text('CUADRE PARCIAL Nro. ' + formatDate(new Date(), 'dd-MM', 'en'), 22.5, 16, {align: 'center'});
+    doc.text('HORA:' +  formatDate(new Date(), 'HH:mm aa', 'en'), 22.5, 18, {align: 'center'});
 
-      doc.text( '______________________________________', 2, index +  3);
-      index = index + 3;
+    doc.text(this.sede, 22.5, 20, {align: 'center'});
 
-    }
-    doc.text('Importe Total:                                   ' + 45.00, 2, index + 3);
+    doc.text( '________________________________________', 22.5, 22, {align: 'center'});
+    doc.text('Cajero.%  Caja.%  TND:%', 2, 24, {align: 'left'});
+    // tslint:disable-next-line:max-line-length
+    doc.text( 'FechaI.: ' + formatDate(new Date(), 'dd/MM/yyyy', 'en'), 2 , 26, {align: 'left'});
+    doc.text( 'FechaF.: ' + formatDate(new Date(), 'dd/MM/yyyy', 'en'), 2 , 28, {align: 'left'});
+    doc.text( '________________________________________', 22.5, 29, {align: 'center'});
 
+    doc.text( 'Cajero. ', 2 , 31, {align: 'left'});
+    doc.text( 'Cantidad. ', 22.5 , 31, {align: 'center'});
+    doc.text( 'S/. ', 43 , 31, {align: 'right'});
+
+    doc.text( 'Ana ', 2 , 33, {align: 'left'});
+    doc.text( '23 ', 22.5 , 33, {align: 'center'});
+    doc.text( '12.00', 43 , 33, {align: 'right'});
+
+    // doc.text( 'FechaF.: ' + formatDate(new Date(), 'dd/MM/yyyy', 'en'), 2 , 26, {align: 'left'});
     doc.save('tiket' + '.pdf');
     doc.autoPrint();
-    // doc.output('dataurlnewwindow');
-    const canvas = document.getElementById('pdf');
-
   }
 
   // pruebaPaginacion() {

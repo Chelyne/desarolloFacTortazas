@@ -75,7 +75,7 @@
     <ion-item lines="none">
       <ion-label color="primary" position="floating">Proveedor</ion-label>
       <!-- {{provedorObtenido.ruc}} - {{provedorObtenido.nombre}} -->
-      <ion-input #proveedorInput (click)="modalProveedor()" placeholder="Seleccionar proveedor" [value]="provedorObtenido?provedorObtenido.ruc + ' - ' + provedorObtenido.nombre:''" type="text"></ion-input>
+      <ion-input #proveedorInput (click)="modalProveedor()" placeholder="Seleccionar proveedor" [value]="provedorObtenido?provedorObtenido.numeroDocumento + ' - ' + provedorObtenido.nombre:''" type="text"></ion-input>
       <!-- <ion-label style="color:green">{{proveedorInput.value}}</ion-label> -->
     </ion-item>
     <ion-item-divider>

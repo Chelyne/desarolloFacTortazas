@@ -1,5 +1,5 @@
 export interface ContadorDeSerieInterface {
-    idSerie?: string;
+    id?: string; // idSerie NO
     tipoComprobante?: string;
     serie?: string;
     numero?: string;

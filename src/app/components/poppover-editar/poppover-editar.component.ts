@@ -11,6 +11,7 @@ export class PoppoverEditarComponent implements OnInit {
 
   @Input() exportar;
   @Input() importarProductosCompuestos;
+  @Input() formato;
 
   constructor(private popoverController: PopoverController) { }
 

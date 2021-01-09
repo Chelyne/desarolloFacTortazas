@@ -543,7 +543,7 @@ export class DbDataService {
     // console.log( idCliente, newCliente);
 
     const promesa =  new Promise<void>( (resolve, reject) => {
-      this.afs.doc(idCliente).update(newCliente);
+      this.afs.collection('clientes').doc(idCliente).update(newCliente);
       resolve();
     });
 
@@ -841,7 +841,8 @@ export class DbDataService {
       // Actualizar empresa
       const id = this.datosEmpresa[0].id;
       const promesa =  new Promise( (resolve) => {
-        this.afs.collection('empresa').doc(id).update(empresa);
+        // NOTE: Si hay una empresa entonces remplazarlo
+        this.afs.collection('empresa').doc(id).set(empresa);
         // tslint:disable-next-line: no-unused-expression
         resolve;
       });
@@ -909,6 +910,7 @@ export class DbDataService {
     const id = formatDate(new Date(), 'dd-MM-yyyy', 'en');
     const promesa = new Promise( (resolve, reject) => {
       this.afs.collection('sedes').doc(sede.toLocaleLowerCase()).collection('productosVenta').add(data).then( guardado => {
+        console.log(guardado);
         const dataVenta = {
           idListaProductos: guardado.id,
           cliente: venta.cliente,
@@ -916,6 +918,7 @@ export class DbDataService {
           totalPagarVenta: venta.totalPagarVenta,
           tipoComprobante: venta.tipoComprobante,
           serieComprobante: venta.serieComprobante,
+          numeroComprobante: venta.numeroComprobante,
           fechaEmision: new Date(),
           bolsa: venta.bolsa,
           tipoPago: venta.tipoPago,
@@ -932,7 +935,7 @@ export class DbDataService {
 
 
   obtenerProductosDeVenta(idProductoVenta: string, sede: string){
-    console.log('PPPPPPPPPPPPPPPPPPPPPRODUCTOvENTA', idProductoVenta);
+    console.log('Id de un producto de venta en productVEnta', idProductoVenta);
     this.itemDeventaDoc = this.afs.collection('sedes').doc(sede.toLocaleLowerCase())
     .collection('productosVenta').doc(idProductoVenta); // , ref => ref.where('id', '==', idProductoVenta));
 
@@ -945,6 +948,7 @@ export class DbDataService {
             const data = action.payload.data();
             return data;
           }
+          // CLEAN
           // return changes.map(action => {
           //   const data = action.payload.doc.data() as ItemDeVentaInterface;
           //   // data.id = action.payload.doc.id;
@@ -955,5 +959,46 @@ export class DbDataService {
       ));
   }
 
+
+  // ESTADO DE CAJA CHICA
+
+  EstadoCajaChicaVendedor(estadoCaja: string, dni: string) {
+    console.log('obteniedno caja de: ', dni, ' con el estado ABIERTO: ', estadoCaja);
+    // tslint:disable-next-line:max-line-length
+    const consulta = this.afs.collection('CajaChica', ref => ref.where('estado', '==', estadoCaja).where( 'dniVendedor', '==', dni).limit(1));
+    return consulta.snapshotChanges().pipe(map(changes => {
+      return changes.map(action => {
+        const data = action.payload.doc.data() as CompraInterface;
+        data.id = action.payload.doc.id;
+        return data;
+      });
+    }));
+  }
+
+  // CORRELCION DE COMPROBANTE
+
+  obtenerCorrelacion(serie: string, sede: string) {
+    // tslint:disable-next-line:max-line-length
+    const consulta = this.afs.collection('sedes').doc(sede.toLocaleLowerCase()).collection('serie', ref => ref.where('serie', '==', serie).limit(1));
+    return consulta.snapshotChanges().pipe(map(changes => {
+      return changes.map(action => {
+        const data = action.payload.doc.data() as CompraInterface;
+        data.id = action.payload.doc.id;
+        return data;
+      });
+    }));
+  }
+
+  // ACTUALIZAR CORRELACION
+
+  ActualizarCorrelacion(id: string, sede: string, correlacion1: number){
+    console.log('ACTUALIZA CORRELACIN ' + correlacion1);
+    const promesa =  new Promise( (resolve, reject) => {
+      this.afs.collection('sedes').doc(sede.toLocaleLowerCase()).collection('serie').doc(id).update({correlacion: correlacion1});
+      resolve(resolve);
+    });
+
+    return promesa;
+  }
 
 }
