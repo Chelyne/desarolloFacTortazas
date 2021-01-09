@@ -105,7 +105,7 @@ export class CajaChicaPage implements OnInit {
   consultaVentaReporteGeneral() {
     const dia = formatDate(new Date(), 'dd-MM-yyyy', 'en');
     const promesa = new Promise((resolve, reject) => {
-      this.dataApi.ObtenerReporteVentaGeneralDia (this.sede.toLowerCase(), dia).then( snapshot => {
+      this.dataApi.ObtenerReporteVentaGeneralDia (this.sede.toLowerCase(), dia).then( (snapshot) => {
         this.datosReporteVentaGeneral = [];
         if (snapshot.empty) {
           this.datosReporteVentaGeneral = null;
@@ -115,7 +115,7 @@ export class CajaChicaPage implements OnInit {
           snapshot.forEach(doc => {
             contador++;
             console.log(doc.id, '=>', doc.data());
-            const datos = doc.data();
+            const datos = doc.data() ;
             let formato: any;
             formato = [
               contador,

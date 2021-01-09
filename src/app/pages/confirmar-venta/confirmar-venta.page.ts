@@ -376,7 +376,9 @@ export class ConfirmarVentaPage implements OnInit {
         const canvas = document.getElementById('pdf');
         break;
       case'factura': {
+        // tslint:disable-next-line:no-shadowed-variable
         let index = 38;
+        // tslint:disable-next-line:no-shadowed-variable
         const doc = new jsPDF( 'p', 'mm', [45, index  + (this.venta.listaItemsDeVenta.length * 7) + 18 + 6 + 20 + 6]);
         doc.addImage(this.LogoEmpresa, 'JPEG', 15, 5, 15, 7);
         doc.setFontSize(6);

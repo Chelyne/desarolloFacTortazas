@@ -23,6 +23,8 @@ export class AgregarEditarClientePage implements OnInit {
   @Input() dataInvoker: ClienteInterface;
   typoDocumento = 'dni';
 
+  consultando: boolean;
+  encontrado: boolean;
   constructor(
     private dataApi: DbDataService,
     private modalCtlr: ModalController,
@@ -181,6 +183,7 @@ export class AgregarEditarClientePage implements OnInit {
     console.log(event.detail.value);
     if (this.typoDocumento === 'dni') {
       if (event.detail.value.length === 8) {
+        this.consultando = true;
         const httpOptions = {
           headers: new HttpHeaders({
             // 'Content-Type':  'application/json',
@@ -190,13 +193,21 @@ export class AgregarEditarClientePage implements OnInit {
         };
         this.http.get('https://dni.optimizeperu.com/api/persons/' + event.detail.value).subscribe((data: any) => {
           console.log(data);
-          if (!isNullOrUndefined(data) && data !== 'Peticiones diarias excedidas') {
+          if (!isNullOrUndefined(data) && data !== 'Peticiones diarias excedidas' && data.name) {
+            this.encontrado = true;
             this.clienteModalForm.value.nombre = data.name + ' ' + data.first_name + ' ' + data.last_name;
+            this.consultando = false;
+          } else {
+            this.encontrado = false;
           }
+        }, err => {
+          this.consultando = false;
+          this.encontrado = false;
         });
       }
     } else {
       if (event.detail.value.length === 11) {
+        this.consultando = true;
         const httpOptions = {
           headers: new HttpHeaders({
             // 'Content-Type':  'application/json',
@@ -204,13 +215,21 @@ export class AgregarEditarClientePage implements OnInit {
             'Authorization': 'token k4d2956bd531ab61d44f4fa07304b20e13913815'
           })
         };
-        this.http.get('https://dni.optimizeperu.com/api/company/' + event.detail.value).subscribe((data: any) => {
-          if (!isNullOrUndefined(data) && data !== 'Peticiones diarias excedidas') {
+        const url = 'https://dni.optimizeperu.com/api/company/';
+        this.http.get('https://dniruc.apisperu.com/api/v1/ruc/' + event.detail.value + '?token=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJlbWFpbCI6ImFpaXp4Ym92c2dxcnRpZ2J3cEBuaXdnaHguY29tIn0.BwArIEbkSUE_GuXwPjETGTLvl88rhANKTsVcA7NY-WE').subscribe((data: any) => {
+          if (!isNullOrUndefined(data) && data !== 'Peticiones diarias excedidas' && data.razonSocial) {
+            this.encontrado = true;
             console.log(data);
-            this.clienteModalForm.value.direccion = data.domicilio_fiscal;
-            this.clienteModalForm.value.nombre = data.razon_social;
+            this.clienteModalForm.value.direccion = data.direccion;
+            this.clienteModalForm.value.nombre = data.razonSocial;
             console.log(this.clienteModalForm.value);
+            this.consultando = false;
+          } else {
+            this.encontrado = false;
           }
+        }, err => {
+          this.consultando = false;
+          this.encontrado = false;
         });
       }
     }

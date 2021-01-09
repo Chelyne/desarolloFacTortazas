@@ -11,20 +11,6 @@
 
 <ion-content>
   <form [formGroup]="proveedorModalForm" autocomplete="off">
-
-    <ion-item>
-      <ion-label color="primary" position="floating">Nombre</ion-label>
-      <ion-input type="text" formControlName="nombre" placeholder="Persona o Empresa"></ion-input>
-    </ion-item>
-    <div class="alertDanger" *ngIf="nombre.invalid && (nombre.dirty || nombre.touched)">
-      <div class="mensajeError" *ngIf="nombre.errors.required">
-        *Complete el nombre del proveedor
-      </div>
-      <div class="mensajeError" *ngIf="!nombre.errors.required && !nombre.errors.minLength">
-        *Ingrese mínimo 3 caracteres
-      </div>
-    </div>
-
     <!-- <ion-item>
       <ion-label>RUC:* </ion-label>
       <ion-input type="text" formControlName="ruc" placeholder="RUC" (keypress)="numberOnlyValidation($event)"></ion-input>
@@ -51,13 +37,19 @@
 
     <ion-item>
       <ion-label color="primary" position="floating">Número Documento</ion-label>
-      <ion-input placeholder="Número Documento" type="text" formControlName="numeroDocumento" (keypress)="numberOnlyValidation($event)"></ion-input>
+      <ion-input (ionChange)="consultaSunat($event)" placeholder="Número Documento" maxlength="11" type="text" formControlName="numeroDocumento" (keypress)="numberOnlyValidation($event)"></ion-input>
+      <ion-buttons slot="end">
+        <ion-button>
+          <ion-spinner slot="icon-only" color="primary" *ngIf="consultando" name="crescent"></ion-spinner>
+          <ion-icon slot="icon-only" *ngIf="!consultando && encontrado" color="success" name="shield-checkmark"></ion-icon>
+          <ion-icon slot="icon-only" *ngIf="!consultando && !encontrado" color="danger" name="close-circle"></ion-icon>
+        </ion-button>
+      </ion-buttons>
     </ion-item>
     <div class="alertDanger" *ngIf="numeroDocumento.invalid && (numeroDocumento.dirty || numeroDocumento.touched)">
       <div *ngIf="typoDocumento=='ruc'">
         <div class="mensajeError" *ngIf="numeroDocumento.errors.required">
           *Ingrese el Número del Documento
-          Ingrese ruc
         </div>
         <div class="alertDanger" *ngIf="numeroDocumento.errors.minlength">
           *Ingresaste al menos 8 carácteres
@@ -69,7 +61,6 @@
       <div *ngIf="typoDocumento=='dni'">
         <div class="mensajeError" *ngIf="numeroDocumento.errors.required">
           *Ingrese el Número del Documento
-          Ingrese DNI
         </div>
         <div class="alertDanger" *ngIf="numeroDocumento.errors.minlength">
           *Ingresaste al menos 8 carácteres
@@ -77,6 +68,19 @@
         <div class="alertDanger" *ngIf="numeroDocumento.errors.maxlength">
           *Ingrese máximo 11 caracteres
         </div>
+      </div>
+    </div>
+
+    <ion-item>
+      <ion-label color="primary" position="floating">Nombre</ion-label>
+      <ion-input value="{{this.proveedorModalForm.value.nombre}}" type="text"  formControlName="nombre" placeholder="Persona o Empresa"></ion-input>
+    </ion-item>
+    <div class="alertDanger" *ngIf="nombre.invalid && (nombre.dirty || nombre.touched)">
+      <div class="mensajeError" *ngIf="nombre.errors.required">
+        *Complete el nombre del proveedor
+      </div>
+      <div class="mensajeError" *ngIf="!nombre.errors.required && !nombre.errors.minLength">
+        *Ingrese mínimo 3 caracteres
       </div>
     </div>
 
@@ -98,7 +102,7 @@
 
     <ion-item>
       <ion-label color="primary" position="floating">Dirección</ion-label>
-      <ion-input type="text" formControlName="direccion" placeholder="Dirección"></ion-input>
+      <ion-input value="{{this.proveedorModalForm.value.direccion}}" type="text" formControlName="direccion" placeholder="Dirección"></ion-input>
     </ion-item>
     <div class="alertDanger" *ngIf="direccion.invalid && (direccion.dirty || direccion.touched)">
       <div class="mensajeError" *ngIf="direccion.errors.required">
