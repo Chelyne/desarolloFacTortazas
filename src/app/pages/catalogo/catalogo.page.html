@@ -74,18 +74,15 @@
                             <ion-searchbar (ionClear)="limpiarBuscador()" (ionChange)="Search($event)" #search placeholder="Buscar" inputmode="text" debounce="1000" animated="true" mode="ios"></ion-searchbar>
                         </ion-item>
                         <ion-list>
-                            <ion-item *ngFor="let item of categorias" (click)="irLIstaProductos(item.categoria)">
+                            <ion-item *ngFor="let cat of listaDeCategorias" (click)="irLIstaProductos(cat.categoria)">
                                 <ion-avatar slot="start">
-                                    <img *ngIf="item.img" src="{{item.img}}" alt="">
-                                    <img *ngIf="!item.img" src="../../../assets/img/pet chop.png" alt="">
+                                    <img *ngIf="cat.img" src="{{cat.img}}" alt="">
+                                    <img *ngIf="!cat.img" src="../../../assets/img/pet chop.png" alt="">
                                 </ion-avatar>
                                 <ion-label>
-                                    <h2>{{item.categoria}}</h2>
-                                    <h3>{{item.cantidad}} {{item.medida}}</h3>
-                                    <p *ngIf="item.precio" class="precio">S/. {{item.precio | number: '1.2'}}</p>
+                                    <h2>{{cat.categoria}}</h2>
                                 </ion-label>
                             </ion-item>
-
                         </ion-list>
                     </ion-card-content>
                 </ion-card>

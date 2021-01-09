@@ -42,6 +42,7 @@ export class CatalogoPage implements OnInit {
     public alertController: AlertController,
     private afs: AngularFirestore) {
     this.ObtenerProductos();
+    this.ObtenerCategorias();
     this.menuCtrl.enable(true);
     this.route.queryParams.subscribe(params => {
       this.categoria = 'petshop';
@@ -49,7 +50,6 @@ export class CatalogoPage implements OnInit {
    }
 
    ngOnInit() {
-    console.log(this.categorias);
     this.categorias = this.categoriasService.getcategoriasNegocio(this.categoria);
     this.ultimaCategoria = 4;
 
@@ -62,6 +62,13 @@ export class CatalogoPage implements OnInit {
   ObtenerProductos(){
     this.dataApi.ObtenerListaProductosSinCat(this.sedes, 20).subscribe(data => {
       this.listaDeProductos = data;
+    });
+  }
+
+   // btener lista de productos
+   ObtenerCategorias(){
+    this.dataApi.ObtenerListaCategorias(this.sedes, 20).subscribe(data => {
+      this.listaDeCategorias = data;
     });
   }
 
