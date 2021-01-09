@@ -415,7 +415,7 @@ export class ConfirmarVentaPage implements OnInit {
     switch (this.tipoComprobante) {
       case 'boleta':
         let index = 37;
-        const doc = new jsPDF( 'p', 'mm', [45, index  + (this.venta.listaItemsDeVenta.length * 7) + 5 + 24 + 12]);
+        const doc = new jsPDF( 'p', 'mm', [45, index  + (this.venta.listaItemsDeVenta.length * 7) + 7 + 30 + 12]);
         doc.addImage(this.LogoEmpresa, 'JPEG', 11, 1, 22, 8);
         doc.setFontSize(6);
         doc.setFont('helvetica');
@@ -437,7 +437,7 @@ export class ConfirmarVentaPage implements OnInit {
         // tslint:disable-next-line:max-line-length
         doc.text(this.venta.serieComprobante + '-' + this.digitosFaltantes('0', (8 - this.venta.numeroComprobante.length)) + this.venta.numeroComprobante, 22.5, 27, {align: 'center'});
         doc.text('Ruc o Razon social:', 22.5, 31, {align: 'center'});
-        doc.text( this.venta.cliente.numDoc + ' - ' + this.venta.cliente.nombre, 22.5, 33, {align: 'center'});
+        doc.text( this.venta.cliente.numDoc + ' - ' + this.convertirMayuscula(this.venta.cliente.nombre), 22.5, 33, {align: 'center'});
         // tslint:disable-next-line:max-line-length
         doc.text('Fecha: ' + formatDate(new Date(), 'dd/MM/yyyy', 'en') + '  ' + 'Hora: ' + formatDate(new Date(), 'HH:mm aa', 'en'), 22.5, 35, {align: 'center'});
         doc.setFontSize(5);
@@ -460,19 +460,28 @@ export class ConfirmarVentaPage implements OnInit {
           doc.text( '__________________________________________', 22.5, index +  3, {align: 'center'});
           index = index + 3;
         }
-        doc.text('Descuento:', 2, index + 3, {align: 'left'});
-        doc.text('s/ ' + this.venta.descuentoVenta.toFixed(2), 43, index + 3, {align: 'right'});
-        index = index + 2;
-        doc.text('ICBP(0.30):', 2, index + 3, {align: 'left'});
+        doc.text('SubTotal: S/ ', 35, index + 3, {align: 'right'});
+        doc.text(this.venta.montoNeto.toFixed(2), 43, index + 3, {align: 'right'});
+        doc.text('Descuento: S/ ', 35, index + 5, {align: 'right'});
+        doc.text(this.venta.descuentoVenta.toFixed(2), 43, index + 5, {align: 'right'});
+        index = index + 4;
+        doc.text('ICBP(0.30): S/ ', 35, index + 3, {align: 'right'});
         doc.text((this.cantidadBolsa * 0.3).toFixed(2), 43, index + 3, {align: 'right'});
-        doc.text('Importe Total:', 2, index + 5, {align: 'left'});
-        doc.text('s/ ' + this.venta.totalPagarVenta.toFixed(2), 43, index + 5, {align: 'right'});
+        doc.text('Importe Total: S/ ', 35, index + 5, {align: 'right'});
+        doc.text(this.venta.totalPagarVenta.toFixed(2), 43, index + 5, {align: 'right'});
+        doc.text('Vuelto: S/ ', 35, index + 7, {align: 'right'});
+        doc.text(this.vuelto.toFixed(2), 43, index + 7, {align: 'right'});
         doc.setFontSize(3.5);
-        doc.text('SON ' + this.NumeroALetras(this.venta.totalPagarVenta), 2, index + 7, {align: 'left'});
+        doc.text('SON ' + this.NumeroALetras(this.venta.totalPagarVenta), 2, index + 9, {align: 'left'});
         doc.setFontSize(4);
-        doc.text('Vendedor: ' + this.venta.vendedor.nombre, 2, index + 9, {align: 'left'});
-        doc.addImage(qr, 'JPEG', 15, index + 8, 15, 15);
-        index = index + 24;
+        doc.text('Vendedor: ' + this.convertirMayuscula(this.venta.vendedor.nombre), 2, index + 11, {align: 'left'});
+        // doc.text(this.venta.vendedor.nombre.toUpperCase(), 43, index + 11, {align: 'right'});
+
+        doc.text('Forma de Pago: ' + this.convertirMayuscula(this.venta.tipoPago) , 2, index + 13, {align: 'left'});
+        // doc.text(this.venta.tipoPago.toUpperCase(), 43, index + 13, {align: 'right'});
+
+        doc.addImage(qr, 'JPEG', 15, index + 14, 15, 15);
+        index = index + 30;
         doc.setFontSize(4);
         doc.text('Representación impresa del comprobante de pago\r de Venta Electrónica, esta puede ser consultada en\r www.tooby.com\rNO ACEPTAMOS DEVOLUCIONES', 22.5, index + 3, {align: 'center'});
         doc.text('GRACIAS POR SU COMPRA', 22.5, index + 10, {align: 'center'});
@@ -567,30 +576,35 @@ export class ConfirmarVentaPage implements OnInit {
       }
       case 'n. venta': {
         // tslint:disable-next-line:no-shadowed-variable
-        let index = 35;
+        let index = 37;
         // tslint:disable-next-line:no-shadowed-variable
-        const doc = new jsPDF( 'p', 'mm', [45, index  + (this.venta.listaItemsDeVenta.length * 7) + 23 + 12]);
+        const doc = new jsPDF( 'p', 'mm', [45, index  + (this.venta.listaItemsDeVenta.length * 7) + 7 + 22 + 12]);
         doc.addImage(this.LogoEmpresa, 'JPEG', 11, 1, 22, 8);
         doc.setFontSize(6);
         doc.setFont('helvetica');
         doc.text('CLÍNICA VETERINARIA TOOBY E.I.R.L', 22.5, 12, {align: 'center'});
         if (this.storage.datosAdmi.sede === 'Andahuaylas') {
-        doc.text('Av. Peru 236 Parque Lampa de Oro ', 22.5, 14, {align: 'center'});
-        doc.text('Telefono: 983905066', 22.5, 17, {align: 'center'});
+        doc.text('Av. Peru 236 Andahuaylas Apurimac ', 22.5, 14, {align: 'center'});
+        doc.text('Parque Lampa de Oro ', 22.5, 16, {align: 'center'});
+
+        doc.text('Telefono: 983905066', 22.5, 19, {align: 'center'});
         }
         if (this.storage.datosAdmi.sede === 'Abancay') {
-          doc.text('Av. Seoane 100 Parque el olivo ', 22.5, 14, {align: 'center'});
-          doc.text('Telefono: 988907777', 22.5, 17, {align: 'center'});
+          doc.text('Av. Seoane 100 Abancay Apurimac', 22.5, 14, {align: 'center'});
+          doc.text('Parque el Olivo', 22.5, 16, {align: 'center'});
+
+          doc.text('Telefono: 988907777', 22.5, 19, {align: 'center'});
           }
-        doc.text('Ruc: ' + this.RUC, 22.5, 19, {align: 'center'});
-        doc.text('Nota de Venta electrónica', 22.5, 23, {align: 'center'});
+        doc.text('Ruc: ' + this.RUC, 22.5, 21, {align: 'center'});
+        doc.text('Nota de Venta electrónica', 22.5, 25, {align: 'center'});
         // tslint:disable-next-line:max-line-length
-        doc.text(this.venta.serieComprobante + '-' + this.digitosFaltantes('0', (8 - this.venta.numeroComprobante.length)) + this.venta.numeroComprobante, 22.5, 25, {align: 'center'});
-        doc.text('Ruc o Razon social:', 22.5, 29, {align: 'center'});
-        doc.text( this.venta.cliente.numDoc + ' - ' + this.venta.cliente.nombre, 22.5, 31, {align: 'center'});
+        doc.text(this.venta.serieComprobante + '-' + this.digitosFaltantes('0', (8 - this.venta.numeroComprobante.length)) + this.venta.numeroComprobante, 22.5, 27, {align: 'center'});
+        doc.text('Ruc o Razon social:', 22.5, 31, {align: 'center'});
+        doc.text( this.venta.cliente.numDoc + ' - ' + this.convertirMayuscula(this.venta.cliente.nombre), 22.5, 33, {align: 'center'});
         // tslint:disable-next-line:max-line-length
-        doc.text('Fecha: ' + formatDate(new Date(), 'dd/MM/yyyy', 'en') + '  ' + 'Hora: ' + formatDate(new Date(), 'HH:mm aa', 'en'), 22.5, 33, {align: 'center'});
+        doc.text('Fecha: ' + formatDate(new Date(), 'dd/MM/yyyy', 'en') + '  ' + 'Hora: ' + formatDate(new Date(), 'HH:mm aa', 'en'), 22.5, 35, {align: 'center'});
         doc.setFontSize(5);
+
         for (const c of this.venta.listaItemsDeVenta) {
           doc.text( '__________________________________________', 22.5, index, {align: 'center'});
           index = index + 3;
@@ -603,34 +617,37 @@ export class ConfirmarVentaPage implements OnInit {
           }
           // tslint:disable-next-line:max-line-length
           // tslint:disable-next-line:max-line-length
-          doc.text( c.producto.cantidad + '.00    ' + 'UND' + '      ' + c.producto.precio.toFixed(2), 2, index + 3, {align: 'justify'});
-          doc.text((c.producto.precio * c.producto.cantidad).toFixed(2), 43, index + 3, {align: 'right'} );
+          doc.text( c.cantidad.toFixed(2) + '    ' + c.producto.medida + '      ' + c.producto.precio.toFixed(2), 2, index + 3, {align: 'justify'});
+          doc.text((c.totalxprod).toFixed(2), 43, index + 3, {align: 'right'} );
 
           doc.text( '__________________________________________', 22.5, index +  3, {align: 'center'});
           index = index + 3;
         }
-        doc.text('Descuento', 2, index + 3, {align: 'left'});
-        doc.text( (0).toFixed(2), 43, index + 3, {align: 'right'});
-        doc.text('Total Venta', 2, index + 5, {align: 'left'});
-        doc.text( (this.venta.totalPagarVenta).toFixed(2), 43, index + 5, {align: 'right'});
-        doc.text( '___________________________________________', 22.5, index + 5, {align: 'center'});
-
-        doc.text('Importe Total :', 2, index + 8, {align: 'left'});
-        doc.text('s/ ' + this.venta.totalPagarVenta.toFixed(2), 43, index + 8, {align: 'right'});
-        doc.setFontSize(3);
-        doc.text('SON ' + this.NumeroALetras(this.venta.totalPagarVenta), 2, index + 10, {align: 'left'});
+        doc.text('SubTotal: S/ ', 35, index + 3, {align: 'right'});
+        doc.text(this.venta.montoNeto.toFixed(2), 43, index + 3, {align: 'right'});
+        doc.text('Descuento: S/ ', 35, index + 5, {align: 'right'});
+        doc.text(this.venta.descuentoVenta.toFixed(2), 43, index + 5, {align: 'right'});
+        index = index + 4;
+        doc.text('ICBP(0.30): S/ ', 35, index + 3, {align: 'right'});
+        doc.text((this.cantidadBolsa * 0.3).toFixed(2), 43, index + 3, {align: 'right'});
+        doc.text('Importe Total: S/ ', 35, index + 5, {align: 'right'});
+        doc.text(this.venta.totalPagarVenta.toFixed(2), 43, index + 5, {align: 'right'});
+        doc.text('Vuelto: S/ ', 35, index + 7, {align: 'right'});
+        doc.text(this.vuelto.toFixed(2), 43, index + 7, {align: 'right'});
+        doc.setFontSize(3.5);
+        doc.text('SON ' + this.NumeroALetras(this.venta.totalPagarVenta), 2, index + 9, {align: 'left'});
         doc.setFontSize(4);
-        doc.text('Forma de pago:', 2, index + 12, {align: 'left'});
-        doc.text( this.venta.tipoPago.toUpperCase(), 43, index + 12, {align: 'right'});
-        doc.text('Vendedor:', 2, index + 14, {align: 'left'});
-        doc.text( this.venta.vendedor.nombre.toUpperCase(), 43, index + 14, {align: 'right'});
+        doc.text('Vendedor: ' + this.convertirMayuscula(this.venta.vendedor.nombre), 2, index + 11, {align: 'left'});
+        // doc.text(this.venta.vendedor.nombre.toUpperCase(), 43, index + 11, {align: 'right'});
+
+        doc.text('Forma de Pago: ' + this.convertirMayuscula(this.venta.tipoPago) , 2, index + 13, {align: 'left'});
 
         doc.setFontSize(5);
-        doc.text('GRACIAS POR SU PREFERENCIA', 22.5, index + 18, {align: 'center'});
-        doc.text('DOCUMENTO NO VALIDO PARA SUNAT', 22.5, index + 20, {align: 'center'});
-        doc.text('RECLAME SU COMPROBANTE', 22.5, index + 22, {align: 'center'});
-        doc.text( '__________________________________________', 22.5, index + 23, {align: 'center'});
-        index = index + 23;
+        doc.text('GRACIAS POR SU PREFERENCIA', 22.5, index + 17, {align: 'center'}); // 14
+        doc.text('DOCUMENTO NO VALIDO PARA SUNAT', 22.5, index + 19, {align: 'center'});
+        doc.text('RECLAME SU COMPROBANTE', 22.5, index + 21, {align: 'center'});
+        doc.text( '__________________________________________', 22.5, index + 22, {align: 'center'});
+        index = index + 22;
         doc.text('EL VETERINARIO TE RECUERDA:', 2, index + 3, {align: 'left'});
         doc.text('-Desparasitar a tu mascota cada 2 meses', 2, index + 6, {align: 'left'});
         doc.text('-Completar todas sus vacunas', 2, index + 8, {align: 'left'});
@@ -646,6 +663,9 @@ export class ConfirmarVentaPage implements OnInit {
 
     }
   }
+  convertirMayuscula(letra: string) {
+    return letra.charAt(0).toUpperCase() + letra.slice(1);
+}
 
 
   Unidades(num){
