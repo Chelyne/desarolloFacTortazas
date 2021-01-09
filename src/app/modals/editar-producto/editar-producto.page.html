@@ -128,6 +128,23 @@
                                     </div>
                                 </div>
                             </ion-col>
+                            <ion-col>
+                                <ion-item lines="none">
+                                    <ion-label position="floating">Ingrese la codigo de barras</ion-label>
+                                    <ion-input maxLength="35" formControlName="codigoBarra" placeholder="Ingrese codigo de barras del producto" value="{{dataProducto.codigoBarra}}"></ion-input>
+                                </ion-item>
+                                <div class="alertDanger" *ngIf="codigoBarra.invalid && (codigoBarra.dirty || codigoBarra.touched)">
+                                    <div class="mensajeError" *ngIf="!!codigoBarra.errors.required">
+                                        Complete el codigo de barras
+                                    </div>
+                                    <div class="mensajeError" *ngIf="!!codigoBarra.errors.minlength">
+                                        El codigo de barras debe tener al menos 3 caracteres.
+                                    </div>
+                                    <div class="mensajeError" *ngIf="!!codigoBarra.errors.maxlength">
+                                        El codigo de barras debe tener máximo 35 caracteres.
+                                    </div>
+                                </div>
+                            </ion-col>
                         </ion-row>
                     </ion-grid>
                 </ion-col>

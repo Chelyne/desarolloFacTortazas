@@ -13,6 +13,7 @@ export interface ProductoInterface {
     subCategoria?: string;
     descripcionProducto?: string;
     marca?: string;
+    codigoBarra?: string;
     fechaTimeRegistro?: Date;
     fechaDeVencimiento?: Date;
 
