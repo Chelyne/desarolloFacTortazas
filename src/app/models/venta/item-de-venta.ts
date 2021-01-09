@@ -4,10 +4,10 @@ export interface ItemDeVentaInterface {
     producto?: ProductoInterface;
     idProducto?: string;
     cantidad?: number;
-    totalxprod?: number;
+    montoNeto?: number;
     descuentoProducto?: number; // número 1.2, 3.3. 3.5
-
-    porcentaje?: number;
-    precioVenta?: number;
+    porcentajeDescuento?: number;
+    totalxprod?: number;
+    // precioVenta?: number; //
 }
 

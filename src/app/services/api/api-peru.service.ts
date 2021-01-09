@@ -21,8 +21,8 @@ export class ApiPeruService {
 
 
   constructor(
-    private dataApi?: DbDataService,
-    private storage?: StorageService
+    private dataApi: DbDataService,
+    private storage: StorageService
   ) {
     this.obtenerDatosDeLaEmpresa();
   }
@@ -123,6 +123,7 @@ export class ApiPeruService {
   }
 
   // NOTE - Esta es la función más importante que se encarga de enviar una factura a sunat
+  // ANCHOR
   enviarComprobanteASunat(venta: VentaInterface){
     const myHeaders = new Headers();
     // TODO: en caso de que no exita el token ver si emprea tiene el token
@@ -219,28 +220,28 @@ export class ApiPeruService {
 
     const totalaPagar = venta.totalPagarVenta;
     const igv = totalaPagar * 18 / 100;
-    const totalaPagarMasIgv = totalaPagar + igv;
+    const montoOperGravadas = totalaPagar - igv;
 
     const promesa = new Promise((resolve, reject) => {
       this.obtenerDetallesDeProductos(venta.idListaProductos)
-      .then(data => {
-        console.log('lista de productos Formateados 3: ', data);
+      .then(itemsVenta => {
+        console.log('lista de productos Formateados 3: ', itemsVenta);
 
-        productFormat = data;
+        productFormat = itemsVenta; // TODO: Probar como funciona directo
         const r = {
           tipoOperacion: '0101', // Venta interna
           tipoDoc: this.obtenerCodigoComprobante(venta.tipoComprobante),  // Factura:01, Boleta:03 //
           serie: venta.serieComprobante,
-          correlativo: '1', // venta.numeroComprobante,
+          correlativo: venta.numeroComprobante, // venta.numeroComprobante,
           fechaEmision: this.formtearFecha(venta.fechaEmision), // TODO, formaterar fecha a Data-time
           tipoMoneda: 'PEN',
           client: this.formatearCliente(venta.cliente),
-          company: this.formatearEmpresa(this.datosDeEmpresa),
-          mtoOperGravadas: totalaPagar,
+          company: this.formatearEmpresa(this.datosDeEmpresa), // ANCHOR
+          mtoOperGravadas: montoOperGravadas,
           mtoIGV: igv,
           totalImpuestos: igv,
-          valorVenta: totalaPagar,
-          mtoImpVenta: totalaPagarMasIgv,
+          valorVenta: montoOperGravadas,
+          mtoImpVenta: totalaPagar,
           ublVersion: '2.1',
           details: productFormat,
           legends: [
@@ -287,25 +288,25 @@ export class ApiPeruService {
 
   formatearDetalleVenta(itemDeVenta: ItemDeVentaInterface): SaleDetailInterface{
     const cantidadItems = itemDeVenta.cantidad;
-    const precioUnitario = itemDeVenta.producto.precio;
-    const igvUnitario = precioUnitario * 18 / 100;
-    const montoBase = cantidadItems * precioUnitario;
-    const igvTotal = montoBase * 18 / 100;
-    const montoBaseIgv = montoBase + igvTotal;
+    const precioUnit = itemDeVenta.producto.precio;
+    const igvUnitario = precioUnit * 18 / 100;
+    const precioUnitSinIgv = precioUnit - igvUnitario;
+    const montoBase = cantidadItems * precioUnitSinIgv;
+    const igvTotal = cantidadItems * igvUnitario;
 
     return {
-        codProducto: 'P001',
-        unidad: 'NIU',
+        // codProducto: 'P001', // TODO, PROBAR A ENVIAR SIN ESTE
+        unidad: this.ObtenerCodigoMedida(itemDeVenta.producto.medida), // TODO: crear obtener codigo de medida
         descripcion: itemDeVenta.producto.nombre,
         cantidad: itemDeVenta.cantidad,
-        mtoValorUnitario: precioUnitario,
+        mtoValorUnitario: precioUnitSinIgv,
         mtoValorVenta: montoBase,
-        mtoBaseIgv: montoBaseIgv,
+        mtoBaseIgv: montoBase,
         porcentajeIgv: 18,
         igv: igvTotal,
-        tipAfeIgv: '10',
+        tipAfeIgv: '10', // OperacionOnerosa: 10
         totalImpuestos: igvTotal, // suma de todos los impues que hubiesen
-        mtoPrecioUnitario: precioUnitario + igvUnitario
+        mtoPrecioUnitario: precioUnit
       };
   }
 
@@ -320,18 +321,10 @@ export class ApiPeruService {
   }
 
   formtearFecha(dateTime: any): string{
-    // let dateTime = new Date();
-    // const dateTime = new Date(dateTimeSend);
+
     const fechaFormateada = new Date(moment.unix(dateTime.seconds).format('D MMM YYYY H:mm'));
     const fechaString = formatDate(fechaFormateada, 'yyyy-dd-MMThh:mm:ss-05:00', 'en');
-
-    console.log('aaaaaaaaaaaaa', fechaString);
-    // let fechaFormateada = `${dateTime.getFullYear()}-${dateTime.getMonth()}-${dateTime.getDay()}T`;
-    // fechaFormateada += `${dateTime.getHours()}:${dateTime.getMinutes()}:${dateTime.getSeconds()}-05:00`;
-
-    // console.log('hola Mariluz', fechaFormateada);
-
-    // console.log(fechaFormateada);
+    // console.log('aaaaaaaaaaaaa', fechaString);
     return fechaString;
   }
 
@@ -353,7 +346,7 @@ export class ApiPeruService {
     // TODO - agregar una funcion para obtener el codigo de tipo de documento segun sunat
     // TODO - Adaptar al nueva ClienteInterface
     return {
-      tipoDoc: '1', // el catalogo N6, DNI = 1, Tambien obtener el ruc
+      tipoDoc: this.ObtenerCodigoTipoDoc(cliente.tipoDoc), // el catalogo N6, DNI = 1, Tambien obtener el ruc
       numDoc: cliente.numDoc,
       rznSocial: cliente.nombre,
       address: {
@@ -362,6 +355,16 @@ export class ApiPeruService {
       email: cliente.email,
       telephone: cliente.celular
     };
+  }
+
+  ObtenerCodigoTipoDoc(typoDoc: string){
+    if (typoDoc === 'ruc'){
+      return '1';
+    } else if (typoDoc === 'dni') {
+      return '6';
+    } else{
+      return 'TYPO DE DOCUMENTO INVALIDO';
+    }
   }
 
   formatearEmpresa(empresa: EmpresaInterface): CompanyInterface{
@@ -389,7 +392,74 @@ export class ApiPeruService {
 
 
 
-
+  ObtenerCodigoMedida(medida: string){
+    switch (medida.toLowerCase()) {
+        case 'botellas': return 'BG';
+        case 'caja': return 'BO';
+        case 'docena': return 'BX';
+        case 'gramo': return 'DZN';
+        case 'juego': return 'GRM';
+        case 'kilogramo': return 'SET';
+        case 'kit': return 'KGM';
+        case 'libras': return 'KT';
+        case 'litro': return 'LBR';
+        case 'metro': return 'LTR';
+        case 'miligramos': return 'MTR';
+        case 'mililitro': return 'MGM';
+        case 'milimetro': return 'MLT';
+        case 'onzas': return 'MMT';
+        case 'pies': return 'ONZ';
+        case 'piezas': return 'FOT';
+        case 'pulgadas': return 'C62';
+        case 'unidad (bienes)': return 'INH';
+        case 'ciento de unidades': return 'NIU';
+        case 'bolsa': return 'CEN';
+        case 'balde': return 'BJ';
+        case 'barriles': return 'BLL';
+        case 'cartones': return 'CT';
+        case 'centimetro cuadrado': return 'CMK';
+        case 'latas': return 'CA';
+        case 'metro cuadrado': return 'MTK';
+        case 'milimetro cuadrado': return 'MMK';
+        case 'paquete': return 'PK';
+        case 'par': return 'PR';
+        case 'unidad servicios': return 'ZZ';
+        case 'cilindro': return 'CY';
+        case 'galon ingles': return 'GLI';
+        case 'pies cuadrados': return 'FTK';
+        case 'us galon': return 'GLL';
+        case 'bobinas': return '4A';
+        case 'centimetro cubico': return 'CMQ';
+        case 'centimetro lineal': return 'CMT';
+        case 'conos': return 'CJ';
+        case 'docena por 10**6': return 'DZP';
+        case 'fardo': return 'BE';
+        case 'gruesa': return 'GRO';
+        case 'hectolitro': return 'HLT';
+        case 'hoja': return 'LEF';
+        case 'kilometro': return 'KTM';
+        case 'kilovatio hora': return 'KWH';
+        case 'megawatt hora': return 'MWH';
+        case 'metro cubico': return 'MTQ';
+        case 'milimetro cubico': return 'MMQ';
+        case 'millares': return 'MLL';
+        case 'millon de unidades': return 'UM';
+        case 'paletas': return 'PF';
+        case 'pies cubicos': return 'FTQ';
+        case 'placas': return 'PG';
+        case 'pliego': return 'ST';
+        case 'resma': return 'RM';
+        case 'tambor': return 'DR';
+        case 'tonelada corta': return 'STN';
+        case 'tonelada larga': return 'LTN';
+        case 'toneladas': return 'TNE';
+        case 'tubos': return 'TU';
+        case 'yarda': return 'YRD';
+        case 'yarda cuadrada': return 'YDK';
+        default: return 'NIU';
+        // default: return 'MEDIDA NO REGISTRADA';
+    }
+  }
 
 
 
