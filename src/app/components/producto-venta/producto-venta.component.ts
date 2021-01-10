@@ -90,7 +90,7 @@ export class ProductoVentaComponent implements OnInit {
   //   return this.itemDeVenta.descuentoProducto;
   // }
 
-  calcularPorcentaje(numero: number, porcentaje:number){
+  calcularPorcentaje(numero: number, porcentaje: number){
     return numero * porcentaje / 100;
   }
 
@@ -135,7 +135,8 @@ export class ProductoVentaComponent implements OnInit {
     this.itemDeVenta.porcentajeDescuento = 0.0;
     console.log('sssssssssssssdddd', this.itemDeVenta.montoNeto, this.itemDeVenta.porcentajeDescuento);
 
-    this.itemDeVenta.totalxprod = this.formVenta.value.precioVenta ? parseFloat(this.formVenta.value.precioVenta): this.itemDeVenta.montoNeto;
+    // tslint:disable-next-line:max-line-length
+    this.itemDeVenta.totalxprod = this.formVenta.value.precioVenta ? parseFloat(this.formVenta.value.precioVenta) : this.itemDeVenta.montoNeto;
     this.itemDeVenta.descuentoProducto = this.itemDeVenta.montoNeto - this.itemDeVenta.totalxprod;
     console.log('cambioPrecio', this.itemDeVenta);
     this.emitirCambioDePropiedades();
