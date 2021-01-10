@@ -388,7 +388,7 @@
                             <ion-col size="12" *ngFor="let item of listaItemsDeVenta; let i = index">
                                 <!-- <ion-item> -->
                                 <!-- <span slot="start">{{i+1}}</span> -->
-                                <app-producto-venta [itemDeVenta]="item" (cambiarCantidadProd)="inputModificado($event)" (quitarItemDeVenta)="quitarProducto($event)"></app-producto-venta>
+                                <app-producto-venta [itemDeVenta]="item" (cambiarPropiedadesProducto)="inputModificado($event)" (quitarItemDeVenta)="quitarProducto($event)"></app-producto-venta>
                                 <!-- </ion-item> -->
                             </ion-col>
                             <!-- CONGELAR BOTONES -->

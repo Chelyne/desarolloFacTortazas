@@ -884,10 +884,11 @@ NumeroALetras(num) {
     }
   }
 
-  calcularPrecioTotalItemProducto(itemDeVenta: ItemDeVentaInterface): number{
-    if (typeof itemDeVenta.descuentoProducto === 'undefined') {
-      return itemDeVenta.totalxprod;
-    }
-    return itemDeVenta.totalxprod - itemDeVenta.descuentoProducto;
+  calcularPrecioTotalItemProducto(itemDeVenta: ItemDeVentaInterface){
+    // if (typeof itemDeVenta.descuentoProducto === 'undefined') {
+    //   return itemDeVenta.totalxprod;
+    // }
+    // return itemDeVenta.totalxprod - itemDeVenta.descuentoProducto;
+    return itemDeVenta.totalxprod;
   }
 }
