@@ -49,7 +49,7 @@ export class ProductoVentaComponent implements OnInit {
     return new FormGroup({
       cantidad: new FormControl(this.itemDeVenta.cantidad, [Validators.required, Validators.pattern('[0-9]+')]),
       precioVenta: new FormControl(this.obtenerPrecioVenta(), [Validators.required]),
-      porcentaje: new FormControl(this.itemDeVenta.porcentajeDescuento ? this.itemDeVenta.porcentajeDescuento : 0, [Validators.required])
+      porcentaje: new FormControl(this.itemDeVenta.porcentajeDescuento, [Validators.required])
     });
   }
 
@@ -60,6 +60,9 @@ export class ProductoVentaComponent implements OnInit {
   // ANCHOR - Refactorizar
   obtenerPrecioVenta(): number{
     // Obtiene el ImporteTotal por el producto
+    if (this.itemDeVenta.montoNeto !== this.itemDeVenta.totalxprod){
+      return this.itemDeVenta.totalxprod;
+    }
     return this.itemDeVenta.montoNeto - this.itemDeVenta.descuentoProducto;
     return this.itemDeVenta.totalxprod;
     return 0;
@@ -128,7 +131,8 @@ export class ProductoVentaComponent implements OnInit {
     // this.itemDeVenta.cantidad = this.formVenta.value.cantidad ? parseInt(this.formVenta.value.cantidad, 10) : 0;
     this.itemDeVenta.montoNeto = this.itemDeVenta.cantidad * this.itemDeVenta.producto.precio;
     // this.itemDeVenta.porcentajeDescuento = this.formVenta.value.porcentaje ? parseFloat(this.formVenta.value.porcentaje) : 0;
-    this.itemDeVenta.porcentajeDescuento = 0;
+    console.log('sssssssssssssdddd', this.itemDeVenta.montoNeto, this.itemDeVenta.porcentajeDescuento);
+    this.itemDeVenta.porcentajeDescuento = 0.0;
     console.log('sssssssssssssdddd', this.itemDeVenta.montoNeto, this.itemDeVenta.porcentajeDescuento);
 
     this.itemDeVenta.totalxprod = this.formVenta.value.precioVenta ? parseFloat(this.formVenta.value.precioVenta): this.itemDeVenta.montoNeto;

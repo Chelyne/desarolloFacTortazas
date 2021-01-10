@@ -8,6 +8,8 @@ import { isNullOrUndefined } from 'util';
 // import { ImagePicker } from '@ionic-native/image-picker/ngx';
 import { DbDataService } from '../../services/db-data.service';
 import { CategoriasService } from '../../services/categorias.service';
+import { CategoriaInterface } from '../../models/CategoriaInterface';
+import { StorageService } from '../../services/storage.service';
 
 
 @Component({
@@ -17,6 +19,8 @@ import { CategoriasService } from '../../services/categorias.service';
   providers: [DatePipe]
 })
 export class ModalAgregarProductoPage implements OnInit {
+  sedes = this.storage.datosAdmi.sede;
+
   @ViewChild('inputTalla', {static: false}) inputTalla;
   @ViewChild('inputInventario', {static: false}) inputInventario;
   @ViewChild('inputPrecio', {static: false}) inputPrecio;
@@ -27,6 +31,8 @@ export class ModalAgregarProductoPage implements OnInit {
   @Input() sede: string;
   @Input() categoria: string;
   @Input() subCategoria: string;
+
+  listaDeCategorias: CategoriaInterface[] = [];
 
 // ----------------
   processing: boolean;
@@ -57,10 +63,12 @@ export class ModalAgregarProductoPage implements OnInit {
     private firebaseStorage: AngularFireStorage,
     private datePipe: DatePipe,
     private loadingController: LoadingController,
-    private categoriaService: CategoriasService
+    private categoriaService: CategoriasService,
+    private storage: StorageService,
     // private imagePicker: ImagePicker,
   ) {
     this.productoForm = this.createFormGroup();
+    this.ObtenerCategorias();
 
    }
 
@@ -73,6 +81,14 @@ export class ModalAgregarProductoPage implements OnInit {
     console.log('sede', this.sede);
     console.log('categoria', this.categoria);
   }
+
+  // btener lista de productos
+   ObtenerCategorias(){
+    this.dbData.ObtenerListaCategorias(this.sedes, 20).subscribe(data => {
+      this.listaDeCategorias = data;
+    });
+  }
+
   // --------------------------
    presentActionSheet(fileLoader) {
     fileLoader.click();

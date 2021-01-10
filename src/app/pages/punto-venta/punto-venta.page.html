@@ -1,46 +1,46 @@
 <ion-header>
-  <ion-toolbar>
-    <ion-buttons slot="start">
-      <ion-menu-button menu="primerMenu">
-      </ion-menu-button>
-    </ion-buttons>
-    <ion-title color="primary">Punto de Venta</ion-title>
-    <ion-item lines="none" slot="end">
-      <ion-button (click)="modalVentas()" size="small" fill="outline">
-        <ion-icon name="clipboard-outline"></ion-icon> &nbsp;
-        <ion-label>Ventas</ion-label>
-      </ion-button>
-      <ion-button (click)="AgregarNuevoCliente()" size="small" fill="outline">
-        <ion-icon name="person-outline"></ion-icon> &nbsp;
-        <ion-label>Agregar Cliente</ion-label>
-      </ion-button>
-      <ion-button size="small" fill="outline">
-        <ion-icon name="gift-outline"></ion-icon> &nbsp;
-        <ion-label>Agregar Producto</ion-label>
-      </ion-button>
-    </ion-item>
-  </ion-toolbar>
-  <ion-toolbar color="light">
-    <ion-grid>
-      <ion-row>
-        <!-- <ion-col size="1.5">
+    <ion-toolbar>
+        <ion-buttons slot="start">
+            <ion-menu-button menu="primerMenu">
+            </ion-menu-button>
+        </ion-buttons>
+        <ion-title color="primary">Punto de Venta</ion-title>
+        <ion-item lines="none" slot="end">
+            <ion-button (click)="modalVentas()" size="small" fill="outline">
+                <ion-icon name="clipboard-outline"></ion-icon> &nbsp;
+                <ion-label>Ventas</ion-label>
+            </ion-button>
+            <ion-button (click)="AgregarNuevoCliente()" size="small" fill="outline">
+                <ion-icon name="person-outline"></ion-icon> &nbsp;
+                <ion-label>Agregar Cliente</ion-label>
+            </ion-button>
+            <ion-button (click)="agregarProducto()" size="small" fill="outline">
+                <ion-icon name="gift-outline"></ion-icon> &nbsp;
+                <ion-label>Agregar Producto</ion-label>
+            </ion-button>
+        </ion-item>
+    </ion-toolbar>
+    <ion-toolbar color="light">
+        <ion-grid>
+            <ion-row>
+                <!-- <ion-col size="1.5">
           <ion-item style="border-radius: 10px;" lines="none">
             <ion-icon slot="start" color="primary" name="scan-circle-outline"></ion-icon>
             <ion-toggle (ionChange)="cambiarModoBusqueda()" color="primary"></ion-toggle>
           </ion-item>
         </ion-col> -->
-        <ion-col size="8">
-          <ion-searchbar (ionClear)="limpiarBuscador()" (ionChange)="Search($event)" #search placeholder="Buscar producto" inputmode="text" debounce="300" animated="true"></ion-searchbar>
-        </ion-col>
-        <ion-col size="4">
-          <ion-item style="border-radius: 10px;" lines="none">
-            <ion-icon slot="start" color="primary" name="person"></ion-icon>
-            <ion-input [value]="cliente?(cliente.nombre | titlecase): null" (ionFocus)="abrirPoppoverClientes($event)" type="text" placeholder="Cliente"></ion-input>
-          </ion-item>
-        </ion-col>
-      </ion-row>
-    </ion-grid>
-  </ion-toolbar>
+                <ion-col size="8">
+                    <ion-searchbar (ionClear)="limpiarBuscador()" (ionChange)="Search($event)" #search placeholder="Buscar producto" inputmode="text" debounce="300" animated="true"></ion-searchbar>
+                </ion-col>
+                <ion-col size="4">
+                    <ion-item style="border-radius: 10px;" lines="none">
+                        <ion-icon slot="start" color="primary" name="person"></ion-icon>
+                        <ion-input [value]="cliente?(cliente.nombre | titlecase): null" (ionFocus)="abrirPoppoverClientes($event)" type="text" placeholder="Cliente"></ion-input>
+                    </ion-item>
+                </ion-col>
+            </ion-row>
+        </ion-grid>
+    </ion-toolbar>
 </ion-header>
 
 <!-- <ion-content>
@@ -161,6 +161,70 @@
 </ion-content> -->
 
 <ion-content>
+    <ion-grid class="gridPrincipal">
+        <ion-row>
+            <ion-col size="8">
+                <ion-content class="scroll" color="light" *ngIf="productos">
+                    <div class="ion-padding custom-skeleton productos" *ngIf="buscando">
+                        <ion-card *ngFor="let number of [0,1,2,3,4,5,6,7,8,9,10]">
+                            <ion-row>
+                                <ion-col size-xs="4">
+                                    <ion-skeleton-text animated style="height: 100%"></ion-skeleton-text>
+                                </ion-col>
+                                <ion-col>
+                                    <ion-skeleton-text animated style="width: 88%"></ion-skeleton-text>
+                                    <ion-skeleton-text animated style="width: 70%"></ion-skeleton-text>
+                                    <ion-skeleton-text animated style="width: 60%"></ion-skeleton-text>
+                                </ion-col>
+                            </ion-row><br>
+                        </ion-card>
+                    </div>
+                    <div class="productos" *ngIf="productos">
+                        <ion-card class="cardBuscador" *ngFor="let prod of productos" (click)="AgregarItemDeVenta(prod)">
+                            <ion-row class="ion-justify-content-center ion-align-items-center">
+                                <ion-col size-xs="3" class="colImg">
+                                    <img *ngIf="prod.img" [src]='prod.img' alt="">
+                                    <img *ngIf="!prod.img" src='../../../../../assets/img/pet chop.png' alt="">
+                                </ion-col>
+                                <ion-col size-xs="5" class="colDatos">
+                                    <ion-label style="font-size: 17px; font-weight: bold;">{{prod.nombre | titlecase}}</ion-label><br>
+                                    <ion-label>{{prod.cantidad}} {{prod.medida}}</ion-label><br>
+                                    <ion-badge>{{prod.subCategoria}}</ion-badge>
+                                </ion-col>
+                                <ion-col size-xs="4" class="ion-text-center" style="border-left: solid 1px grey;" *ngIf="prod.categoria !== 'farmacia'">
+                                    <ion-label style="font-size: 3vh;"><span style="font-size: 15px;">S/.</span>{{prod.precio | number: '1.2'}}</ion-label><br>
+                                </ion-col>
+                            </ion-row>
+                        </ion-card>
+                    </div>
+                    <div class="sinResultado" *ngIf="sinResultados">
+                        <ion-icon color="danger" name="sad-outline"></ion-icon><br>
+                        <ion-label>{{sinResultados}}</ion-label>
+                    </div>
+                    <div class="sinBuscar" *ngIf="buscando===null || buscando===undefined">
+                        <form>
+                            <ion-icon color="primary" name="search"></ion-icon><br>
+                            <ion-label>Realiza la busqueda de cualquier producto</ion-label>
+                        </form>
+                    </div>
+                    <!-- <img src="https://images.vexels.com/media/users/3/153874/isolated/preview/5147b9d69f00249a07732a905bcb251e-buscar-configuraci--n-icono-de-trazo-de-color-by-vexels.png" alt=""> -->
+                </ion-content>
+                <ion-content class="categoriasContent" *ngIf="!listaProductos.length && !this.categoria && !productos">
+                    <ion-grid class="categorias">
+                        <ion-row>
+                            <ion-col size-lg="3" size-md="3" size-sm="6" size-xs="6" *ngFor="let categoria of categorias">
+                                <ion-card (click)="listaProductosCategoria(categoria.categoria)">
+                                    <img [src]="categoria.img" alt="">
+                                    <ion-label [style.color]="categoria.color">{{categoria.categoria | uppercase}}</ion-label>
+                                </ion-card>
+                            </ion-col>
+                        </ion-row>
+                    </ion-grid>
+                </ion-content>
+                <!-- <ion-content class="productosContent" *ngIf="categoria && !productos">
+                    <ion-segment scrollable value="{{categoria}}"> -->
+                        <!-- <ion-segment-button value="categoria" (click)="resetListaCa">
+=======
   <ion-grid class="gridPrincipal">
     <ion-row>
       <ion-col size="8">
@@ -210,26 +274,27 @@
             </form>
           </div>
           <!-- <img src="https://images.vexels.com/media/users/3/153874/isolated/preview/5147b9d69f00249a07732a905bcb251e-buscar-configuraci--n-icono-de-trazo-de-color-by-vexels.png" alt=""> -->
-        </ion-content>
-        <ion-content class="categoriasContent" *ngIf="!listaProductos.length && !this.categoria && !productos">
-          <ion-grid class="categorias">
-            <ion-row>
-              <ion-col size-lg="3" size-md="3" size-sm="6" size-xs="6" *ngFor="let categoria of categorias">
-                <ion-card (click)="listaProductosCategoria(categoria.categoria)">
-                  <img [src]="categoria.img" alt="">
-                  <ion-label [style.color]="categoria.color">{{categoria.categoria | uppercase}}</ion-label>
-                </ion-card>
-              </ion-col>
-            </ion-row>
-          </ion-grid>
-        </ion-content>
-        <ion-content class="productosContent"  *ngIf="categoria && !productos">
-          <ion-segment scrollable value="{{categoria}}">
-            <!-- <ion-segment-button value="categoria" (click)="resetListaCa">
+                <!-- </ion-content> -->
+                <ion-content class="categoriasContent" *ngIf="!listaProductos.length && !this.categoria && !productos">
+                    <ion-grid class="categorias">
+                        <ion-row>
+                            <ion-col size-lg="3" size-md="3" size-sm="6" size-xs="6" *ngFor="let categoria of categorias">
+                                <ion-card (click)="listaProductosCategoria(categoria.categoria)">
+                                    <img [src]="categoria.img" alt="">
+                                    <ion-label [style.color]="categoria.color">{{categoria.categoria | uppercase}}</ion-label>
+                                </ion-card>
+                            </ion-col>
+                        </ion-row>
+                    </ion-grid>
+                </ion-content>
+                <ion-content class="productosContent" *ngIf="categoria && !productos">
+                    <ion-segment scrollable value="{{categoria}}">
+                        <!-- <ion-segment-button value="categoria" (click)="resetListaCa">
+>>>>>>> 6e4c419406d719ee893459a0a1c2a9c66b79cdbb
               <ion-label>Categorias</ion-label>
             </ion-segment-button> -->
-            <ion-segment-button [id]="categoria.categoria" value ="{{categoria.categoria}}" *ngFor="let categoria of categorias" (click)="listaProductosCategoria(categoria.categoria)" >
-              <!-- <ion-card >
+                        <ion-segment-button [id]="categoria.categoria" value="{{categoria.categoria}}" *ngFor="let categoria of categorias" (click)="listaProductosCategoria(categoria.categoria)">
+                            <!-- <ion-card >
                 <ion-card-header [style.background-color]="categoria.color">
                   <img [src]="categoria.img" alt="">
                 </ion-card-header>
@@ -237,101 +302,97 @@
                   <ion-label [style.color]="categoria.color">{{categoria.categoria | titlecase}}</ion-label>
                 </ion-card-content>
               </ion-card> -->
-              <ion-label [style.color]="categoria.color">{{categoria.categoria | titlecase}}</ion-label>
-            </ion-segment-button>
-          </ion-segment>
-          <div class="sinDatos" *ngIf="sinDatos===true">
-            <div class="textoSindatos">
-              <ion-icon class="icono" name="gift-outline" color="medium"></ion-icon> <br><br>
-              <ion-label color="medium">No hay productos</ion-label>
-            </div>
-          </div>
-          <div class="cargando" *ngIf="(sinDatos===null || sinDatos===undefined)">
-            <div class="textoCargando">
-              <ion-spinner name="lines-small" color="primary"></ion-spinner>
-            </div>
-          </div>
-          <ion-grid class="productos" *ngIf="listaProductos.length">
-            <ion-row>
-              <ion-col size-lg="3" size-md="3" size-sm="4" size-xs="4" *ngFor="let producto of listaProductos">
-                <ion-card mode="ios" (click)="AgregarItemDeVenta(producto)">
-                  <img *ngIf="producto.img" src="{{producto.img}}" alt="">
-                  <img *ngIf="!producto.img" src="../../../assets/img/pet chop.png" alt="">
-                  <ion-card-title>{{producto.nombre | titlecase}}
-                  </ion-card-title>
-                  <ion-card-subtitle>{{producto.cantidad}} {{producto.medida}}</ion-card-subtitle>
-                  <ion-card-subtitle *ngIf="producto.precio" class="precio">S/. {{producto.precio  | number: '1.2'}}</ion-card-subtitle>
-                </ion-card>
-              </ion-col>
-            </ion-row>
-          </ion-grid>
-          <!-- <ion-infinite-scroll threshold="100px" (ionInfinite)="loadData($event)">
+                            <ion-label [style.color]="categoria.color">{{categoria.categoria | titlecase}}</ion-label>
+                        </ion-segment-button>
+                    </ion-segment>
+                    <div class="sinDatos" *ngIf="sinDatos===true">
+                        <div class="textoSindatos">
+                            <ion-icon class="icono" name="gift-outline" color="medium"></ion-icon> <br><br>
+                            <ion-label color="medium">No hay productos</ion-label>
+                        </div>
+                    </div>
+                    <div class="cargando" *ngIf="(sinDatos===null || sinDatos===undefined)">
+                        <div class="textoCargando">
+                            <ion-spinner name="lines-small" color="primary"></ion-spinner>
+                        </div>
+                    </div>
+                    <ion-grid class="productos" *ngIf="listaProductos.length">
+                        <ion-row>
+                            <ion-col size-lg="3" size-md="3" size-sm="4" size-xs="4" *ngFor="let producto of listaProductos">
+                                <ion-card mode="ios" (click)="AgregarItemDeVenta(producto)">
+                                    <img *ngIf="producto.img" src="{{producto.img}}" alt="">
+                                    <img *ngIf="!producto.img" src="../../../assets/img/pet chop.png" alt="">
+                                    <ion-card-title>{{producto.nombre | titlecase}}
+                                    </ion-card-title>
+                                    <ion-card-subtitle>{{producto.cantidad}} {{producto.medida}}</ion-card-subtitle>
+                                    <ion-card-subtitle *ngIf="producto.precio" class="precio">S/. {{producto.precio | number: '1.2'}}</ion-card-subtitle>
+                                </ion-card>
+                            </ion-col>
+                        </ion-row>
+                    </ion-grid>
+                    <!-- <ion-infinite-scroll threshold="100px" (ionInfinite)="loadData($event)">
             <ion-infinite-scroll-content
               loadingSpinner="crescent"
               loadingText="Cargando datos...">
             </ion-infinite-scroll-content>
           </ion-infinite-scroll> -->
-        </ion-content>
-      </ion-col>
-      <ion-col size="4">
-        <ion-header class="ion-no-border">
-          <ion-toolbar color="light">
-            <ion-buttons slot="start">
-              <ion-button [disabled]="listaItemsDeVenta.length===0" (click)="AgregaraListaDeEspera()" color="primary">
-                <ion-icon slot="icon-only" name="snow-outline"></ion-icon>
-              </ion-button>
-              <ion-button (click)="modalCongelados()" color="danger">
-                <ion-icon slot="icon-only" name="flame-outline"></ion-icon>
-              </ion-button>
-            </ion-buttons>
-            <ion-buttons slot="end">
-              <ion-button [disabled]="listaItemsDeVenta.length===0" (click)="QuitarListaDeVenta()" color="danger">
-                <ion-icon slot="icon-only" name="trash-bin"></ion-icon>
-              </ion-button>
-            </ion-buttons>
-          </ion-toolbar>
-        </ion-header>
-        <ion-content class="contentItemsVenta">
-          <div class="sinDatosVenta" *ngIf="listaItemsDeVenta.length === 0">
-            <div class="textoSindatos">
-              <ion-icon class="icono" name="reader-outline" color="medium"></ion-icon> <br><br>
-              <ion-label color="medium">No hay productos agregados</ion-label>
-            </div>
-          </div>
-          <ion-grid class="itemsVender" *ngIf="listaItemsDeVenta.length > 0">
-            <ion-row class="headerItems">
-              <ion-col size="1">
-                <ion-label>Cant.</ion-label>
-              </ion-col>
-              <ion-col size="6.5">
-                <ion-label>Nombre</ion-label>
-              </ion-col>
-              <ion-col size="1">
-                <ion-label>%</ion-label>
-              </ion-col>
-              <ion-col size="1">
-                <ion-label>S/</ion-label>
-              </ion-col>
-              <ion-col size="1.5">
-                <ion-label>Total</ion-label>
-              </ion-col>
-              <ion-col size="1">
-                <ion-label></ion-label>
-              </ion-col>
-            </ion-row>
-            <ion-row class="contentItems">
-              <ion-col size="12" *ngFor="let item of listaItemsDeVenta; let i = index">
-                <!-- <ion-item> -->
-                  <!-- <span slot="start">{{i+1}}</span> -->
-                  <app-producto-venta
-                  [itemDeVenta]="item"
-                  (cambiarCantidadProd)="inputModificado($event)"
-                  (quitarItemDeVenta)="quitarProducto($event)"
-                  ></app-producto-venta>
-                <!-- </ion-item> -->
-              </ion-col>
-              <!-- CONGELAR BOTONES -->
-              <!-- <ion-col size="12">
+                </ion-content>
+            </ion-col>
+            <ion-col size="4">
+                <ion-header class="ion-no-border">
+                    <ion-toolbar color="light">
+                        <ion-buttons slot="start">
+                            <ion-button [disabled]="listaItemsDeVenta.length===0" (click)="AgregaraListaDeEspera()" color="primary">
+                                <ion-icon slot="icon-only" name="snow-outline"></ion-icon>
+                            </ion-button>
+                            <ion-button (click)="modalCongelados()" color="danger">
+                                <ion-icon slot="icon-only" name="flame-outline"></ion-icon>
+                            </ion-button>
+                        </ion-buttons>
+                        <ion-buttons slot="end">
+                            <ion-button [disabled]="listaItemsDeVenta.length===0" (click)="QuitarListaDeVenta()" color="danger">
+                                <ion-icon slot="icon-only" name="trash-bin"></ion-icon>
+                            </ion-button>
+                        </ion-buttons>
+                    </ion-toolbar>
+                </ion-header>
+                <ion-content class="contentItemsVenta">
+                    <div class="sinDatosVenta" *ngIf="listaItemsDeVenta.length === 0">
+                        <div class="textoSindatos">
+                            <ion-icon class="icono" name="reader-outline" color="medium"></ion-icon> <br><br>
+                            <ion-label color="medium">No hay productos agregados</ion-label>
+                        </div>
+                    </div>
+                    <ion-grid class="itemsVender" *ngIf="listaItemsDeVenta.length > 0">
+                        <ion-row class="headerItems">
+                            <ion-col size="1">
+                                <ion-label>Cant.</ion-label>
+                            </ion-col>
+                            <ion-col size="6.5">
+                                <ion-label>Nombre</ion-label>
+                            </ion-col>
+                            <ion-col size="1">
+                                <ion-label>%</ion-label>
+                            </ion-col>
+                            <ion-col size="1">
+                                <ion-label>S/</ion-label>
+                            </ion-col>
+                            <ion-col size="1.5">
+                                <ion-label>Total</ion-label>
+                            </ion-col>
+                            <ion-col size="1">
+                                <ion-label></ion-label>
+                            </ion-col>
+                        </ion-row>
+                        <ion-row class="contentItems">
+                            <ion-col size="12" *ngFor="let item of listaItemsDeVenta; let i = index">
+                                <!-- <ion-item> -->
+                                <!-- <span slot="start">{{i+1}}</span> -->
+                                <app-producto-venta [itemDeVenta]="item" (cambiarCantidadProd)="inputModificado($event)" (quitarItemDeVenta)="quitarProducto($event)"></app-producto-venta>
+                                <!-- </ion-item> -->
+                            </ion-col>
+                            <!-- CONGELAR BOTONES -->
+                            <!-- <ion-col size="12">
                 <ion-label >Total a pagar: {{importeTotalPagar}} </ion-label>
                 <ion-button (click)="AgregaraListaDeEspera()" expand="block" fill="clear" shape="round">
                   Agregar a lista de espera
@@ -340,9 +401,9 @@
                   Quitar lista
                 </ion-button>
               </ion-col> -->
-            </ion-row>
-            <!-- CONGELAR VENTA -->
-            <!-- <ion-row *ngIf="listaDeVentas.length">
+                        </ion-row>
+                        <!-- CONGELAR VENTA -->
+                        <!-- <ion-row *ngIf="listaDeVentas.length">
               <ion-col size="12">
                 <ion-list>
                   <ion-list-header lines="inset">
@@ -362,18 +423,18 @@
                 </ion-list>
               </ion-col>
             </ion-row> -->
-          </ion-grid>
-        </ion-content>
-        <div style=" height: 10%; width: 100%; position: absolute;">
-          <ion-button [disabled]="!importeTotalPagar" style="height: 100%;" expand="block" (click)="irPagar()">
-              <ion-icon  color="light"name="caret-forward-outline"></ion-icon>
-              <ion-label color="light">PAGAR</ion-label> &nbsp;&nbsp;
-              <ion-label color="light">S/. {{importeTotalPagar | number: '1.2'}}</ion-label>
-          </ion-button>
-        </div>
-      </ion-col>
-    </ion-row>
-    <!-- <ion-row>
+                    </ion-grid>
+                </ion-content>
+                <div style=" height: 10%; width: 100%; position: absolute;">
+                    <ion-button [disabled]="!importeTotalPagar" style="height: 100%;" expand="block" (click)="irPagar()">
+                        <ion-icon color="light" name="caret-forward-outline"></ion-icon>
+                        <ion-label color="light">PAGAR</ion-label> &nbsp;&nbsp;
+                        <ion-label color="light">S/. {{importeTotalPagar | number: '1.2'}}</ion-label>
+                    </ion-button>
+                </div>
+            </ion-col>
+        </ion-row>
+        <!-- <ion-row>
       <ion-col size-lg="6">
         <ion-content class="categoriasContent">
           <ion-grid class="categorias">
@@ -417,5 +478,5 @@
         </ion-content>
       </ion-col>
     </ion-row> -->
-  </ion-grid>
+        </ion-grid>
 </ion-content>
