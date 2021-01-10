@@ -276,6 +276,7 @@ export class ConfirmarVentaPage implements OnInit {
   }
 
   SeleccionarComprobante(comprobante: string){
+    console.log('comprobnte:', comprobante);
     this.tipoComprobante = comprobante;
 
     if (comprobante === 'factura'){
@@ -300,7 +301,7 @@ export class ConfirmarVentaPage implements OnInit {
     this.venta.montoBase = this.importeBase;
     console.log('Se generó el pago');
     this.obtenerCorrelacionComprobante().then((numero: ContadorDeSerieInterface[]) => {
-      if (numero[0].disponible) {
+      // if (numero[0].disponible) {
         this.dataApi.ActualizarEstadoCorrelacion(numero[0].id, this.storage.datosAdmi.sede, false);
         console.log(numero);
         console.log('numero de comprobante', this.tipoComprobante, numero[0].correlacion + 1);
@@ -309,7 +310,7 @@ export class ConfirmarVentaPage implements OnInit {
           this.dataApi.ActualizarCorrelacion(numero[0].id, this.storage.datosAdmi.sede, numero[0].correlacion + 1);
           this.dataApi.ActualizarEstadoCorrelacion(numero[0].id, this.storage.datosAdmi.sede, true);
           this.resetFormPago();
-          this.tipoComprobante = 'boleta';
+          // this.tipoComprobante = 'boleta';
           this.cantidadBolsa = 0;
           this.bolsa = false;
           this.tipoPago = 'efectivo';
@@ -319,7 +320,7 @@ export class ConfirmarVentaPage implements OnInit {
           this.loading.dismiss();
           this.presentToast('Venta exitosa');
         });
-      }
+      // }
     // tslint:disable-next-line:no-shadowed-variable
     }).catch(error => {
       this.presentToast('Ocurrio un error' + error);
@@ -412,9 +413,10 @@ export class ConfirmarVentaPage implements OnInit {
     // console.log(qrcode);
     // const imageData = this.getBase64Image(qrcode.firstChild.firstChild);
     // console.log(imageData);
+    console.log(this.tipoComprobante);
     switch (this.tipoComprobante) {
       case 'boleta':
-        let index = 37;
+        let index = 39;
         const doc = new jsPDF( 'p', 'mm', [45, index  + (this.venta.listaItemsDeVenta.length * 7) + 7 + 30 + 12]);
         doc.addImage(this.LogoEmpresa, 'JPEG', 11, 1, 22, 8);
         doc.setFontSize(6);
@@ -436,10 +438,11 @@ export class ConfirmarVentaPage implements OnInit {
         doc.text('Boleta de Venta electrónica', 22.5, 25, {align: 'center'});
         // tslint:disable-next-line:max-line-length
         doc.text(this.venta.serieComprobante + '-' + this.digitosFaltantes('0', (8 - this.venta.numeroComprobante.length)) + this.venta.numeroComprobante, 22.5, 27, {align: 'center'});
-        doc.text('Ruc o Razon social:', 22.5, 31, {align: 'center'});
-        doc.text( this.venta.cliente.numDoc + ' - ' + this.convertirMayuscula(this.venta.cliente.nombre), 22.5, 33, {align: 'center'});
+        doc.text('Ruc: ' + this.venta.cliente.numDoc , 22.5, 31, {align: 'center'});
+        doc.text( 'Razon social:', 22.5, 33, {align: 'center'});
+        doc.text( this.convertirMayuscula(this.venta.cliente.nombre), 22.5, 35, {align: 'center'});
         // tslint:disable-next-line:max-line-length
-        doc.text('Fecha: ' + formatDate(new Date(), 'dd/MM/yyyy', 'en') + '  ' + 'Hora: ' + formatDate(new Date(), 'HH:mm aa', 'en'), 22.5, 35, {align: 'center'});
+        doc.text('Fecha: ' + formatDate(new Date(), 'dd/MM/yyyy', 'en') + '  ' + 'Hora: ' + formatDate(new Date(), 'HH:mm aa', 'en'), 22.5, 37, {align: 'center'});
         doc.setFontSize(5);
 
         for (const c of this.venta.listaItemsDeVenta) {
@@ -493,31 +496,38 @@ export class ConfirmarVentaPage implements OnInit {
         const canvas = document.getElementById('pdf');
         break;
       case'factura': {
+        console.log('es una facura');
         // tslint:disable-next-line:no-shadowed-variable
-        let index = 35;
+        let index = 39;
         // tslint:disable-next-line:no-shadowed-variable
-        const doc = new jsPDF( 'p', 'mm', [45, index  + (this.venta.listaItemsDeVenta.length * 7) + 19 + 21 + 12]);
+        const doc = new jsPDF( 'p', 'mm', [45, index  + (this.venta.listaItemsDeVenta.length * 7) + 19 + 25 + 12]);
         doc.addImage(this.LogoEmpresa, 'JPEG', 11, 1, 22, 8);
         doc.setFontSize(6);
         doc.setFont('helvetica');
         doc.text('CLÍNICA VETERINARIA TOOBY E.I.R.L', 22.5, 12, {align: 'center'});
         if (this.storage.datosAdmi.sede === 'Andahuaylas') {
-        doc.text('Av. Peru 236 Parque Lampa de Oro ', 22.5, 14, {align: 'center'});
-        doc.text('Telefono: 983905066', 22.5, 17, {align: 'center'});
+        doc.text('Av. Peru 236 Andahuaylas Apurimac ', 22.5, 14, {align: 'center'});
+        doc.text('Parque Lampa de Oro ', 22.5, 16, {align: 'center'});
+
+        doc.text('Telefono: 983905066', 22.5, 19, {align: 'center'});
         }
         if (this.storage.datosAdmi.sede === 'Abancay') {
-          doc.text('Av. Seoane 100 Parque el olivo ', 22.5, 14, {align: 'center'});
-          doc.text('Telefono: 988907777', 22.5, 17, {align: 'center'});
+          doc.text('Av. Seoane 100 Abancay Apurimac', 22.5, 14, {align: 'center'});
+          doc.text('Parque el Olivo', 22.5, 16, {align: 'center'});
+
+          doc.text('Telefono: 988907777', 22.5, 19, {align: 'center'});
           }
-        doc.text('Ruc: ' + this.RUC, 22.5, 19, {align: 'center'});
-        doc.text('Factura de Venta electrónica', 22.5, 23, {align: 'center'});
+        doc.text('Ruc: ' + this.RUC, 22.5, 21, {align: 'center'});
+        doc.text('Factura de Venta electrónica', 22.5, 25, {align: 'center'});
         // tslint:disable-next-line:max-line-length
-        doc.text(this.venta.serieComprobante + '-' + this.digitosFaltantes('0', (8 - this.venta.numeroComprobante.length)) + this.venta.numeroComprobante, 22.5, 25, {align: 'center'});
-        doc.text('Ruc o Razon social:', 22.5, 29, {align: 'center'});
-        doc.text( this.venta.cliente.numDoc + ' - ' + this.venta.cliente.nombre, 22.5, 31, {align: 'center'});
+        doc.text(this.venta.serieComprobante + '-' + this.digitosFaltantes('0', (8 - this.venta.numeroComprobante.length)) + this.venta.numeroComprobante, 22.5, 27, {align: 'center'});
+        doc.text('Ruc: ' + this.venta.cliente.numDoc , 22.5, 31, {align: 'center'});
+        doc.text( 'Razon social:', 22.5, 33, {align: 'center'});
+        doc.text( this.convertirMayuscula(this.venta.cliente.nombre), 22.5, 35, {align: 'center'});
         // tslint:disable-next-line:max-line-length
-        doc.text('Fecha: ' + formatDate(new Date(), 'dd/MM/yyyy', 'en') + '  ' + 'Hora: ' + formatDate(new Date(), 'HH:mm aa', 'en'), 22.5, 33, {align: 'center'});
+        doc.text('Fecha: ' + formatDate(new Date(), 'dd/MM/yyyy', 'en') + '  ' + 'Hora: ' + formatDate(new Date(), 'HH:mm aa', 'en'), 22.5, 37, {align: 'center'});
         doc.setFontSize(5);
+
         for (const c of this.venta.listaItemsDeVenta) {
           doc.text( '__________________________________________', 22.5, index, {align: 'center'});
           index = index + 3;
@@ -530,14 +540,14 @@ export class ConfirmarVentaPage implements OnInit {
           }
           // tslint:disable-next-line:max-line-length
           // tslint:disable-next-line:max-line-length
-          doc.text( c.producto.cantidad + '.00    ' + 'UND' + '      ' + c.producto.precio.toFixed(2), 2, index + 3, {align: 'justify'});
-          doc.text((c.producto.precio * c.producto.cantidad).toFixed(2), 43, index + 3, {align: 'right'} );
+          doc.text( c.cantidad.toFixed(2) + '    ' + c.producto.medida + '      ' + c.producto.precio.toFixed(2), 2, index + 3, {align: 'justify'});
+          doc.text((c.totalxprod).toFixed(2), 43, index + 3, {align: 'right'} );
 
           doc.text( '__________________________________________', 22.5, index +  3, {align: 'center'});
           index = index + 3;
         }
         doc.text('OP. GRAVADAS:', 2, index + 3, {align: 'left'});
-        doc.text( (this.venta.totalPagarVenta - (this.venta.totalPagarVenta * 0.18)).toFixed(2), 43, index + 3, {align: 'right'});
+        doc.text( (this.venta.totalPagarVenta / 1.18).toFixed(2), 43, index + 3, {align: 'right'});
         doc.text('OP. INAFECTA:', 2, index + 5, {align: 'left'});
         doc.text( (0).toFixed(2), 43, index + 5, {align: 'right'});
         doc.text('OP. EXONERADA:', 2, index + 7, {align: 'left'});
@@ -547,11 +557,11 @@ export class ConfirmarVentaPage implements OnInit {
         doc.text('OP. EXPORTACIÓN', 2, index + 11, {align: 'left'});
         doc.text( (0).toFixed(2), 43, index + 11, {align: 'right'});
         doc.text('DESCUENTO', 2, index + 13, {align: 'left'});
-        doc.text( (0).toFixed(2), 43, index + 13, {align: 'right'});
+        doc.text( (this.venta.descuentoVenta).toFixed(2), 43, index + 13, {align: 'right'});
         doc.text('I.G.V. (18%)', 2, index + 15, {align: 'left'});
-        doc.text( (this.venta.totalPagarVenta * 0.18).toFixed(2), 43, index + 15, {align: 'right'});
-        doc.text('ICBP(0.20)', 2, index + 17, {align: 'left'});
-        doc.text( (0).toFixed(2), 43, index + 17, {align: 'right'});
+        doc.text( (this.calcularIGVincluido(this.venta.totalPagarVenta)).toFixed(2), 43, index + 15, {align: 'right'});
+        doc.text('ICBP(0.30)', 2, index + 17, {align: 'left'});
+        doc.text( (this.cantidadBolsa * 0.30).toFixed(2), 43, index + 17, {align: 'right'});
         doc.text('I.S.C.', 2, index + 19, {align: 'left'});
         doc.text( (0).toFixed(2), 43, index + 19, {align: 'right'});
         doc.text( '__________________________________________', 22.5, index + 19, {align: 'center'});
@@ -562,13 +572,16 @@ export class ConfirmarVentaPage implements OnInit {
         doc.setFontSize(3);
         doc.text('SON ' + this.NumeroALetras(this.venta.totalPagarVenta), 2, index + 5, {align: 'left'});
         doc.setFontSize(4);
-        doc.text('Vendedor: ' + this.venta.vendedor.nombre, 2, index + 7, {align: 'left'});
-        doc.addImage(qr, 'JPEG', 15, index + 8, 15, 15);
-        index = index + 21;
+        doc.text('Vendedor: ' + this.convertirMayuscula(this.venta.vendedor.nombre), 2, index + 7, {align: 'left'});
+        doc.text('Forma de Pago: ' + this.convertirMayuscula(this.venta.tipoPago) , 2, index + 9, {align: 'left'});
+
+
+        doc.addImage(qr, 'JPEG', 15, index + 10, 15, 15);
+        index = index + 25;
         doc.setFontSize(4);
         doc.text('Representación impresa del comprobante de pago\r de Factura Electrónica, esta puede ser consultada en\r www.tooby.com\rNO ACEPTAMOS DEVOLUCIONES', 22.5, index + 3, {align: 'center'});
         doc.text('GRACIAS POR SU COMPRA', 22.5, index + 10, {align: 'center'});
-        // doc.save('tiket' + '.pdf');
+        doc.save('tiket' + '.pdf');
         doc.autoPrint();
         window.open(doc.output('bloburl').toString(), '_blank');
         // doc.output('dataurlnewwindow');
@@ -576,7 +589,7 @@ export class ConfirmarVentaPage implements OnInit {
       }
       case 'n. venta': {
         // tslint:disable-next-line:no-shadowed-variable
-        let index = 37;
+        let index = 39;
         // tslint:disable-next-line:no-shadowed-variable
         const doc = new jsPDF( 'p', 'mm', [45, index  + (this.venta.listaItemsDeVenta.length * 7) + 7 + 22 + 12]);
         doc.addImage(this.LogoEmpresa, 'JPEG', 11, 1, 22, 8);
@@ -599,10 +612,11 @@ export class ConfirmarVentaPage implements OnInit {
         doc.text('Nota de Venta electrónica', 22.5, 25, {align: 'center'});
         // tslint:disable-next-line:max-line-length
         doc.text(this.venta.serieComprobante + '-' + this.digitosFaltantes('0', (8 - this.venta.numeroComprobante.length)) + this.venta.numeroComprobante, 22.5, 27, {align: 'center'});
-        doc.text('Ruc o Razon social:', 22.5, 31, {align: 'center'});
-        doc.text( this.venta.cliente.numDoc + ' - ' + this.convertirMayuscula(this.venta.cliente.nombre), 22.5, 33, {align: 'center'});
+        doc.text('Ruc: ' + this.venta.cliente.numDoc , 22.5, 31, {align: 'center'});
+        doc.text( 'Razon social:', 22.5, 33, {align: 'center'});
+        doc.text( this.convertirMayuscula(this.venta.cliente.nombre), 22.5, 35, {align: 'center'});
         // tslint:disable-next-line:max-line-length
-        doc.text('Fecha: ' + formatDate(new Date(), 'dd/MM/yyyy', 'en') + '  ' + 'Hora: ' + formatDate(new Date(), 'HH:mm aa', 'en'), 22.5, 35, {align: 'center'});
+        doc.text('Fecha: ' + formatDate(new Date(), 'dd/MM/yyyy', 'en') + '  ' + 'Hora: ' + formatDate(new Date(), 'HH:mm aa', 'en'), 22.5, 37, {align: 'center'});
         doc.setFontSize(5);
 
         for (const c of this.venta.listaItemsDeVenta) {
@@ -665,6 +679,10 @@ export class ConfirmarVentaPage implements OnInit {
   }
   convertirMayuscula(letra: string) {
     return letra.charAt(0).toUpperCase() + letra.slice(1);
+}
+calcularIGVincluido(montoTotalPagar: number){
+  const montoBase = montoTotalPagar / 1.18;
+  return(montoTotalPagar - montoBase);
 }
 
 
@@ -884,10 +902,11 @@ NumeroALetras(num) {
     }
   }
 
-  calcularPrecioTotalItemProducto(itemDeVenta: ItemDeVentaInterface): number{
-    if (typeof itemDeVenta.descuentoProducto === 'undefined') {
-      return itemDeVenta.totalxprod;
-    }
-    return itemDeVenta.totalxprod - itemDeVenta.descuentoProducto;
+  calcularPrecioTotalItemProducto(itemDeVenta: ItemDeVentaInterface){
+    // if (typeof itemDeVenta.descuentoProducto === 'undefined') {
+    //   return itemDeVenta.totalxprod;
+    // }
+    // return itemDeVenta.totalxprod - itemDeVenta.descuentoProducto;
+    return itemDeVenta.totalxprod;
   }
 }
