@@ -249,7 +249,6 @@ export class PuntoVentaPage implements OnInit {
     console.log(evento);
     this.ActualizarMonto(evento.id, evento.cantidad,
     evento.porcentaje, evento.descuento, evento.montoNeto, evento.totalxprod);
-    // this.calcularTotalaPagar();
   }
 
   ActualizarMonto(
@@ -292,7 +291,7 @@ export class PuntoVentaPage implements OnInit {
         }
       }
     }
-    console.log('AQUI SE CALCULARA EL IMPORTE TOTAL');
+
     this.calcularTotalaPagar();
   }
 
@@ -324,7 +323,6 @@ export class PuntoVentaPage implements OnInit {
       totalxpagar += item.totalxprod;
     }
     // console.log(totalxpagar);
-    console.log('SE CALCULO TOTAL A PAGARRRRRRRR');
 
     this.importeTotalPagar = totalxpagar;
   }
