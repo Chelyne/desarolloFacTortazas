@@ -12,7 +12,6 @@ import { AngularFirestore } from '@angular/fire/firestore';
 import { map } from 'rxjs/operators';
 import { StorageService } from '../../services/storage.service';
 import { PoppoverClientesComponent } from '../../components/poppover-clientes/poppover-clientes.component';
-// import { TestServiceService } from 'src/app/services/test-service.service';
 
 import { ActivatedRoute, Router } from '@angular/router';
 import { ConfirmarVentaService } from 'src/app/services/confirmar-venta.service';
@@ -88,7 +87,7 @@ export class PuntoVentaPage implements OnInit {
               private storage: StorageService,
               private toastController: ToastController,
               private popoverController: PopoverController,
-              private testServ: ConfirmarVentaService,
+              private confirmarVentaServ: ConfirmarVentaService,
               private rutaActiva: ActivatedRoute,
               private modalController: ModalController,
               private router: Router,
@@ -257,37 +256,12 @@ export class PuntoVentaPage implements OnInit {
   ){
     if (this.listaItemsDeVenta.length > 0) {
       for (const itemDeVenta of this.listaItemsDeVenta) {
-        // console.log('ssssssssssssssssss')
         if (idProdItem === itemDeVenta.idProducto){
             itemDeVenta.cantidad = cantidad;
             itemDeVenta.descuentoProducto = descuento;
             itemDeVenta.porcentajeDescuento = porcentaje;
             itemDeVenta.montoNeto = montoNeto;
             itemDeVenta.totalxprod = totalxprod;
-            // itemDeVenta.totalxprod = cantidad * itemDeVenta.producto.precio; // - descuento;
-            // itemDeVenta.precioVenta = precioVenta;
-
-
-
-            // if (isNullOrUndefined(porcentaje)) {
-            //   if (isNullOrUndefined(precioVenta)) {
-            //     itemDeVenta.totalxprod = itemDeVenta.cantidad * itemDeVenta.producto.precio;
-            //   } else {
-            //     itemDeVenta.totalxprod = precioVenta;
-            //   }
-            //   break;
-
-            // } else {
-            //     itemDeVenta.totalxprod = itemDeVenta.cantidad * itemDeVenta.producto.precio;
-            //     itemDeVenta.totalxprod = itemDeVenta.totalxprod - (itemDeVenta.totalxprod * (porcentaje / 100));
-            //     break;
-            // }
-
-            // if (isNullOrUndefined(precioVenta)) {
-            //   itemDeVenta.totalxprod = itemDeVenta.cantidad * itemDeVenta.producto.precio;
-            // } else {
-            //   itemDeVenta.totalxprod = precioVenta;
-            // }
         }
       }
     }
@@ -395,7 +369,7 @@ export class PuntoVentaPage implements OnInit {
     if (this.cliente) {
       if (this.listaItemsDeVenta.length > 0) {
         if (this.cajaChica) {
-          this.testServ.setVenta(this.CrearItemDeVentas());
+          this.confirmarVentaServ.setVenta(this.CrearItemDeVentas());
           this.router.navigate(['/confirmar-venta']);
         } else {
           this.presentToast('Por favor aperture su caja chica para vender', 'danger');
@@ -613,4 +587,6 @@ export class PuntoVentaPage implements OnInit {
     });
     return await modal.present();
   }
+
 }
+
