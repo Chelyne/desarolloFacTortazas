@@ -80,15 +80,12 @@ export class ProductoVentaComponent implements OnInit {
   get precioVenta() { return this.formVenta.get('precioVenta'); }
   get porcentaje() { return this.formVenta.get('porcentaje'); }
 
-  // ANCHOR - Refactorizar
   obtenerPrecioVenta(): number{
     // Obtiene el ImporteTotal por el producto
     if (this.itemDeVenta.montoNeto !== this.itemDeVenta.totalxprod){
       return this.itemDeVenta.totalxprod;
     }
     return this.itemDeVenta.montoNeto - this.itemDeVenta.descuentoProducto;
-    return this.itemDeVenta.totalxprod;
-    return 0;
   }
 
   calcularPorcentaje(numero: number, porcentaje: number){
@@ -135,7 +132,7 @@ export class ProductoVentaComponent implements OnInit {
     this.itemDeVenta.porcentajeDescuento = 0.0;
 
     // tslint:disable-next-line: max-line-length
-    this.itemDeVenta.totalxprod = this.formVenta.value.precioVenta ? parseFloat(this.formVenta.value.precioVenta): this.itemDeVenta.montoNeto;
+    this.itemDeVenta.totalxprod = this.formVenta.value.precioVenta ? parseFloat(this.formVenta.value.precioVenta) : this.itemDeVenta.montoNeto;
     this.itemDeVenta.descuentoProducto = this.itemDeVenta.montoNeto - this.itemDeVenta.totalxprod;
 
     this.emitirCambioDePropiedades();
