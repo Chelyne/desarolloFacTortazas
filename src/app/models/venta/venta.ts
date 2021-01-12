@@ -24,5 +24,6 @@ export interface VentaInterface {
     montoNeto?: number;
     igv?: number;
     montoBase?: number;
+    cantidadBolsa?:number;
 }
 

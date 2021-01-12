@@ -6,7 +6,7 @@ import * as moment from 'moment';
 import { formatDate } from '@angular/common';
 
 import { redondeoDecimal } from 'src/app/global/funciones-globales';
-import { MonotoALetras } from 'src/app/global/monto-a-letra';
+import { MontoALetras } from 'src/app/global/monto-a-letra';
 
 @Injectable({
   providedIn: 'root'
@@ -158,7 +158,7 @@ formatearVenta(venta: VentaInterface){
     legends: [
       {
         code: '1000',
-        value: MonotoALetras(totalaPagar)
+        value: MontoALetras(totalaPagar)
       }
     ]
   };

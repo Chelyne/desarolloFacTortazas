@@ -19,7 +19,7 @@ import { ContadorDeSerieInterface } from '../../models/serie';
 
 import { redondeoDecimal } from '../../global/funciones-globales';
 import { ItemDeVentaInterface } from '../../models/venta/item-de-venta';
-import { MonotoALetras } from 'src/app/global/monto-a-letra';
+import { MontoALetras } from 'src/app/global/monto-a-letra';
 
 @Component({
   selector: 'app-confirmar-venta',
@@ -279,7 +279,9 @@ export class ConfirmarVentaPage implements OnInit {
     this.venta.serieComprobante = this.serieComprobante;
     this.venta.vendedor = this.storage.datosAdmi;
     this.venta.bolsa = this.bolsa;
+    this.venta.cantidadBolsa = this.cantidadBolsa;
     this.venta.tipoPago = this.tipoPago;
+    this.venta.montoNeto = this.importeNeto;
     this.venta.descuentoVenta = this.importeDescuento;
     this.venta.totalPagarVenta = this.importeTotal;
     this.venta.igv = this.igvImporteBase;
@@ -465,7 +467,7 @@ export class ConfirmarVentaPage implements OnInit {
         doc.text(this.vuelto.toFixed(2), 43, index + 7, {align: 'right'});
         doc.setFontSize(3.5);
         // doc.text('SON ' + this.NumeroALetras(this.venta.totalPagarVenta), 2, index + 9, {align: 'left'});
-        doc.text(MonotoALetras(this.venta.totalPagarVenta), 2, index + 9, {align: 'left'});
+        doc.text(MontoALetras(this.venta.totalPagarVenta), 2, index + 9, {align: 'left'});
         doc.setFontSize(4);
         doc.text('Vendedor: ' + this.convertirMayuscula(this.venta.vendedor.nombre), 2, index + 11, {align: 'left'});
         // doc.text(this.venta.vendedor.nombre.toUpperCase(), 43, index + 11, {align: 'right'});
@@ -561,7 +563,7 @@ export class ConfirmarVentaPage implements OnInit {
         doc.text('s/ ' + this.venta.totalPagarVenta.toFixed(2), 43, index + 3, {align: 'right'});
         doc.setFontSize(3);
         // doc.text('SON ' + this.NumeroALetras(this.venta.totalPagarVenta), 2, index + 5, {align: 'left'});
-        doc.text(MonotoALetras(this.venta.totalPagarVenta), 2, index + 5, {align: 'left'});
+        doc.text(MontoALetras(this.venta.totalPagarVenta), 2, index + 5, {align: 'left'});
         doc.setFontSize(4);
         doc.text('Vendedor: ' + this.convertirMayuscula(this.venta.vendedor.nombre), 2, index + 7, {align: 'left'});
         doc.text('Forma de Pago: ' + this.convertirMayuscula(this.venta.tipoPago) , 2, index + 9, {align: 'left'});
@@ -641,7 +643,7 @@ export class ConfirmarVentaPage implements OnInit {
         doc.text(this.vuelto.toFixed(2), 43, index + 7, {align: 'right'});
         doc.setFontSize(3.5);
         // doc.text('SON ' + this.NumeroALetras(this.venta.totalPagarVenta), 2, index + 9, {align: 'left'});
-        doc.text(MonotoALetras(this.venta.totalPagarVenta), 2, index + 9, {align: 'left'});
+        doc.text(MontoALetras(this.venta.totalPagarVenta), 2, index + 9, {align: 'left'});
         doc.setFontSize(4);
         doc.text('Vendedor: ' + this.convertirMayuscula(this.venta.vendedor.nombre), 2, index + 11, {align: 'left'});
         // doc.text(this.venta.vendedor.nombre.toUpperCase(), 43, index + 11, {align: 'right'});

@@ -58,14 +58,14 @@ export class ListaDeVentasPage implements OnInit {
   }
 
 
-  EnviarComprobante(){
-    for (const venta of this.listaDeVentas) {
-      // this.apiPeru.enviarComprobanteASunat(venta);
-    }
-  }
+  // EnviarComprobante(){
+  //   for (const venta of this.listaDeVentas) {
+  //     this.apiPeru.enviarComprobanteASunat(venta);
+  //   }
+  // }
 
   enviarUnComprobante(data) {
     console.log(data);
-    // this.apiPeru.enviarComprobanteASunat(data);
+    this.apiPeru.enviarASunatAdaptador(data);
   }
 }

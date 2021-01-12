@@ -59,7 +59,7 @@ export interface ClientInterface {
 export interface CompanyInterface {
     ruc?: string;
     razonSocial?: string;
-    nombreComercial?: AddressInterface;
+    nombreComercial?: string;
     address?: AddressInterface;
     email?: string;
     telephone?: string;
