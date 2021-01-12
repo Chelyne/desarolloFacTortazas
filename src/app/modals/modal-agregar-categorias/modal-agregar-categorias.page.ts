@@ -164,27 +164,38 @@ loading;
     this.sinFoto = null;
     this.mensaje = null;
     console.log(this.categoriaForm.value);
-    if (isNullOrUndefined(this.image)) {
-      this.sinFoto = 'Por favor suba una foto';
-    }
+    // if (isNullOrUndefined(this.image)) {
+    //   this.sinFoto = 'Por favor suba una foto';
+    // }
 
-    if (this.categoriaForm.valid && this.image) {
-
-      this.presentLoading('Agregando Categoria');
-      this.uploadImages(this.image).then( url => {
-        console.log('La url:', url);
-        this.categoriaForm.value.img = url;
+    if (this.categoriaForm.valid) {
+      if (this.image){
+        this.presentLoading('Agregando Categoria');
+        this.uploadImages(this.image).then( url => {
+          console.log('La url:', url);
+          this.categoriaForm.value.img = url;
+          this.categoriaForm.value.categoria = this.categoriaForm.value.categoria.toLowerCase();
+          this.categoriaForm.value.sede = this.sede;
+          this.categoriaForm.value.fechaRegistro = new Date();
+          this.dbData.guardarCategoria(this.categoriaForm.value, this.sede);
+          this.cerrarModal();
+          this.loading.dismiss();
+          this.presentToast('Se agregó correctamente.');
+          this.onResetForm();
+        }).catch(err => {
+          this.presentToast('error al subir imagen');
+        });
+      }else{
+        this.categoriaForm.value.img = null;
         this.categoriaForm.value.categoria = this.categoriaForm.value.categoria.toLowerCase();
         this.categoriaForm.value.sede = this.sede;
         this.categoriaForm.value.fechaRegistro = new Date();
         this.dbData.guardarCategoria(this.categoriaForm.value, this.sede);
         this.cerrarModal();
-        this.loading.dismiss();
+        // this.loading.dismiss();
         this.presentToast('Se agregó correctamente.');
         this.onResetForm();
-      }).catch(err => {
-        this.presentToast('error al subir imagen');
-      });
+      }
     }
     if (this.categoriaForm.invalid) {
       this.mensaje = 'Complete todos los campos';

@@ -4,7 +4,7 @@ import { DbDataService } from '../../services/db-data.service';
 import { StorageService } from '../../services/storage.service';
 import { formatDate, DatePipe } from '@angular/common';
 import { VentaInterface } from '../../models/venta/venta';
-import { MonotoALetras } from '../../global/monto-a-letra';
+import { MontoALetras } from '../../global/monto-a-letra';
 import * as moment from 'moment';
 import jsPDF from 'jspdf';
 import { NgxQrcodeElementTypes, NgxQrcodeErrorCorrectionLevels, QrcodeComponent } from '@techiediaries/ngx-qrcode';
@@ -197,7 +197,7 @@ export class ModalVentasPage implements OnInit {
           doc.text(venta.montoPagado ? venta.montoPagado.toFixed(2) : '0.00', 43, index + 7, {align: 'right'});
           doc.setFontSize(3.5);
           // doc.text('SON ' + this.NumeroALetras(this.venta.totalPagarVenta), 2, index + 9, {align: 'left'});
-          doc.text(MonotoALetras(venta.totalPagarVenta), 2, index + 9, {align: 'left'});
+          doc.text(MontoALetras(venta.totalPagarVenta), 2, index + 9, {align: 'left'});
           doc.setFontSize(4);
           doc.text('Vendedor: ' + this.convertirMayuscula(venta.vendedor.nombre), 2, index + 11, {align: 'left'});
           // doc.text(this.venta.vendedor.nombre.toUpperCase(), 43, index + 11, {align: 'right'});
@@ -294,7 +294,7 @@ export class ModalVentasPage implements OnInit {
           doc.text('s/ ' + venta.totalPagarVenta.toFixed(2), 43, index + 3, {align: 'right'});
           doc.setFontSize(3);
           // doc.text('SON ' + this.NumeroALetras(this.venta.totalPagarVenta), 2, index + 5, {align: 'left'});
-          doc.text(MonotoALetras(venta.totalPagarVenta), 2, index + 5, {align: 'left'});
+          doc.text(MontoALetras(venta.totalPagarVenta), 2, index + 5, {align: 'left'});
           doc.setFontSize(4);
           doc.text('Vendedor: ' + this.convertirMayuscula(venta.vendedor.nombre), 2, index + 7, {align: 'left'});
           doc.text('Forma de Pago: ' + this.convertirMayuscula(venta.tipoPago) , 2, index + 9, {align: 'left'});
@@ -374,7 +374,7 @@ export class ModalVentasPage implements OnInit {
           doc.text(venta.montoPagado ? venta.montoPagado.toFixed(2) : '0.00', 43, index + 7, {align: 'right'});
           doc.setFontSize(3.5);
           // doc.text('SON ' + this.NumeroALetras(this.venta.totalPagarVenta), 2, index + 9, {align: 'left'});
-          doc.text(MonotoALetras(venta.totalPagarVenta), 2, index + 9, {align: 'left'});
+          doc.text(MontoALetras(venta.totalPagarVenta), 2, index + 9, {align: 'left'});
           doc.setFontSize(4);
           doc.text('Vendedor: ' + this.convertirMayuscula(venta.vendedor.nombre), 2, index + 11, {align: 'left'});
           // doc.text(this.venta.vendedor.nombre.toUpperCase(), 43, index + 11, {align: 'right'});

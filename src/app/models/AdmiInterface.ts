@@ -5,7 +5,7 @@ export interface AdmiInterface {
     apellidos?: string;
     foto?: string;
     sede?: string;
-    celular?: number;
+    celular?: number|string;
     password?: string;
     dni?: string;
     rol?: string;
