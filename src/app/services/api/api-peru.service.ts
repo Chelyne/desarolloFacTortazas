@@ -10,6 +10,9 @@ import { isNullOrUndefined } from 'util';
 import { DbDataService } from '../db-data.service';
 import { StorageService } from '../storage.service';
 
+import { redondeoDecimal } from 'src/app/global/funciones-globales';
+
+
 @Injectable({
   providedIn: 'root'
 })
@@ -122,8 +125,23 @@ export class ApiPeruService {
     return this.datosDeEmpresa;
   }
 
+/* ---------------------------------------------------------------------------------------------- */
+/*                                     ENVIAR COMPROBANTE A SUNAT                                 */
+/* ---------------------------------------------------------------------------------------------- */
+
+  enviarASunatAdaptador(venta: VentaInterface){
+    this.dataApi.obtenerProductosDeVenta(venta.idListaProductos, this.sede).subscribe( (data: any) => {
+      console.log('Lista de productos de la venta obtenidos de firebase:', data);
+      // tslint:disable-next-line: deprecation
+      if (!isNullOrUndefined(data)){
+        venta.listaItemsDeVenta = data.productos;
+      }
+    }
+    );
+  }
+
+
   // NOTE - Esta es la función más importante que se encarga de enviar una factura a sunat
-  // ANCHOR
   enviarComprobanteASunat(venta: VentaInterface){
     const myHeaders = new Headers();
     // TODO: en caso de que no exita el token ver si emprea tiene el token
@@ -160,58 +178,6 @@ export class ApiPeruService {
     });
   }
 
-  enviarComprobanteToSunat(data: any){
-    const myHeaders = new Headers();
-    // myHeaders.append('Authorization', 'Bearer '.concat(this.datosDeEmpresa.token.code));
-    // myHeaders.append('Content-Type', 'application/json');
-
-    // myHeaders.append("Authorization", "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJpYXQiOjE2MDk2MTUzMDAsInVzZXJuYW1lIjoiZnJpZW5kc2NvZGUiLCJjb21wYW55IjoiMjA2MDE4MzEwMzIiLCJleHAiOjQ3NjMyMTUzMDB9.JIikuy-l6I74EB5-DNMlFjdqtIhIwR4CDDc10LLuiUuwt3AdxSbpQlgZbIHsGA7cMFAGkhP0trdZVFp40Z35Ayr9fL-JA4NX6Scd6VdnlIBkf2FT32irpGwkY71bEUnjDxGARWGtFnZwhK3MMLWAdjemGrTP25AqtGK8IjkiFZSKQ90toFxpd1Ije6zigRxrkFl0vS6WsFWwHXG-vmCyBqw_i_qE8MVT1zVemas1RZxaDH3UIhCB7mXxZqEUO8QqcmUB8L9OY6tCFOYm_whDjOdkz4GrxdfWMoAQHwDhEhI85k4fwrdynbGyonH1Invcv5xejz0u99geEJmTns9TdqV0dDjhvE4Prqtb53PwRSpJ6Bpo9lIq_YFoMcJk9duXqS2iVNgFDEc3oa35OeM75x0xfrv5i7uIr_JajjQ1-LLz36hJpc1lt9dwAEPrtGoEoSwImGByBZA7yU19cw_3r429-bHMAjnvdF9tPBPJCfVFfW0SYsLfR_UVXoZNzWk1gYDLUvvQw5PtLh6GVGtphy4sSTElZ1-fZ1Q2lmf8Jh8XSdeE4qDfXhW9YHIBUwn99K_9H80Hd8mi2rqJzig4ftudNZtAU0YqLHq6WohTXWNwf9Fob7b66vlwXHawQ6HGoN046kAebuWKBQeYwJFYzfQJOznEtkw5aiJ2wo9hcaU");
-    const tokenOne = 'eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJpYXQiOjE2MDk2MTUzMDAsInVzZXJuYW1lIjoiZnJpZW5kc2NvZGUiLCJjb21wYW55IjoiMjA2MDE4MzEwMzIiLCJleHAiOjQ3NjMyMTUzMDB9.JIikuy-l6I74EB5-DNMlFjdqtIhIwR4CDDc10LLuiUuwt3AdxSbpQlgZbIHsGA7cMFAGkhP0trdZVFp40Z35Ayr9fL-JA4NX6Scd6VdnlIBkf2FT32irpGwkY71bEUnjDxGARWGtFnZwhK3MMLWAdjemGrTP25AqtGK8IjkiFZSKQ90toFxpd1Ije6zigRxrkFl0vS6WsFWwHXG-vmCyBqw_i_qE8MVT1zVemas1RZxaDH3UIhCB7mXxZqEUO8QqcmUB8L9OY6tCFOYm_whDjOdkz4GrxdfWMoAQHwDhEhI85k4fwrdynbGyonH1Invcv5xejz0u99geEJmTns9TdqV0dDjhvE4Prqtb53PwRSpJ6Bpo9lIq_YFoMcJk9duXqS2iVNgFDEc3oa35OeM75x0xfrv5i7uIr_JajjQ1-LLz36hJpc1lt9dwAEPrtGoEoSwImGByBZA7yU19cw_3r429-bHMAjnvdF9tPBPJCfVFfW0SYsLfR_UVXoZNzWk1gYDLUvvQw5PtLh6GVGtphy4sSTElZ1-fZ1Q2lmf8Jh8XSdeE4qDfXhW9YHIBUwn99K_9H80Hd8mi2rqJzig4ftudNZtAU0YqLHq6WohTXWNwf9Fob7b66vlwXHawQ6HGoN046kAebuWKBQeYwJFYzfQJOznEtkw5aiJ2wo9hcaU';
-    let tokenDos = this.datosDeEmpresa.token.code;
-
-    if(tokenDos === tokenOne){
-      console.log('Los tokens son iguales');
-      console.log(tokenDos);
-      console.log(tokenOne);
-
-    }else{
-      console.log('LosNOOOOOOOOOOOOOOOOO tokens son iguales');
-      console.log(tokenDos);
-      console.log(tokenOne);
-    }
-
-
-    myHeaders.append("Authorization", `Bearer ${this.datosDeEmpresa.token.code}`)
-    //myHeaders.append("Authorization", "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJpYXQiOjE2MDk2MTUzMDAsInVzZXJuYW1lIjoiZnJpZW5kc2NvZGUiLCJjb21wYW55IjoiMjA2MDE4MzEwMzIiLCJleHAiOjQ3NjMyMTUzMDB9.JIikuy-l6I74EB5-DNMlFjdqtIhIwR4CDDc10LLuiUuwt3AdxSbpQlgZbIHsGA7cMFAGkhP0trdZVFp40Z35Ayr9fL-JA4NX6Scd6VdnlIBkf2FT32irpGwkY71bEUnjDxGARWGtFnZwhK3MMLWAdjemGrTP25AqtGK8IjkiFZSKQ90toFxpd1Ije6zigRxrkFl0vS6WsFWwHXG-vmCyBqw_i_qE8MVT1zVemas1RZxaDH3UIhCB7mXxZqEUO8QqcmUB8L9OY6tCFOYm_whDjOdkz4GrxdfWMoAQHwDhEhI85k4fwrdynbGyonH1Invcv5xejz0u99geEJmTns9TdqV0dDjhvE4Prqtb53PwRSpJ6Bpo9lIq_YFoMcJk9duXqS2iVNgFDEc3oa35OeM75x0xfrv5i7uIr_JajjQ1-LLz36hJpc1lt9dwAEPrtGoEoSwImGByBZA7yU19cw_3r429-bHMAjnvdF9tPBPJCfVFfW0SYsLfR_UVXoZNzWk1gYDLUvvQw5PtLh6GVGtphy4sSTElZ1-fZ1Q2lmf8Jh8XSdeE4qDfXhW9YHIBUwn99K_9H80Hd8mi2rqJzig4ftudNZtAU0YqLHq6WohTXWNwf9Fob7b66vlwXHawQ6HGoN046kAebuWKBQeYwJFYzfQJOznEtkw5aiJ2wo9hcaU");
-
-    myHeaders.append("Content-Type", "application/json");
-
-    const raw = JSON.stringify(data);
-
-    const requestOptions: RequestInit = {
-      method: 'POST',
-      headers: myHeaders,
-      body: raw,
-      redirect: 'follow'
-    };
-
-    // fetch('https://facturacion.apisperu.com/api/v1/invoice/send', requestOptions)
-    //     .then(response => response.text())
-    //     .then(cdr => {
-
-    //       console.log('crd', cdr);
-    //       // TODO: Guardar resultado en la base de datos
-    //       // console.log('Aqui debería guardaaaaaaaaaaaaaaaaa');
-    //       // this.dataApi.guardarCDR(venta, this.sede, cdr);
-    //     } )
-    //     .catch(error => console.log('errorrrrrrrrrrrrrrrrrrrrrrrrr', error));
-    fetch('https://facturacion.apisperu.com/api/v1/invoice/send', requestOptions)
-    .then(response => response.text())
-    .then(result => console.log(result))
-    .catch(error => console.log('error', error));
-
-  }
-
   formatearVenta(venta: VentaInterface){
     // const productFormat: SaleDetailInterface[] = this.formatearDetalles(venta);
     console.log('Venta a ser Formateada', venta);
@@ -219,8 +185,9 @@ export class ApiPeruService {
     let productFormat;
 
     const totalaPagar = venta.totalPagarVenta;
-    const igv = totalaPagar * 18 / 100;
-    const montoOperGravadas = totalaPagar - igv;
+    const montoBase = totalaPagar / 1.18;
+    const igv = totalaPagar - montoBase;
+    const montoOperGravadas = montoBase;
 
     const promesa = new Promise((resolve, reject) => {
       this.obtenerDetallesDeProductos(venta.idListaProductos)
@@ -254,8 +221,8 @@ export class ApiPeruService {
         resolve(r);
       });
     });
-    return promesa;
 
+    return promesa;
   }
 
   // tslint:disable-next-line: member-ordering
@@ -283,30 +250,32 @@ export class ApiPeruService {
         resolve(productFormat);
       });
     });
+
     return promesa;
   }
 
   formatearDetalleVenta(itemDeVenta: ItemDeVentaInterface): SaleDetailInterface{
     const cantidadItems = itemDeVenta.cantidad;
     const precioUnit = itemDeVenta.producto.precio;
-    const igvUnitario = precioUnit * 18 / 100;
-    const precioUnitSinIgv = precioUnit - igvUnitario;
-    const montoBase = cantidadItems * precioUnitSinIgv;
+    const precioUnitarioBase = precioUnit / 1.18;
+    const igvUnitario = precioUnit - precioUnitarioBase;
+
+    const montoBase = cantidadItems * precioUnitarioBase;
     const igvTotal = cantidadItems * igvUnitario;
 
     return {
         // codProducto: 'P001', // TODO, PROBAR A ENVIAR SIN ESTE
-        unidad: this.ObtenerCodigoMedida(itemDeVenta.producto.medida), // TODO: crear obtener codigo de medida
+        unidad: this.ObtenerCodigoMedida(itemDeVenta.producto.medida),
         descripcion: itemDeVenta.producto.nombre,
         cantidad: itemDeVenta.cantidad,
-        mtoValorUnitario: precioUnitSinIgv,
-        mtoValorVenta: montoBase,
-        mtoBaseIgv: montoBase,
+        mtoValorUnitario: redondeoDecimal(precioUnitarioBase, 2),
+        mtoValorVenta: redondeoDecimal(montoBase, 2),
+        mtoBaseIgv: redondeoDecimal(montoBase, 2),
         porcentajeIgv: 18,
-        igv: igvTotal,
+        igv: redondeoDecimal(igvTotal, 2),
         tipAfeIgv: '10', // OperacionOnerosa: 10
-        totalImpuestos: igvTotal, // suma de todos los impues que hubiesen
-        mtoPrecioUnitario: precioUnit
+        totalImpuestos: redondeoDecimal(igvTotal, 2), // suma de todos los impues que hubiesen
+        mtoPrecioUnitario: redondeoDecimal(precioUnit, 2)
       };
   }
 

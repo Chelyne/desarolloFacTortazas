@@ -1,15 +1,209 @@
 import { Injectable } from '@angular/core';
+import { SaleDetailInterface } from 'src/app/models/comprobante/comprobante';
+import { ItemDeVentaInterface } from 'src/app/models/venta/item-de-venta';
+import { VentaInterface } from 'src/app/models/venta/venta';
+import * as moment from 'moment';
+import { formatDate } from '@angular/common';
+
+import { redondeoDecimal } from 'src/app/global/funciones-globales';
+import { MonotoALetras } from 'src/app/global/monto-a-letra';
 
 @Injectable({
   providedIn: 'root'
 })
 export class TestApiService {
 
+  userApiPeru = 'friendscode';
+  passwardApiPeru = 'friends2019peru';
+
   constructor() { }
 
   saludo(){
     return 'hola';
   }
+
+  setApiPeruDataUser(user: string, password: string){
+    this.userApiPeru = user;
+    this.passwardApiPeru = password;
+    // console.log('DATA USUARIOOOOOOOOOOOO: ', this.userApiPeru, this.passwardApiPeru);
+  }
+
+  login(){
+    const myHeaders = new Headers();
+    myHeaders.append('Content-Type', 'application/json');
+
+    const raw = JSON.stringify({
+      username: this.userApiPeru,
+      password: this.passwardApiPeru
+    });
+
+    const requestOptions: RequestInit = {
+      method: 'POST',
+      headers: myHeaders,
+      body: raw,
+      redirect: 'follow'
+    };
+
+    return fetch('https://facturacion.apisperu.com/api/v1/auth/login', requestOptions)
+      .then(response => response.json())
+      // .then(result => result.token)
+      .catch(error => console.log('error', error));
+  }
+
+  obtenerUserApiperuToken(){
+    return this.login().then(result => result.token);
+      // .catch(error => console.log('error', error));
+  }
+
+  async listarEmprasas(){
+
+    const myHeaders = new Headers();
+    const userToken = await this.obtenerUserApiperuToken();
+    // console.log('Bearerrrrrrrrrrrrrrrrrrrrr ', 'Bearer '.concat(userToken));
+    myHeaders.append('Authorization', 'Bearer '.concat(userToken));
+
+    // const raw = JSON.stringify({});
+
+    const requestOptions: RequestInit = {
+      method: 'GET',
+      headers: myHeaders,
+      // body: raw,
+      redirect: 'follow'
+    };
+
+    return fetch('https://facturacion.apisperu.com/api/v1/companies', requestOptions)
+      .then(response => response.json())
+      // .then(result => console.log(result))
+      .catch(error => console.log('error', error));
+  }
+
+  async obtenerEmpresaByRUC(rucEnter: string){
+    const listaDeEmpresas = await this.listarEmprasas();
+    console.log(rucEnter);
+    for (const empresa of listaDeEmpresas) {
+      // console.log('sssssssssssssssssssssss', empresa);
+      // console.log(empresa.ruc);
+      if (empresa.ruc === rucEnter){
+        // console.log('ruccccccccccccccccccccccccccccc', rucEnter, empresa);
+        return empresa;
+      }
+    }
+    console.log('ruc failllllllllllllllllllllllllllllll');
+    return {};
+  }
+
+/* ---------------------------------------------------------------------------------------------- */
+/*                                     ENVIAR COMPROBANTE A SUNAT                                 */
+/* ---------------------------------------------------------------------------------------------- */
+
+enviarASunatAdaptador(venta: VentaInterface){
+
+}
+
+reconstruirVenta(venta: VentaInterface){
+  // NOTE: recuperar datos de firestore
+  // NOTE: Añadir a venta,
+  // NOTE: formatear
+  // NOTE: Enviar a sunat
+  // NOTE: Guardar CDR
+}
+
+
+obtenerCodigoComprobante(typoComprobante: string){
+
+  if (typoComprobante.toLowerCase() === 'factura'){
+    return '01';
+  } else if (typoComprobante.toLowerCase() === 'boleta'){
+    return '03';
+  } else {
+    console.log('Comprobante no valido');
+    return 'TYPO COMPROBANTE INVALID';
+  }
+}
+
+formtearFecha(dateTime: any): string{
+
+  const fechaFormateada = new Date(moment.unix(dateTime.seconds).format('D MMM YYYY H:mm'));
+  const fechaString = formatDate(fechaFormateada, 'yyyy-dd-MMThh:mm:ss-05:00', 'en');
+  // console.log('aaaaaaaaaaaaa', fechaString);
+  return fechaString;
+}
+
+formatearVenta(venta: VentaInterface){
+  console.log('Venta a ser Formateada', venta);
+  console.log('Fecha de emision de la venta', venta.fechaEmision);
+  const productFormat = this.formatearDetalles(venta.listaItemsDeVenta);
+
+  const totalaPagar = venta.totalPagarVenta;
+  const montoBase = totalaPagar / 1.18;
+  const igv = totalaPagar - montoBase;
+  const montoOperGravadas = montoBase;
+
+  return {
+    tipoOperacion: '0101', // Venta interna
+    tipoDoc: this.obtenerCodigoComprobante(venta.tipoComprobante),  // Factura:01, Boleta:03 //
+    serie: venta.serieComprobante,
+    correlativo: venta.numeroComprobante, // venta.numeroComprobante,
+    fechaEmision: '', // this.formtearFecha(venta.fechaEmision), // TODO, formaterar fecha a Data-time
+    tipoMoneda: 'PEN',
+    client: {}, // this.formatearCliente(venta.cliente),
+    company: {}, // this.formatearEmpresa(this.datosDeEmpresa), // ANCHOR
+    mtoOperGravadas: redondeoDecimal(montoOperGravadas, 2),
+    mtoIGV: redondeoDecimal(igv, 2),
+    totalImpuestos: redondeoDecimal(igv, 2),
+    valorVenta: redondeoDecimal(montoOperGravadas, 2),
+    mtoImpVenta: redondeoDecimal(totalaPagar, 2),
+    ublVersion: '2.1',
+    details: productFormat,
+    legends: [
+      {
+        code: '1000',
+        value: MonotoALetras(totalaPagar)
+      }
+    ]
+  };
+
+}
+
+formatearDetalles(itemsDeVenta): SaleDetailInterface[]{
+  const listaFormateda: SaleDetailInterface[] = [];
+
+  for (const itemDeVenta of itemsDeVenta) {
+    listaFormateda.push(this.formatearDetalleVenta(itemDeVenta));
+  }
+  console.log(listaFormateda);
+  return listaFormateda;
+}
+
+formatearDetalleVenta(itemDeVenta: ItemDeVentaInterface): SaleDetailInterface{
+  // TODO - Verificar que como se hace un descuento
+  const cantidadItems = itemDeVenta.cantidad;
+  const precioUnit = itemDeVenta.producto.precio;
+  const precioUnitarioBase = precioUnit / 1.18;
+  const igvUnitario = precioUnit - precioUnitarioBase;
+
+  const montoBase = cantidadItems * precioUnitarioBase;
+  const igvTotal = cantidadItems * igvUnitario;
+
+  return {
+      // codProducto: 'P001', // TODO, PROBAR A ENVIAR SIN ESTE
+      unidad: this.ObtenerCodigoMedida(itemDeVenta.producto.medida),
+      descripcion: itemDeVenta.producto.nombre,
+      cantidad: itemDeVenta.cantidad,
+      mtoValorUnitario: redondeoDecimal(precioUnitarioBase, 2),
+      mtoValorVenta: redondeoDecimal(montoBase, 2),
+      mtoBaseIgv: redondeoDecimal(montoBase, 2),
+      porcentajeIgv: 18,
+      igv: redondeoDecimal(igvTotal, 2),
+      tipAfeIgv: '10', // OperacionOnerosa: 10
+      totalImpuestos: redondeoDecimal(igvTotal, 2), // suma de todos los impues que hubiesen
+      mtoPrecioUnitario: redondeoDecimal(precioUnit, 2)
+    };
+}
+
+
+/* ---------------------------------------------------------------------------------------------- */
+
 
   ObtenerCodigoMedida(medida: string){
     switch (medida.toLowerCase()) {
