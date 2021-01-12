@@ -19,6 +19,7 @@ import { ContadorDeSerieInterface } from '../../models/serie';
 
 import { redondeoDecimal } from '../../global/funciones-globales';
 import { ItemDeVentaInterface } from '../../models/venta/item-de-venta';
+import { MonotoALetras } from 'src/app/global/monto-a-letra';
 
 @Component({
   selector: 'app-confirmar-venta',
@@ -28,49 +29,37 @@ import { ItemDeVentaInterface } from '../../models/venta/item-de-venta';
 export class ConfirmarVentaPage implements OnInit {
 
   formPago: FormGroup;
+
+  // Datos de la empresa
   RUC = '20601831032';
-
-  // subTotalDeVenta
-  // subTotalDeVenta: number;
-  // importeTotalFijo: number;
-
-  // IGVdeVenta: number;
-
-  // totalAPagar
-  // NOTE - Total a pagar debería ser un constante
-  // totalAPagar: number;
-
+  LogoEmpresa = '../../../assets/img/TOOBY LOGO.png';
 
   // tslint:disable-next-line: no-inferrable-types
   tipoComprobante: string = 'boleta';
   serieComprobante: string;
+  tipoPago = 'efectivo';
 
-
-  // tslint:disable-next-line: no-inferrable-types
-  vuelto: number = 0;
-  // tslint:disable-next-line: no-inferrable-types
-  montoEntrante: number = 0;
+  // Variables para la interaccion con el usuario
+  vuelto = 0;
+  montoEntrante = 0;
   descuentoDeVentaMonto = 0;
   descuentoDeVentaPorcentaje = 0;
 
-  // nuevas variables
+  // Variables generales para el calculo de montos de la venta
   importeNeto = 0.0;
-
   importeTotal = 0.0;
   importeBase = 0.0;
   igvImporteBase = 0.0;
-
   importeDescuento = 0.0;
 
-
-
+  // Variable para almacenar la venta actual
   venta: VentaInterface;
-  loading;
+
+
   bolsa = false;
   cantidadBolsa = 0;
-  tipoPago = 'efectivo';
-  LogoEmpresa = '../../../assets/img/TOOBY LOGO.png';
 
+  loading;
   elementType = NgxQrcodeElementTypes.CANVAS;
   correctionLevel = NgxQrcodeErrorCorrectionLevels.HIGH;
   valueQR;
@@ -113,7 +102,13 @@ export class ConfirmarVentaPage implements OnInit {
         this.igvImporteBase = 0;
       }
       console.log('venta', this.venta);
+
+      // this.formPago.setControl('montoIngreso',
+      //   new FormControl(this.importeTotal, [Validators.required, Validators.pattern('^[0-9]*\.?[0-9]*$')])
+      // );
+      this.ActualizarMontoEntrante(this.importeTotal);
       this.calcularVuelto();
+
     }
   }
 
@@ -145,21 +140,19 @@ export class ConfirmarVentaPage implements OnInit {
 
   ngOnInit() {
     this.menuCtrl.enable(true);
-    // REFACTOR
 
     this.formPago.setControl('montoIngreso',
       new FormControl(this.importeTotal, [Validators.required, Validators.pattern('^[0-9]*\.?[0-9]*$')])
     );
 
-    this.formPago.setControl('descuentoMonto',
-      new FormControl(this.descuentoDeVentaMonto, [ Validators.pattern('^[0-9]*\.?[0-9]*$')])
-    );
+    // this.formPago.setControl('descuentoMonto',
+    //   new FormControl(this.descuentoDeVentaMonto, [ Validators.pattern('^[0-9]*\.?[0-9]*$')])
+    // );
 
-    this.formPago.setControl('descuentoPorcentaje',
-      new FormControl(this.descuentoDeVentaPorcentaje, [ Validators.pattern('^[0-9]*\.?[0-9]*$')])
-    );
+    // this.formPago.setControl('descuentoPorcentaje',
+    //   new FormControl(this.descuentoDeVentaPorcentaje, [ Validators.pattern('^[0-9]*\.?[0-9]*$')])
+    // );
 
-    // console.log('sssssssssssss', this.venta);
   }
 
 
@@ -193,17 +186,10 @@ export class ConfirmarVentaPage implements OnInit {
 
     this.importeBase = this.importeTotal / 1.18;
     this.igvImporteBase = this.importeTotal - this.importeBase;
-    console.log(this.importeDescuento, this.importeTotal, this.descuentoDeVentaMonto);
-
-    // tslint:disable-next-line:max-line-length
-    // this.formPago.setControl('descuento', new FormControl(this.totalconDescuento, [Validators.required, Validators.pattern('^[0-9]*\.?[0-9]*$')]));
-    // this.modificarMontoEntrante(this.totalconDescuento);
-    // this.calcularVuelto();
 
     // modificar el campo: montoEntrante
-    // this.modificarMontoEntrante(this.importeDescuento); // para luego
+    this.ActualizarMontoEntrante(this.importeTotal);
     this.calcularVuelto();
-    //
   }
 
   realizarDescuentoPorcentaje(){
@@ -220,19 +206,13 @@ export class ConfirmarVentaPage implements OnInit {
     this.importeBase = this.importeTotal / 1.18;
     this.igvImporteBase = this.importeTotal - this.importeBase;
 
-    console.log(this.importeDescuento, this.importeTotal, this.descuentoDeVentaMonto);
-
-    // modificar el campo: montoEntrante
-    // this.modificarMontoEntrante(this.importeDescuento); //PA LUEGO
+    this.ActualizarMontoEntrante(this.importeTotal);
     this.calcularVuelto();
-    //
   }
 
-  modificarMontoEntrante(monto: number){
-    console.log(monto);
-    this.montoEntrante = monto;
-    this.formPago.setControl('montoIngreso', new FormControl(this.montoEntrante.toFixed(2), [Validators.required, Validators.pattern('^[0-9]*\.?[0-9]*$')]));
-    // this.calcularVuelto();
+  ActualizarMontoEntrante(monto: number){
+    this.formPago.setControl('montoIngreso',
+    new FormControl(monto.toFixed(2), [Validators.required, Validators.pattern('^[0-9]*\.?[0-9]*$')]));
   }
 
 
@@ -243,7 +223,7 @@ export class ConfirmarVentaPage implements OnInit {
       this.montoEntrante = 0;
     }
 
-    console.log('total con descuento', this.montoEntrante, redondeoDecimal(this.importeDescuento, 2));
+    // console.log('total con descuento', this.montoEntrante, redondeoDecimal(this.importeDescuento, 2));
 
     this.vuelto =  this.montoEntrante - redondeoDecimal(this.importeTotal, 2);
     this.vuelto = redondeoDecimal(this.vuelto, 2);
@@ -259,11 +239,16 @@ export class ConfirmarVentaPage implements OnInit {
     this.calcularVuelto();
   }
 
-  ponerMontoExacto(){
+  ponerMontoExactoYCalularVuelto(){
     this.montoEntrante = this.importeTotal;
     this.formPago.setControl('montoIngreso', new FormControl(this.montoEntrante.toFixed(2), [Validators.required, Validators.pattern('^[0-9]*\.?[0-9]*$')]));
     this.calcularVuelto();
   }
+  // ponerMontoExactoYCalcularVuelto(){
+  //   this.montoEntrante = this.importeTotal;
+  //   this.formPago.setControl('montoIngreso', new FormControl(this.montoEntrante.toFixed(2), [Validators.required, Validators.pattern('^[0-9]*\.?[0-9]*$')]));
+  //   this.calcularVuelto();
+  // }
 
 
 
@@ -353,25 +338,29 @@ export class ConfirmarVentaPage implements OnInit {
       this.presentToast('Bolsa agregada');
       this.importeTotal = this.importeTotal + 0.3;
       // this.importeDescuento = this.importeDescuento + 0.3;
-      if (this.tipoPago === 'tarjeta') {
-        this.ponerMontoExacto();
-      }
-      this.calcularVuelto();
+      // if (this.tipoPago === 'tarjeta') {
+      //  this.ponerMontoExacto();
+      // }
+      //this.calcularVuelto();
     } else {
       this.presentToast('Bolsa quitada');
       this.importeTotal = this.importeTotal - (0.3 * this.cantidadBolsa);
-      if (this.tipoPago === 'tarjeta') {
-        this.ponerMontoExacto();
-      }
+      // if (this.tipoPago === 'tarjeta') {
+      //  this.ponerMontoExacto();
+      // }
       // this.importeDescuento = this.importeDescuento - (0.3 * this.cantidadBolsa);
-      this.calcularVuelto();
+      //this.calcularVuelto();
       this.cantidadBolsa = 0;
     }
+    this.ponerMontoExactoYCalularVuelto();
+    // this.calcularVuelto();
+
   }
+
   seleccionTipoPago(tipo: string) {
     this.tipoPago = tipo;
     if (this.tipoPago === 'tarjeta') {
-      this.ponerMontoExacto();
+      this.ponerMontoExactoYCalularVuelto();
     }
   }
 
@@ -475,7 +464,8 @@ export class ConfirmarVentaPage implements OnInit {
         doc.text('Vuelto: S/ ', 35, index + 7, {align: 'right'});
         doc.text(this.vuelto.toFixed(2), 43, index + 7, {align: 'right'});
         doc.setFontSize(3.5);
-        doc.text('SON ' + this.NumeroALetras(this.venta.totalPagarVenta), 2, index + 9, {align: 'left'});
+        // doc.text('SON ' + this.NumeroALetras(this.venta.totalPagarVenta), 2, index + 9, {align: 'left'});
+        doc.text(MonotoALetras(this.venta.totalPagarVenta), 2, index + 9, {align: 'left'});
         doc.setFontSize(4);
         doc.text('Vendedor: ' + this.convertirMayuscula(this.venta.vendedor.nombre), 2, index + 11, {align: 'left'});
         // doc.text(this.venta.vendedor.nombre.toUpperCase(), 43, index + 11, {align: 'right'});
@@ -570,7 +560,8 @@ export class ConfirmarVentaPage implements OnInit {
         doc.text('TOTAL IMPORTE:', 2, index + 3, {align: 'left'});
         doc.text('s/ ' + this.venta.totalPagarVenta.toFixed(2), 43, index + 3, {align: 'right'});
         doc.setFontSize(3);
-        doc.text('SON ' + this.NumeroALetras(this.venta.totalPagarVenta), 2, index + 5, {align: 'left'});
+        // doc.text('SON ' + this.NumeroALetras(this.venta.totalPagarVenta), 2, index + 5, {align: 'left'});
+        doc.text(MonotoALetras(this.venta.totalPagarVenta), 2, index + 5, {align: 'left'});
         doc.setFontSize(4);
         doc.text('Vendedor: ' + this.convertirMayuscula(this.venta.vendedor.nombre), 2, index + 7, {align: 'left'});
         doc.text('Forma de Pago: ' + this.convertirMayuscula(this.venta.tipoPago) , 2, index + 9, {align: 'left'});
@@ -649,7 +640,8 @@ export class ConfirmarVentaPage implements OnInit {
         doc.text('Vuelto: S/ ', 35, index + 7, {align: 'right'});
         doc.text(this.vuelto.toFixed(2), 43, index + 7, {align: 'right'});
         doc.setFontSize(3.5);
-        doc.text('SON ' + this.NumeroALetras(this.venta.totalPagarVenta), 2, index + 9, {align: 'left'});
+        // doc.text('SON ' + this.NumeroALetras(this.venta.totalPagarVenta), 2, index + 9, {align: 'left'});
+        doc.text(MonotoALetras(this.venta.totalPagarVenta), 2, index + 9, {align: 'left'});
         doc.setFontSize(4);
         doc.text('Vendedor: ' + this.convertirMayuscula(this.venta.vendedor.nombre), 2, index + 11, {align: 'left'});
         // doc.text(this.venta.vendedor.nombre.toUpperCase(), 43, index + 11, {align: 'right'});
@@ -677,180 +669,15 @@ export class ConfirmarVentaPage implements OnInit {
 
     }
   }
+
   convertirMayuscula(letra: string) {
     return letra.charAt(0).toUpperCase() + letra.slice(1);
-}
-calcularIGVincluido(montoTotalPagar: number){
-  const montoBase = montoTotalPagar / 1.18;
-  return(montoTotalPagar - montoBase);
-}
+  }
 
-
-  Unidades(num){
-
-    switch (num)
-    {
-        case 1: return 'UN';
-        case 2: return 'DOS';
-        case 3: return 'TRES';
-        case 4: return 'CUATRO';
-        case 5: return 'CINCO';
-        case 6: return 'SEIS';
-        case 7: return 'SIETE';
-        case 8: return 'OCHO';
-        case 9: return 'NUEVE';
-    }
-
-    return '';
-}// Unidades()
-
-Decenas(num){
-
-    const decena = Math.floor(num / 10);
-    const unidad = num - (decena * 10);
-
-    switch (decena)
-    {
-        case 1:
-            switch (unidad)
-            {
-                case 0: return 'DIEZ';
-                case 1: return 'ONCE';
-                case 2: return 'DOCE';
-                case 3: return 'TRECE';
-                case 4: return 'CATORCE';
-                case 5: return 'QUINCE';
-                default: return 'DIECI' + this.Unidades(unidad);
-            }
-        case 2:
-            switch (unidad)
-            {
-                case 0: return 'VEINTE';
-                default: return 'VEINTI' + this.Unidades(unidad);
-            }
-        case 3: return this.DecenasY('TREINTA', unidad);
-        case 4: return this.DecenasY('CUARENTA', unidad);
-        case 5: return this.DecenasY('CINCUENTA', unidad);
-        case 6: return this.DecenasY('SESENTA', unidad);
-        case 7: return this.DecenasY('SETENTA', unidad);
-        case 8: return this.DecenasY('OCHENTA', unidad);
-        case 9: return this.DecenasY('NOVENTA', unidad);
-        case 0: return this.Unidades(unidad);
-    }
-} // Unidades()
-
-DecenasY(strSin, numUnidades) {
-    if (numUnidades > 0) {
-      return strSin + ' Y ' + this.Unidades(numUnidades);
-    }
-    return strSin;
-} // DecenasY()
-
-Centenas(num) {
-    const centenas = Math.floor(num / 100);
-    const decenas = num - (centenas * 100);
-
-    switch (centenas)
-    {
-        case 1:
-            if (decenas > 0) {
-              return 'CIENTO ' + this.Decenas(decenas);
-            }
-            return 'CIEN';
-        case 2: return 'DOSCIENTOS ' + this.Decenas(decenas);
-        case 3: return 'TRESCIENTOS ' + this.Decenas(decenas);
-        case 4: return 'CUATROCIENTOS ' + this.Decenas(decenas);
-        case 5: return 'QUINIENTOS ' + this.Decenas(decenas);
-        case 6: return 'SEISCIENTOS ' + this.Decenas(decenas);
-        case 7: return 'SETECIENTOS ' + this.Decenas(decenas);
-        case 8: return 'OCHOCIENTOS ' + this.Decenas(decenas);
-        case 9: return 'NOVECIENTOS ' + this.Decenas(decenas);
-    }
-
-    return this.Decenas(decenas);
-}// Centenas()
-
-Seccion(num, divisor, strSingular, strPlural) {
-    const cientos = Math.floor(num / divisor);
-    const resto = num - (cientos * divisor);
-
-    let letras = '';
-
-    if (cientos > 0) {
-      if (cientos > 1) {
-        letras = this.Centenas(cientos) + ' ' + strPlural;
-      } else {
-        letras = strSingular;
-      }
-    }
-
-    if (resto > 0) {
-      letras += '';
-    }
-
-    return letras;
-} // Seccion()
-
-Miles(num) {
-    const divisor = 1000;
-    const cientos = Math.floor(num / divisor);
-    const resto = num - (cientos * divisor);
-
-    const strMiles = this.Seccion(num, divisor, 'UN MIL', 'MIL');
-    const strCentenas = this.Centenas(resto);
-
-    if (strMiles === '') {
-      return strCentenas;
-    }
-
-    return strMiles + ' ' + strCentenas;
-}// Miles()
-
-Millones(num) {
-    const divisor = 1000000;
-    const cientos = Math.floor(num / divisor);
-    const resto = num - (cientos * divisor);
-    const strMillones = this.Seccion(num, divisor, 'UN MILLON DE', 'MILLONES DE');
-    const strMiles = this.Miles(resto);
-
-    if (strMillones === '') {
-      return strMiles;
-    }
-
-    return strMillones + ' ' + strMiles;
-}// Millones()
-
-NumeroALetras(num) {
-    const data = {
-      numero: num,
-      enteros: Math.floor(num),
-      centavos: (((Math.round(num * 100)) - (Math.floor(num) * 100))),
-      letrasCentavos: '',
-      letrasMonedaPlural: 'SOLES', // 'PESOS', 'Dólares', 'Bolívares', 'etcs'
-      letrasMonedaSingular: 'SOL', // 'PESO', 'Dólar', 'Bolivar', 'etc'
-      letrasMonedaCentavoPlural: 'CÉNTIMOS',
-      letrasMonedaCentavoSingular: 'CÉNTIMO'
-    };
-
-    if (data.centavos > 0) {
-        data.letrasCentavos = 'CON ' + (() => {
-            if (data.centavos === 1) {
-              return this.Millones(data.centavos) + ' ' + data.letrasMonedaCentavoSingular;
-            } else {
-              return this.Millones(data.centavos) + ' ' + data.letrasMonedaCentavoPlural;
-            }
-            })();
-    }
-
-    if (data.enteros === 0) {
-      return 'CERO ' + data.letrasMonedaPlural + ' ' + data.letrasCentavos;
-    }
-    if (data.enteros === 1) {
-      return this.Millones(data.enteros) + ' ' + data.letrasMonedaSingular + ' ' + data.letrasCentavos;
-    } else {
-      return this.Millones(data.enteros) + ' ' + data.letrasMonedaPlural + ' ' + data.letrasCentavos;
-    }
-  } // NumeroALetras()
+  calcularIGVincluido(montoTotalPagar: number){
+    const montoBase = montoTotalPagar / 1.18;
+    return(montoTotalPagar - montoBase);
+  }
 
   generarQR(value: string) {
     this.valueQR = value;
@@ -880,10 +707,11 @@ NumeroALetras(num) {
     this.cantidadBolsa++;
     this.importeTotal = this.importeTotal + 0.3;
     // this.importeDescuento = this.importeDescuento + 0.3;
-    if (this.tipoPago === 'tarjeta') {
-      this.ponerMontoExacto();
-    }
-    this.calcularVuelto();
+    // if (this.tipoPago === 'tarjeta') {
+      this.ponerMontoExactoYCalularVuelto();
+    // }
+    // this.calcularVuelto();
+
   }
 
   quitarBolsa() {
@@ -891,15 +719,19 @@ NumeroALetras(num) {
       this.cantidadBolsa--;
       this.importeTotal = this.importeTotal - 0.3;
       // this.importeDescuento = this.importeDescuento - 0.3;
-      if (this.tipoPago === 'tarjeta') {
-        this.ponerMontoExacto();
-      }
-      this.calcularVuelto();
+      // if (this.tipoPago === 'tarjeta') {
+      //   this.ponerMontoExacto();
+      // }
+      // this.calcularVuelto();
     } else {
       this.presentToast('Minimo 0');
       this.bolsa = false;
-      this.calcularVuelto();
+      // this.calcularVuelto();
     }
+
+    this.ponerMontoExactoYCalularVuelto();
+    // this.calcularVuelto();
+
   }
 
   calcularPrecioTotalItemProducto(itemDeVenta: ItemDeVentaInterface){

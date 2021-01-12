@@ -238,6 +238,10 @@ const routes: Routes = [
   {
     path: 'modal-ventas',
     loadChildren: () => import('./modals/modal-ventas/modal-ventas.module').then( m => m.ModalVentasPageModule)
+  },
+  {
+    path: 'buscar',
+    loadChildren: () => import('./pages/buscar/buscar.module').then( m => m.BuscarPageModule)
   }
 
 
