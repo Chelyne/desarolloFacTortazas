@@ -214,11 +214,11 @@ resetOrientation(srcBase64, srcOrientation, callback) {
       categoriass: new FormControl('', [Validators.required]),
       cantidad: new FormControl('', [Validators.required, Validators.min(1)]),
       medida: new FormControl('', [Validators.required]),
-      marca: new FormControl('', [Validators.required, Validators.minLength(3), Validators.maxLength(45)]),
-      codigoBarra: new FormControl('', [Validators.required, Validators.minLength(3), Validators.maxLength(45)]),
-      precio: new FormControl('', [Validators.required]),
-      cantStock: new FormControl('', [Validators.required, Validators.min(1)]),
-      fechaDeVencimiento: new FormControl('', [Validators.required]),
+      marca: new FormControl('', [Validators.minLength(3), Validators.maxLength(45)]),
+      codigoBarra: new FormControl('', [Validators.minLength(3), Validators.maxLength(45)]),
+      precio: new FormControl(''),
+      cantStock: new FormControl('', [Validators.min(1)]),
+      fechaDeVencimiento: new FormControl(''),
       img: new FormControl(''),
       fechaRegistro: new FormControl(''),
       sede: new FormControl(''),
@@ -324,7 +324,7 @@ resetOrientation(srcBase64, srcOrientation, callback) {
       this.productoForm.removeControl('precio');
     }
 
-    if (this.productoForm.valid && this.categoria && this.image) {
+    if (this.productoForm.valid && this.categoria) {
       if ( this.tallas && this.tallas.length > 0) {
         this.productoForm.addControl('tallas', new FormControl(this.tallas));
       } else {
@@ -335,22 +335,22 @@ resetOrientation(srcBase64, srcOrientation, callback) {
         this.productoForm.removeControl('descripcionProducto');
       }
       this.presentLoading('Agregando producto');
-      this.uploadImages(this.image).then( url => {
-        console.log('La url:', url);
-        this.productoForm.value.img = url;
-        this.productoForm.value.nombre = this.productoForm.value.nombre.toLowerCase();
-        this.productoForm.value.categoria = this.categoria;
-        this.productoForm.value.subCategoria = this.productoForm.value.categoriass.toLowerCase();
-        this.productoForm.value.sede = this.sede;
-        this.productoForm.value.fechaRegistro = new Date();
-        this.dbData.guardarProducto(this.productoForm.value, this.sede);
-        this.cerrarModal();
-        this.loading.dismiss();
-        this.presentToast('Se agregó correctamente.');
-        this.onResetForm();
-      }).catch(err => {
-        this.presentToast('error al subir imagen');
-      });
+      // this.uploadImages(this.image).then( url => {
+        // console.log('La url:', url);
+      this.productoForm.value.img = null;
+      this.productoForm.value.nombre = this.productoForm.value.nombre.toLowerCase();
+      this.productoForm.value.categoria = this.categoria;
+      this.productoForm.value.subCategoria = this.productoForm.value.categoriass.toLowerCase();
+      this.productoForm.value.sede = this.sede;
+      this.productoForm.value.fechaRegistro = new Date();
+      this.dbData.guardarProducto(this.productoForm.value, this.sede);
+      this.cerrarModal();
+      this.loading.dismiss();
+      this.presentToast('Se agregó correctamente.');
+      this.onResetForm();
+      // }).catch(err => {
+      //   this.presentToast('error al subir imagen');
+      // });
     }
     if (this.productoForm.invalid) {
       this.mensaje = 'Complete todos los campos';
