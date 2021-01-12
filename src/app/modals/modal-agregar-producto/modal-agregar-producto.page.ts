@@ -331,9 +331,9 @@ resetOrientation(srcBase64, srcOrientation, callback) {
         this.productoForm.removeControl('nombreTalla');
         this.productoForm.removeControl('tallas');
       }
-      if (isNullOrUndefined(this.productoForm.value.descripcionProducto)) {
-        this.productoForm.removeControl('descripcionProducto');
-      }
+      // if (isNullOrUndefined(this.productoForm.value.descripcionProducto)) {
+      //   this.productoForm.removeControl('descripcionProducto');
+      // }
       this.presentLoading('Agregando producto');
       // this.uploadImages(this.image).then( url => {
         // console.log('La url:', url);
