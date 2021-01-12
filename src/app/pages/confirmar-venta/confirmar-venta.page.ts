@@ -246,7 +246,8 @@ export class ConfirmarVentaPage implements OnInit {
   }
   // ponerMontoExactoYCalcularVuelto(){
   //   this.montoEntrante = this.importeTotal;
-  //   this.formPago.setControl('montoIngreso', new FormControl(this.montoEntrante.toFixed(2), [Validators.required, Validators.pattern('^[0-9]*\.?[0-9]*$')]));
+  // tslint:disable-next-line:max-line-length
+  // this.formPago.setControl('montoIngreso', new FormControl(this.montoEntrante.toFixed(2), [Validators.required, Validators.pattern('^[0-9]*\.?[0-9]*$')]));
   //   this.calcularVuelto();
   // }
 
@@ -341,7 +342,7 @@ export class ConfirmarVentaPage implements OnInit {
       // if (this.tipoPago === 'tarjeta') {
       //  this.ponerMontoExacto();
       // }
-      //this.calcularVuelto();
+      // this.calcularVuelto();
     } else {
       this.presentToast('Bolsa quitada');
       this.importeTotal = this.importeTotal - (0.3 * this.cantidadBolsa);
@@ -349,7 +350,7 @@ export class ConfirmarVentaPage implements OnInit {
       //  this.ponerMontoExacto();
       // }
       // this.importeDescuento = this.importeDescuento - (0.3 * this.cantidadBolsa);
-      //this.calcularVuelto();
+      // this.calcularVuelto();
       this.cantidadBolsa = 0;
     }
     this.ponerMontoExactoYCalularVuelto();
@@ -708,7 +709,7 @@ export class ConfirmarVentaPage implements OnInit {
     this.importeTotal = this.importeTotal + 0.3;
     // this.importeDescuento = this.importeDescuento + 0.3;
     // if (this.tipoPago === 'tarjeta') {
-      this.ponerMontoExactoYCalularVuelto();
+    this.ponerMontoExactoYCalularVuelto();
     // }
     // this.calcularVuelto();
 

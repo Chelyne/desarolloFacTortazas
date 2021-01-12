@@ -83,7 +83,7 @@ export class CatalogoPage implements OnInit {
     const lowercaseKey = key.toLowerCase();
 
     if (lowercaseKey.length) {
-      this.dataApi.ObtenerListaProductosByName(this.sedes, lowercaseKey, 5).subscribe(data => {
+      this.dataApi.ObtenerListaProductosByName(this.sedes, lowercaseKey).subscribe(data => {
         this.listaDeProductos = data;
         console.log('love', data);
 

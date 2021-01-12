@@ -18,11 +18,13 @@ export interface VentaInterface {
     cdrStatus?: string; // ? NOTE: Este item esta en el cdr
     cdr?: CDRInterface;
     bolsa?: boolean;
+    cantidadBolsa?: number;
     tipoPago?: string;
     totalPagarVenta?: number;
     descuentoVenta?: number;
     montoNeto?: number;
     igv?: number;
     montoBase?: number;
+    montoPagado?: number;
 }
 
