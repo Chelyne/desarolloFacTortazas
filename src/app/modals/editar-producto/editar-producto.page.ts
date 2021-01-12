@@ -156,11 +156,11 @@ export class EditarProductoPage implements OnInit {
     return new FormGroup({
       id: new FormControl(this.dataProducto.id),
       sede: new FormControl(this.dataProducto.sede),
-      nombre: new FormControl(this.dataProducto.nombre, [Validators.required, Validators.minLength(3), Validators.maxLength(65)]),
+      nombre: new FormControl(this.dataProducto.nombre, [Validators.required, Validators.minLength(2), Validators.maxLength(60)]),
       cantidad: new FormControl(this.dataProducto.cantidad, [Validators.required, Validators.min(1)]),
       medida: new FormControl(this.dataProducto.medida, [Validators.required]),
       marca: new FormControl(this.dataProducto.marca, [Validators.minLength(3), Validators.maxLength(65)]),
-      codigoBarra: new FormControl(this.dataProducto.codigoBarra, [Validators.minLength(3), Validators.maxLength(65)]),
+      codigoBarra: new FormControl(this.dataProducto.codigoBarra),
       precio: new FormControl(this.dataProducto.precio, []),
       cantStock: new FormControl(this.dataProducto.cantStock, [ Validators.min(0)]),
       fechaDeVencimiento: new FormControl(this.dataProducto.fechaDeVencimiento),
@@ -183,16 +183,16 @@ export class EditarProductoPage implements OnInit {
 
   actualizarProducto() {
     console.log(this.updateForm.value, this.cantStock);
-    if (this.dataProducto.categoria === 'farmacia') {
-      this.updateForm.removeControl('precio');
-      console.log(this.updateForm.value);
-    }
+    // if (this.dataProducto.categoria === 'farmacia') {
+    //   this.updateForm.removeControl('precio');
+    //   console.log(this.updateForm.value);
+    // }
     if (isNullOrUndefined(this.updateForm.value.img)) {
       this.updateForm.removeControl('img');
     }
-    if (isNullOrUndefined(this.updateForm.value.tallas)) {
-      this.updateForm.removeControl('tallas');
-    }
+    // if (isNullOrUndefined(this.updateForm.value.tallas)) {
+    //   this.updateForm.removeControl('tallas');
+    // }
     console.log(this.updateForm.value);
     console.log(this.updateForm.valid);
     if (this.updateForm.valid) {

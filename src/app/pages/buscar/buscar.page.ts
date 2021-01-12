@@ -19,7 +19,7 @@ export class BuscarPage implements OnInit {
 
   createFormGroup() {
     return new FormGroup({
-      tipoComprobante: new FormControl('', [Validators.required]),
+      tipoComprobante: new FormControl('factura', [Validators.required]),
       fechaEmision: new FormControl('', [Validators.required]),
       serieComprobante: new FormControl('', [Validators.required, Validators.minLength(3), Validators.maxLength(45)]),
       numeroComprobante: new FormControl('', [Validators.required]),
