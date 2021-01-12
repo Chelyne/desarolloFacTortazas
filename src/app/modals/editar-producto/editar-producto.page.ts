@@ -17,7 +17,7 @@ export class EditarProductoPage implements OnInit {
   @Input()dataProducto;
 
   // ----------------
-  processing:boolean;
+  processing: boolean;
   uploadImage: string | ArrayBuffer;
 
 // ----------------
@@ -43,7 +43,7 @@ export class EditarProductoPage implements OnInit {
 
   ngOnInit() {
     this.updateForm = this.createFormGroup();
-    console.log('holaola',this.dataProducto);
+    console.log('holaola', this.dataProducto);
   }
 
     // --------------------------
@@ -53,11 +53,11 @@ export class EditarProductoPage implements OnInit {
       fileLoader.onchange = function () {
         var file = fileLoader.files[0];
         var reader = new FileReader();
-  
+
         reader.addEventListener("load", function () {
           that.processing = true;
           that.uploadImage = reader.result;
-  
+
           that.getOrientation(fileLoader.files[0], function (orientation) {
             if (orientation > 1) {
               that.resetOrientation(reader.result, orientation, function (resetBase64Image) {
@@ -68,7 +68,7 @@ export class EditarProductoPage implements OnInit {
             }
           });
         }, false);
-  
+
         if (file) {
           reader.readAsDataURL(file);
         }
@@ -77,12 +77,11 @@ export class EditarProductoPage implements OnInit {
   imageLoaded(){
     this.processing = false;
   }
-  
-  
+
   getOrientation(file, callback) {
     var reader = new FileReader();
     reader.onload = function (e:any) {
-  
+
       var view = new DataView(e.target.result);
       if (view.getUint16(0, false) != 0xFFD8) return callback(-2);
       var length = view.byteLength, offset = 2;
