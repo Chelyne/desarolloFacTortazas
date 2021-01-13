@@ -45,6 +45,9 @@ export class CajaChicaPage implements OnInit {
   datosReporteVentaGeneral = [];
   datosReportePuntoVentaVendedor = [];
   datosReporteIngresoPagoVendedorDia = [];
+  totalEfectivo = 0;
+  totalTargeta = 0;
+  totalGeneral = 0;
 
   productosArray;
   contadorConsultaProdcutos = 0;
@@ -69,116 +72,81 @@ export class CajaChicaPage implements OnInit {
   ngOnInit() {
     this.menuCtrl.enable(true);
   }
-  ReporteVentaDiaGeneral(formato: string) {
-    this.consultaVentaReporteGeneral(formato).then( (data: any) => {
-      if (formato === 'ticked') {
-        // this.ReporteTiket();
-        console.log('datos ticked', data);
-        let totalEfectivo = 0;
-        let totalTargeta = 0;
-        let totalGeneral = 0;
-
-        data.forEach(element => {
-          totalGeneral = totalGeneral + element.totalPagarVenta;
-          if (element.tipoPago === 'efectivo') {
-          totalEfectivo = totalEfectivo + element.totalPagarVenta;
-          }
-          if (element.tipoPago === 'tarjeta') {
-            totalTargeta = totalTargeta + element.totalPagarVenta;
-            }
+  ReporteVentaDiaGeneralPDF() {
+    this.consultaVentaReporteGeneral().then( (data: any) => {
+      console.log(data);
+      const doc = new jsPDF('portrait', 'px', 'a4') as jsPDFWithPlugin;
+      doc.setFontSize(16);
+      doc.setFont('bold');
+      doc.text('Reporte General de ventas POS', 120, 30);
+      doc.addImage(this.LogoEmpresa, 'JPEG', 370, 20, 30, 15);
+      doc.setLineWidth(0.5);
+      doc.line(120, 35, 290, 35);
+      doc.rect(30, 40, 387, 40); // empty square
+      doc.setFontSize(12);
+      doc.text( 'Empresa:', 40, 55);
+      doc.text( 'RUC:', 40, 70);
+      doc.text( 'Veterinarias Tooby ,' + this.sede, 75, 55);
+      doc.text( this.RUC, 64, 70);
+      doc.setFontSize(12);
+      doc.text( 'Fecha reporte:', 220, 55);
+      doc.text( formatDate(new Date(), 'dd-MM-yyyy', 'en'), 275, 55);
+      if (isNullOrUndefined(data)) {
+      doc.text( 'No se encontraron registros.', 35, 100);
+      } else {
+        doc.autoTable({
+          // tslint:disable-next-line:max-line-length
+          head: [['#', 'Tipo transacción', 'Tipo documento', 'Documento', 'Fecha emisión', 'Cliente' , 'N. Documento', 'Moneda', 'Total']],
+          body: this.datosReporteVentaGeneral,
+          startY: 90,
+          theme: 'grid',
+          // foot:  [['ID', 'Name', 'Country']],
         });
-        console.log('dtos de efectivo: ', totalEfectivo , 'total tarjeta: ', totalTargeta , 'total general: ', totalGeneral );
-
       }
-      if (formato === 'a4') {
-        console.log(data);
-        const doc = new jsPDF('portrait', 'px', 'a4') as jsPDFWithPlugin;
-        doc.setFontSize(16);
-        doc.setFont('bold');
-        doc.text('Reporte General de ventas POS', 120, 30);
-        doc.addImage(this.LogoEmpresa, 'JPEG', 370, 20, 30, 15);
-        doc.setLineWidth(0.5);
-        doc.line(120, 35, 290, 35);
-        doc.rect(30, 40, 387, 40); // empty square
-        doc.setFontSize(12);
-        doc.text( 'Empresa:', 40, 55);
-        doc.text( 'RUC:', 40, 70);
-        doc.text( 'Veterinarias Tooby ,' + this.sede, 75, 55);
-        doc.text( this.RUC, 64, 70);
-        doc.setFontSize(12);
-        doc.text( 'Fecha reporte:', 220, 55);
-        doc.text( formatDate(new Date(), 'dd-MM-yyyy', 'en'), 275, 55);
-        if (isNullOrUndefined(data)) {
-        doc.text( 'No se encontraron registros.', 35, 100);
-        } else {
-          doc.autoTable({
-            // tslint:disable-next-line:max-line-length
-            head: [['#', 'Tipo transacción', 'Tipo documento', 'Documento', 'Fecha emisión', 'Cliente' , 'N. Documento', 'Moneda', 'Total']],
-            body: this.datosReporteVentaGeneral,
-            startY: 90,
-            theme: 'grid',
-            // foot:  [['ID', 'Name', 'Country']],
-          });
-        }
-        doc.save('reporte General Ventas ' + formatDate(new Date(), 'dd-MM-yyyy', 'en') + '.pdf');
-      }
+      doc.save('reporte General Ventas ' + formatDate(new Date(), 'dd-MM-yyyy', 'en') + '.pdf');
     });
   }
-  consultaVentaReporteGeneral(format: string) {
+  consultaVentaReporteGeneral() {
+    // tslint:disable-next-line:prefer-const
+    let productosArray;
     const dia = formatDate(new Date(), 'dd-MM-yyyy', 'en');
     const promesa = new Promise((resolve, reject) => {
       this.dataApi.ObtenerReporteVentaGeneralDia (this.sede.toLowerCase(), dia).then( snapshot => {
         if (snapshot.empty) {
           this.datosReporteVentaGeneral = null;
+          resolve(productosArray);
         } else {
-          if (format === 'a4') {
-            this.datosReporteVentaGeneral = [];
-            let contador = 0;
-            // tslint:disable-next-line:no-shadowed-variable
-            snapshot.forEach(doc => {
-              contador++;
-              console.log(doc.id, '=>', doc.data());
-              const datos = doc.data();
-              let formato: any;
-              formato = [
-                contador,
-               'Venta',
-               datos.tipoComprobante.toUpperCase() || null,
-               datos.serieComprobante + '-' + this.digitosFaltantes('0', (8 - datos.numeroComprobante.length)) + datos.numeroComprobante,
-               datos.fechaEmision ? this.datePipe.transform(new Date(moment.unix(datos.fechaEmision.seconds).format('D MMM YYYY H:mm')), 'short') : null,
-               datos.cliente.nombre.toUpperCase() || null,
-               datos.cliente.numDoc || null,
-               'PEN',
-               datos.totalPagarVenta.toFixed(2)
-              ];
-              this.datosReporteVentaGeneral.push(formato);
-            });
-
-
-          }
-          if (format === 'ticked') {
-            // this.datosReporteVentaGeneral = snapshot;
-            let contador = 0;
-
-            snapshot.forEach(doc => {
-              contador++;
-              console.log(doc.id, '=>', doc.data());
-              const datos = doc.data();
-              datos.numeracion = contador;
-              this.datosReporteVentaGeneral.push(datos);
-            });
-          }
-
+          productosArray = snapshot;
+          this.datosReporteVentaGeneral = [];
+          let contador = 0;
+          // tslint:disable-next-line:no-shadowed-variable
+          snapshot.forEach(doc => {
+            contador++;
+            // console.log(doc.id, '=>', doc.data());
+            const datos = doc.data();
+            let formato: any;
+            formato = [
+              contador,
+             'Venta',
+             datos.tipoComprobante.toUpperCase() || null,
+             datos.serieComprobante + '-' + this.digitosFaltantes('0', (8 - datos.numeroComprobante.length)) + datos.numeroComprobante,
+             datos.fechaEmision ? this.datePipe.transform(new Date(moment.unix(datos.fechaEmision.seconds).format('D MMM YYYY H:mm')), 'short') : null,
+             datos.cliente.nombre.toUpperCase() || null,
+             datos.cliente.numDoc || null,
+             'PEN',
+             datos.totalPagarVenta.toFixed(2)
+            ];
+            this.datosReporteVentaGeneral.push(formato);
+          });
+          resolve(productosArray);
         }
-        console.log('datos generales a meter', this.datosReporteVentaGeneral);
-        resolve(this.datosReporteVentaGeneral);
       });
     });
     return promesa;
   }
   ReportePuntoVenta(datosCaja: CajaChicaInterface) {
     console.log('fecha consulta', datosCaja.FechaConsulta , ' dni', datosCaja.dniVendedor);
-    this.ConsultaPuntoVentaVendedor(datosCaja.FechaConsulta, datosCaja.dniVendedor).then(data => {
+    this.ConsultaPuntoVentaVendedor(datosCaja.FechaConsulta, datosCaja.dniVendedor).then((data: any) => {
       console.log(data);
       const doc = new jsPDF('portrait', 'px', 'a4') as jsPDFWithPlugin;
 
@@ -205,8 +173,8 @@ export class CajaChicaPage implements OnInit {
       doc.text( this.RUC, 64, 70);
       doc.text( datosCaja.nombreVendedor.toUpperCase(), 81, 80);
       doc.text( datosCaja.estado, 98, 90);
-      doc.text( 'S./ ' + datosCaja.saldoInicial, 90, 110);
-      doc.text( 'S./ ' + datosCaja.saldoFinal, 90, 120);
+      doc.text( 'S./ ' + datosCaja.saldoInicial.toFixed(2), 90, 110);
+      doc.text( 'S./ ' + datosCaja.saldoFinal.toFixed(2), 90, 120);
 
       doc.setFontSize(12);
       doc.text( 'Fecha reporte:', 185, 60);
@@ -221,22 +189,19 @@ export class CajaChicaPage implements OnInit {
       doc.text(datosCaja.sede, 247, 70);
       doc.text( datosCaja.FechaApertura, 267, 80);
       doc.text( datosCaja.FechaCierre, 258, 90);
-      doc.text( 'S./ ' + (datosCaja.saldoFinal - datosCaja.saldoInicial), 225, 110);
+      doc.text( 'S./ ' + (this.totalGeneral).toFixed(2), 225, 110);
       doc.text( 'S./ 00.00', 225, 120);
       const metodoPago = [
-        [1, 'Efectivo', datosCaja.saldoFinal - datosCaja.saldoInicial],
-        [2, 'Tarjeta de crédito', 0.00],
-        [3, 'Tarjeta de débito', 0.00],
-        [4, 'Transferencia', 0.00],
-        [5, 'Factura 30 días', 0.00],
-        [6, 'Tarjeta de crédito visa', 0.00],
-        [7, 'Contado contraentrega', 0.00],
-        [8, 'A 30 días', 0.00],
-        [9, 'Crédito', 0.00],
-        [10, 'contado ', 0.00],
+        [1, 'Efectivo', this.totalEfectivo.toFixed(2)],
+        [2, 'Tarjeta de credito o debito', this.totalTargeta.toFixed(2)],
+        [3, 'Total Ventas', this.totalGeneral.toFixed(2)],
       ];
 
-      doc.autoTable({
+      if (isNullOrUndefined(data)) {
+      doc.text( 'No se encontraron registros.', 35, 150);
+      } else {
+        console.log('dato regresados', data);
+        doc.autoTable({
         // tslint:disable-next-line:max-line-length
             head: [['#', 'Descripción', 'suma']],
             body: metodoPago,
@@ -244,14 +209,11 @@ export class CajaChicaPage implements OnInit {
             theme: 'grid',
             // foot:  [['ID', 'Name', 'Country']],
           });
-      if (isNullOrUndefined(data)) {
-      doc.text( 'No se encontraron registros.', 35, 150);
-      } else {
         doc.autoTable({
           // tslint:disable-next-line:max-line-length
           head: [['#', 'Tipo transacción', 'Tipo documento', 'Documento', 'Fecha emisión', 'Cliente' , 'N. Documento', 'Moneda', 'Total']],
           body: this.datosReportePuntoVentaVendedor,
-          startY: 350,
+          startY: 230,
           theme: 'grid',
         });
       }
@@ -260,17 +222,31 @@ export class CajaChicaPage implements OnInit {
   }
   ConsultaPuntoVentaVendedor(dia: string, dniVendedor: string) {
     const promesa = new Promise((resolve, reject) => {
-      this.dataApi.ObtenerReporteVentaDiaVendedor(this.sede.toLowerCase(), dia, dniVendedor).then( snapshot => {
+      this.dataApi.ObtenerReporteVentaDiaVendedor(this.sede.toLowerCase(), dia, dniVendedor).then( (snapshot: any) => {
         this.datosReportePuntoVentaVendedor = [];
         if (snapshot.empty) {
           this.datosReportePuntoVentaVendedor = null;
         } else {
+          this.totalEfectivo = 0;
+          this.totalTargeta = 0;
+          this.totalGeneral = 0;
           let contador = 0;
           // tslint:disable-next-line:no-shadowed-variable
           snapshot.forEach(doc => {
             contador++;
             // console.log(doc.id, '=>', doc.data());
             const datos = doc.data();
+            this.totalGeneral =  this.totalGeneral + datos.totalPagarVenta  ;
+            console.log('totalgeneral', this.totalGeneral);
+
+            if (datos.tipoPago === 'efectivo') {
+            this.totalEfectivo =  this.totalEfectivo + datos.totalPagarVenta;
+            console.log('totalEfectivo', this.totalEfectivo);
+            }
+            if (datos.tipoPago === 'tarjeta') {
+            this.totalTargeta =  this.totalTargeta + datos.totalPagarVenta;
+            console.log('totalTargeta', this.totalTargeta);
+            }
             let formato: any;
             formato = [
               contador,
@@ -412,17 +388,7 @@ export class CajaChicaPage implements OnInit {
           this.consultaDetallesVenta(formato, datosCaja).then(data => {
             console.log('EMPEZAM0000000000000OS', data);
           });
-          // snapshot.forEach(doc => {
-          //   const datos = doc.data();
-          //   // console.log('id de boleta', datos.idListaProductos );
-          //   this.consultaDetallesVenta(datos).then(data => {
-          //     if (!isNullOrUndefined(data)) {
-          //       productosArray = productosArray.concat(data);
-          //       }
-          //   });
-          // });
           resolve(productosArray);
-
         }
       });
 
@@ -722,10 +688,62 @@ export class CajaChicaPage implements OnInit {
     console.log(data);
     if (data) {
       switch (data.action) {
-        case 'a4': console.log('a4'); this.ReporteVentaDiaGeneral('a4'); break;
-        case 'ticked': console.log('ticked'); this.ReporteVentaDiaGeneral('ticked'); break;
+        case 'a4': console.log('a4'); this.ReporteVentaDiaGeneralPDF(); break;
+        case 'ticked': console.log('ticked'); this.ReporteTiketPrueba(); break;
       }
     }
+
+  }
+  ReporteTiketPrueba() {
+    this.consultaVentaReporteGeneral().then((res: any) => {
+      console.log(res);
+      if (!isNullOrUndefined(res)) {
+        // tslint:disable-next-line:prefer-const
+      let arrayVendedor = [];
+      res.forEach(doc => {
+        const data = doc.data();
+        console.log('datos obtenidos', doc.data());
+        if (arrayVendedor.length > 0) {
+          // tslint:disable-next-line:no-shadowed-variable
+          arrayVendedor.forEach( res => {
+            if (res.dniVend === data.vendedor.dni) {
+              res.montofinal = + data.totalPagarVenta ;
+              console.log('hay duplicado');
+            } else {
+              console.log(' no hay duplicado');
+              const formato = {
+                dniVend: data.vendedor.dni,
+                nombreVend: data.vendedor.nombre,
+                // montofinal: data.totalPagarVenta,
+                // montoTajeta: data.tipoPago === 'tarjeta' ? data.totalPagarVenta ? ,
+                // montoEfectivo: data.tipoPago === 'efectivo' ? data.totalPagarVenta : 0,
+              };
+              console.log('rformatooooo', formato);
+              arrayVendedor.push(formato);
+            }
+            // console.log('array vendedor', arrayVendedor);
+          });
+          // console.log('datos de arreglo general:' , arrayVendedor);
+
+        }
+        else {
+          const formato = {
+            dniVend: data.vendedor.dni,
+            nombreVend: data.vendedor.nombre,
+            montofinal: data.totalPagarVenta,
+            montoTajeta: data.tipoPago === 'tarjeta' ? data.totalPagarVenta : 0,
+            montoEfectivo: data.tipoPago === 'efectivo' ? data.totalPagarVenta : 0,
+          };
+          console.log('rformatooooo', formato);
+          arrayVendedor.push(formato);
+          console.log('agrgando datos a array');
+        }
+      });
+
+      }else {
+        console.log('no hay datos que mostrar');
+      }
+    });
 
   }
   async ReporteProductos(ev: any, item: CajaChicaInterface) {
