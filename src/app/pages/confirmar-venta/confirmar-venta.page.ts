@@ -279,6 +279,15 @@ export class ConfirmarVentaPage implements OnInit {
     }
   }
 
+  cambiarPrecioUnitarioSiLoRequiere(listaItemsDeVenta: ItemDeVentaInterface[]): ItemDeVentaInterface[]{
+    for (const itemdeventa of listaItemsDeVenta) {
+      if ( itemdeventa.totalxprod !== itemdeventa.montoNeto){
+        itemdeventa.producto.precio = itemdeventa.totalxprod / itemdeventa.cantidad;
+      }
+    }
+    return listaItemsDeVenta;
+  }
+
   generarPago(){
     this.presentLoading('Generando Venta');
     this.venta.tipoComprobante = this.tipoComprobante;
@@ -294,6 +303,7 @@ export class ConfirmarVentaPage implements OnInit {
     this.venta.montoBase = this.importeBase;
     this.venta.estadoVenta = 'registrado';
     this.venta.cantidadBolsa = this.cantidadBolsa;
+    this.venta.listaItemsDeVenta = this.cambiarPrecioUnitarioSiLoRequiere(this.venta.listaItemsDeVenta);
     this.venta.montoPagado = this.montoEntrante;
     console.log('Se generó el pago');
     this.obtenerCorrelacionComprobante().then((numero: ContadorDeSerieInterface[]) => {
