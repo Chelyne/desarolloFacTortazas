@@ -44,7 +44,7 @@ registerLocaleData(localeEs);
     FormsModule,
     ReactiveFormsModule,
     AngularFireModule.initializeApp(environment.firebaseConfig),
-    AngularFirestoreModule.enablePersistence(),
+    AngularFirestoreModule, // .enablePersistence(),
     AngularFireAuthModule,
     HttpClientModule,
     PipesModule,

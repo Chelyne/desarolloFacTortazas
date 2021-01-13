@@ -959,7 +959,9 @@ export class DbDataService {
           descuentoVenta: venta.descuentoVenta,
           totalPagarVenta: venta.totalPagarVenta,
           igv: venta.igv,
-          montoBase: venta.montoBase
+          montoBase: venta.montoBase,
+          montoPagado: venta.montoPagado
+
         };
         // tslint:disable-next-line:max-line-length
         this.afs.collection('sedes').doc(sede.toLocaleLowerCase()).collection('ventas').doc(id).collection('ventasDia').add(dataVenta).then(ventas => {
