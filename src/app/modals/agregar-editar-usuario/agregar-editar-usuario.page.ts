@@ -3,6 +3,7 @@ import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { ModalController, ToastController } from '@ionic/angular';
 import { DbDataService } from 'src/app/services/db-data.service';
 import { AdmiInterface } from '../../models/AdmiInterface';
+import { StorageService } from '../../services/storage.service';
 
 @Component({
   selector: 'app-agregar-editar-usuario',
@@ -25,7 +26,8 @@ export class AgregarEditarUsuarioPage implements OnInit {
   constructor(
     private dataApi: DbDataService,
     private modalCtlr: ModalController,
-    private toastCtrl: ToastController
+    private toastCtrl: ToastController,
+    private storage: StorageService
   ) {
 
     this.usuarioModalForm = this.createFormGroupUsuario();
@@ -45,7 +47,8 @@ export class AgregarEditarUsuarioPage implements OnInit {
       dni: new FormControl('', [Validators.required, Validators.minLength(8), Validators.maxLength(8)]),
       correo: new FormControl('', [Validators.required, Validators.minLength(8), Validators.pattern(this.emailPattern)]),
       password: new FormControl('', [Validators.required, Validators.minLength(6)]),
-      rol: new FormControl('', Validators.required)
+      rol: new FormControl('', Validators.required),
+      sede: new FormControl('')
     });
   }
 
@@ -59,7 +62,8 @@ export class AgregarEditarUsuarioPage implements OnInit {
       // tslint:disable-next-line:max-line-length
       correo: new FormControl(this.dataInvoker.correo, [Validators.required, Validators.minLength(8), Validators.pattern(this.emailPattern)]),
       password: new FormControl(this.dataInvoker.password, [Validators.required, Validators.minLength(6)]),
-      rol: new FormControl(this.dataInvoker.rol, Validators.required)
+      rol: new FormControl(this.dataInvoker.rol, Validators.required),
+      sede: new FormControl(this.dataInvoker.sede)
     });
   }
 
@@ -86,6 +90,7 @@ export class AgregarEditarUsuarioPage implements OnInit {
   guardarUsuario(){
     this.usuarioModalForm.value.nombre = this.nombre.value.toLowerCase();
     this.usuarioModalForm.value.apellidos = this.apellidos.value.toLowerCase();
+    this.usuarioModalForm.value.sede = this.storage.datosAdmi.sede;
 
     this.dataApi.guardarUsuario(this.usuarioModalForm.value).then(() => {
       console.log('Se ingreso Correctamente');

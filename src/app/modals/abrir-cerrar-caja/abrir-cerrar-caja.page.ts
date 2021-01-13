@@ -143,34 +143,60 @@ export class AbrirCerrarCajaPage implements OnInit {
     toast.present();
   }
 
-  async enviaruno(venta) {
-    await this.apiPeru.enviarASunatAdaptador(venta).then(cdr => {
-      console.log(cdr);
-    });
+  async enviaruno() {
+    const lista = await this.obtenerListaVentas().then((listaventas: []) => listaventas);
+    // console.log(lista);
+    for (const venta of lista) {
+      console.log(venta);
+      await this.apiPeru.enviarASunatAdaptador(venta).then(cdr => {
+        console.log(cdr);
+      });
+    }
   }
 
-  async enviarComprobantes() {
+  async obtenerListaVentas() {
     const dia =  formatDate(new Date(), 'dd-MM-yyyy', 'en');
     console.log(dia);
-    await this.dataApi.ObtenerReporteVentaDiaVendedor(this.sede, dia, this.datosCaja.dniVendedor).then(data => {
-      if (data.empty) {
-        this.presentToast('No hay datos para enviar');
-      } else {
-        data.forEach(element => {
-          const venta = element.data();
-          venta.idVenta = element.id;
-          console.log(venta);
-          setTimeout(() => {
-            if (venta.tipoComprobante === 'boleta' || venta.tipoComprobante === 'factura') {
-              this.enviaruno(venta);
-              // this.apiPeru.enviarASunatAdaptador(venta).then(cdr => {
-              //   console.log(cdr);
-              // });
-            }
-          }, 2000);
-        });
-      }
+    const promesa = new Promise((resolve, reject) => {
+      this.dataApi.listaVentasVendedorDia(this.sede, dia, this.datosCaja.dniVendedor).subscribe((datos => {
+        console.log('no imprimir', datos);
+        resolve(datos);
+        // let cont = 0;
+        // for (const venta of datos) {
+        //   console.log(venta);
+        //   if (venta.tipoComprobante === 'boleta' || venta.tipoComprobante === 'factura') {
+        //     await this.enviaruno(venta).then(() => {
+        //       cont++;
+        //       console.log('ENVIADO ', cont , venta);
+        //     });
+        //   }
+        // }
+      }));
     });
+    return promesa;
+    // await this.dataApi.ObtenerReporteVentaDiaVendedor(this.sede, dia, this.datosCaja.dniVendedor).then(data => {
+    //   if (data.empty) {
+    //     this.presentToast('No hay datos para enviar');
+    //   } else {
+    //     let cont = 0;
+    //     data.forEach(element => {
+    //       const venta = element.data();
+    //       venta.idVenta = element.id;
+    //       console.log(venta);
+    //       setTimeout(() => {
+    //         if (venta.tipoComprobante === 'boleta' || venta.tipoComprobante === 'factura') {
+    //           this.enviaruno(venta).then(() => {
+    //             cont++;
+    //             console.log('ENVIADO ', cont , venta);
+    //           });
+    //           // this.apiPeru.enviarASunatAdaptador(venta).then(cdr => {
+    //           //   console.log(cdr);
+    //           // });
+    //         }
+    //       }, 2000);
+    //     });
+    //   }
+    // });
   }
 
   CerrarCaja(){
@@ -185,7 +211,7 @@ export class AbrirCerrarCajaPage implements OnInit {
     if (this.CerrarCajaChicaForm.value.montoFinal >= this.datosCaja.saldoInicial) {
       console.log('cerrar caja', cajaCierre);
       this.dataApi.CerrarCajaChica(this.datosCaja.id, cajaCierre).then(res => {
-        this.enviarComprobantes();
+        // this.enviarComprobantes();
         this.presentToast('Cerraste la caja correctamente', 'success', 'checkmark-circle-outline');
         this.cerrarModal();
       });

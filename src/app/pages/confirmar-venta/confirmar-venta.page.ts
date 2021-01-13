@@ -659,7 +659,7 @@ export class ConfirmarVentaPage implements OnInit {
         }
         doc.setFontSize(3.5);
         // doc.text('SON ' + this.NumeroALetras(this.venta.totalPagarVenta), 2, index + 9, {align: 'left'});
-        doc.text(MontoALetras(this.venta.totalPagarVenta), 2, index + 9, {align: 'left'});
+        doc.text(MontoALetras(this.venta.totalPagarVenta), 2, index + 7, {align: 'left'});
         doc.setFontSize(4);
         doc.text('Vendedor: ' + this.convertirMayuscula(this.venta.vendedor.nombre), 2, index + 9, {align: 'left'});
         // doc.text(this.venta.vendedor.nombre.toUpperCase(), 43, index + 11, {align: 'right'});
