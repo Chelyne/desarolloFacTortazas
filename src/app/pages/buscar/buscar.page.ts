@@ -1,5 +1,9 @@
 import { Component, OnInit } from '@angular/core';
 import { FormGroup, FormControl, Validators } from '@angular/forms';
+import { DbDataService } from '../../services/db-data.service';
+import { formatDate } from '@angular/common';
+import * as moment from 'moment';
+import { VentaInterface } from '../../models/venta/venta';
 
 @Component({
   selector: 'app-buscar',
@@ -8,8 +12,18 @@ import { FormGroup, FormControl, Validators } from '@angular/forms';
 })
 export class BuscarPage implements OnInit {
   buscarForm: FormGroup;
+  sede = '';
+  serie: string;
+  numero: string;
+  fechaventas: string;
+  mensaje: string;
+  numDocu: string;
+  total: string;
+  comprobante: VentaInterface[] = [];
 
-  constructor() {
+  constructor(
+    private dataApi: DbDataService,
+  ) {
     this.buscarForm = this.createFormGroup();
 
   }
@@ -21,7 +35,7 @@ export class BuscarPage implements OnInit {
     return new FormGroup({
       tipoComprobante: new FormControl('factura', [Validators.required]),
       fechaEmision: new FormControl('', [Validators.required]),
-      serieComprobante: new FormControl('', [Validators.required, Validators.minLength(3), Validators.maxLength(45)]),
+      serieComprobante: new FormControl('', [Validators.required, Validators.minLength(0), Validators.maxLength(45)]),
       numeroComprobante: new FormControl('', [Validators.required]),
       numDoc: new FormControl('', [Validators.required, Validators.minLength(3), Validators.maxLength(45)]),
       totalPagarVenta: new FormControl('', [Validators.required]),
@@ -37,6 +51,51 @@ export class BuscarPage implements OnInit {
 
 
   guardarProducto() {
+    const fecha = this.buscarForm.value.fechaEmision;
+    this.fechaventas = fecha.split('-').reverse().join('-');
+
     console.log(this.buscarForm.value);
+    this.serie = this.buscarForm.value.serieComprobante;
+    const num = this.buscarForm.value.numeroComprobante;
+    // tslint:disable-next-line: radix
+    this.numero = '' + parseInt(num);
+    this.numDocu = this.buscarForm.value.numDoc;
+    this.total = this.buscarForm.value.totalPagarVenta;
+
+    console.log(this.serie);
+    console.log(this.numero);
+    console.log(this.fechaventas);
+    console.log(this.numDocu);
+    console.log(this.total);
+    this.obtenerComprobante(this.fechaventas, this.numero, this.serie);
   }
+
+  // formtearFecha(dateTime: any): string{
+
+  //   const fechaFormateada = new Date(moment.unix(dateTime.seconds).format('D MMM YYYY H:mm'));
+  //   const fechaString = formatDate(fechaFormateada, 'yyyy-dd-MMThh:mm:ss-05:00', 'en');
+  //   // console.log('aaaaaaaaaaaaa', fechaString);
+  //   return fechaString;
+  // }
+
+  obtenerComprobante(fachaventas: string, numero: string, serie: string){
+    if (this.buscarForm.valid){
+      if (this.serie === 'F001' || this.serie === 'B001' ){
+        this.sede = 'andahuaylas';
+      }else if (this.serie === 'F002' || this.serie === 'B002' ){
+        this.sede = 'abancay';
+      }else{
+        console.log('sede no encontrado');
+      }
+      console.log('sede', this.sede);
+      this.dataApi.ObtenerConprobante(this.sede, fachaventas, numero, serie).subscribe(data => {
+        console.log('datos', data);
+        this.comprobante = data;
+
+      });
+    }else{
+      this.mensaje = 'Complete todos los campos';
+    }
+  }
+
 }
