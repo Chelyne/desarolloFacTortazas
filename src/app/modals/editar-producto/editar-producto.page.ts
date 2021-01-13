@@ -17,7 +17,7 @@ export class EditarProductoPage implements OnInit {
   @Input()dataProducto;
 
   // ----------------
-  processing:boolean;
+  processing: boolean;
   uploadImage: string | ArrayBuffer;
 
 // ----------------
@@ -43,7 +43,7 @@ export class EditarProductoPage implements OnInit {
 
   ngOnInit() {
     this.updateForm = this.createFormGroup();
-    console.log('holaola',this.dataProducto);
+    console.log('holaola', this.dataProducto);
   }
 
     // --------------------------
@@ -53,11 +53,11 @@ export class EditarProductoPage implements OnInit {
       fileLoader.onchange = function () {
         var file = fileLoader.files[0];
         var reader = new FileReader();
-  
+
         reader.addEventListener("load", function () {
           that.processing = true;
           that.uploadImage = reader.result;
-  
+
           that.getOrientation(fileLoader.files[0], function (orientation) {
             if (orientation > 1) {
               that.resetOrientation(reader.result, orientation, function (resetBase64Image) {
@@ -68,7 +68,7 @@ export class EditarProductoPage implements OnInit {
             }
           });
         }, false);
-  
+
         if (file) {
           reader.readAsDataURL(file);
         }
@@ -77,12 +77,11 @@ export class EditarProductoPage implements OnInit {
   imageLoaded(){
     this.processing = false;
   }
-  
-  
+
   getOrientation(file, callback) {
     var reader = new FileReader();
     reader.onload = function (e:any) {
-  
+
       var view = new DataView(e.target.result);
       if (view.getUint16(0, false) != 0xFFD8) return callback(-2);
       var length = view.byteLength, offset = 2;
@@ -157,14 +156,14 @@ export class EditarProductoPage implements OnInit {
     return new FormGroup({
       id: new FormControl(this.dataProducto.id),
       sede: new FormControl(this.dataProducto.sede),
-      nombre: new FormControl(this.dataProducto.nombre, [Validators.required, Validators.minLength(3), Validators.maxLength(65)]),
+      nombre: new FormControl(this.dataProducto.nombre, [Validators.required, Validators.minLength(2), Validators.maxLength(60)]),
       cantidad: new FormControl(this.dataProducto.cantidad, [Validators.required, Validators.min(1)]),
       medida: new FormControl(this.dataProducto.medida, [Validators.required]),
-      marca: new FormControl(this.dataProducto.marca, [Validators.required, Validators.minLength(3), Validators.maxLength(65)]),
-      codigoBarra: new FormControl(this.dataProducto.codigoBarra, [Validators.required, Validators.minLength(3), Validators.maxLength(65)]),
-      precio: new FormControl(this.dataProducto.precio, [Validators.required]),
-      cantStock: new FormControl(this.dataProducto.cantStock, [Validators.required, Validators.min(0)]),
-      fechaDeVencimiento: new FormControl(this.dataProducto.fechaDeVencimiento, [Validators.required]),
+      marca: new FormControl(this.dataProducto.marca, [Validators.minLength(3), Validators.maxLength(65)]),
+      codigoBarra: new FormControl(this.dataProducto.codigoBarra),
+      precio: new FormControl(this.dataProducto.precio, []),
+      cantStock: new FormControl(this.dataProducto.cantStock, [ Validators.min(0)]),
+      fechaDeVencimiento: new FormControl(this.dataProducto.fechaDeVencimiento),
       tallas: new FormControl(this.dataProducto.tallas),
       categoria: new FormControl(this.dataProducto.categoria),
       img: new FormControl(this.dataProducto.img),
@@ -184,16 +183,16 @@ export class EditarProductoPage implements OnInit {
 
   actualizarProducto() {
     console.log(this.updateForm.value, this.cantStock);
-    if (this.dataProducto.categoria === 'farmacia') {
-      this.updateForm.removeControl('precio');
-      console.log(this.updateForm.value);
-    }
+    // if (this.dataProducto.categoria === 'farmacia') {
+    //   this.updateForm.removeControl('precio');
+    //   console.log(this.updateForm.value);
+    // }
     if (isNullOrUndefined(this.updateForm.value.img)) {
       this.updateForm.removeControl('img');
     }
-    if (isNullOrUndefined(this.updateForm.value.tallas)) {
-      this.updateForm.removeControl('tallas');
-    }
+    // if (isNullOrUndefined(this.updateForm.value.tallas)) {
+    //   this.updateForm.removeControl('tallas');
+    // }
     console.log(this.updateForm.value);
     console.log(this.updateForm.valid);
     if (this.updateForm.valid) {

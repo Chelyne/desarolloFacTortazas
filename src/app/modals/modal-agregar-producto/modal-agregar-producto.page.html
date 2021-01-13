@@ -54,17 +54,17 @@
                             <ion-col>
                                 <ion-item lines="none">
                                     <ion-label color="primary" position="floating">Nombre del producto o servicio</ion-label>
-                                    <ion-input maxLength="35" formControlName="nombre" class="nombre" placeholder="Ingrese nombre"></ion-input>
+                                    <ion-input maxLength="60" formControlName="nombre" class="nombre" placeholder="Ingrese nombre"></ion-input>
                                 </ion-item>
                                 <div class="alertDanger" *ngIf="nombre.invalid && (nombre.dirty || nombre.touched)">
                                     <div class="mensajeError" *ngIf="!!nombre.errors.required">
                                         Complete el nombre
                                     </div>
                                     <div class="mensajeError" *ngIf="!!nombre.errors.minlength">
-                                        El nombre debe tener al menos 3 caracteres.
+                                        El nombre debe tener al menos 2 caracteres.
                                     </div>
                                     <div class="mensajeError" *ngIf="!!nombre.errors.maxlength">
-                                        El nombre debe tener máximo 35 caracteres.
+                                        El nombre debe tener máximo 60 caracteres.
                                     </div>
                                 </div>
                             </ion-col>
@@ -101,13 +101,27 @@
                                 <ion-item lines="none">
                                     <ion-label color="primary" position="stacked">Medida</ion-label>
                                     <ion-select class="custom-options" interface="popover" formControlName="medida" placeholder="medida" cancelText="Cancelar" okText="Aceptar" mode="ios">
-                                        <ion-select-option value="Gramos">Gramos</ion-select-option>
-                                        <ion-select-option value="Kilogramo">Kilogramo</ion-select-option>
-                                        <ion-select-option value="Litro">Litro</ion-select-option>
-                                        <ion-select-option value="Unidad">Unidad</ion-select-option>
-                                        <ion-select-option value="Caja">Caja</ion-select-option>
-                                        <ion-select-option value="Paquete">Paquete</ion-select-option>
-                                        <ion-select-option value="Saco">Saco</ion-select-option>
+                                        <ion-select-option value="gramos">Gramos</ion-select-option>
+                                        <ion-select-option value="kilogramo">Kilogramo</ion-select-option>
+                                        <ion-select-option value="litro">Litro</ion-select-option>
+                                        <ion-select-option value="unidad">Unidad</ion-select-option>
+                                        <ion-select-option value="caja">Caja</ion-select-option>
+                                        <ion-select-option value="paquete">Paquete</ion-select-option>
+                                        <ion-select-option value="saco">Saco</ion-select-option>
+                                        <ion-select-option value="botellas">Botellas</ion-select-option>
+                                            <ion-select-option value="docena">Docena</ion-select-option>
+                                                <ion-select-option value="kit">Kit</ion-select-option>
+                                                    <ion-select-option value="libras">Libras</ion-select-option>
+                                                        <ion-select-option value="metro">Metro</ion-select-option>
+                                                            <ion-select-option value="miligramos">Miligramos</ion-select-option>
+                                                                <ion-select-option value="mililitro">Mililitro</ion-select-option>
+                                                                    <ion-select-option value="milimetro">Milimetro</ion-select-option>
+                                                                        <ion-select-option value="pulgadas">Pulgadas</ion-select-option>
+                                                                            <ion-select-option value="bolsa">Bolsa</ion-select-option>
+                                                                                <ion-select-option value="par">Par</ion-select-option>
+                                                                                    <ion-select-option value="unidad servicios">Unidad Servicios</ion-select-option>
+                                                                                        <ion-select-option value="piezas">Piezas</ion-select-option>
+                                                                                            <ion-select-option value="latas">Latas</ion-select-option>
                                     </ion-select>
                                 </ion-item>
                                 <div class="alertDanger" *ngIf="medida.invalid && (medida.dirty || medida.touched)">
@@ -137,7 +151,7 @@
                             </ion-col>
                             <ion-col>
                                 <ion-item lines="none">
-                                    <ion-label position="floating">Ingrese la codigo de barras</ion-label>
+                                    <ion-label color="primary" position="floating">Ingrese la codigo de barras</ion-label>
                                     <ion-input maxLength="35" formControlName="codigoBarra" placeholder="Ingrese codigo de barras"></ion-input>
                                 </ion-item>
                                 <div class="alertDanger" *ngIf="codigoBarra.invalid && (codigoBarra.dirty || codigoBarra.touched)">

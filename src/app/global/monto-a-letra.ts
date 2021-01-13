@@ -1,5 +1,5 @@
 // ?NOTE MAYOR O IGUAL A MIL MILLONES NO ES SOPORTADO
-export function MonotoALetras(num: number) {
+export function MontoALetras(num: number) {
     const data = {
       numero: num,
       enteros: Math.floor(num),

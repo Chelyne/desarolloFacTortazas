@@ -909,6 +909,24 @@ export class DbDataService {
 
     return promesa;
   }
+  guardarCDRr(idVenta: string, fechaEmision: any, sede: string, cdrVenta: CDRInterface){
+    // console.log('guuuuuuuuuuuuuuuardadr cdr');
+    // const idFecha = venta.fechaEmision.getDay() + '-' + venta.fechaEmision.getMonth() + '-' + venta.fechaEmision.getFullYear();
+    // console.log('ffffffffffffffffffffffffffffff',  venta.fechaEmision);
+    const fecha: any = fechaEmision;
+    const fechaFormateada = new Date(moment.unix(fecha.seconds).format('D MMM YYYY H:mm'));
+    const fechaString = formatDate(fechaFormateada, 'dd-MM-yyyy', 'en');
+
+    // console.log('ffffffffeeeeeeeeeecha', fechaString, cdrVenta);
+
+    const promesa =  new Promise<void>( (resolve, reject) => {
+      this.afs.collection('sedes').doc(sede.toLocaleLowerCase()).collection('ventas').doc(fechaString)
+      .collection('ventasDia').doc(idVenta).update({cdr: cdrVenta});
+      resolve();
+    });
+
+    return promesa;
+  }
 
 
 /* -------------------------------------------------------------------------- */
@@ -930,13 +948,18 @@ export class DbDataService {
           idListaProductos: guardado.id,
           cliente: venta.cliente,
           vendedor: venta.vendedor,
-          totalPagarVenta: venta.totalPagarVenta,
           tipoComprobante: venta.tipoComprobante,
           serieComprobante: venta.serieComprobante,
           numeroComprobante: venta.numeroComprobante,
           fechaEmision: new Date(),
           bolsa: venta.bolsa,
+          cantidadBolsa: venta.cantidadBolsa,
           tipoPago: venta.tipoPago,
+          montoNeto: venta.montoNeto,
+          descuentoVenta: venta.descuentoVenta,
+          totalPagarVenta: venta.totalPagarVenta,
+          igv: venta.igv,
+          montoBase: venta.montoBase
         };
         // tslint:disable-next-line:max-line-length
         this.afs.collection('sedes').doc(sede.toLocaleLowerCase()).collection('ventas').doc(id).collection('ventasDia').add(dataVenta).then(ventas => {

@@ -6,7 +6,7 @@ import { AdmiInterface } from '../AdmiInterface';
 
 export interface VentaInterface {
     idVenta?: string;
-    fechaEmision?: Date;
+    fechaEmision?: Date|{};
     tipoComprobante?: string;
     serieComprobante?: string;
     numeroComprobante?: string;
