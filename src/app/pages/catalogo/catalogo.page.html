@@ -71,7 +71,7 @@
 
                     <ion-card-content>
                         <ion-item>
-                            <ion-searchbar (ionClear)="limpiarBuscador()" (ionChange)="Search($event)" #search placeholder="Buscar" inputmode="text" debounce="1000" animated="true" mode="ios"></ion-searchbar>
+                            <ion-searchbar (ionClear)="limpiarBuscador()" (ionChange)="SearchCategorias($event)" #search placeholder="Buscar" inputmode="text" debounce="1000" animated="true" mode="ios"></ion-searchbar>
                         </ion-item>
                         <ion-list>
                             <ion-item *ngFor="let cat of listaDeCategorias" (click)="irLIstaProductos(cat.categoria)">
@@ -80,7 +80,7 @@
                                     <img *ngIf="!cat.img" src="../../../assets/img/pet chop.png" alt="">
                                 </ion-avatar>
                                 <ion-label>
-                                    <h2>{{cat.categoria}}</h2>
+                                    <h2>{{cat.categoria | titlecase}}</h2>
                                 </ion-label>
                             </ion-item>
                         </ion-list>
