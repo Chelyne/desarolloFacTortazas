@@ -24,6 +24,9 @@ export class ModalVentasPage implements OnInit {
   LogoEmpresa = '../../../assets/img/TOOBY LOGO.png';
   listaVentas: VentaInterface[];
 
+  sede = this.storage.datosAdmi.sede;
+
+
   elementType = NgxQrcodeElementTypes.CANVAS;
   correctionLevel = NgxQrcodeErrorCorrectionLevels.HIGH;
   valueQR;
@@ -118,8 +121,41 @@ export class ModalVentasPage implements OnInit {
     return promesa;
   }
 
-  generarComprobante(venta: VentaInterface) {
+  anularVenta(ventaSelect: VentaInterface){
+    // NOTE - FechaEmision:
+    //      formato que regresa, fechaEmision: "13-01-2021 12:24:00"
+    console.log('la venta debería anularse', ventaSelect);
+    // console.log(compraSelect.anulado);
+    const fechaString = `${ventaSelect.fechaEmision}`;
+    const fechaEmisionFormateada = fechaString.split(' ')[0];
+    console.log(fechaEmisionFormateada);
+
+
+    if (ventaSelect.estadoVenta === 'registrado'){
+      this.dataApi.toggleAnularVenta(ventaSelect.idVenta, 'anulado', this.sede, fechaEmisionFormateada);
+    } else {
+      this.dataApi.toggleAnularVenta(ventaSelect.idVenta, 'registrado', this.sede, fechaEmisionFormateada);
+    }
+  }
+
+  generarmensaje(typoAccion: string, estadoVenta: string): string{
+    if (estadoVenta === 'anulado'){
+      return '===== COPIA DE COMPROBANTE ANULADO =====';
+    }
+    if (typoAccion === 'copia' ) {
+      return '===== COPIA DE COMPROBANTE =====';
+    } else if (typoAccion === 'anular' ) {
+      return '===== COMPROBANTE ANULADO  =====';
+    }
+    return '';
+  }
+
+  generarComprobante(venta: VentaInterface, typoAccion: string) {
     console.log(venta);
+
+    if (typoAccion === 'anular' ) {
+      this.anularVenta(venta);
+    }
 
     const qr = this.getImage();
     console.log(qr);
@@ -208,7 +244,8 @@ export class ModalVentasPage implements OnInit {
 
           doc.addImage(qr, 'JPEG', 15, index + 14, 15, 15);
           index = index + 30;
-          doc.text('===== COPIA DE COMPROBANTE =====', 22.5, index + 2, {align: 'center'});
+          // doc.text('===== COPIA DE COMPROBANTE =====', 22.5, index + 2, {align: 'center'});
+          doc.text(this.generarmensaje(typoAccion, venta.estadoVenta), 22.5, index + 2, {align: 'center'});
           index = index + 2;
           doc.setFontSize(4);
           doc.text('Representación impresa del comprobante de pago\r de Venta Electrónica, esta puede ser consultada en\r www.tooby.com\rNO ACEPTAMOS DEVOLUCIONES', 22.5, index + 3, {align: 'center'});
@@ -414,5 +451,7 @@ export class ModalVentasPage implements OnInit {
       }
     });
   }
+
+
 
 }

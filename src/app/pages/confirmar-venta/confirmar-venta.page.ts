@@ -296,7 +296,7 @@ export class ConfirmarVentaPage implements OnInit {
     this.venta.totalPagarVenta = this.importeTotal;
     this.venta.igv = this.igvImporteBase;
     this.venta.montoBase = this.importeBase;
-    this.venta.estadoVenta = 'conforme';
+    this.venta.estadoVenta = 'registrado';
     this.venta.cantidadBolsa = this.cantidadBolsa;
     this.venta.listaItemsDeVenta = this.cambiarPrecioUnitarioSiLoRequiere(this.venta.listaItemsDeVenta);
     this.venta.montoPagado = this.montoEntrante;

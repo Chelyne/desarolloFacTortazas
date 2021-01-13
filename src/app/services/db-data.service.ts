@@ -844,6 +844,41 @@ export class DbDataService {
     return promesa;
   }
 
+  toggleAnularVenta(idVenta: string, nuevoEstado: string, sede: string, fechaEmision: string) {
+    // console.log( idProveedor, newProveedor);
+
+    // const fecha: any = fechaEmision;
+    // const fechaFormateada = new Date(moment.unix(fecha.seconds).format('D MMM YYYY H:mm'));
+    // const fechaString = formatDate(fechaFormateada, 'dd-MM-yyyy', 'en');
+
+    const promesa =  new Promise<void>( (resolve, reject) => {
+      this.afs.collection('sedes').doc(sede.toLocaleLowerCase()).collection('ventas').doc(fechaEmision)
+      .collection('ventasDia').doc(idVenta).update({estadoVenta: nuevoEstado});
+      resolve();
+    });
+
+    return promesa;
+  }
+
+  // guardarCDRr(idVenta: string, fechaEmision: any, sede: string, cdrVenta: CDRInterface){
+  //   // console.log('guuuuuuuuuuuuuuuardadr cdr', cdrVenta, sede, idVenta);
+  //   // const idFecha = venta.fechaEmision.getDay() + '-' + venta.fechaEmision.getMonth() + '-' + venta.fechaEmision.getFullYear();
+  //   // console.log('ffffffffffffffffffffffffffffff',  venta.fechaEmision);
+  //   const fecha: any = fechaEmision;
+  //   const fechaFormateada = new Date(moment.unix(fecha.seconds).format('D MMM YYYY H:mm'));
+  //   const fechaString = formatDate(fechaFormateada, 'dd-MM-yyyy', 'en');
+
+  //   // console.log('ffffffffeeeeeeeeeecha', fechaString, cdrVenta);
+
+  //   const promesa =  new Promise<void>( (resolve, reject) => {
+  //     this.afs.collection('sedes').doc(sede.toLocaleLowerCase()).collection('ventas').doc(fechaString)
+  //     .collection('ventasDia').doc(idVenta).update({cdr: cdrVenta});
+  //     resolve();
+  //   });
+
+  //   return promesa;
+  // }
+
   ActualizarProductoStock(sede: string, productId: string, stock: number){
     const promesa =  new Promise( (resolve, reject) => {
       this.afs.collection('sedes').doc(sede).collection('productos').doc(productId).update({cantStock: stock});
@@ -919,6 +954,7 @@ export class DbDataService {
 
     return promesa;
   }
+
   guardarCDRr(idVenta: string, fechaEmision: any, sede: string, cdrVenta: CDRInterface){
     // console.log('guuuuuuuuuuuuuuuardadr cdr', cdrVenta, sede, idVenta);
     // const idFecha = venta.fechaEmision.getDay() + '-' + venta.fechaEmision.getMonth() + '-' + venta.fechaEmision.getFullYear();
