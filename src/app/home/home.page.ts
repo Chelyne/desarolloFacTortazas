@@ -264,4 +264,39 @@ export class HomePage {
         });
       } );
     }
+
+    obtenerListaVentas() {
+      const vendedores = [];
+      this.dataSrvc.ObtenerReporteVentaGeneralDia(this.storage.datosAdmi.sede, '12-01-2021').then(datos => {
+        console.log(datos);
+        if (datos.empty) {
+          console.log('no hay datos');
+        } else {
+          datos.forEach((data: any) => {
+            console.log(data.data());
+            const venta = data.data();
+            if (vendedores.length > 0) {
+              console.log('hay vendedores', vendedores, venta.vendedor.dni);
+              for (const vendedor of vendedores) {
+                console.log(vendedor.dni + ' = ' + venta.vendedor.dni);
+                if (vendedor.dni === venta.vendedor.dni) {
+                  vendedor.montoFinal = vendedor.montoFinal + venta.totalPagarVenta;
+                  return;
+                } else {
+                  console.log('no hay este vendedor');
+                  venta.vendedor.montoFinal = venta.totalPagarVenta;
+                  vendedores.push(venta.vendedor);
+                  return;
+                }
+              }
+              console.log(vendedores);
+            } else {
+              console.log('no hay vendedores');
+              venta.vendedor.montoFinal = venta.totalPagarVenta;
+              vendedores.push(venta.vendedor);
+            }
+          });
+        }
+      });
+    }
 }
