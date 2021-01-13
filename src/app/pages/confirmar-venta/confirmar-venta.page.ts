@@ -266,7 +266,12 @@ export class ConfirmarVentaPage implements OnInit {
     this.tipoComprobante = comprobante;
 
     if (comprobante === 'factura'){
-      this.comprobarSerieComprobante();
+      if (this.venta.cliente.tipoDoc === 'dni') {
+        this.presentToast('No puedes emitir comprobante a cliente sin RUC');
+        this.tipoComprobante = 'boleta';
+      } else {
+        this.comprobarSerieComprobante();
+      }
     } else if (comprobante === 'boleta'){
       this.comprobarSerieComprobante();
     }else if (comprobante === 'n. venta'){

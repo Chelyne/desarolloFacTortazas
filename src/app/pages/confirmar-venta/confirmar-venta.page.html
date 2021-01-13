@@ -72,11 +72,11 @@
         <ion-grid>
           <ion-row>
             <ion-col size="5">
-              <ion-item>
-                <ion-button *ngIf="tipoComprobante!=='factura'" fill="outline" (click)="SeleccionarComprobante('factura')">
+              <ion-item *ngIf="venta">
+                <ion-button  *ngIf="tipoComprobante!=='factura'" fill="outline" (click)="SeleccionarComprobante('factura')">
                   <ion-label color="primary">Factura</ion-label>
                 </ion-button>
-                <ion-button *ngIf="tipoComprobante==='factura'" (click)="SeleccionarComprobante('factura')">
+                <ion-button  *ngIf="tipoComprobante==='factura'" (click)="SeleccionarComprobante('factura')">
                   <ion-label color="light">Factura</ion-label>
                 </ion-button>
                 <ion-button *ngIf="tipoComprobante!=='boleta'" fill="outline" (click)="SeleccionarComprobante('boleta')">
@@ -113,7 +113,7 @@
                 <ion-label>{{serieComprobante}}</ion-label>
                 <!-- <ion-buttons> -->
                   <!-- <ion-button style="cursor: unset;" expand="block"> -->
-                    <ion-label (click)="finalizarNotaVenta()"> &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;</ion-label>
+                    <ion-label (click)="finalizarNotaVenta()"> &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;</ion-label>
                   <!-- </ion-button> -->
                 <!-- </ion-buttons> -->
               </ion-item>
