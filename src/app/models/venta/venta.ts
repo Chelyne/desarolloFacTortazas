@@ -24,6 +24,7 @@ export interface VentaInterface {
     montoNeto?: number;
     igv?: number;
     montoBase?: number;
-    cantidadBolsa?:number;
+    cantidadBolsa?: number;
+    estadoVenta?: 'conforme' | 'anulado' | 'enviado'; // string
 }
 

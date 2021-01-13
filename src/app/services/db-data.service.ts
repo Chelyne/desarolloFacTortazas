@@ -208,6 +208,11 @@ export class DbDataService {
       }));
   }
 
+
+/* -------------------------------------------------------------------------- */
+/*                           obtener lista de ventas                          */
+/* -------------------------------------------------------------------------- */
+
   ObtenerListaDeVentas(sede: string, fachaventas: string) {
     const sede1 = sede.toLocaleLowerCase();
     // tslint:disable-next-line:max-line-length
@@ -223,6 +228,11 @@ export class DbDataService {
         });
       }));
   }
+
+/* -------------------------------------------------------------------------- */
+/* -------------------------------------------------------------------------- */
+/* -------------------------------------------------------------------------- */
+
 
   ObtenerListaClientes(sede: string) {
     // const sede1 = sede.toLocaleLowerCase();
@@ -955,6 +965,7 @@ export class DbDataService {
           bolsa: venta.bolsa,
           cantidadBolsa: venta.cantidadBolsa,
           tipoPago: venta.tipoPago,
+          estadoVenta: venta.estadoVenta,
           montoNeto: venta.montoNeto,
           descuentoVenta: venta.descuentoVenta,
           totalPagarVenta: venta.totalPagarVenta,
