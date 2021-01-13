@@ -160,10 +160,10 @@ export class DbDataService {
       }));
   }
 
-  ObtenerListaProductosByName(sede: string, nombre: string, limit: number) {
+  ObtenerListaProductosByName(sede: string, nombre: string) {
     const sede1 = sede.toLocaleLowerCase();
     // tslint:disable-next-line:max-line-length
-    this.productoCollection = this.afs.collection('sedes').doc(sede1).collection('productos' , ref => ref.orderBy('nombre').startAt(nombre).endAt(nombre + '\uf8ff').limit(limit));
+    this.productoCollection = this.afs.collection('sedes').doc(sede1).collection('productos' , ref => ref.orderBy('nombre').startAt(nombre).endAt(nombre + '\uf8ff'));
     // tslint:disable-next-line:max-line-length
     // this.productoCollection = this.afs.collection<ProductoInterface>('frutas', ref => ref.where('propietario', '==', propietario).orderBy('fechaRegistro', 'desc'));
     return this.productos = this.productoCollection.snapshotChanges()
@@ -742,12 +742,12 @@ export class DbDataService {
   }
   ObtenerReporteVentaGeneralDia(sede: string, dia: string) {
     console.log('service dia', dia);
-    return this.afs.collection('sedes').doc(sede).collection('ventas').doc(dia).collection('ventasDia').ref.get();
+    return this.afs.collection('sedes').doc(sede.toLocaleLowerCase()).collection('ventas').doc(dia).collection('ventasDia').ref.get();
   }
   ObtenerReporteVentaDiaVendedor(sede: string, dia: string, dniVendedor: string) {
     // console.log('service dia', dia);
     // tslint:disable-next-line:max-line-length
-    return this.afs.collection('sedes').doc(sede).collection('ventas').doc(dia).collection('ventasDia').ref.where('vendedor.dni', '==', dniVendedor).get();
+    return this.afs.collection('sedes').doc(sede.toLocaleLowerCase()).collection('ventas').doc(dia).collection('ventasDia').ref.where('vendedor.dni', '==', dniVendedor).get();
   }
   ObtenerDetallesProdVentas(sede: string, id: string) {
     console.log('id', id);
@@ -920,7 +920,7 @@ export class DbDataService {
     return promesa;
   }
   guardarCDRr(idVenta: string, fechaEmision: any, sede: string, cdrVenta: CDRInterface){
-    // console.log('guuuuuuuuuuuuuuuardadr cdr');
+    // console.log('guuuuuuuuuuuuuuuardadr cdr', cdrVenta, sede, idVenta);
     // const idFecha = venta.fechaEmision.getDay() + '-' + venta.fechaEmision.getMonth() + '-' + venta.fechaEmision.getFullYear();
     // console.log('ffffffffffffffffffffffffffffff',  venta.fechaEmision);
     const fecha: any = fechaEmision;
@@ -1060,5 +1060,6 @@ export class DbDataService {
 
     return promesa;
   }
+
 
 }

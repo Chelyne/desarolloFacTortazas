@@ -1,6 +1,7 @@
 import { ProductoInterface } from '../ProductoInterface';
 
 export interface ItemDeVentaInterface {
+    productos?: any[];
     producto?: ProductoInterface;
     idProducto?: string;
     cantidad?: number;

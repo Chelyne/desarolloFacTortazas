@@ -132,23 +132,24 @@ export class ApiPeruService {
 /* ---------------------------------------------------------------------------------------------- */
 
   enviarASunatAdaptador(venta: VentaInterface){
-    this.dataApi.obtenerProductosDeVenta(venta.idListaProductos, this.sede).subscribe( (data: any) => {
-      console.log('Lista de productos de la venta obtenidos de firebase:', data);
-      // tslint:disable-next-line: deprecation
-      if (!isNullOrUndefined(data)){
-        venta.listaItemsDeVenta = data.productos;
-      }
-
-      const ventaFormateada = this.formatearVenta(venta);
-      console.log(ventaFormateada);
-
-      this.enviarComprobanteASunat(ventaFormateada).then(cdr => {
-        console.log(cdr);
-        this.dataApi.guardarCDRr(venta.idVenta, venta.fechaEmision, this.sede, cdr);
-
-      }).catch(error => console.log('No se envio comprobante a la SUNAT', error));
-    }
-    );
+    const promesa = new Promise((resolve, reject) => {
+      this.dataApi.obtenerProductosDeVenta(venta.idListaProductos, this.sede).subscribe( (data: any) => {
+        console.log('Lista de productos de la venta obtenidos de firebase:', data);
+        // tslint:disable-next-line: deprecation
+        if (!isNullOrUndefined(data)){
+          venta.listaItemsDeVenta = data.productos;
+        }
+        const ventaFormateada = this.formatearVenta(venta);
+        console.log(ventaFormateada);
+        this.enviarComprobanteASunat(ventaFormateada).then(cdr => {
+          // console.log(cdr);
+          this.dataApi.guardarCDRr(venta.idVenta, venta.fechaEmision, this.sede, cdr).then(() => {
+            resolve(cdr);
+          });
+        }).catch(error => console.log('No se envio comprobante a la SUNAT', error));
+      });
+    });
+    return promesa;
   }
 
 
