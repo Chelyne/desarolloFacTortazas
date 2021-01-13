@@ -65,6 +65,7 @@ export class ConfirmarVentaPage implements OnInit {
   valueQR;
   @ViewChild('qr') qr: QrcodeComponent;
 
+  generandoPago = false;
   constructor(
     private confirmarVentaServ: ConfirmarVentaService,
     private menuCtrl: MenuController,
@@ -289,6 +290,7 @@ export class ConfirmarVentaPage implements OnInit {
   }
 
   generarPago(){
+    this.generandoPago = true;
     this.presentLoading('Generando Venta');
     this.venta.tipoComprobante = this.tipoComprobante;
     this.venta.serieComprobante = this.serieComprobante;
