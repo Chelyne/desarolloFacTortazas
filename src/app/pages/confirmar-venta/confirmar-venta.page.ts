@@ -19,7 +19,7 @@ import { ContadorDeSerieInterface } from '../../models/serie';
 
 import { redondeoDecimal } from '../../global/funciones-globales';
 import { ItemDeVentaInterface } from '../../models/venta/item-de-venta';
-import { MonotoALetras } from 'src/app/global/monto-a-letra';
+import { MontoALetras } from 'src/app/global/monto-a-letra';
 
 @Component({
   selector: 'app-confirmar-venta',
@@ -246,7 +246,8 @@ export class ConfirmarVentaPage implements OnInit {
   }
   // ponerMontoExactoYCalcularVuelto(){
   //   this.montoEntrante = this.importeTotal;
-  //   this.formPago.setControl('montoIngreso', new FormControl(this.montoEntrante.toFixed(2), [Validators.required, Validators.pattern('^[0-9]*\.?[0-9]*$')]));
+  // tslint:disable-next-line:max-line-length
+  // this.formPago.setControl('montoIngreso', new FormControl(this.montoEntrante.toFixed(2), [Validators.required, Validators.pattern('^[0-9]*\.?[0-9]*$')]));
   //   this.calcularVuelto();
   // }
 
@@ -273,17 +274,32 @@ export class ConfirmarVentaPage implements OnInit {
     }
   }
 
+  cambiarPrecioUnitarioSiLoRequiere(listaItemsDeVenta: ItemDeVentaInterface[]): ItemDeVentaInterface[]{
+    for (const itemdeventa of listaItemsDeVenta) {
+      if ( itemdeventa.totalxprod !== itemdeventa.montoNeto){
+        itemdeventa.producto.precio = itemdeventa.totalxprod / itemdeventa.cantidad;
+      }
+    }
+    return listaItemsDeVenta;
+  }
+
   generarPago(){
     this.presentLoading('Generando Venta');
     this.venta.tipoComprobante = this.tipoComprobante;
     this.venta.serieComprobante = this.serieComprobante;
     this.venta.vendedor = this.storage.datosAdmi;
     this.venta.bolsa = this.bolsa;
+    this.venta.cantidadBolsa = this.cantidadBolsa;
     this.venta.tipoPago = this.tipoPago;
+    this.venta.montoNeto = this.importeNeto;
     this.venta.descuentoVenta = this.importeDescuento;
     this.venta.totalPagarVenta = this.importeTotal;
     this.venta.igv = this.igvImporteBase;
     this.venta.montoBase = this.importeBase;
+    this.venta.estadoVenta = 'conforme';
+    this.venta.cantidadBolsa = this.cantidadBolsa;
+    this.venta.listaItemsDeVenta = this.cambiarPrecioUnitarioSiLoRequiere(this.venta.listaItemsDeVenta);
+    this.venta.montoPagado = this.montoEntrante;
     console.log('Se generó el pago');
     this.obtenerCorrelacionComprobante().then((numero: ContadorDeSerieInterface[]) => {
       // if (numero[0].disponible) {
@@ -341,7 +357,7 @@ export class ConfirmarVentaPage implements OnInit {
       // if (this.tipoPago === 'tarjeta') {
       //  this.ponerMontoExacto();
       // }
-      //this.calcularVuelto();
+      // this.calcularVuelto();
     } else {
       this.presentToast('Bolsa quitada');
       this.importeTotal = this.importeTotal - (0.3 * this.cantidadBolsa);
@@ -349,7 +365,7 @@ export class ConfirmarVentaPage implements OnInit {
       //  this.ponerMontoExacto();
       // }
       // this.importeDescuento = this.importeDescuento - (0.3 * this.cantidadBolsa);
-      //this.calcularVuelto();
+      // this.calcularVuelto();
       this.cantidadBolsa = 0;
     }
     this.ponerMontoExactoYCalularVuelto();
@@ -458,14 +474,14 @@ export class ConfirmarVentaPage implements OnInit {
         doc.text(this.venta.descuentoVenta.toFixed(2), 43, index + 5, {align: 'right'});
         index = index + 4;
         doc.text('ICBP(0.30): S/ ', 35, index + 3, {align: 'right'});
-        doc.text((this.cantidadBolsa * 0.3).toFixed(2), 43, index + 3, {align: 'right'});
+        doc.text((this.venta.cantidadBolsa * 0.3).toFixed(2), 43, index + 3, {align: 'right'});
         doc.text('Importe Total: S/ ', 35, index + 5, {align: 'right'});
         doc.text(this.venta.totalPagarVenta.toFixed(2), 43, index + 5, {align: 'right'});
         doc.text('Vuelto: S/ ', 35, index + 7, {align: 'right'});
         doc.text(this.vuelto.toFixed(2), 43, index + 7, {align: 'right'});
         doc.setFontSize(3.5);
         // doc.text('SON ' + this.NumeroALetras(this.venta.totalPagarVenta), 2, index + 9, {align: 'left'});
-        doc.text(MonotoALetras(this.venta.totalPagarVenta), 2, index + 9, {align: 'left'});
+        doc.text(MontoALetras(this.venta.totalPagarVenta), 2, index + 9, {align: 'left'});
         doc.setFontSize(4);
         doc.text('Vendedor: ' + this.convertirMayuscula(this.venta.vendedor.nombre), 2, index + 11, {align: 'left'});
         // doc.text(this.venta.vendedor.nombre.toUpperCase(), 43, index + 11, {align: 'right'});
@@ -551,7 +567,7 @@ export class ConfirmarVentaPage implements OnInit {
         doc.text('I.G.V. (18%)', 2, index + 15, {align: 'left'});
         doc.text( (this.calcularIGVincluido(this.venta.totalPagarVenta)).toFixed(2), 43, index + 15, {align: 'right'});
         doc.text('ICBP(0.30)', 2, index + 17, {align: 'left'});
-        doc.text( (this.cantidadBolsa * 0.30).toFixed(2), 43, index + 17, {align: 'right'});
+        doc.text( (this.venta.cantidadBolsa * 0.30).toFixed(2), 43, index + 17, {align: 'right'});
         doc.text('I.S.C.', 2, index + 19, {align: 'left'});
         doc.text( (0).toFixed(2), 43, index + 19, {align: 'right'});
         doc.text( '__________________________________________', 22.5, index + 19, {align: 'center'});
@@ -561,7 +577,7 @@ export class ConfirmarVentaPage implements OnInit {
         doc.text('s/ ' + this.venta.totalPagarVenta.toFixed(2), 43, index + 3, {align: 'right'});
         doc.setFontSize(3);
         // doc.text('SON ' + this.NumeroALetras(this.venta.totalPagarVenta), 2, index + 5, {align: 'left'});
-        doc.text(MonotoALetras(this.venta.totalPagarVenta), 2, index + 5, {align: 'left'});
+        doc.text(MontoALetras(this.venta.totalPagarVenta), 2, index + 5, {align: 'left'});
         doc.setFontSize(4);
         doc.text('Vendedor: ' + this.convertirMayuscula(this.venta.vendedor.nombre), 2, index + 7, {align: 'left'});
         doc.text('Forma de Pago: ' + this.convertirMayuscula(this.venta.tipoPago) , 2, index + 9, {align: 'left'});
@@ -582,7 +598,7 @@ export class ConfirmarVentaPage implements OnInit {
         // tslint:disable-next-line:no-shadowed-variable
         let index = 39;
         // tslint:disable-next-line:no-shadowed-variable
-        const doc = new jsPDF( 'p', 'mm', [45, index  + (this.venta.listaItemsDeVenta.length * 7) + 7 + 22 + 12]);
+        const doc = new jsPDF( 'p', 'mm', [45, index  + (this.venta.listaItemsDeVenta.length * 7) + 9 + 20 + 12]);
         doc.addImage(this.LogoEmpresa, 'JPEG', 11, 1, 22, 8);
         doc.setFontSize(6);
         doc.setFont('helvetica');
@@ -628,32 +644,46 @@ export class ConfirmarVentaPage implements OnInit {
           doc.text( '__________________________________________', 22.5, index +  3, {align: 'center'});
           index = index + 3;
         }
-        doc.text('SubTotal: S/ ', 35, index + 3, {align: 'right'});
-        doc.text(this.venta.montoNeto.toFixed(2), 43, index + 3, {align: 'right'});
-        doc.text('Descuento: S/ ', 35, index + 5, {align: 'right'});
-        doc.text(this.venta.descuentoVenta.toFixed(2), 43, index + 5, {align: 'right'});
-        index = index + 4;
-        doc.text('ICBP(0.30): S/ ', 35, index + 3, {align: 'right'});
-        doc.text((this.cantidadBolsa * 0.3).toFixed(2), 43, index + 3, {align: 'right'});
-        doc.text('Importe Total: S/ ', 35, index + 5, {align: 'right'});
-        doc.text(this.venta.totalPagarVenta.toFixed(2), 43, index + 5, {align: 'right'});
-        doc.text('Vuelto: S/ ', 35, index + 7, {align: 'right'});
-        doc.text(this.vuelto.toFixed(2), 43, index + 7, {align: 'right'});
+        if (this.venta.bolsa) {
+          console.log(this.venta.bolsa, this.venta.cantidadBolsa);
+          doc.text('BOLSA PLASTICA ', 2, index + 3);
+          // tslint:disable-next-line:max-line-length
+          doc.text( this.venta.cantidadBolsa.toFixed(2) + '    ' + 'Unidad' + '      ' + (0.3).toFixed(2), 2, index + 5, {align: 'justify'});
+          doc.text((this.venta.cantidadBolsa * 0.30).toFixed(2), 43, index + 5, {align: 'right'} );
+
+          // doc.text((this.cantidadBolsa * 0.3).toFixed(2), 43, index + 3, {align: 'right'});
+          doc.text( '__________________________________________', 22.5, index +  5, {align: 'center'});
+          index = index + 5;
+
+        }
+        if (this.venta.descuentoVenta > 0) {
+          doc.text('SubTotal: S/ ', 35, index + 3, {align: 'right'});
+          doc.text((this.venta.montoNeto + (this.venta.cantidadBolsa * 0.30)).toFixed(2), 43, index + 3, {align: 'right'});
+          doc.text('Descuento: S/ ', 35, index + 5, {align: 'right'});
+          doc.text(this.venta.descuentoVenta.toFixed(2), 43, index + 5, {align: 'right'});
+          index = index + 4;
+        }
+        doc.text('Importe Total: S/ ', 35, index + 3, {align: 'right'});
+        doc.text(this.venta.totalPagarVenta.toFixed(2), 43, index + 3, {align: 'right'});
+        if (this.vuelto > 0) {
+          doc.text('Vuelto: S/ ', 35, index + 5, {align: 'right'});
+          doc.text(this.vuelto.toFixed(2), 43, index + 5, {align: 'right'});
+        }
         doc.setFontSize(3.5);
         // doc.text('SON ' + this.NumeroALetras(this.venta.totalPagarVenta), 2, index + 9, {align: 'left'});
-        doc.text(MonotoALetras(this.venta.totalPagarVenta), 2, index + 9, {align: 'left'});
+        doc.text(MontoALetras(this.venta.totalPagarVenta), 2, index + 7, {align: 'left'});
         doc.setFontSize(4);
-        doc.text('Vendedor: ' + this.convertirMayuscula(this.venta.vendedor.nombre), 2, index + 11, {align: 'left'});
+        doc.text('Vendedor: ' + this.convertirMayuscula(this.venta.vendedor.nombre), 2, index + 9, {align: 'left'});
         // doc.text(this.venta.vendedor.nombre.toUpperCase(), 43, index + 11, {align: 'right'});
 
-        doc.text('Forma de Pago: ' + this.convertirMayuscula(this.venta.tipoPago) , 2, index + 13, {align: 'left'});
+        doc.text('Forma de Pago: ' + this.convertirMayuscula(this.venta.tipoPago) , 2, index + 11, {align: 'left'});
 
         doc.setFontSize(5);
-        doc.text('GRACIAS POR SU PREFERENCIA', 22.5, index + 17, {align: 'center'}); // 14
-        doc.text('DOCUMENTO NO VALIDO PARA SUNAT', 22.5, index + 19, {align: 'center'});
-        doc.text('RECLAME SU COMPROBANTE', 22.5, index + 21, {align: 'center'});
-        doc.text( '__________________________________________', 22.5, index + 22, {align: 'center'});
-        index = index + 22;
+        doc.text('GRACIAS POR SU PREFERENCIA', 22.5, index + 15, {align: 'center'}); // 13
+        doc.text('DOCUMENTO NO VALIDO PARA SUNAT', 22.5, index + 17, {align: 'center'});
+        doc.text('RECLAME SU COMPROBANTE', 22.5, index + 19, {align: 'center'});
+        doc.text( '__________________________________________', 22.5, index + 20, {align: 'center'});
+        index = index + 20;
         doc.text('EL VETERINARIO TE RECUERDA:', 2, index + 3, {align: 'left'});
         doc.text('-Desparasitar a tu mascota cada 2 meses', 2, index + 6, {align: 'left'});
         doc.text('-Completar todas sus vacunas', 2, index + 8, {align: 'left'});
@@ -708,7 +738,7 @@ export class ConfirmarVentaPage implements OnInit {
     this.importeTotal = this.importeTotal + 0.3;
     // this.importeDescuento = this.importeDescuento + 0.3;
     // if (this.tipoPago === 'tarjeta') {
-      this.ponerMontoExactoYCalularVuelto();
+    this.ponerMontoExactoYCalularVuelto();
     // }
     // this.calcularVuelto();
 

@@ -113,7 +113,7 @@ export class ComprasPage implements OnInit {
     const lowercaseKey = key.toLowerCase();
 
     if (lowercaseKey.length) {
-      this.dataApi.ObtenerListaProductosByName(this.sede, lowercaseKey, 10).subscribe(data => {
+      this.dataApi.ObtenerListaProductosByName(this.sede, lowercaseKey).subscribe(data => {
         this.listaDeProductos = data;
       });
     } else  {

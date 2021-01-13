@@ -31,17 +31,7 @@ export class ListaDeVentasPage implements OnInit {
   ngOnInit() {
   }
 
-  ObtenerVentas(){
-    this.dataApi.ObtenerListaDeVentas(this.sedes, this.fachaventas).subscribe(data => {
-      this.listaDeVentas = data;
-      // console.log('VENTAS', data);
-    });
 
-    console.log('hola', this.sedes);
-    console.log('ventas', this.fachaventas);
-    console.log('listaventas', this.listaDeVentas);
-
-  }
 
   createFormGroup() {
     return new FormGroup({
@@ -50,22 +40,43 @@ export class ListaDeVentasPage implements OnInit {
   }
 
   NoEnviados(){
-    let fecha = this.ventasForm.value.fechadeventa;
-    this.fachaventas = fecha.split('-').reverse().join('-');
+
     this.ObtenerVentas();
+
+  }
+
+/* -------------------------------------------------------------------------- */
+/*                           obtener lista de ventas                          */
+/* -------------------------------------------------------------------------- */
+/* -------------------------------------------------------------------------- */
+
+  ObtenerVentas(){
+    const fecha = this.ventasForm.value.fechadeventa;
+    this.fachaventas = fecha.split('-').reverse().join('-');
     console.log(this.fachaventas);
 
+    this.dataApi.ObtenerListaDeVentas(this.sedes, this.fachaventas).subscribe(data => {
+      this.listaDeVentas = data;
+    });
+
+    // console.log('hola', this.sedes);
+    // console.log('ventas', this.fachaventas);
+    // console.log('listaventas', this.listaDeVentas);
   }
+/* -------------------------------------------------------------------------- */
+/*                           obtener lista de ventas                          */
+/* -------------------------------------------------------------------------- */
 
 
-  EnviarComprobante(){
-    for (const venta of this.listaDeVentas) {
-      this.apiPeru.enviarComprobanteASunat(venta);
-    }
-  }
+
+  // EnviarComprobante(){
+  //   for (const venta of this.listaDeVentas) {
+  //     this.apiPeru.enviarComprobanteASunat(venta);
+  //   }
+  // }
 
   enviarUnComprobante(data) {
     console.log(data);
-    this.apiPeru.enviarComprobanteASunat(data);
+    this.apiPeru.enviarASunatAdaptador(data);
   }
 }

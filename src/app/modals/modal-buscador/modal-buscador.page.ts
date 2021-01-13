@@ -33,7 +33,7 @@ export class ModalBuscadorPage implements OnInit {
     const lowercaseKey = key.toLowerCase();
 
     if (lowercaseKey.length) {
-      this.dataApi.ObtenerListaProductosByName(this.storage.datosAdmi.sede, lowercaseKey, 10).subscribe(data => {
+      this.dataApi.ObtenerListaProductosByName(this.storage.datosAdmi.sede, lowercaseKey).subscribe(data => {
         if (data.length > 0) {
           this.listaDeProductos = data;
           this.sinDatos = false;

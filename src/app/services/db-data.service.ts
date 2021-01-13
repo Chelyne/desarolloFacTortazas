@@ -766,12 +766,12 @@ export class DbDataService {
   }
   ObtenerReporteVentaGeneralDia(sede: string, dia: string) {
     console.log('service dia', dia);
-    return this.afs.collection('sedes').doc(sede).collection('ventas').doc(dia).collection('ventasDia').ref.get();
+    return this.afs.collection('sedes').doc(sede.toLocaleLowerCase()).collection('ventas').doc(dia).collection('ventasDia').ref.get();
   }
   ObtenerReporteVentaDiaVendedor(sede: string, dia: string, dniVendedor: string) {
     // console.log('service dia', dia);
     // tslint:disable-next-line:max-line-length
-    return this.afs.collection('sedes').doc(sede).collection('ventas').doc(dia).collection('ventasDia').ref.where('vendedor.dni', '==', dniVendedor).get();
+    return this.afs.collection('sedes').doc(sede.toLocaleLowerCase()).collection('ventas').doc(dia).collection('ventasDia').ref.where('vendedor.dni', '==', dniVendedor).get();
   }
   ObtenerDetallesProdVentas(sede: string, id: string) {
     console.log('id', id);
@@ -943,6 +943,24 @@ export class DbDataService {
 
     return promesa;
   }
+  guardarCDRr(idVenta: string, fechaEmision: any, sede: string, cdrVenta: CDRInterface){
+    // console.log('guuuuuuuuuuuuuuuardadr cdr', cdrVenta, sede, idVenta);
+    // const idFecha = venta.fechaEmision.getDay() + '-' + venta.fechaEmision.getMonth() + '-' + venta.fechaEmision.getFullYear();
+    // console.log('ffffffffffffffffffffffffffffff',  venta.fechaEmision);
+    const fecha: any = fechaEmision;
+    const fechaFormateada = new Date(moment.unix(fecha.seconds).format('D MMM YYYY H:mm'));
+    const fechaString = formatDate(fechaFormateada, 'dd-MM-yyyy', 'en');
+
+    // console.log('ffffffffeeeeeeeeeecha', fechaString, cdrVenta);
+
+    const promesa =  new Promise<void>( (resolve, reject) => {
+      this.afs.collection('sedes').doc(sede.toLocaleLowerCase()).collection('ventas').doc(fechaString)
+      .collection('ventasDia').doc(idVenta).update({cdr: cdrVenta});
+      resolve();
+    });
+
+    return promesa;
+  }
 
 
 /* -------------------------------------------------------------------------- */
@@ -964,13 +982,21 @@ export class DbDataService {
           idListaProductos: guardado.id,
           cliente: venta.cliente,
           vendedor: venta.vendedor,
-          totalPagarVenta: venta.totalPagarVenta,
           tipoComprobante: venta.tipoComprobante,
           serieComprobante: venta.serieComprobante,
           numeroComprobante: venta.numeroComprobante,
           fechaEmision: new Date(),
           bolsa: venta.bolsa,
+          cantidadBolsa: venta.cantidadBolsa,
           tipoPago: venta.tipoPago,
+          estadoVenta: venta.estadoVenta,
+          montoNeto: venta.montoNeto,
+          descuentoVenta: venta.descuentoVenta,
+          totalPagarVenta: venta.totalPagarVenta,
+          igv: venta.igv,
+          montoBase: venta.montoBase,
+          montoPagado: venta.montoPagado
+
         };
         // tslint:disable-next-line:max-line-length
         this.afs.collection('sedes').doc(sede.toLocaleLowerCase()).collection('ventas').doc(id).collection('ventasDia').add(dataVenta).then(ventas => {
@@ -1061,4 +1087,21 @@ export class DbDataService {
     return promesa;
   }
 
+  // ObtenerVents por vendedor
+
+  listaVentasVendedorDia(sede: string, dia: string, dniVendedor: string) {
+      // const sede1 = sede.toLocaleLowerCase();
+      // tslint:disable-next-line:max-line-length
+      this.ventaCollection = this.afs.collection('sedes').doc(sede.toLocaleLowerCase()).collection('ventas').doc(dia).collection('ventasDia', ref => ref.where('vendedor.dni', '==', dniVendedor));
+      // tslint:disable-next-line:max-line-length
+      // this.productoCollection = this.afs.collection<ProductoInterface>('frutas', ref => ref.where('propietario', '==', propietario).orderBy('fechaRegistro', 'desc'));
+      return this.ventas = this.ventaCollection.snapshotChanges()
+        .pipe(map(changes => {
+          return changes.map(action => {
+            const data = action.payload.doc.data() as VentaInterface;
+            data.idVenta = action.payload.doc.id;
+            return data;
+          });
+        }));
+  }
 }

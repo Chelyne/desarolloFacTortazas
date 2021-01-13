@@ -6,7 +6,7 @@ import { AdmiInterface } from '../AdmiInterface';
 
 export interface VentaInterface {
     idVenta?: string;
-    fechaEmision?: Date;
+    fechaEmision?: Date|{};
     tipoComprobante?: string;
     serieComprobante?: string;
     numeroComprobante?: string;
@@ -18,11 +18,14 @@ export interface VentaInterface {
     cdrStatus?: string; // ? NOTE: Este item esta en el cdr
     cdr?: CDRInterface;
     bolsa?: boolean;
+    cantidadBolsa?: number;
     tipoPago?: string;
     totalPagarVenta?: number;
     descuentoVenta?: number;
     montoNeto?: number;
     igv?: number;
     montoBase?: number;
+    estadoVenta?: 'conforme' | 'anulado' | 'enviado'; // string
+    montoPagado?: number;
 }
 

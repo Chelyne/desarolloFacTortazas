@@ -131,7 +131,7 @@ export class ProductoVentaComponent implements OnInit {
     this.itemDeVenta.montoNeto = this.itemDeVenta.cantidad * this.itemDeVenta.producto.precio;
     this.itemDeVenta.porcentajeDescuento = 0.0;
 
-    // tslint:disable-next-line: max-line-length
+    // tslint:disable-next-line:max-line-length
     this.itemDeVenta.totalxprod = this.formVenta.value.precioVenta ? parseFloat(this.formVenta.value.precioVenta) : this.itemDeVenta.montoNeto;
     this.itemDeVenta.descuentoProducto = this.itemDeVenta.montoNeto - this.itemDeVenta.totalxprod;
 

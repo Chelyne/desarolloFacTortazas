@@ -23,7 +23,7 @@
 
     <ion-item>
       <ion-label color="primary" position="floating">Nro Documento</ion-label>
-      <ion-input (ionChange)="consultaSunat($event)" maxlength="11" type="text" (keypress)="numberOnlyValidation($event)" formControlName="numDoc" placeholder="DNI"></ion-input>
+      <ion-input (ionChange)="consultaSunat($event)" maxlength="11" type="text" (keypress)="numberOnlyValidation($event)" formControlName="numDoc" placeholder="{{this.clienteModalForm.value.tipoDoc | uppercase}}"></ion-input>
       <ion-buttons slot="end">
         <ion-button>
           <ion-spinner slot="icon-only" color="primary" *ngIf="consultando" name="crescent"></ion-spinner>
