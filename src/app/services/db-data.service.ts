@@ -208,6 +208,11 @@ export class DbDataService {
       }));
   }
 
+
+/* -------------------------------------------------------------------------- */
+/*                           obtener lista de ventas                          */
+/* -------------------------------------------------------------------------- */
+
   ObtenerListaDeVentas(sede: string, fachaventas: string) {
     const sede1 = sede.toLocaleLowerCase();
     // tslint:disable-next-line:max-line-length
@@ -223,6 +228,11 @@ export class DbDataService {
         });
       }));
   }
+
+/* -------------------------------------------------------------------------- */
+/* -------------------------------------------------------------------------- */
+/* -------------------------------------------------------------------------- */
+
 
   ObtenerListaClientes(sede: string) {
     // const sede1 = sede.toLocaleLowerCase();
@@ -955,6 +965,7 @@ export class DbDataService {
           bolsa: venta.bolsa,
           cantidadBolsa: venta.cantidadBolsa,
           tipoPago: venta.tipoPago,
+          estadoVenta: venta.estadoVenta,
           montoNeto: venta.montoNeto,
           descuentoVenta: venta.descuentoVenta,
           totalPagarVenta: venta.totalPagarVenta,
@@ -1052,5 +1063,21 @@ export class DbDataService {
     return promesa;
   }
 
+  // ObtenerVents por vendedor
 
+  listaVentasVendedorDia(sede: string, dia: string, dniVendedor: string) {
+      // const sede1 = sede.toLocaleLowerCase();
+      // tslint:disable-next-line:max-line-length
+      this.ventaCollection = this.afs.collection('sedes').doc(sede.toLocaleLowerCase()).collection('ventas').doc(dia).collection('ventasDia', ref => ref.where('vendedor.dni', '==', dniVendedor));
+      // tslint:disable-next-line:max-line-length
+      // this.productoCollection = this.afs.collection<ProductoInterface>('frutas', ref => ref.where('propietario', '==', propietario).orderBy('fechaRegistro', 'desc'));
+      return this.ventas = this.ventaCollection.snapshotChanges()
+        .pipe(map(changes => {
+          return changes.map(action => {
+            const data = action.payload.doc.data() as VentaInterface;
+            data.idVenta = action.payload.doc.id;
+            return data;
+          });
+        }));
+  }
 }

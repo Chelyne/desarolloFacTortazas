@@ -202,22 +202,14 @@ export class ApiPeruService {
     }
 
     const totalaPagar = venta.totalPagarVenta - icbr;
+    // const totalaPagar = venta.montoNeto - icbr;
     const MontoBase = totalaPagar / 1.18;
     const igv = totalaPagar - MontoBase;
     const montoOperGravadas = MontoBase;
 
-    // let descuento: ChangeInterface = {};
-    // if (venta.descuentoVenta > 0){
-    //   descuento = {
-    //     codTipo: '00',
-    //     montoBase: venta.montoNeto,
-    //     factor: `${redondeoDecimal((venta.descuentoVenta) / venta.montoNeto, 2)}`,
-    //     monto: venta.descuentoVenta
-    //   };
-    // }
+    let ventaFormateada: ComprobanteInterface ;
 
-
-    return {
+    ventaFormateada =  {
       tipoOperacion: '0101', // Venta interna
       tipoDoc: this.obtenerCodigoComprobante(venta.tipoComprobante),  // Factura:01, Boleta:03 //
       serie: venta.serieComprobante,
@@ -226,7 +218,7 @@ export class ApiPeruService {
       tipoMoneda: 'PEN',
       client: this.formatearCliente(venta.cliente),
       company: this.formatearEmpresa(this.datosDeEmpresa),
-      mtoOperGravadas: 11.44, // redondeoDecimal(montoOperGravadas, 2),
+      mtoOperGravadas: redondeoDecimal(montoOperGravadas, 2),
       mtoIGV: redondeoDecimal(igv, 2),
       icbper: redondeoDecimal(icbr, 2),
       totalImpuestos: redondeoDecimal(igv + icbr, 2),
@@ -240,9 +232,46 @@ export class ApiPeruService {
           value: MontoALetras(totalaPagar)
         }
       ],
-      // descuentos: [descuento]
+      //descuentos: venta.descuentoVenta > 0 ? [descuento] : []
     };
 
+    const descuento: ChangeInterface = {};
+    if (venta.descuentoVenta > 0){
+      // const Descuento = venta.descuentoVenta;
+
+      // let descuentoBase = Descuento / 1.18;
+      // const descuentoIgv = redondeoDecimal(Descuento - descuentoBase, 2);
+      // descuentoBase = redondeoDecimal(descuentoBase, 2);
+
+
+      // const objetoDescuento: SaleDetailInterface = {
+      //     unidad: 'NIU',
+      //     descripcion: 'DESCUENTO',
+      //     cantidad: 1,
+      //     mtoValorUnitario: descuentoBase,
+      //     mtoValorVenta: -descuentoBase,
+      //     mtoBaseIgv: -descuentoBase,
+      //     porcentajeIgv: 18,
+      //     igv: -descuentoIgv,
+      //     tipAfeIgv: '10', // OperacionOnerosa: 10
+      //     totalImpuestos: -descuentoIgv, // suma de todos los impues que hubiesen
+      //     mtoPrecioUnitario: -Descuento
+      // };
+
+      // ventaFormateada.details.push(objetoDescuento);
+
+      // descuento = {
+      //   codTipo: '00',
+      //   // montoBase: venta.montoNeto,
+      //   // factor: `${redondeoDecimal((venta.descuentoVenta) / venta.montoNeto, 2)}`,
+      //   monto: venta.descuentoVenta
+      // };
+
+      // ventaFormateada.descuentos = [descuento];
+      ventaFormateada.sumDsctoGlobal = venta.descuentoVenta;
+    }
+
+    return ventaFormateada;
   }
 
   formatearDetalles(itemsDeVenta): SaleDetailInterface[]{
@@ -278,8 +307,9 @@ export class ApiPeruService {
         tipAfeIgv: '10', // OperacionOnerosa: 10
         totalImpuestos: redondeoDecimal(igvTotal, 2), // suma de todos los impues que hubiesen
         mtoPrecioUnitario: redondeoDecimal(precioUnit, 2)
-      };
+    };
   }
+
 
 
   formtearFecha(dateTime: any): string{

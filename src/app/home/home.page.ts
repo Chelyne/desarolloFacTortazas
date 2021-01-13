@@ -264,7 +264,7 @@ export class HomePage {
         });
       } );
     }
-
+    // prueba chelyn
     obtenerListaVentas() {
       const vendedores = [];
       this.dataSrvc.ObtenerReporteVentaGeneralDia(this.storage.datosAdmi.sede, '12-01-2021').then(datos => {

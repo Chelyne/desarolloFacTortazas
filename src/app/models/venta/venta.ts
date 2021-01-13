@@ -25,6 +25,7 @@ export interface VentaInterface {
     montoNeto?: number;
     igv?: number;
     montoBase?: number;
+    estadoVenta?: 'conforme' | 'anulado' | 'enviado'; // string
     montoPagado?: number;
 }
 
