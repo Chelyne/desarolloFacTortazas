@@ -299,6 +299,7 @@ export class ConfirmarVentaPage implements OnInit {
     this.venta.estadoVenta = 'conforme';
     this.venta.cantidadBolsa = this.cantidadBolsa;
     this.venta.listaItemsDeVenta = this.cambiarPrecioUnitarioSiLoRequiere(this.venta.listaItemsDeVenta);
+    this.venta.montoPagado = this.montoEntrante;
     console.log('Se generó el pago');
     this.obtenerCorrelacionComprobante().then((numero: ContadorDeSerieInterface[]) => {
       // if (numero[0].disponible) {

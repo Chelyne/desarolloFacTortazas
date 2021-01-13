@@ -194,7 +194,8 @@ export class ModalVentasPage implements OnInit {
           doc.text('Importe Total: S/ ', 35, index + 5, {align: 'right'});
           doc.text(venta.totalPagarVenta.toFixed(2), 43, index + 5, {align: 'right'});
           doc.text('Vuelto: S/ ', 35, index + 7, {align: 'right'});
-          doc.text(venta.montoPagado ? venta.montoPagado.toFixed(2) : '0.00', 43, index + 7, {align: 'right'});
+          // tslint:disable-next-line:max-line-length
+          doc.text(venta.montoPagado - venta.totalPagarVenta > 0 ? (venta.montoPagado - venta.totalPagarVenta).toFixed(2) : '0.00', 43, index + 7, {align: 'right'});
           doc.setFontSize(3.5);
           // doc.text('SON ' + this.NumeroALetras(this.venta.totalPagarVenta), 2, index + 9, {align: 'left'});
           doc.text(MontoALetras(venta.totalPagarVenta), 2, index + 9, {align: 'left'});
@@ -232,13 +233,11 @@ export class ModalVentasPage implements OnInit {
           if (this.storage.datosAdmi.sede === 'Andahuaylas') {
           doc.text('Av. Peru 236 Andahuaylas Apurimac ', 22.5, 14, {align: 'center'});
           doc.text('Parque Lampa de Oro ', 22.5, 16, {align: 'center'});
-
           doc.text('Telefono: 983905066', 22.5, 19, {align: 'center'});
           }
           if (this.storage.datosAdmi.sede === 'Abancay') {
             doc.text('Av. Seoane 100 Abancay Apurimac', 22.5, 14, {align: 'center'});
             doc.text('Parque el Olivo', 22.5, 16, {align: 'center'});
-
             doc.text('Telefono: 988907777', 22.5, 19, {align: 'center'});
             }
           doc.text('Ruc: ' + this.RUC, 22.5, 21, {align: 'center'});
@@ -315,7 +314,7 @@ export class ModalVentasPage implements OnInit {
           // tslint:disable-next-line:no-shadowed-variable
           let index = 39;
           // tslint:disable-next-line:no-shadowed-variable
-          const doc = new jsPDF( 'p', 'mm', [45, index  + (venta.listaItemsDeVenta.length * 7) + 7 + 22 + 12]);
+          const doc = new jsPDF( 'p', 'mm', [45, index  + (venta.listaItemsDeVenta.length * 7) + 9 + 24 + 12]);
           doc.addImage(this.LogoEmpresa, 'JPEG', 11, 1, 22, 8);
           doc.setFontSize(6);
           doc.setFont('helvetica');
@@ -361,41 +360,55 @@ export class ModalVentasPage implements OnInit {
             doc.text( '__________________________________________', 22.5, index +  3, {align: 'center'});
             index = index + 3;
           }
-          doc.text('SubTotal: S/ ', 35, index + 3, {align: 'right'});
-          doc.text(venta.montoNeto ? venta.montoNeto.toFixed(2) : '0.00', 43, index + 3, {align: 'right'});
-          doc.text('Descuento: S/ ', 35, index + 5, {align: 'right'});
-          doc.text(venta.descuentoVenta ? venta.descuentoVenta.toFixed(2) : '0.00', 43, index + 5, {align: 'right'});
-          index = index + 4;
-          doc.text('ICBP(0.30): S/ ', 35, index + 3, {align: 'right'});
-          doc.text(venta.cantidadBolsa ? (venta.cantidadBolsa * 0.3).toFixed(2) : '0.00', 43, index + 3, {align: 'right'});
-          doc.text('Importe Total: S/ ', 35, index + 5, {align: 'right'});
-          doc.text(venta.totalPagarVenta.toFixed(2), 43, index + 5, {align: 'right'});
-          doc.text('Vuelto: S/ ', 35, index + 7, {align: 'right'});
-          doc.text(venta.montoPagado ? venta.montoPagado.toFixed(2) : '0.00', 43, index + 7, {align: 'right'});
+          if (venta.bolsa) {
+            console.log(venta.bolsa, venta.cantidadBolsa);
+            doc.text('BOLSA PLASTICA ', 2, index + 3);
+            // tslint:disable-next-line:max-line-length
+            doc.text( venta.cantidadBolsa.toFixed(2) + '    ' + 'Unidad' + '      ' + (0.3).toFixed(2), 2, index + 5, {align: 'justify'});
+            doc.text((venta.cantidadBolsa * 0.30).toFixed(2), 43, index + 5, {align: 'right'} );
+            // doc.text((this.cantidadBolsa * 0.3).toFixed(2), 43, index + 3, {align: 'right'});
+            doc.text( '__________________________________________', 22.5, index +  5, {align: 'center'});
+            index = index + 5;
+          }
+          if (venta.descuentoVenta > 0) {
+            doc.text('SubTotal: S/ ', 35, index + 3, {align: 'right'});
+            doc.text((venta.montoNeto + (venta.cantidadBolsa * 0.30)).toFixed(2), 43, index + 3, {align: 'right'});
+            doc.text('Descuento: S/ ', 35, index + 5, {align: 'right'});
+            doc.text(venta.descuentoVenta.toFixed(2), 43, index + 5, {align: 'right'});
+            index = index + 4;
+          }
+          doc.text('Importe Total: S/ ', 35, index + 3, {align: 'right'});
+          doc.text(venta.totalPagarVenta.toFixed(2), 43, index + 3, {align: 'right'});
+          const vuelto = venta.montoPagado - venta.totalPagarVenta;
+          if ((vuelto) > 0) {
+            doc.text('Vuelto: S/ ', 35, index + 5, {align: 'right'});
+            doc.text((vuelto).toFixed(2), 43, index + 5, {align: 'right'});
+          }
           doc.setFontSize(3.5);
           // doc.text('SON ' + this.NumeroALetras(this.venta.totalPagarVenta), 2, index + 9, {align: 'left'});
-          doc.text(MontoALetras(venta.totalPagarVenta), 2, index + 9, {align: 'left'});
+          doc.text(MontoALetras(venta.totalPagarVenta), 2, index + 7, {align: 'left'});
           doc.setFontSize(4);
-          doc.text('Vendedor: ' + this.convertirMayuscula(venta.vendedor.nombre), 2, index + 11, {align: 'left'});
+          doc.text('Vendedor: ' + this.convertirMayuscula(venta.vendedor.nombre), 2, index + 9, {align: 'left'});
           // doc.text(this.venta.vendedor.nombre.toUpperCase(), 43, index + 11, {align: 'right'});
 
-          doc.text('Forma de Pago: ' + this.convertirMayuscula(venta.tipoPago) , 2, index + 13, {align: 'left'});
+          doc.text('Forma de Pago: ' + this.convertirMayuscula(venta.tipoPago) , 2, index + 11, {align: 'left'});
 
           doc.setFontSize(5);
-          doc.text('GRACIAS POR SU PREFERENCIA', 22.5, index + 17, {align: 'center'}); // 14
-          doc.text('DOCUMENTO NO VALIDO PARA SUNAT', 22.5, index + 19, {align: 'center'});
-          doc.text('RECLAME SU COMPROBANTE', 22.5, index + 21, {align: 'center'});
-          doc.text( '__________________________________________', 22.5, index + 22, {align: 'center'});
-          index = index + 22;
+          doc.text('===== COPIA DE COMPROBANTE =====', 22.5, index + 15, {align: 'center'});
+
+          doc.text('GRACIAS POR SU PREFERENCIA', 22.5, index + 19, {align: 'center'}); // 13
+          doc.text('DOCUMENTO NO VALIDO PARA SUNAT', 22.5, index + 21, {align: 'center'});
+          doc.text('RECLAME SU COMPROBANTE', 22.5, index + 23, {align: 'center'});
+          doc.text( '__________________________________________', 22.5, index + 24, {align: 'center'});
+          index = index + 24;
           doc.text('EL VETERINARIO TE RECUERDA:', 2, index + 3, {align: 'left'});
-          doc.text('- Desparasitar a tu mascota cada 2 meses', 2, index + 6, {align: 'left'});
-          doc.text('- Completar todas sus vacunas', 2, index + 8, {align: 'left'});
-          doc.text('- Cuida el aseo e higiene de tu engreido', 2, index + 10, {align: 'left'});
+          doc.text('-Desparasitar a tu mascota cada 2 meses', 2, index + 6, {align: 'left'});
+          doc.text('-Completar todas sus vacunas', 2, index + 8, {align: 'left'});
+          doc.text('-Cuida el aseo e higiene de tu engreido', 2, index + 10, {align: 'left'});
 
           doc.autoPrint();
           // doc.output('datauristring');
           window.open(doc.output('bloburl').toString(), '_blank');
-          // doc.save('notaVenta ' + '.pdf');
           break;
         }
       }
