@@ -87,8 +87,6 @@ export class ConfirmarVentaPage implements OnInit {
     if (isNullOrUndefined(this.venta)) {
       this.router.navigate(['/punto-venta']);
     } else {
-      this.generarQR('20331066703' +  '|'  + '03' + 'B001' + '000626' + '40.00' + '2-01-21' + '987654321');
-
       if (Object.entries(this.venta).length !== 0){
 
         this.importeNeto = this.venta.montoNeto;
@@ -314,6 +312,9 @@ export class ConfirmarVentaPage implements OnInit {
         console.log(numero);
         console.log('numero de comprobante', this.tipoComprobante, numero[0].correlacion + 1);
         this.venta.numeroComprobante = (numero[0].correlacion + 1).toString();
+        const fecha = formatDate(new Date(), 'dd-MM-yyyy', 'en');
+        this.generarQR(this.RUC +  '|'  + '03' +  '|' + this.serieComprobante +  '|' + this.venta.numeroComprobante +  '|' +
+        this.venta.totalPagarVenta +  '|' + fecha +  '|' + this.venta.cliente.numDoc);
         this.dataApi.confirmarVenta(this.venta, this.storage.datosAdmi.sede).then(data => {
           this.dataApi.ActualizarCorrelacion(numero[0].id, this.storage.datosAdmi.sede, numero[0].correlacion + 1);
           this.dataApi.ActualizarEstadoCorrelacion(numero[0].id, this.storage.datosAdmi.sede, true);
@@ -499,7 +500,7 @@ export class ConfirmarVentaPage implements OnInit {
         doc.addImage(qr, 'JPEG', 15, index + 14, 15, 15);
         index = index + 30;
         doc.setFontSize(4);
-        doc.text('Representación impresa del comprobante de pago\r de Venta Electrónica, esta puede ser consultada en\r www.tooby.com\rNO ACEPTAMOS DEVOLUCIONES', 22.5, index + 3, {align: 'center'});
+        doc.text('Representación impresa del comprobante de pago\r de Venta Electrónica, esta puede ser consultada en\r www.facturaciontooby.web.app/buscar\rNO ACEPTAMOS DEVOLUCIONES', 22.5, index + 3, {align: 'center'});
         doc.text('GRACIAS POR SU COMPRA', 22.5, index + 10, {align: 'center'});
         // doc.save('tiket' + '.pdf');
         doc.autoPrint();
@@ -593,7 +594,7 @@ export class ConfirmarVentaPage implements OnInit {
         doc.addImage(qr, 'JPEG', 15, index + 10, 15, 15);
         index = index + 25;
         doc.setFontSize(4);
-        doc.text('Representación impresa del comprobante de pago\r de Factura Electrónica, esta puede ser consultada en\r www.tooby.com\rNO ACEPTAMOS DEVOLUCIONES', 22.5, index + 3, {align: 'center'});
+        doc.text('Representación impresa del comprobante de pago\r de Factura Electrónica, esta puede ser consultada en\r www.facturaciontooby.web.app/buscar\rNO ACEPTAMOS DEVOLUCIONES', 22.5, index + 3, {align: 'center'});
         doc.text('GRACIAS POR SU COMPRA', 22.5, index + 10, {align: 'center'});
         doc.save('tiket' + '.pdf');
         doc.autoPrint();

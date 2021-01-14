@@ -1,5 +1,6 @@
 {
   "hosting": {
+    "site": "facturaciontooby",
     "public": "www",
     "ignore": [
       "firebase.json",
