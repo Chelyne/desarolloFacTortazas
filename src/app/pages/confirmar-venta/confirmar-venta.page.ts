@@ -65,7 +65,7 @@ export class ConfirmarVentaPage implements OnInit {
   valueQR;
   @ViewChild('qr') qr: QrcodeComponent;
 
-  generandoPago = false;
+  generandoPago: boolean;
   constructor(
     private confirmarVentaServ: ConfirmarVentaService,
     private menuCtrl: MenuController,
@@ -81,7 +81,7 @@ export class ConfirmarVentaPage implements OnInit {
 
   ionViewWillEnter() {
     this.comprobarSerieComprobante();
-
+    this.generandoPago = false;
     this.venta = this.confirmarVentaServ.getVentaService();
     console.log('Ventainterfaceeeeeeeeeeeeeeee', this.venta);
     if (isNullOrUndefined(this.venta)) {
@@ -450,8 +450,8 @@ export class ConfirmarVentaPage implements OnInit {
         doc.text('Boleta de Venta electrónica', 22.5, 25, {align: 'center'});
         // tslint:disable-next-line:max-line-length
         doc.text(this.venta.serieComprobante + '-' + this.digitosFaltantes('0', (8 - this.venta.numeroComprobante.length)) + this.venta.numeroComprobante, 22.5, 27, {align: 'center'});
-        doc.text('Ruc: ' + this.venta.cliente.numDoc , 22.5, 31, {align: 'center'});
-        doc.text( 'Razon social:', 22.5, 33, {align: 'center'});
+        doc.text(this.venta.cliente.tipoDoc.toUpperCase() + ': ' + this.venta.cliente.numDoc , 22.5, 31, {align: 'center'});
+        doc.text( 'Cliente: ', 22.5, 33, {align: 'center'});
         doc.text( this.convertirMayuscula(this.venta.cliente.nombre), 22.5, 35, {align: 'center'});
         // tslint:disable-next-line:max-line-length
         doc.text('Fecha: ' + formatDate(new Date(), 'dd/MM/yyyy', 'en') + '  ' + 'Hora: ' + formatDate(new Date(), 'HH:mm aa', 'en'), 22.5, 37, {align: 'center'});
@@ -534,8 +534,8 @@ export class ConfirmarVentaPage implements OnInit {
         doc.text('Factura de Venta electrónica', 22.5, 25, {align: 'center'});
         // tslint:disable-next-line:max-line-length
         doc.text(this.venta.serieComprobante + '-' + this.digitosFaltantes('0', (8 - this.venta.numeroComprobante.length)) + this.venta.numeroComprobante, 22.5, 27, {align: 'center'});
-        doc.text('Ruc: ' + this.venta.cliente.numDoc , 22.5, 31, {align: 'center'});
-        doc.text( 'Razon social:', 22.5, 33, {align: 'center'});
+        doc.text(this.venta.cliente.tipoDoc.toUpperCase() + ': ' + this.venta.cliente.numDoc , 22.5, 31, {align: 'center'});
+        doc.text( 'Cliente:', 22.5, 33, {align: 'center'});
         doc.text( this.convertirMayuscula(this.venta.cliente.nombre), 22.5, 35, {align: 'center'});
         // tslint:disable-next-line:max-line-length
         doc.text('Fecha: ' + formatDate(new Date(), 'dd/MM/yyyy', 'en') + '  ' + 'Hora: ' + formatDate(new Date(), 'HH:mm aa', 'en'), 22.5, 37, {align: 'center'});
@@ -626,8 +626,8 @@ export class ConfirmarVentaPage implements OnInit {
         doc.text('Nota de Venta electrónica', 22.5, 25, {align: 'center'});
         // tslint:disable-next-line:max-line-length
         doc.text(this.venta.serieComprobante + '-' + this.digitosFaltantes('0', (8 - this.venta.numeroComprobante.length)) + this.venta.numeroComprobante, 22.5, 27, {align: 'center'});
-        doc.text('Ruc: ' + this.venta.cliente.numDoc , 22.5, 31, {align: 'center'});
-        doc.text( 'Razon social:', 22.5, 33, {align: 'center'});
+        doc.text(this.venta.cliente.tipoDoc.toUpperCase() + ': '+ this.venta.cliente.numDoc , 22.5, 31, {align: 'center'});
+        doc.text( 'Cliente:', 22.5, 33, {align: 'center'});
         doc.text( this.convertirMayuscula(this.venta.cliente.nombre), 22.5, 35, {align: 'center'});
         // tslint:disable-next-line:max-line-length
         doc.text('Fecha: ' + formatDate(new Date(), 'dd/MM/yyyy', 'en') + '  ' + 'Hora: ' + formatDate(new Date(), 'HH:mm aa', 'en'), 22.5, 37, {align: 'center'});
