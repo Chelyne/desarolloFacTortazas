@@ -431,8 +431,8 @@ export class ModalVentasPage implements OnInit {
           doc.text('Forma de Pago: ' + this.convertirMayuscula(venta.tipoPago) , 2, index + 11, {align: 'left'});
 
           doc.setFontSize(5);
-          doc.text('===== COPIA DE COMPROBANTE =====', 22.5, index + 15, {align: 'center'});
-
+          // doc.text('===== COPIA DE COMPROBANTE =====', 22.5, index + 15, {align: 'center'});
+          doc.text(this.generarmensaje(typoAccion, venta.estadoVenta), 22.5, index + 15, {align: 'center'});
           doc.text('GRACIAS POR SU PREFERENCIA', 22.5, index + 19, {align: 'center'}); // 13
           doc.text('DOCUMENTO NO VALIDO PARA SUNAT', 22.5, index + 21, {align: 'center'});
           doc.text('RECLAME SU COMPROBANTE', 22.5, index + 23, {align: 'center'});
