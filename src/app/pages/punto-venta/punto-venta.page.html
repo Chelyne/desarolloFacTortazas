@@ -211,18 +211,6 @@
                     </div>
                     <!-- <img src="https://images.vexels.com/media/users/3/153874/isolated/preview/5147b9d69f00249a07732a905bcb251e-buscar-configuraci--n-icono-de-trazo-de-color-by-vexels.png" alt=""> -->
                 </ion-content>
-                <ion-content class="categoriasContent" *ngIf="!listaProductos.length && !this.categoria && !productos">
-                    <ion-grid class="categorias">
-                        <ion-row>
-                            <ion-col size-lg="3" size-md="3" size-sm="6" size-xs="6" *ngFor="let categoria of categorias">
-                                <ion-card (click)="listaProductosCategoria(categoria.categoria)">
-                                    <img [src]="categoria.img" alt="">
-                                    <ion-label [style.color]="categoria.color">{{categoria.categoria | uppercase}}</ion-label>
-                                </ion-card>
-                            </ion-col>
-                        </ion-row>
-                    </ion-grid>
-                </ion-content>
                 <!-- <ion-content class="productosContent" *ngIf="categoria && !productos">
                     <ion-segment scrollable value="{{categoria}}"> -->
                         <!-- <ion-segment-button value="categoria" (click)="resetListaCa">

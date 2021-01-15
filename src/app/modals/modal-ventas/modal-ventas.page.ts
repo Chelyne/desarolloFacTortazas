@@ -24,6 +24,9 @@ export class ModalVentasPage implements OnInit {
   LogoEmpresa = '../../../assets/img/TOOBY LOGO.png';
   listaVentas: VentaInterface[];
 
+  sede = this.storage.datosAdmi.sede;
+
+
   elementType = NgxQrcodeElementTypes.CANVAS;
   correctionLevel = NgxQrcodeErrorCorrectionLevels.HIGH;
   valueQR;
@@ -118,8 +121,41 @@ export class ModalVentasPage implements OnInit {
     return promesa;
   }
 
-  generarComprobante(venta: VentaInterface) {
+  anularVenta(ventaSelect: VentaInterface){
+    // NOTE - FechaEmision:
+    //      formato que regresa, fechaEmision: "13-01-2021 12:24:00"
+    console.log('la venta debería anularse', ventaSelect);
+    // console.log(compraSelect.anulado);
+    const fechaString = `${ventaSelect.fechaEmision}`;
+    const fechaEmisionFormateada = fechaString.split(' ')[0];
+    console.log(fechaEmisionFormateada);
+
+
+    if (ventaSelect.estadoVenta === 'registrado'){
+      this.dataApi.toggleAnularVenta(ventaSelect.idVenta, 'anulado', this.sede, fechaEmisionFormateada);
+    } else {
+      this.dataApi.toggleAnularVenta(ventaSelect.idVenta, 'registrado', this.sede, fechaEmisionFormateada);
+    }
+  }
+
+  generarmensaje(typoAccion: string, estadoVenta: string): string{
+    if (estadoVenta === 'anulado'){
+      return '===== COPIA DE COMPROBANTE ANULADO =====';
+    }
+    if (typoAccion === 'copia' ) {
+      return '===== COPIA DE COMPROBANTE =====';
+    } else if (typoAccion === 'anular' ) {
+      return '===== COMPROBANTE ANULADO  =====';
+    }
+    return '';
+  }
+
+  generarComprobante(venta: VentaInterface, typoAccion: string) {
     console.log(venta);
+
+    if (typoAccion === 'anular' ) {
+      this.anularVenta(venta);
+    }
 
     const qr = this.getImage();
     console.log(qr);
@@ -159,8 +195,8 @@ export class ModalVentasPage implements OnInit {
           doc.text('Boleta de Venta electrónica', 22.5, 25, {align: 'center'});
           // tslint:disable-next-line:max-line-length
           doc.text(venta.serieComprobante + '-' + this.digitosFaltantes('0', (8 - venta.numeroComprobante.length)) + venta.numeroComprobante, 22.5, 27, {align: 'center'});
-          doc.text('Ruc: ' + venta.cliente.numDoc , 22.5, 31, {align: 'center'});
-          doc.text( 'Razon social:', 22.5, 33, {align: 'center'});
+          doc.text(venta.cliente.tipoDoc.toUpperCase() + ': ' + venta.cliente.numDoc , 22.5, 31, {align: 'center'});
+          doc.text( 'Cliente:', 22.5, 33, {align: 'center'});
           doc.text( this.convertirMayuscula(venta.cliente.nombre), 22.5, 35, {align: 'center'});
           // tslint:disable-next-line:max-line-length
           doc.text('Fecha: ' + formatDate(new Date(), 'dd/MM/yyyy', 'en') + '  ' + 'Hora: ' + formatDate(new Date(), 'HH:mm aa', 'en'), 22.5, 37, {align: 'center'});
@@ -208,7 +244,8 @@ export class ModalVentasPage implements OnInit {
 
           doc.addImage(qr, 'JPEG', 15, index + 14, 15, 15);
           index = index + 30;
-          doc.text('===== COPIA DE COMPROBANTE =====', 22.5, index + 2, {align: 'center'});
+          // doc.text('===== COPIA DE COMPROBANTE =====', 22.5, index + 2, {align: 'center'});
+          doc.text(this.generarmensaje(typoAccion, venta.estadoVenta), 22.5, index + 2, {align: 'center'});
           index = index + 2;
           doc.setFontSize(4);
           doc.text('Representación impresa del comprobante de pago\r de Venta Electrónica, esta puede ser consultada en\r www.tooby.com\rNO ACEPTAMOS DEVOLUCIONES', 22.5, index + 3, {align: 'center'});
@@ -244,8 +281,8 @@ export class ModalVentasPage implements OnInit {
           doc.text('Factura de Venta electrónica', 22.5, 25, {align: 'center'});
           // tslint:disable-next-line:max-line-length
           doc.text(venta.serieComprobante + '-' + this.digitosFaltantes('0', (8 - venta.numeroComprobante.length)) + venta.numeroComprobante, 22.5, 27, {align: 'center'});
-          doc.text('Ruc: ' + venta.cliente.numDoc , 22.5, 31, {align: 'center'});
-          doc.text( 'Razon social:', 22.5, 33, {align: 'center'});
+          doc.text(venta.cliente.tipoDoc.toUpperCase() + ': ' + + venta.cliente.numDoc , 22.5, 31, {align: 'center'});
+          doc.text( 'Cliente:', 22.5, 33, {align: 'center'});
           doc.text( this.convertirMayuscula(venta.cliente.nombre), 22.5, 35, {align: 'center'});
           // tslint:disable-next-line:max-line-length
           doc.text('Fecha: ' + formatDate(new Date(), 'dd/MM/yyyy', 'en') + '  ' + 'Hora: ' + formatDate(new Date(), 'HH:mm aa', 'en'), 22.5, 37, {align: 'center'});
@@ -335,8 +372,8 @@ export class ModalVentasPage implements OnInit {
           doc.text('Nota de Venta electrónica', 22.5, 25, {align: 'center'});
           // tslint:disable-next-line:max-line-length
           doc.text(venta.serieComprobante + '-' + this.digitosFaltantes('0', (8 - venta.numeroComprobante.length)) + venta.numeroComprobante, 22.5, 27, {align: 'center'});
-          doc.text('Ruc: ' + venta.cliente.numDoc , 22.5, 31, {align: 'center'});
-          doc.text( 'Razon social:', 22.5, 33, {align: 'center'});
+          doc.text(venta.cliente.tipoDoc.toUpperCase() + ': ' + venta.cliente.numDoc , 22.5, 31, {align: 'center'});
+          doc.text( 'Cliente:', 22.5, 33, {align: 'center'});
           doc.text( this.convertirMayuscula(venta.cliente.nombre), 22.5, 35, {align: 'center'});
           // tslint:disable-next-line:max-line-length
           doc.text('Fecha: ' + formatDate(new Date(), 'dd/MM/yyyy', 'en') + '  ' + 'Hora: ' + formatDate(new Date(), 'HH:mm aa', 'en'), 22.5, 37, {align: 'center'});
@@ -394,7 +431,7 @@ export class ModalVentasPage implements OnInit {
           doc.text('Forma de Pago: ' + this.convertirMayuscula(venta.tipoPago) , 2, index + 11, {align: 'left'});
 
           doc.setFontSize(5);
-          doc.text('===== COPIA DE COMPROBANTE =====', 22.5, index + 15, {align: 'center'});
+          doc.text(this.generarmensaje(typoAccion, venta.estadoVenta), 22.5, index + 15, {align: 'center'});
 
           doc.text('GRACIAS POR SU PREFERENCIA', 22.5, index + 19, {align: 'center'}); // 13
           doc.text('DOCUMENTO NO VALIDO PARA SUNAT', 22.5, index + 21, {align: 'center'});
@@ -414,5 +451,7 @@ export class ModalVentasPage implements OnInit {
       }
     });
   }
+
+
 
 }

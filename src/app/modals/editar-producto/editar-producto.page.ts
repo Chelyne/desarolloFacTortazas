@@ -160,6 +160,7 @@ export class EditarProductoPage implements OnInit {
       cantidad: new FormControl(this.dataProducto.cantidad, [Validators.required, Validators.min(1)]),
       medida: new FormControl(this.dataProducto.medida, [Validators.required]),
       marca: new FormControl(this.dataProducto.marca, [Validators.minLength(3), Validators.maxLength(65)]),
+      codigo: new FormControl(this.dataProducto.codigo),
       codigoBarra: new FormControl(this.dataProducto.codigoBarra),
       precio: new FormControl(this.dataProducto.precio, []),
       cantStock: new FormControl(this.dataProducto.cantStock, [ Validators.min(0)]),
@@ -176,6 +177,7 @@ export class EditarProductoPage implements OnInit {
   get cantidad() {return this.updateForm.get('cantidad'); }
   get medida() {return this.updateForm.get('medida'); }
   get marca() {return this.updateForm.get('marca'); }
+  get codigo() {return this.updateForm.get('codigo'); }
   get codigoBarra() {return this.updateForm.get('codigoBarra'); }
   get precio() {return this.updateForm.get('precio'); }
   get cantStock() {return this.updateForm.get('cantStock'); }

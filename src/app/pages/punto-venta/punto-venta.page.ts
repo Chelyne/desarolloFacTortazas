@@ -104,15 +104,22 @@ export class PuntoVentaPage implements OnInit {
     this.categorias = this.categoriasService.getcategoriasNegocio('petshop');
     this.sinDatos = false;
 
-    if (this.rutaActiva.snapshot.params.cancelar === 'true') {
-      this.listaItemsDeVenta = [];
-    }
-
     if (!isNullOrUndefined(this.storage.listaVenta)) {
       this.listaDeVentas = this.storage.listaVenta;
     }
     console.log('sede', this.sede);
     console.log('categoria', this.categoriaP);
+  }
+
+  ionViewWillEnter() {
+    if (this.confirmarVentaServ.getEsCancelado()){
+      this.listaItemsDeVenta = [];
+      this.confirmarVentaServ.setVenta({});
+      this.confirmarVentaServ.setEsCancelado(false);
+      this.calcularTotalaPagar();
+      this.cliente = '';
+    }
+
   }
 
   ionViewDidEnter() {
@@ -444,29 +451,56 @@ export class PuntoVentaPage implements OnInit {
         }, error => { console.log('error de subscribe'  + error); }
         );
       } else {
-        // tslint:disable-next-line:max-line-length
-        this.afs.collection('sedes').doc(this.storage.datosAdmi.sede.toLowerCase()).collection('productos', res => res.orderBy('codigoBarra').startAt(lowercaseKey).endAt(lowercaseKey + '\uf8ff')).snapshotChanges()
-        .pipe(map(changes => {
-          return changes.map(action => {
-            const data = action.payload.doc.data();
-            data.id = action.payload.doc.id;
-            return data;
-          });
-        }
-        )).subscribe(res => {
-          if (res.length === 0 ) {
-            console.log('no hay datos');
-            this.productos = null;
-            this.buscando = false;
-            this.sinResultados = 'No se encontraron productos';
-            this.presentToast(this.sinResultados, 'danger');
-          } else {
-            console.log(res );
-            this.productos = res;
-            this.buscando = false;
+
+        if (lowercaseKey.length > 10) {
+          // tslint:disable-next-line:max-line-length
+          this.afs.collection('sedes').doc(this.storage.datosAdmi.sede.toLowerCase()).collection('productos', res => res.orderBy('codigoBarra').startAt(lowercaseKey).endAt(lowercaseKey + '\uf8ff')).snapshotChanges()
+          .pipe(map(changes => {
+            return changes.map(action => {
+              const data = action.payload.doc.data();
+              data.id = action.payload.doc.id;
+              return data;
+            });
           }
-        }, error => { console.log('error de subscribe'  + error); }
-        );
+          )).subscribe(res => {
+            if (res.length === 0 ) {
+              console.log('no hay datos');
+              this.productos = null;
+              this.buscando = false;
+              this.sinResultados = 'No se encontraron productos';
+              this.presentToast(this.sinResultados, 'danger');
+            } else {
+              console.log(res );
+              this.productos = res;
+              this.buscando = false;
+            }
+          }, error => { console.log('error de subscribe'  + error); }
+          );
+        } else {
+          // tslint:disable-next-line:max-line-length
+          this.afs.collection('sedes').doc(this.storage.datosAdmi.sede.toLowerCase()).collection('productos', res => res.orderBy('codigo').startAt(lowercaseKey).endAt(lowercaseKey + '\uf8ff')).snapshotChanges()
+          .pipe(map(changes => {
+            return changes.map(action => {
+              const data = action.payload.doc.data();
+              data.id = action.payload.doc.id;
+              return data;
+            });
+          }
+          )).subscribe(res => {
+            if (res.length === 0 ) {
+              console.log('no hay datos');
+              this.productos = null;
+              this.buscando = false;
+              this.sinResultados = 'No se encontraron productos';
+              this.presentToast(this.sinResultados, 'danger');
+            } else {
+              console.log(res );
+              this.productos = res;
+              this.buscando = false;
+            }
+          }, error => { console.log('error de subscribe'  + error); }
+          );
+        }
       }
      } else  {
       console.log('lowercase 0');

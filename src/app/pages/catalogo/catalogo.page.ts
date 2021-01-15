@@ -60,7 +60,7 @@ export class CatalogoPage implements OnInit {
   // ======================================================================================
   // btener lista de productos
   ObtenerProductos(){
-    this.dataApi.ObtenerListaProductosSinCat(this.sedes, 20).subscribe(data => {
+    this.dataApi.ObtenerListaProductosSinCat(this.sedes).subscribe(data => {
       this.listaDeProductos = data;
     });
   }
@@ -85,11 +85,26 @@ export class CatalogoPage implements OnInit {
     if (lowercaseKey.length) {
       this.dataApi.ObtenerListaProductosByName(this.sedes, lowercaseKey).subscribe(data => {
         this.listaDeProductos = data;
-        console.log('love', data);
-
+        console.log('Love', data);
       });
     } else  {
       this.ObtenerProductos();
+    }
+  }
+
+  SearchCategorias(ev) {
+    this.buscando = true;
+
+    const key = ev.detail.value;
+    const lowercaseKey = key.toLowerCase();
+
+    if (lowercaseKey.length) {
+      this.dataApi.ObtenerListaCategoriasByName(this.sedes, lowercaseKey).subscribe(data => {
+        this.listaDeCategorias = data;
+        console.log('amor', data);
+      });
+    } else  {
+      this.ObtenerCategorias();
     }
   }
 

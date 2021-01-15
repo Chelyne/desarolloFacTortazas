@@ -114,6 +114,11 @@
         </ion-grid>
     </form>
 </ion-content>
+<div class="alertDanger" *ngIf="mensaje">
+    <div class="mensajeError">
+        {{mensaje}}
+    </div>
+</div>
 <ion-footer class="ion-no-border footer">
     <ion-button (click)="guardarProducto()" shape="round" expand="block">
         <ion-icon slot="icon-only" color="light" name="add-circle-outline"></ion-icon> &nbsp;

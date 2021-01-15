@@ -65,6 +65,7 @@ export class ConfirmarVentaPage implements OnInit {
   valueQR;
   @ViewChild('qr') qr: QrcodeComponent;
 
+  generandoPago: boolean;
   constructor(
     private confirmarVentaServ: ConfirmarVentaService,
     private menuCtrl: MenuController,
@@ -80,14 +81,12 @@ export class ConfirmarVentaPage implements OnInit {
 
   ionViewWillEnter() {
     this.comprobarSerieComprobante();
-
+    this.generandoPago = false;
     this.venta = this.confirmarVentaServ.getVentaService();
     console.log('Ventainterfaceeeeeeeeeeeeeeee', this.venta);
     if (isNullOrUndefined(this.venta)) {
       this.router.navigate(['/punto-venta']);
     } else {
-      this.generarQR('20331066703' +  '|'  + '03' + 'B001' + '000626' + '40.00' + '2-01-21' + '987654321');
-
       if (Object.entries(this.venta).length !== 0){
 
         this.importeNeto = this.venta.montoNeto;
@@ -255,10 +254,12 @@ export class ConfirmarVentaPage implements OnInit {
 
   cancelarVenta(){
     console.log('cancelar venta');
-    this.confirmarVentaServ.cleanData();
+    // this.confirmarVentaServ.cleanData();
+    this.confirmarVentaServ.resetService();
     this.resetFormPago();
     this.bolsa = false;
-    this.router.navigate(['/punto-venta', 'true']);
+    // this.router.navigate(['/punto-venta', 'true']);
+    this.router.navigate(['/punto-venta']);
   }
 
   SeleccionarComprobante(comprobante: string){
@@ -266,7 +267,12 @@ export class ConfirmarVentaPage implements OnInit {
     this.tipoComprobante = comprobante;
 
     if (comprobante === 'factura'){
-      this.comprobarSerieComprobante();
+      if (this.venta.cliente.tipoDoc === 'dni') {
+        this.presentToast('No puedes emitir comprobante a cliente sin RUC');
+        this.tipoComprobante = 'boleta';
+      } else {
+        this.comprobarSerieComprobante();
+      }
     } else if (comprobante === 'boleta'){
       this.comprobarSerieComprobante();
     }else if (comprobante === 'n. venta'){
@@ -284,6 +290,7 @@ export class ConfirmarVentaPage implements OnInit {
   }
 
   generarPago(){
+    this.generandoPago = true;
     this.presentLoading('Generando Venta');
     this.venta.tipoComprobante = this.tipoComprobante;
     this.venta.serieComprobante = this.serieComprobante;
@@ -296,7 +303,7 @@ export class ConfirmarVentaPage implements OnInit {
     this.venta.totalPagarVenta = this.importeTotal;
     this.venta.igv = this.igvImporteBase;
     this.venta.montoBase = this.importeBase;
-    this.venta.estadoVenta = 'conforme';
+    this.venta.estadoVenta = 'registrado';
     this.venta.cantidadBolsa = this.cantidadBolsa;
     this.venta.listaItemsDeVenta = this.cambiarPrecioUnitarioSiLoRequiere(this.venta.listaItemsDeVenta);
     this.venta.montoPagado = this.montoEntrante;
@@ -307,6 +314,9 @@ export class ConfirmarVentaPage implements OnInit {
         console.log(numero);
         console.log('numero de comprobante', this.tipoComprobante, numero[0].correlacion + 1);
         this.venta.numeroComprobante = (numero[0].correlacion + 1).toString();
+        const fecha = formatDate(new Date(), 'dd-MM-yyyy', 'en');
+        this.generarQR(this.RUC +  '|'  + '03' +  '|' + this.serieComprobante +  '|' + this.venta.numeroComprobante +  '|' +
+        this.venta.totalPagarVenta +  '|' + fecha +  '|' + this.venta.cliente.numDoc);
         this.dataApi.confirmarVenta(this.venta, this.storage.datosAdmi.sede).then(data => {
           this.dataApi.ActualizarCorrelacion(numero[0].id, this.storage.datosAdmi.sede, numero[0].correlacion + 1);
           this.dataApi.ActualizarEstadoCorrelacion(numero[0].id, this.storage.datosAdmi.sede, true);
@@ -315,7 +325,13 @@ export class ConfirmarVentaPage implements OnInit {
           this.cantidadBolsa = 0;
           this.bolsa = false;
           this.tipoPago = 'efectivo';
-          this.router.navigate(['/punto-venta', 'true']);
+          this.confirmarVentaServ.resetService();
+          // this.confirmarVentaServ.setVenta({});
+          this.router.navigate(['/punto-venta']);
+          // .then(() => {
+          //   this.confirmarVentaServ.setEsCancelado(true);
+          //   this.confirmarVentaServ.setVenta({});
+          // });
           this.generarComprobante();
           console.log('guardado', data);
           this.loading.dismiss();
@@ -380,9 +396,10 @@ export class ConfirmarVentaPage implements OnInit {
     }
   }
 
-  volver() {
-    this.router.navigate(['/punto-venta', 'false']);
-  }
+  // volver() {
+  //   // this.router.navigate(['/punto-venta', 'false']);
+  //   this.router.navigate(['/punto-venta']);
+  // }
 
   async presentModalComprobante() {
     const modal = await this.modalController.create({
@@ -443,8 +460,8 @@ export class ConfirmarVentaPage implements OnInit {
         doc.text('Boleta de Venta electrónica', 22.5, 25, {align: 'center'});
         // tslint:disable-next-line:max-line-length
         doc.text(this.venta.serieComprobante + '-' + this.digitosFaltantes('0', (8 - this.venta.numeroComprobante.length)) + this.venta.numeroComprobante, 22.5, 27, {align: 'center'});
-        doc.text('Ruc: ' + this.venta.cliente.numDoc , 22.5, 31, {align: 'center'});
-        doc.text( 'Razon social:', 22.5, 33, {align: 'center'});
+        doc.text(this.venta.cliente.tipoDoc.toUpperCase() + ': ' + this.venta.cliente.numDoc , 22.5, 31, {align: 'center'});
+        doc.text( 'Cliente: ', 22.5, 33, {align: 'center'});
         doc.text( this.convertirMayuscula(this.venta.cliente.nombre), 22.5, 35, {align: 'center'});
         // tslint:disable-next-line:max-line-length
         doc.text('Fecha: ' + formatDate(new Date(), 'dd/MM/yyyy', 'en') + '  ' + 'Hora: ' + formatDate(new Date(), 'HH:mm aa', 'en'), 22.5, 37, {align: 'center'});
@@ -492,7 +509,7 @@ export class ConfirmarVentaPage implements OnInit {
         doc.addImage(qr, 'JPEG', 15, index + 14, 15, 15);
         index = index + 30;
         doc.setFontSize(4);
-        doc.text('Representación impresa del comprobante de pago\r de Venta Electrónica, esta puede ser consultada en\r www.tooby.com\rNO ACEPTAMOS DEVOLUCIONES', 22.5, index + 3, {align: 'center'});
+        doc.text('Representación impresa del comprobante de pago\r de Venta Electrónica, esta puede ser consultada en\r www.facturaciontooby.web.app/buscar\rNO ACEPTAMOS DEVOLUCIONES', 22.5, index + 3, {align: 'center'});
         doc.text('GRACIAS POR SU COMPRA', 22.5, index + 10, {align: 'center'});
         // doc.save('tiket' + '.pdf');
         doc.autoPrint();
@@ -527,8 +544,8 @@ export class ConfirmarVentaPage implements OnInit {
         doc.text('Factura de Venta electrónica', 22.5, 25, {align: 'center'});
         // tslint:disable-next-line:max-line-length
         doc.text(this.venta.serieComprobante + '-' + this.digitosFaltantes('0', (8 - this.venta.numeroComprobante.length)) + this.venta.numeroComprobante, 22.5, 27, {align: 'center'});
-        doc.text('Ruc: ' + this.venta.cliente.numDoc , 22.5, 31, {align: 'center'});
-        doc.text( 'Razon social:', 22.5, 33, {align: 'center'});
+        doc.text(this.venta.cliente.tipoDoc.toUpperCase() + ': ' + this.venta.cliente.numDoc , 22.5, 31, {align: 'center'});
+        doc.text( 'Cliente:', 22.5, 33, {align: 'center'});
         doc.text( this.convertirMayuscula(this.venta.cliente.nombre), 22.5, 35, {align: 'center'});
         // tslint:disable-next-line:max-line-length
         doc.text('Fecha: ' + formatDate(new Date(), 'dd/MM/yyyy', 'en') + '  ' + 'Hora: ' + formatDate(new Date(), 'HH:mm aa', 'en'), 22.5, 37, {align: 'center'});
@@ -586,7 +603,7 @@ export class ConfirmarVentaPage implements OnInit {
         doc.addImage(qr, 'JPEG', 15, index + 10, 15, 15);
         index = index + 25;
         doc.setFontSize(4);
-        doc.text('Representación impresa del comprobante de pago\r de Factura Electrónica, esta puede ser consultada en\r www.tooby.com\rNO ACEPTAMOS DEVOLUCIONES', 22.5, index + 3, {align: 'center'});
+        doc.text('Representación impresa del comprobante de pago\r de Factura Electrónica, esta puede ser consultada en\r www.facturaciontooby.web.app/buscar\rNO ACEPTAMOS DEVOLUCIONES', 22.5, index + 3, {align: 'center'});
         doc.text('GRACIAS POR SU COMPRA', 22.5, index + 10, {align: 'center'});
         doc.save('tiket' + '.pdf');
         doc.autoPrint();
@@ -619,8 +636,8 @@ export class ConfirmarVentaPage implements OnInit {
         doc.text('Nota de Venta electrónica', 22.5, 25, {align: 'center'});
         // tslint:disable-next-line:max-line-length
         doc.text(this.venta.serieComprobante + '-' + this.digitosFaltantes('0', (8 - this.venta.numeroComprobante.length)) + this.venta.numeroComprobante, 22.5, 27, {align: 'center'});
-        doc.text('Ruc: ' + this.venta.cliente.numDoc , 22.5, 31, {align: 'center'});
-        doc.text( 'Razon social:', 22.5, 33, {align: 'center'});
+        doc.text(this.venta.cliente.tipoDoc.toUpperCase() + ': ' + this.venta.cliente.numDoc , 22.5, 31, {align: 'center'});
+        doc.text( 'Cliente:', 22.5, 33, {align: 'center'});
         doc.text( this.convertirMayuscula(this.venta.cliente.nombre), 22.5, 35, {align: 'center'});
         // tslint:disable-next-line:max-line-length
         doc.text('Fecha: ' + formatDate(new Date(), 'dd/MM/yyyy', 'en') + '  ' + 'Hora: ' + formatDate(new Date(), 'HH:mm aa', 'en'), 22.5, 37, {align: 'center'});

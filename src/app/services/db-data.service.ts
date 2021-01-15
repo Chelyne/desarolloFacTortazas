@@ -114,6 +114,7 @@ export class DbDataService {
           cantidad: data.cantidad,
           medida: data.medida,
           marca: data.marca,
+          codigo: data.codigo,
           codigoBarra: data.codigoBarra,
           precio: data.precio,
           cantStock: data.cantStock,
@@ -127,6 +128,7 @@ export class DbDataService {
           cantidad: data.cantidad,
           medida: data.medida,
           marca: data.marca,
+          codigo: data.codigo,
           codigoBarra: data.codigoBarra,
           precio: data.precio,
           cantStock: data.cantStock,
@@ -143,6 +145,8 @@ export class DbDataService {
     this.productoDoc = this.afs.doc<ProductoInterface>(`sedes/${sede1}/productos/${idProducto}`);
     this.productoDoc.delete();
   }
+
+
 
   ObtenerListaProductos(sede: string, categoria: string, subCategoria: string) {
     const sede1 = sede.toLocaleLowerCase();
@@ -176,10 +180,10 @@ export class DbDataService {
       }));
   }
 
-  ObtenerListaProductosSinCat(sede: string, limit: number) {
+  ObtenerListaProductosSinCat(sede: string) {
     const sede1 = sede.toLocaleLowerCase();
     // tslint:disable-next-line:max-line-length
-    this.productoCollection = this.afs.collection('sedes').doc(sede1).collection('productos', ref => ref.orderBy('fechaRegistro', 'desc').limit(limit));
+    this.productoCollection = this.afs.collection('sedes').doc(sede1).collection('productos', ref => ref.orderBy('fechaRegistro', 'desc'));
     // tslint:disable-next-line:max-line-length
     // this.productoCollection = this.afs.collection<ProductoInterface>('frutas', ref => ref.where('propietario', '==', propietario).orderBy('fechaRegistro', 'desc'));
     return this.productos = this.productoCollection.snapshotChanges()
@@ -208,15 +212,26 @@ export class DbDataService {
       }));
   }
 
-
-/* -------------------------------------------------------------------------- */
-/*                           obtener lista de ventas                          */
-/* -------------------------------------------------------------------------- */
+  ObtenerListaCategoriasByName(sede: string, categoria: string) {
+    const sede1 = sede.toLocaleLowerCase();
+    // tslint:disable-next-line:max-line-length
+    this.productoCollection = this.afs.collection('sedes').doc(sede1).collection('categorias' , ref => ref.orderBy('categoria').startAt(categoria).endAt(categoria + '\uf8ff'));
+    // tslint:disable-next-line:max-line-length
+    // this.productoCollection = this.afs.collection<ProductoInterface>('frutas', ref => ref.where('propietario', '==', propietario).orderBy('fechaRegistro', 'desc'));
+    return this.categorias = this.categoriaCollection.snapshotChanges()
+    .pipe(map(changes => {
+      return changes.map(action => {
+        const data = action.payload.doc.data() as CategoriaInterface;
+        data.id = action.payload.doc.id;
+        return data;
+      });
+    }));
+  }
 
   ObtenerListaDeVentas(sede: string, fachaventas: string) {
     const sede1 = sede.toLocaleLowerCase();
     // tslint:disable-next-line:max-line-length
-    this.ventaCollection = this.afs.collection('sedes').doc(sede1).collection('ventas').doc(fachaventas).collection('ventasDia', ref => ref.orderBy('numeroComprobante', 'asc'));
+    this.ventaCollection = this.afs.collection('sedes').doc(sede1).collection('ventas').doc(fachaventas).collection('ventasDia', ref => ref.orderBy('numeroComprobante', 'desc'));
     // tslint:disable-next-line:max-line-length
     // this.productoCollection = this.afs.collection<ProductoInterface>('frutas', ref => ref.where('propietario', '==', propietario).orderBy('fechaRegistro', 'desc'));
     return this.ventas = this.ventaCollection.snapshotChanges()
@@ -229,10 +244,21 @@ export class DbDataService {
       }));
   }
 
-/* -------------------------------------------------------------------------- */
-/* -------------------------------------------------------------------------- */
-/* -------------------------------------------------------------------------- */
-
+  ObtenerConprobante(sede: string, fachaventas: string, numero: string, serie: string) {
+    const sede1 = sede.toLocaleLowerCase();
+    // tslint:disable-next-line:max-line-length
+    this.ventaCollection = this.afs.collection('sedes').doc(sede1).collection('ventas').doc(fachaventas).collection('ventasDia', ref => ref.where('numeroComprobante', '==', numero).where('serieComprobante', '==', serie));
+    // tslint:disable-next-line:max-line-length
+    // this.productoCollection = this.afs.collection<ProductoInterface>('frutas', ref => ref.where('propietario', '==', propietario).orderBy('fechaRegistro', 'desc'));
+    return this.ventas = this.ventaCollection.snapshotChanges()
+      .pipe(map(changes => {
+        return changes.map(action => {
+          const data = action.payload.doc.data() as VentaInterface;
+          data.idVenta = action.payload.doc.id;
+          return data;
+        });
+      }));
+  }
 
   ObtenerListaClientes(sede: string) {
     // const sede1 = sede.toLocaleLowerCase();
@@ -853,6 +879,41 @@ export class DbDataService {
     return promesa;
   }
 
+  toggleAnularVenta(idVenta: string, nuevoEstado: string, sede: string, fechaEmision: string) {
+    // console.log( idProveedor, newProveedor);
+
+    // const fecha: any = fechaEmision;
+    // const fechaFormateada = new Date(moment.unix(fecha.seconds).format('D MMM YYYY H:mm'));
+    // const fechaString = formatDate(fechaFormateada, 'dd-MM-yyyy', 'en');
+
+    const promesa =  new Promise<void>( (resolve, reject) => {
+      this.afs.collection('sedes').doc(sede.toLocaleLowerCase()).collection('ventas').doc(fechaEmision)
+      .collection('ventasDia').doc(idVenta).update({estadoVenta: nuevoEstado});
+      resolve();
+    });
+
+    return promesa;
+  }
+
+  // guardarCDRr(idVenta: string, fechaEmision: any, sede: string, cdrVenta: CDRInterface){
+  //   // console.log('guuuuuuuuuuuuuuuardadr cdr', cdrVenta, sede, idVenta);
+  //   // const idFecha = venta.fechaEmision.getDay() + '-' + venta.fechaEmision.getMonth() + '-' + venta.fechaEmision.getFullYear();
+  //   // console.log('ffffffffffffffffffffffffffffff',  venta.fechaEmision);
+  //   const fecha: any = fechaEmision;
+  //   const fechaFormateada = new Date(moment.unix(fecha.seconds).format('D MMM YYYY H:mm'));
+  //   const fechaString = formatDate(fechaFormateada, 'dd-MM-yyyy', 'en');
+
+  //   // console.log('ffffffffeeeeeeeeeecha', fechaString, cdrVenta);
+
+  //   const promesa =  new Promise<void>( (resolve, reject) => {
+  //     this.afs.collection('sedes').doc(sede.toLocaleLowerCase()).collection('ventas').doc(fechaString)
+  //     .collection('ventasDia').doc(idVenta).update({cdr: cdrVenta});
+  //     resolve();
+  //   });
+
+  //   return promesa;
+  // }
+
   ActualizarProductoStock(sede: string, productId: string, stock: number){
     const promesa =  new Promise( (resolve, reject) => {
       this.afs.collection('sedes').doc(sede).collection('productos').doc(productId).update({cantStock: stock});
@@ -928,6 +989,7 @@ export class DbDataService {
 
     return promesa;
   }
+
   guardarCDRr(idVenta: string, fechaEmision: any, sede: string, cdrVenta: CDRInterface){
     // console.log('guuuuuuuuuuuuuuuardadr cdr', cdrVenta, sede, idVenta);
     // const idFecha = venta.fechaEmision.getDay() + '-' + venta.fechaEmision.getMonth() + '-' + venta.fechaEmision.getFullYear();

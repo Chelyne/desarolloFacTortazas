@@ -1,7 +1,44 @@
-ion-input {
-    font-family: Nunito;
-    border: solid 1px var(--ion-color-primary);
-    border-radius: 5px;
-    margin-top: 5px;
-    --padding-start: 12px;
+* {
+    ion-label {
+        font-family: Nunito;
+    }
+
+    ion-input {
+        font-family: Nunito;
+    }
+}
+
+// ion-input {
+//     font-family: Nunito;
+//     border: solid 1px var(--ion-color-primary);
+//     border-radius: 5px;
+//     margin-top: 5px;
+//     --padding-start: 12px;
+// }
+
+.sinDatos {
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    align-content: center;
+    .textoSindatos {
+        text-align: center;
+        // border: solid 2px var(--ion-color-danger);
+        padding: 10%;
+        margin: 10%;
+        border-radius: 10px;
+        font-weight: bold;
+        .icono {
+            zoom: 4;
+        }
+    }
+}
+
+.cargando {
+    height: 70%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    align-content: center;
 }

@@ -206,6 +206,27 @@ export class HomePage {
           }));
   }
 
+  // getProductos() {
+  //   const sus = this.dataSrvc.ObtenerListaProductosSinCat(this.storage.datosAdmi.sede).subscribe(datos => {
+  //     sus.unsubscribe();
+  //     console.log(datos);
+  //     this.todosProductos = datos;
+  //   });
+  // }
+
+  // pasarBarraCodigo() {
+  //   let contador = 0;
+  //   this.todosProductos.forEach(element => {
+  //     if (element.codigoBarra) {
+  //       this.afs.collection('sedes').doc('andahuaylas').collection('productos')
+  //       .doc(element.id).update({codigoBarra: null, codigo: element.codigoBarra.toString()}).then(() => {
+  //         contador++;
+  //         console.log('Actualizado ' + contador + ' ' + element.codigoBarra.toString());
+  //       });
+  //     }
+  //   });
+  // }
+
   consultFallos() {
     this.exportar.exportAsExcelFile(this.listaFallos, 'faltantes');
   }

@@ -215,6 +215,7 @@ resetOrientation(srcBase64, srcOrientation, callback) {
       cantidad: new FormControl('', [Validators.required, Validators.min(1)]),
       medida: new FormControl('unidad', [Validators.required]),
       marca: new FormControl('', [Validators.minLength(3), Validators.maxLength(45)]),
+      codigo: new FormControl('', [Validators.minLength(1), Validators.maxLength(20)]),
       codigoBarra: new FormControl('', [Validators.minLength(1), Validators.maxLength(20)]),
       precio: new FormControl(''),
       cantStock: new FormControl('', [Validators.min(1)]),
@@ -234,6 +235,7 @@ resetOrientation(srcBase64, srcOrientation, callback) {
   get cantidad() {return this.productoForm.get('cantidad'); }
   get medida() {return this.productoForm.get('medida'); }
   get marca() {return this.productoForm.get('marca'); }
+  get codigo() {return this.productoForm.get('codigo'); }
   get codigoBarra() {return this.productoForm.get('codigoBarra'); }
   get precio() {return this.productoForm.get('precio'); }
   get cantStock() {return this.productoForm.get('cantStock'); }
