@@ -95,7 +95,7 @@ export class ComprasPage implements OnInit {
 
 
   ObtenerProductos(){
-    this.dataApi.ObtenerListaProductosSinCat(this.sede, 10).subscribe(data => {
+    this.dataApi.ObtenerListaProductosSinCat(this.sede).subscribe(data => {
       this.listaDeProductos = data;
       // console.log(data);
     });

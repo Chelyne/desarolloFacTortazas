@@ -128,11 +128,6 @@ const routes: Routes = [
     canActivate: [AuthGuard]
   },
   {
-    path: 'punto-venta/:cancelar',
-    loadChildren: () => import('./pages/punto-venta/punto-venta.module').then( m => m.PuntoVentaPageModule),
-    canActivate: [AuthGuard]
-  },
-  {
     path: 'lista-de-usarios',
     loadChildren: () => import('./pages/lista-de-usarios/lista-de-usarios.module').then( m => m.ListaDeUsariosPageModule),
     canActivate: [AuthGuard]

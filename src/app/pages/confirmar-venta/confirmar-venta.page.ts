@@ -254,10 +254,12 @@ export class ConfirmarVentaPage implements OnInit {
 
   cancelarVenta(){
     console.log('cancelar venta');
-    this.confirmarVentaServ.cleanData();
+    // this.confirmarVentaServ.cleanData();
+    this.confirmarVentaServ.resetService();
     this.resetFormPago();
     this.bolsa = false;
-    this.router.navigate(['/punto-venta', 'true']);
+    // this.router.navigate(['/punto-venta', 'true']);
+    this.router.navigate(['/punto-venta']);
   }
 
   SeleccionarComprobante(comprobante: string){
@@ -323,7 +325,13 @@ export class ConfirmarVentaPage implements OnInit {
           this.cantidadBolsa = 0;
           this.bolsa = false;
           this.tipoPago = 'efectivo';
-          this.router.navigate(['/punto-venta', 'true']);
+          this.confirmarVentaServ.resetService();
+          // this.confirmarVentaServ.setVenta({});
+          this.router.navigate(['/punto-venta']);
+          // .then(() => {
+          //   this.confirmarVentaServ.setEsCancelado(true);
+          //   this.confirmarVentaServ.setVenta({});
+          // });
           this.generarComprobante();
           console.log('guardado', data);
           this.loading.dismiss();
@@ -388,9 +396,10 @@ export class ConfirmarVentaPage implements OnInit {
     }
   }
 
-  volver() {
-    this.router.navigate(['/punto-venta', 'false']);
-  }
+  // volver() {
+  //   // this.router.navigate(['/punto-venta', 'false']);
+  //   this.router.navigate(['/punto-venta']);
+  // }
 
   async presentModalComprobante() {
     const modal = await this.modalController.create({
@@ -627,7 +636,7 @@ export class ConfirmarVentaPage implements OnInit {
         doc.text('Nota de Venta electrónica', 22.5, 25, {align: 'center'});
         // tslint:disable-next-line:max-line-length
         doc.text(this.venta.serieComprobante + '-' + this.digitosFaltantes('0', (8 - this.venta.numeroComprobante.length)) + this.venta.numeroComprobante, 22.5, 27, {align: 'center'});
-        doc.text(this.venta.cliente.tipoDoc.toUpperCase() + ': '+ this.venta.cliente.numDoc , 22.5, 31, {align: 'center'});
+        doc.text(this.venta.cliente.tipoDoc.toUpperCase() + ': ' + this.venta.cliente.numDoc , 22.5, 31, {align: 'center'});
         doc.text( 'Cliente:', 22.5, 33, {align: 'center'});
         doc.text( this.convertirMayuscula(this.venta.cliente.nombre), 22.5, 35, {align: 'center'});
         // tslint:disable-next-line:max-line-length
