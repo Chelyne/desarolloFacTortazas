@@ -742,7 +742,16 @@ export class DbDataService {
   }
   ObtenerReporteVentaGeneralDia(sede: string, dia: string) {
     console.log('service dia', dia);
-    return this.afs.collection('sedes').doc(sede.toLocaleLowerCase()).collection('ventas').doc(dia).collection('ventasDia').ref.get();
+    let resultado: any;
+    resultado = this.afs.collection('sedes').doc(sede.toLocaleLowerCase()).collection('ventas').doc(dia).collection('ventasDia');
+    return resultado.snapshotChanges()
+    .pipe(map((changes: any) => {
+      return changes.map(action => {
+        const data = action.payload.doc.data();
+        data.idVenta = action.payload.doc.id;
+        return data;
+      });
+    }));
   }
   ObtenerReporteVentaDiaVendedor(sede: string, dia: string, dniVendedor: string) {
     // console.log('service dia', dia);
