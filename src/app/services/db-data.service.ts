@@ -114,6 +114,7 @@ export class DbDataService {
           cantidad: data.cantidad,
           medida: data.medida,
           marca: data.marca,
+          codigo: data.codigo,
           codigoBarra: data.codigoBarra,
           precio: data.precio,
           cantStock: data.cantStock,
@@ -127,6 +128,7 @@ export class DbDataService {
           cantidad: data.cantidad,
           medida: data.medida,
           marca: data.marca,
+          codigo: data.codigo,
           codigoBarra: data.codigoBarra,
           precio: data.precio,
           cantStock: data.cantStock,
@@ -178,10 +180,10 @@ export class DbDataService {
       }));
   }
 
-  ObtenerListaProductosSinCat(sede: string, limit: number) {
+  ObtenerListaProductosSinCat(sede: string) {
     const sede1 = sede.toLocaleLowerCase();
     // tslint:disable-next-line:max-line-length
-    this.productoCollection = this.afs.collection('sedes').doc(sede1).collection('productos', ref => ref.orderBy('fechaRegistro', 'desc').limit(limit));
+    this.productoCollection = this.afs.collection('sedes').doc(sede1).collection('productos', ref => ref.orderBy('fechaRegistro', 'desc'));
     // tslint:disable-next-line:max-line-length
     // this.productoCollection = this.afs.collection<ProductoInterface>('frutas', ref => ref.where('propietario', '==', propietario).orderBy('fechaRegistro', 'desc'));
     return this.productos = this.productoCollection.snapshotChanges()
@@ -229,7 +231,7 @@ export class DbDataService {
   ObtenerListaDeVentas(sede: string, fachaventas: string) {
     const sede1 = sede.toLocaleLowerCase();
     // tslint:disable-next-line:max-line-length
-    this.ventaCollection = this.afs.collection('sedes').doc(sede1).collection('ventas').doc(fachaventas).collection('ventasDia', ref => ref.orderBy('numeroComprobante', 'asc'));
+    this.ventaCollection = this.afs.collection('sedes').doc(sede1).collection('ventas').doc(fachaventas).collection('ventasDia', ref => ref.orderBy('numeroComprobante', 'desc'));
     // tslint:disable-next-line:max-line-length
     // this.productoCollection = this.afs.collection<ProductoInterface>('frutas', ref => ref.where('propietario', '==', propietario).orderBy('fechaRegistro', 'desc'));
     return this.ventas = this.ventaCollection.snapshotChanges()

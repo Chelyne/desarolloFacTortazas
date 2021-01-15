@@ -108,44 +108,45 @@ const routes: Routes = [
   },
   {
     path: 'descuentos',
-    loadChildren: () => import('./pages/descuentos/descuentos.module').then( m => m.DescuentosPageModule)
+    loadChildren: () => import('./pages/descuentos/descuentos.module').then( m => m.DescuentosPageModule),
+    canActivate: [AuthGuard]
   },
   {
     path: 'modal-agregar-descuento',
     // tslint:disable-next-line:max-line-length
-    loadChildren: () => import('./modals/modal-agregar-descuento/modal-agregar-descuento.module').then( m => m.ModalAgregarDescuentoPageModule)
+    loadChildren: () => import('./modals/modal-agregar-descuento/modal-agregar-descuento.module').then( m => m.ModalAgregarDescuentoPageModule),
+    canActivate: [AuthGuard]
   },
   {
     path: 'servicios/:tipo',
-    loadChildren: () => import('./pages/servicios/servicios.module').then( m => m.ServiciosPageModule)
+    loadChildren: () => import('./pages/servicios/servicios.module').then( m => m.ServiciosPageModule),
+    canActivate: [AuthGuard]
   },
   {
     path: 'punto-venta',
-    loadChildren: () => import('./pages/punto-venta/punto-venta.module').then( m => m.PuntoVentaPageModule)
+    loadChildren: () => import('./pages/punto-venta/punto-venta.module').then( m => m.PuntoVentaPageModule),
+    canActivate: [AuthGuard]
   },
-  {
-    path: 'punto-venta/:cancelar',
-    loadChildren: () => import('./pages/punto-venta/punto-venta.module').then( m => m.PuntoVentaPageModule)
-  },
-
-
-
   {
     path: 'lista-de-usarios',
-    loadChildren: () => import('./pages/lista-de-usarios/lista-de-usarios.module').then( m => m.ListaDeUsariosPageModule)
+    loadChildren: () => import('./pages/lista-de-usarios/lista-de-usarios.module').then( m => m.ListaDeUsariosPageModule),
+    canActivate: [AuthGuard]
   },
   {
     path: 'lista-de-clientes',
-    loadChildren: () => import('./pages/lista-de-clientes/lista-de-clientes.module').then( m => m.ListaDeClientesPageModule)
+    loadChildren: () => import('./pages/lista-de-clientes/lista-de-clientes.module').then( m => m.ListaDeClientesPageModule),
+    canActivate: [AuthGuard]
   },
   {
     path: 'lista-de-proveedores',
-    loadChildren: () => import('./pages/lista-de-proveedores/lista-de-proveedores.module').then( m => m.ListaDeProveedoresPageModule)
+    loadChildren: () => import('./pages/lista-de-proveedores/lista-de-proveedores.module').then( m => m.ListaDeProveedoresPageModule),
+    canActivate: [AuthGuard]
   },
 
   {
     path: 'ingreso-egreso-gestor',
-    loadChildren: () => import('./pages/ingreso-egreso-gestor/ingreso-egreso-gestor.module').then( m => m.IngresoEgresoGestorPageModule)
+    loadChildren: () => import('./pages/ingreso-egreso-gestor/ingreso-egreso-gestor.module').then( m => m.IngresoEgresoGestorPageModule),
+    canActivate: [AuthGuard]
   },
 
   // {
@@ -157,88 +158,107 @@ const routes: Routes = [
   //   loadChildren: () => import('./pages/lista-de-productos/lista-de-productos.module').then( m => m.ListaDeProductosPageModule)
   // },
 
-
   {
     path: 'caja-chica',
-    loadChildren: () => import('./pages/caja-chica/caja-chica.module').then( m => m.CajaChicaPageModule)
+    loadChildren: () => import('./pages/caja-chica/caja-chica.module').then( m => m.CajaChicaPageModule),
+    canActivate: [AuthGuard]
   },
   {
     path: 'abrir-cerrar-caja',
-    loadChildren: () => import('./modals/abrir-cerrar-caja/abrir-cerrar-caja.module').then( m => m.AbrirCerrarCajaPageModule)
+    loadChildren: () => import('./modals/abrir-cerrar-caja/abrir-cerrar-caja.module').then( m => m.AbrirCerrarCajaPageModule),
+    canActivate: [AuthGuard]
   },
   {
     path: 'dashboard',
-    loadChildren: () => import('./pages/dashboard/dashboard.module').then( m => m.DashboardPageModule)
+    loadChildren: () => import('./pages/dashboard/dashboard.module').then( m => m.DashboardPageModule),
+    canActivate: [AuthGuard]
   },
   {
     path: 'catalogo',
-    loadChildren: () => import('./pages/catalogo/catalogo.module').then( m => m.CatalogoPageModule)
+    loadChildren: () => import('./pages/catalogo/catalogo.module').then( m => m.CatalogoPageModule),
+    canActivate: [AuthGuard]
   },
   {
     path: 'lista-de-compras',
-    loadChildren: () => import('./pages/lista-de-compras/lista-de-compras.module').then( m => m.ListaDeComprasPageModule)
+    loadChildren: () => import('./pages/lista-de-compras/lista-de-compras.module').then( m => m.ListaDeComprasPageModule),
+    canActivate: [AuthGuard]
   },
   {
     path: 'confirmar-venta',
-    loadChildren: () => import('./pages/confirmar-venta/confirmar-venta.module').then( m => m.ConfirmarVentaPageModule)
+    loadChildren: () => import('./pages/confirmar-venta/confirmar-venta.module').then( m => m.ConfirmarVentaPageModule),
+    canActivate: [AuthGuard]
   },
   {
     path: 'compras',
-    loadChildren: () => import('./pages/compras/compras.module').then( m => m.ComprasPageModule)
+    loadChildren: () => import('./pages/compras/compras.module').then( m => m.ComprasPageModule),
+    canActivate: [AuthGuard]
   },
   {
     path: 'modal-proveedores',
-    loadChildren: () => import('./modals/modal-proveedores/modal-proveedores.module').then( m => m.ModalProveedoresPageModule)
+    loadChildren: () => import('./modals/modal-proveedores/modal-proveedores.module').then( m => m.ModalProveedoresPageModule),
+    canActivate: [AuthGuard]
   },
   {
     path: 'modal-producto-compra',
-    loadChildren: () => import('./modals/modal-producto-compra/modal-producto-compra.module').then( m => m.ModalProductoCompraPageModule)
+    loadChildren: () => import('./modals/modal-producto-compra/modal-producto-compra.module').then( m => m.ModalProductoCompraPageModule),
+    canActivate: [AuthGuard]
   },
   {
     path: 'modal-buscador',
-    loadChildren: () => import('./modals/modal-buscador/modal-buscador.module').then( m => m.ModalBuscadorPageModule)
+    loadChildren: () => import('./modals/modal-buscador/modal-buscador.module').then( m => m.ModalBuscadorPageModule),
+    canActivate: [AuthGuard]
   },
   {
     path: 'detalles-de-compra',
-    loadChildren: () => import('./modals/detalles-de-compra/detalles-de-compra.module').then( m => m.DetallesDeCompraPageModule)
+    loadChildren: () => import('./modals/detalles-de-compra/detalles-de-compra.module').then( m => m.DetallesDeCompraPageModule),
+    canActivate: [AuthGuard]
   },
   {
     path: 'ventas-congeladas',
-    loadChildren: () => import('./modals/ventas-congeladas/ventas-congeladas.module').then( m => m.VentasCongeladasPageModule)
+    loadChildren: () => import('./modals/ventas-congeladas/ventas-congeladas.module').then( m => m.VentasCongeladasPageModule),
+    canActivate: [AuthGuard]
   },
   {
     path: 'productos-compuestos',
-    loadChildren: () => import('./pages/productos-compuestos/productos-compuestos.module').then( m => m.ProductosCompuestosPageModule)
+    loadChildren: () => import('./pages/productos-compuestos/productos-compuestos.module').then( m => m.ProductosCompuestosPageModule),
+    canActivate: [AuthGuard]
   },
   {
     path: 'agregar-editar-prod-compuestos',
     // tslint:disable-next-line:max-line-length
-    loadChildren: () => import('./modals/agregar-editar-prod-compuestos/agregar-editar-prod-compuestos.module').then( m => m.AgregarEditarProdCompuestosPageModule)
+    loadChildren: () => import('./modals/agregar-editar-prod-compuestos/agregar-editar-prod-compuestos.module').then( m => m.AgregarEditarProdCompuestosPageModule),
+    canActivate: [AuthGuard]
   },
   {
     path: 'test-page',
-    loadChildren: () => import('./pages/test-page/test-page.module').then( m => m.TestPagePageModule)
+    loadChildren: () => import('./pages/test-page/test-page.module').then( m => m.TestPagePageModule),
+    canActivate: [AuthGuard]
   },
   {
     path: 'comprobante',
-    loadChildren: () => import('./modals/comprobante/comprobante.module').then( m => m.ComprobantePageModule)
+    loadChildren: () => import('./modals/comprobante/comprobante.module').then( m => m.ComprobantePageModule),
+    canActivate: [AuthGuard]
   },
   {
     path: 'lista-de-ventas',
-    loadChildren: () => import('./pages/lista-de-ventas/lista-de-ventas.module').then( m => m.ListaDeVentasPageModule)
+    loadChildren: () => import('./pages/lista-de-ventas/lista-de-ventas.module').then( m => m.ListaDeVentasPageModule),
+    canActivate: [AuthGuard]
   },
   {
     path: 'categorias',
-    loadChildren: () => import('./pages/categorias/categorias.module').then( m => m.CategoriasPageModule)
+    loadChildren: () => import('./pages/categorias/categorias.module').then( m => m.CategoriasPageModule),
+    canActivate: [AuthGuard]
   },
   {
     path: 'modal-agregar-categorias',
     loadChildren: () => import('./modals/modal-agregar-categorias/modal-agregar-categorias.module')
-    .then( m => m.ModalAgregarCategoriasPageModule)
+.then( m => m.ModalAgregarCategoriasPageModule),
+    canActivate: [AuthGuard]
   },
   {
     path: 'modal-ventas',
-    loadChildren: () => import('./modals/modal-ventas/modal-ventas.module').then( m => m.ModalVentasPageModule)
+    loadChildren: () => import('./modals/modal-ventas/modal-ventas.module').then( m => m.ModalVentasPageModule),
+    canActivate: [AuthGuard]
   },
   {
     path: 'buscar',
