@@ -336,12 +336,12 @@ export class ModalVentasPage implements OnInit {
           doc.text('Forma de Pago: ' + this.convertirMayuscula(venta.tipoPago) , 2, index + 9, {align: 'left'});
           doc.addImage(qr, 'JPEG', 15, index + 10, 15, 15);
           index = index + 25;
-          doc.text('===== COPIA DE COMPROBANTE =====', 22.5, index + 2, {align: 'center'});
+          doc.text(this.generarmensaje(typoAccion, venta.estadoVenta), 22.5, index + 2, {align: 'center'});
           index = index + 2;
           doc.setFontSize(4);
           doc.text('Representación impresa del comprobante de pago\r de Factura Electrónica, esta puede ser consultada en\r www.tooby.com\rNO ACEPTAMOS DEVOLUCIONES', 22.5, index + 3, {align: 'center'});
           doc.text('GRACIAS POR SU COMPRA', 22.5, index + 10, {align: 'center'});
-          doc.save('tiket' + '.pdf');
+          // doc.save('tiket' + '.pdf');
           doc.autoPrint();
           window.open(doc.output('bloburl').toString(), '_blank');
           // doc.output('dataurlnewwindow');

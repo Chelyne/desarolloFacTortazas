@@ -605,7 +605,7 @@ export class ConfirmarVentaPage implements OnInit {
         doc.setFontSize(4);
         doc.text('Representación impresa del comprobante de pago\r de Factura Electrónica, esta puede ser consultada en\r www.facturaciontooby.web.app/buscar\rNO ACEPTAMOS DEVOLUCIONES', 22.5, index + 3, {align: 'center'});
         doc.text('GRACIAS POR SU COMPRA', 22.5, index + 10, {align: 'center'});
-        doc.save('tiket' + '.pdf');
+        // doc.save('tiket' + '.pdf');
         doc.autoPrint();
         window.open(doc.output('bloburl').toString(), '_blank');
         // doc.output('dataurlnewwindow');
