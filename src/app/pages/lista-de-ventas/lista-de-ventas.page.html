@@ -152,7 +152,7 @@
                                 <ion-button *ngIf="venta.cdr && !venta.cdr.sunatResponse.success" color="warning">
                                     <ion-label>Reenviar</ion-label>
                                 </ion-button>
-                                <ion-button *ngIf="!venta.cdr" color="success">
+                                <ion-button *ngIf="!venta.cdr" color="success" (click)="enviarUnComprobante(venta)">
                                     <ion-label>Enviar</ion-label>
                                 </ion-button>
                             </ion-item>

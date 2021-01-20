@@ -431,6 +431,7 @@ export class ModalVentasPage implements OnInit {
           doc.text('Forma de Pago: ' + this.convertirMayuscula(venta.tipoPago) , 2, index + 11, {align: 'left'});
 
           doc.setFontSize(5);
+          // doc.text('===== COPIA DE COMPROBANTE =====', 22.5, index + 15, {align: 'center'});
           doc.text(this.generarmensaje(typoAccion, venta.estadoVenta), 22.5, index + 15, {align: 'center'});
 
           doc.text('GRACIAS POR SU PREFERENCIA', 22.5, index + 19, {align: 'center'}); // 13
