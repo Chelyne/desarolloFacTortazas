@@ -204,6 +204,54 @@ formatearDetalleVenta(itemDeVenta: ItemDeVentaInterface): SaleDetailInterface{
 
 /* ---------------------------------------------------------------------------------------------- */
 
+/* -------------------------------------------------------------------------- */
+/*                           enviar nota de credito                           */
+/* -------------------------------------------------------------------------- */
+
+formatearNotaDeCredito(venta: VentaInterface){
+  console.log('Venta a ser Formateada', venta);
+  console.log('Fecha de emision de la venta', venta.fechaEmision);
+  const productFormat = this.formatearDetalles(venta.listaItemsDeVenta);
+
+  const totalaPagar = venta.totalPagarVenta;
+  const montoBase = totalaPagar / 1.18;
+  const igv = totalaPagar - montoBase;
+  const montoOperGravadas = montoBase;
+
+  return {
+    tipDocAfectado: this.obtenerCodigoComprobante(venta.tipoComprobante), // '01',   // Factura
+    numDocfectado: `${venta.serieComprobante}-${venta.numeroComprobante}`, // 'F001-111', // numero y serie
+    codMotivo: '07',    //  Códigos de Tipo de Nota de Crédito Electrónica - 07:Devolucion por item
+    desMotivo: 'DEVOLUCION POR ITEM',
+    tipoDoc: '07', // nota de crédito
+    serie: 'FF01', // la nota de credito tiene una serie
+    fechaEmision: '2019-10-27T00:00:00-05:00', // Fecha de emision // NOTE - se debe gener aquí.
+    correlativo: '123', // correlacion  // NOTE - Tambien debe obtenerse aquí
+    tipoMoneda: 'PEN',
+    client: {}, // this.formatearCliente(venta.cliente),
+    company: {}, // this.formatearEmpresa(this.datosDeEmpresa), // ANCHOR
+    mtoOperGravadas: redondeoDecimal(montoOperGravadas, 2),
+    mtoIGV: redondeoDecimal(igv, 2),
+    totalImpuestos: redondeoDecimal(igv, 2),
+    valorVenta: redondeoDecimal(montoOperGravadas, 2),
+    mtoImpVenta: redondeoDecimal(totalaPagar, 2),
+    ublVersion: '2.1',
+    details: productFormat,
+    legends: [
+      {
+        code: '1000',
+        value: MontoALetras(totalaPagar)
+      }
+    ]
+  };
+
+}
+
+
+
+
+/* -------------------------------------------------------------------------- */
+
 
   ObtenerCodigoMedida(medida: string){
     switch (medida.toLowerCase()) {

@@ -132,7 +132,11 @@ export class ApiPeruService {
 /* ---------------------------------------------------------------------------------------------- */
 
   enviarASunatAdaptador(venta: VentaInterface){
+
     const promesa = new Promise((resolve, reject) => {
+      if (typeof(venta.cdr.sunatResponse.success) !== 'undefined' && venta.cdr.sunatResponse.success === true ){
+        reject(null);
+      }
       this.dataApi.obtenerProductosDeVenta(venta.idListaProductos, this.sede).subscribe( (data: any) => {
         console.log('Lista de productos de la venta obtenidos de firebase:', data);
         // tslint:disable-next-line: deprecation

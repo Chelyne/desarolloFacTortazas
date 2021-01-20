@@ -84,7 +84,7 @@ export class ModalAgregarProductoPage implements OnInit {
 
   // btener lista de productos
    ObtenerCategorias(){
-    this.dbData.ObtenerListaCategorias(this.sedes, 20).subscribe(data => {
+    this.dbData.ObtenerListaCategorias(this.sedes).subscribe(data => {
       this.listaDeCategorias = data;
     });
   }
@@ -216,7 +216,7 @@ resetOrientation(srcBase64, srcOrientation, callback) {
       medida: new FormControl('unidad', [Validators.required]),
       marca: new FormControl('', [Validators.minLength(3), Validators.maxLength(45)]),
       codigo: new FormControl('', [Validators.minLength(1), Validators.maxLength(20)]),
-      codigoBarra: new FormControl('', [Validators.minLength(1), Validators.maxLength(20)]),
+      codigoBarra: new FormControl('', [Validators.minLength(1), Validators.maxLength(60)]),
       precio: new FormControl(''),
       cantStock: new FormControl('', [Validators.min(1)]),
       fechaDeVencimiento: new FormControl(''),

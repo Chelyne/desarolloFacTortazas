@@ -196,10 +196,10 @@ export class DbDataService {
       }));
   }
 
-  ObtenerListaCategorias(sede: string, limit: number) {
+  ObtenerListaCategorias(sede: string) {
     const sede1 = sede.toLocaleLowerCase();
     // tslint:disable-next-line:max-line-length
-    this.categoriaCollection = this.afs.collection('sedes').doc(sede1).collection('categorias', ref => ref.orderBy('fechaRegistro', 'desc').limit(limit));
+    this.categoriaCollection = this.afs.collection('sedes').doc(sede1).collection('categorias', ref => ref.orderBy('fechaRegistro', 'desc'));
     // tslint:disable-next-line:max-line-length
     // this.productoCollection = this.afs.collection<ProductoInterface>('frutas', ref => ref.where('propietario', '==', propietario).orderBy('fechaRegistro', 'desc'));
     return this.categorias = this.categoriaCollection.snapshotChanges()

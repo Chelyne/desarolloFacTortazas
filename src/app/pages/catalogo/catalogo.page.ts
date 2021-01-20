@@ -67,7 +67,7 @@ export class CatalogoPage implements OnInit {
 
    // btener lista de productos
    ObtenerCategorias(){
-    this.dataApi.ObtenerListaCategorias(this.sedes, 20).subscribe(data => {
+    this.dataApi.ObtenerListaCategorias(this.sedes).subscribe(data => {
       this.listaDeCategorias = data;
     });
   }
