@@ -1151,4 +1151,20 @@ export class DbDataService {
           });
         }));
   }
+
+  listaVentasDia(sede: string, dia: string) {
+    // const sede1 = sede.toLocaleLowerCase();
+    // tslint:disable-next-line:max-line-length
+    this.ventaCollection = this.afs.collection('sedes').doc(sede.toLocaleLowerCase()).collection('ventas').doc(dia).collection('ventasDia');
+    // tslint:disable-next-line:max-line-length
+    // this.productoCollection = this.afs.collection<ProductoInterface>('frutas', ref => ref.where('propietario', '==', propietario).orderBy('fechaRegistro', 'desc'));
+    return this.ventas = this.ventaCollection.snapshotChanges()
+      .pipe(map(changes => {
+        return changes.map(action => {
+          const data = action.payload.doc.data() as VentaInterface;
+          data.idVenta = action.payload.doc.id;
+          return data;
+        });
+      }));
+}
 }

@@ -1,5 +1,5 @@
 import { Component, OnInit, Input } from '@angular/core';
-import { ModalController, ToastController } from '@ionic/angular';
+import { ModalController, ToastController, LoadingController } from '@ionic/angular';
 import { DbDataService } from 'src/app/services/db-data.service';
 import { StorageService } from '../../services/storage.service';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
@@ -9,6 +9,7 @@ import { formatDate } from '@angular/common';
 import { ApiPeruService } from '../../services/api/api-peru.service';
 import { time } from 'console';
 import { timer } from 'rxjs';
+import { VentaInterface } from '../../models/venta/venta';
 
 @Component({
   selector: 'app-abrir-cerrar-caja',
@@ -24,12 +25,15 @@ export class AbrirCerrarCajaPage implements OnInit {
   listaUsuarios;
   sede;
 
+  loading;
+  contadorComprobantes = 0;
   constructor(
               private modalCrl: ModalController,
               private storage: StorageService,
               private dataApi: DbDataService,
               private toastController: ToastController,
-              private apiPeru: ApiPeruService
+              private apiPeru: ApiPeruService,
+              private loadingController: LoadingController
               ) {
                 this.sede = this.storage.datosAdmi.sede;
                 this.cajaChicaForm = this.createFormGroupCajaChica();
@@ -143,14 +147,35 @@ export class AbrirCerrarCajaPage implements OnInit {
     toast.present();
   }
 
-  async enviaruno() {
-    const lista = await this.obtenerListaVentas().then((listaventas: []) => listaventas);
-    // console.log(lista);
-    for (const venta of lista) {
-      console.log(venta);
-      await this.apiPeru.enviarASunatAdaptador(venta).then(cdr => {
-        console.log(cdr);
-      });
+  async presentLoading(mensaje: string) {
+    this.loading = await this.loadingController.create({
+      cssClass: 'my-custom-class',
+      message: mensaje,
+      // duration: 10000
+    });
+    await this.loading.present();
+  }
+
+  async enviarComprobantesDelDiaVendedor() {
+    const lista = await this.obtenerListaVentas().then((listaventas: VentaInterface[]) => listaventas);
+    if (lista.length > 0) {
+      // console.log(lista);
+      await this.presentLoading('Enviando comprobantes, Por favor espere...');
+      for (const venta of lista) {
+        this.contadorComprobantes++;
+        console.log(venta);
+        if ((venta.tipoComprobante === 'boleta' || venta.tipoComprobante === 'factura') && !venta.cdr) {
+          await this.apiPeru.enviarASunatAdaptador(venta).then(cdr => {
+            console.log(cdr);
+          });
+        } else {
+          console.log('Es nota de venta' , venta);
+        }
+      }
+      this.loading.dismiss();
+      this.presentToast('Comprobantes enviados.');
+    } else {
+      this.presentToast('No hay ventas para enviar.');
     }
   }
 
@@ -161,42 +186,9 @@ export class AbrirCerrarCajaPage implements OnInit {
       this.dataApi.listaVentasVendedorDia(this.sede, dia, this.datosCaja.dniVendedor).subscribe((datos => {
         console.log('no imprimir', datos);
         resolve(datos);
-        // let cont = 0;
-        // for (const venta of datos) {
-        //   console.log(venta);
-        //   if (venta.tipoComprobante === 'boleta' || venta.tipoComprobante === 'factura') {
-        //     await this.enviaruno(venta).then(() => {
-        //       cont++;
-        //       console.log('ENVIADO ', cont , venta);
-        //     });
-        //   }
-        // }
       }));
     });
     return promesa;
-    // await this.dataApi.ObtenerReporteVentaDiaVendedor(this.sede, dia, this.datosCaja.dniVendedor).then(data => {
-    //   if (data.empty) {
-    //     this.presentToast('No hay datos para enviar');
-    //   } else {
-    //     let cont = 0;
-    //     data.forEach(element => {
-    //       const venta = element.data();
-    //       venta.idVenta = element.id;
-    //       console.log(venta);
-    //       setTimeout(() => {
-    //         if (venta.tipoComprobante === 'boleta' || venta.tipoComprobante === 'factura') {
-    //           this.enviaruno(venta).then(() => {
-    //             cont++;
-    //             console.log('ENVIADO ', cont , venta);
-    //           });
-    //           // this.apiPeru.enviarASunatAdaptador(venta).then(cdr => {
-    //           //   console.log(cdr);
-    //           // });
-    //         }
-    //       }, 2000);
-    //     });
-    //   }
-    // });
   }
 
   CerrarCaja(){
@@ -212,6 +204,7 @@ export class AbrirCerrarCajaPage implements OnInit {
       console.log('cerrar caja', cajaCierre);
       this.dataApi.CerrarCajaChica(this.datosCaja.id, cajaCierre).then(res => {
         // this.enviarComprobantes();
+        this.enviarComprobantesDelDiaVendedor();
         this.presentToast('Cerraste la caja correctamente', 'success', 'checkmark-circle-outline');
         this.cerrarModal();
       });
