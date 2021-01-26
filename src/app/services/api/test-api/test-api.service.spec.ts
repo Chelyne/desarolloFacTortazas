@@ -7,21 +7,73 @@ import 'jasmine-expect';
 import { ItemDeVentaInterface } from 'src/app/models/venta/item-de-venta';
 import { VentaInterface } from 'src/app/models/venta/venta';
 
+/** Librerias para Fifestor */
+import { AngularFireModule } from '@angular/fire';
+import { AngularFirestoreModule } from '@angular/fire/firestore';
+import { environment } from 'src/environments/environment';
+
 describe('TestApiService', () => {
   let service: TestApiService;
 
   beforeEach(() => {
-    // TestBed.configureTestingModule({
-    //   providers:[TestApiService]
-    // });
-    // service = TestBed.inject(TestApiService);
-    service = new TestApiService();
+    TestBed.configureTestingModule({
+      imports: [
+        AngularFireModule.initializeApp(environment.firebaseConfig),
+        AngularFirestoreModule
+      ],
+      declarations: [ ],
+      providers: [ ]
+    });
+
+    // service = new TestApiService();
+    service = TestBed.inject(TestApiService);
     service.setApiPeruDataUser('hz', '123456');
   });
 
   it('should be created', () => {
     expect(service).toBeTruthy();
   });
+  // it('Test Obtención de un UserToken de apiPeru', async () => {
+  //     const valor = await service.obtenerUserApiperuToken();
+  //     if (valor){
+  //       expect(valor).not.toEqual('');
+  //     } else {
+  //       console.log('NO HAY INTERNET');
+  //       expect('No hay internet').toEqual('No hay internet');
+  //     }
+
+  //     /** El usuario 'hzZvvdd' no existe */
+  //     // service.setApiPeruDataUser('hzZvvdd', '123456');
+  //     // const valor1 = await service.obtenerUserApiperuToken();
+  //     // expect(valor1).toEqual('');
+  // });
+  // it('test listarEmpresa', async () => {
+  //   const listaEmpresas = await service.listarEmprasas();
+  //   expect(listaEmpresas.length).toEqual(2);
+  //   console.log('lista de empresas', listaEmpresas);
+  // });
+  // it('test obtener empresa por RUC', async () => {
+  //   const empresa = await service.obtenerEmpresaByRUC('20722440881');
+  //   expect(empresa.ruc).toEqual('20722440881');
+
+  //   const empresa1 = await service.obtenerEmpresaByRUC('220000000');
+  //   expect(empresa1.ruc).not.toEqual('220000000');
+  // });
+  it('Guardar emrpesa', async () => {
+    const valor = await service.getAndSaveEmpresaOnfirebase('20722440881')
+    .then( data => data).catch(err => err);
+    console.log('valor', valor);
+    if (valor === 'exito'){
+      expect(valor).toEqual('exito');
+    } else {
+      expect(valor).toEqual('fail');
+    }
+  });
+  it('Test obtener datos de la empresa', async () => {
+      service.obtenerDatosDeLaEmpresa();
+  });
+
+
   // it('saludo', () => {
   //   expect(service.saludo()).toEqual('hola');
   // });
@@ -446,8 +498,8 @@ describe('TestApiService', () => {
         numeroComprobante: '11'
       };
 
-      console.log(service.formatearNotaDeCredito(venta));
-
+      console.log(service.formatearNotaDeCredito(venta, {serie: 'FZNC', correlacion: '123'}));
+      console.log(service.formtearFechaActual());
     });
 
 

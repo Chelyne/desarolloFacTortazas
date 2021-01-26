@@ -3,7 +3,8 @@ import { Injectable } from '@angular/core';
 import * as moment from 'moment';
 import { EmpresaInterface } from 'src/app/models/api-peru/empresa';
 import { ClienteInterface } from 'src/app/models/cliente-interface';
-import { AddressInterface, ChangeInterface, ClientInterface, CompanyInterface, ComprobanteInterface, SaleDetailInterface } from 'src/app/models/comprobante/comprobante';
+import { AddressInterface, ChangeInterface, ClientInterface, CompanyInterface } from 'src/app/models/comprobante/comprobante';
+import { ComprobanteInterface, NotaDeCreditoInterface, SaleDetailInterface } from 'src/app/models/comprobante/comprobante';
 import { ItemDeVentaInterface } from 'src/app/models/venta/item-de-venta';
 import { VentaInterface } from 'src/app/models/venta/venta';
 import { isNullOrUndefined } from 'util';
@@ -33,8 +34,11 @@ export class ApiPeruService {
   }
 
   // verificarVenta(venta: VentaInterface){
-
   // }
+
+/* ------------------------------------------------------------------------------------------------ */
+/*                                    configuración apisperu setting                                */
+/* ------------------------------------------------------------------------------------------------ */
 
   login(){
     // NOTE - return a userToken
@@ -126,6 +130,10 @@ export class ApiPeruService {
   getDatosEmpresa(){
     return this.datosDeEmpresa;
   }
+/* ------------------------------------------------------------------------------------------------ */
+/* ------------------------------------------------------------------------------------------------ */
+/* ------------------------------------------------------------------------------------------------ */
+
 
 /* ---------------------------------------------------------------------------------------------- */
 /*                                     ENVIAR COMPROBANTE A SUNAT                                 */
@@ -143,7 +151,7 @@ export class ApiPeruService {
           if (!isNullOrUndefined(data)){
             venta.listaItemsDeVenta = data.productos;
           }
-          const ventaFormateada = this.formatearVenta(venta);
+          const ventaFormateada: ComprobanteInterface = this.formatearVenta(venta);
           console.log(ventaFormateada);
           this.enviarComprobanteASunat(ventaFormateada).then(cdr => {
             console.log('drin crd', cdr);
@@ -159,7 +167,7 @@ export class ApiPeruService {
 
 
   // NOTE - Esta es la función más importante que se encarga de enviar una factura a sunat
-  enviarComprobanteASunat(ventaFormateada: VentaInterface){
+  enviarComprobanteASunat(ventaFormateada: ComprobanteInterface){
     const myHeaders = new Headers();
     // TODO: en caso de que no exita el token ver si emprea tiene el token
     myHeaders.append('Authorization', 'Bearer '.concat(this.datosDeEmpresa.token.code));
@@ -319,7 +327,16 @@ export class ApiPeruService {
 
   formtearFecha(dateTime: any): string{
 
-    const fechaFormateada = new Date(moment.unix(dateTime.seconds).format('D MMM YYYY H:mm'));
+    const fechaFormateada = new Date(moment.unix(dateTime.seconds).format('D MMM YYYY H:mm:ss'));
+    const fechaString = formatDate(fechaFormateada, 'yyyy-MM-ddThh:mm:ss-05:00', 'en');
+    // console.log('aaaaaaaaaaaaa', fechaString);
+    return fechaString;
+  }
+
+  formtearFechaActual(): string{
+    const hoy = new Date();
+    console.log(hoy);
+    const fechaFormateada = new Date(moment(hoy).format('D MMM YYYY H:mm:ss'));
     const fechaString = formatDate(fechaFormateada, 'yyyy-MM-ddThh:mm:ss-05:00', 'en');
     // console.log('aaaaaaaaaaaaa', fechaString);
     return fechaString;
@@ -397,6 +414,138 @@ export class ApiPeruService {
       address: empresaDireccion
     };
   }
+
+
+/* ---------------------------------------------------------------------------------------------- */
+/*                           enviar nota de credito                                               */
+/* ---------------------------------------------------------------------------------------------- */
+
+  enviarNotaDeCreditoAdaptador(venta: VentaInterface){
+    // console.log('EnviarNotaCreditoAdaptador: ', venta);
+
+    // solo enviar a sunat si ya tiene un cdr y estado exito
+    if (venta.cdr && venta.cdr.sunatResponse.success === true ){
+      console.log('SE ENVIARÁ NOTA DE CREDITO');
+      this.dataApi.obtenerProductosDeVenta(venta.idListaProductos, this.sede).subscribe((data: any) => {
+        console.log('Lista de productos de la venta obtenidos de firebase:', data);
+
+        // tslint:disable-next-line: deprecation
+        if (!isNullOrUndefined(data)) {
+          venta.listaItemsDeVenta = data.productos;
+        }
+
+        // const ventaFormateada = this.formatearVenta(venta);
+        const typoComprobante = `n.credito.${venta.tipoComprobante}`;
+        console.log('CORRELACION--------------------------------', typoComprobante);
+
+        this.obtenerSerie(typoComprobante).then((dataComprobante: any) => {
+          console.log('DATOS DEL COMPROBANTE', dataComprobante);
+          const IdSerie =  dataComprobante.id;
+          const DatosSerie = {
+            serie: dataComprobante.serie,
+            correlacion: dataComprobante.correlacion
+          };
+
+          console.log('DATOS DEL COMPROBANTE FORMATEADO', DatosSerie);
+
+          const notaCreditoFormateado = this.formatearNotaDeCredito(venta, DatosSerie);
+          console.log('NOTA DE CREDITO FORMATEADO', notaCreditoFormateado);
+
+          this.enviarNotaCreditoASunat(notaCreditoFormateado).then(cdr => {
+            console.log('cdr de nota de credito', cdr);
+            this.dataApi.incrementarCorrelacionTypoDocumento(IdSerie, this.sede, DatosSerie.correlacion); // .then(() => {
+            //   this.dataApi.guardarCDRAnulado(venta.idVenta, venta.fechaEmision, this.sede, cdr);
+            // });
+          }).catch(error => console.log('No se envio comprobante a la SUNAT', error));
+
+        }).catch(error => console.log('No se envio comprobante a la SUNAT', error));
+
+      });
+
+    } else {
+      console.log('no se enviará el comprobante porque no tiene cdr');
+    }
+
+  }
+
+  async obtenerSerie(typoDocumento: string){
+    let datosComprobante: any;
+
+    const promesa = new Promise((resolve, reject) => {
+      this.dataApi.obtenerCorrelacionTypoDocumento(typoDocumento, this.sede).subscribe(data => {
+        console.log(data);
+        datosComprobante = data[0];
+        resolve(datosComprobante);
+      });
+    });
+    return promesa;
+
+  }
+
+  enviarNotaCreditoASunat(notaCreditoFormateado: NotaDeCreditoInterface){
+    const myHeaders = new Headers();
+    myHeaders.append('Authorization', 'Bearer '.concat(this.datosDeEmpresa.token.code));
+    myHeaders.append('Content-Type', 'application/json');
+
+    // TODO: Poner el tipo de dato a raw
+    let raw: string;
+    raw = JSON.stringify(notaCreditoFormateado);
+
+    const requestOptions: RequestInit = {
+      method: 'POST',
+      headers: myHeaders,
+      body: raw,
+      redirect: 'follow'
+    };
+
+    return fetch('https://facturacion.apisperu.com/api/v1/note/send', requestOptions)
+      .then(response => response.json())
+      // .then(result => console.log(result))
+      .catch(error => console.log('error', error));
+
+  }
+
+  formatearNotaDeCredito(venta: VentaInterface, serieNotaCred: {serie: string, correlacion: number}): NotaDeCreditoInterface{
+    console.log('Venta a ser Formateada', venta);
+    console.log('Fecha de emision de la venta', venta.fechaEmision);
+    const productFormat = this.formatearDetalles(venta.listaItemsDeVenta);
+
+    const totalaPagar = venta.totalPagarVenta;
+    const montoBase = totalaPagar / 1.18;
+    const igv = totalaPagar - montoBase;
+    const montoOperGravadas = montoBase;
+
+    return {
+      tipDocAfectado: this.obtenerCodigoComprobante(venta.tipoComprobante), // '01',   // Factura
+      numDocfectado: `${venta.serieComprobante}-${venta.numeroComprobante}`, // 'F001-111', // numero y serie
+      codMotivo: '06', //  Códigos de Tipo de Nota de Crédito Electrónica - 07:Devolucion por item
+      desMotivo: 'DEVOLUCION TOTAL',
+      tipoDoc: '07', // nota de crédito, nota de debito 08
+      serie: serieNotaCred.serie, // 'FF01', // la nota de credito, F si factura y B si boleta
+      correlativo: `${serieNotaCred.correlacion}`, // '123', // correlacion  // NOTE - Tambien debe obtenerse aquí
+      fechaEmision: this.formtearFechaActual(), // '2019-10-27T00:00:00-05:00', // Fecha de emision // NOTE - se debe gener aquí.
+      tipoMoneda: 'PEN',
+      client: this.formatearCliente(venta.cliente),
+      company:  this.formatearEmpresa(this.datosDeEmpresa),
+      mtoOperGravadas: redondeoDecimal(montoOperGravadas, 2),
+      mtoIGV: redondeoDecimal(igv, 2),
+      totalImpuestos: redondeoDecimal(igv, 2),
+      // valorVenta: redondeoDecimal(montoOperGravadas, 2),
+      mtoImpVenta: redondeoDecimal(totalaPagar, 2),
+      ublVersion: '2.1',
+      details: productFormat,
+      legends: [
+        {
+          code: '1000',
+          value: MontoALetras(totalaPagar)
+        }
+      ]
+    };
+
+  }
+
+/* ---------------------------------------------------------------------------------------------- */
+
 
   ObtenerCodigoMedida(medida: string){
     switch (medida.toLowerCase()) {

@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { SaleDetailInterface } from 'src/app/models/comprobante/comprobante';
+import { ClientInterface, SaleDetailInterface } from 'src/app/models/comprobante/comprobante';
 import { ItemDeVentaInterface } from 'src/app/models/venta/item-de-venta';
 import { VentaInterface } from 'src/app/models/venta/venta';
 import * as moment from 'moment';
@@ -7,6 +7,9 @@ import { formatDate } from '@angular/common';
 
 import { redondeoDecimal } from 'src/app/global/funciones-globales';
 import { MontoALetras } from 'src/app/global/monto-a-letra';
+import { ClienteInterface } from 'src/app/models/cliente-interface';
+import { AngularFirestore } from '@angular/fire/firestore';
+import { DbDataService } from '../../db-data.service';
 
 @Injectable({
   providedIn: 'root'
@@ -16,19 +19,43 @@ export class TestApiService {
   userApiPeru = 'friendscode';
   passwardApiPeru = 'friends2019peru';
 
-  constructor() { }
+  rucEmpresa = '20722440881';
 
+  tokenEmpresa: string;
+  tokenUserApiPeru: string;
+
+  datosDeEmpresa;
+
+  constructor(
+    // private afs: AngularFirestore
+    private dataApi: DbDataService
+  ) { }
+
+/* -------------------------------------------------------------------------- */
+/*                 hola mondo para saber que el test funciona                 */
+/* -------------------------------------------------------------------------- */
   saludo(){
     return 'hola';
   }
+/* -------------------------------------------------------------------------- */
 
+
+/* ------------------------------------------------------------------------------------------------ */
+/*                                    configuración apisperu setting                                */
+/* ------------------------------------------------------------------------------------------------ */
   setApiPeruDataUser(user: string, password: string){
     this.userApiPeru = user;
     this.passwardApiPeru = password;
     // console.log('DATA USUARIOOOOOOOOOOOO: ', this.userApiPeru, this.passwardApiPeru);
   }
 
-  login(){
+  async login(){
+    /**
+     *  @objetivo : obtener un UserToken de apis peru
+     *  @note   : Un UserToken tiene una duración de 24 horas.
+     *  @nota   : Si llega a apisPeru responde con un resolve
+     *  @return : Promesa<{token: string}>
+     */
     const myHeaders = new Headers();
     myHeaders.append('Content-Type', 'application/json');
 
@@ -45,24 +72,39 @@ export class TestApiService {
     };
 
     return fetch('https://facturacion.apisperu.com/api/v1/auth/login', requestOptions)
-      .then(response => response.json())
+      .then(tokenResponse => tokenResponse.json())
       // .then(result => result.token)
-      .catch(error => console.log('error', error));
+      .catch(error => error);
   }
 
-  obtenerUserApiperuToken(){
-    return this.login().then(result => result.token);
-      // .catch(error => console.log('error', error));
+  async obtenerUserApiperuToken(){
+    /**
+     *  @objetivo : Validar y obtener un UserToken valido de api peru
+     *  @return : exito: promesa<token:string>, else: promesa<''>
+     *  @CausasDeUnError : Error de internet
+     *  @CausasDeUnError : Usuario o constraseña invalido de ApisPeru
+     */
+    const loginResponse = await this.login();
+
+    if (loginResponse.token){
+      return loginResponse.token;
+    }
+    return '';
   }
 
   async listarEmprasas(){
-
+    /**
+     *  @objetivo : obtener una lista de empresas de apisPeru
+     *  @return : Promesa< [datosEmpresa1, datosEmpresa2, ... ] >
+     *  @CausasDeUnError : Error de internet
+     *  @CausasDeUnError : Si no se obtuviese el token
+     */
     const myHeaders = new Headers();
     const userToken = await this.obtenerUserApiperuToken();
-    // console.log('Bearerrrrrrrrrrrrrrrrrrrrr ', 'Bearer '.concat(userToken));
-    myHeaders.append('Authorization', 'Bearer '.concat(userToken));
+    // tslint:disable-next-line: curly
+    if (!userToken) return [];
 
-    // const raw = JSON.stringify({});
+    myHeaders.append('Authorization', 'Bearer '.concat(userToken));
 
     const requestOptions: RequestInit = {
       method: 'GET',
@@ -72,25 +114,65 @@ export class TestApiService {
     };
 
     return fetch('https://facturacion.apisperu.com/api/v1/companies', requestOptions)
-      .then(response => response.json())
+      .then(listaEmpresas => listaEmpresas.json())
       // .then(result => console.log(result))
       .catch(error => console.log('error', error));
   }
 
   async obtenerEmpresaByRUC(rucEnter: string){
+    /**
+     *  @objetivo : Extraer la empresa de apisPeru deacuerdo al parametro
+     *  @return : exito: Promesa< {datosEmpresa1} >, else Promesa< {} >
+     *  @CausasDeUnError : Error de internet
+     *  @CausasDeUnError : Si no se obtuviese el token
+     */
     const listaDeEmpresas = await this.listarEmprasas();
-    console.log(rucEnter);
+    // console.log(rucEnter);
     for (const empresa of listaDeEmpresas) {
-      // console.log('sssssssssssssssssssssss', empresa);
-      // console.log(empresa.ruc);
       if (empresa.ruc === rucEnter){
-        // console.log('ruccccccccccccccccccccccccccccc', rucEnter, empresa);
         return empresa;
       }
     }
-    console.log('ruc failllllllllllllllllllllllllllllll');
+    // console.log('ruc failllllllllllllllllllllllllllllll');
     return {};
   }
+
+  async getAndSaveEmpresaOnfirebase(rucEnter: string){
+    /**
+     *  @objetivo : Obtener empresa de ApisPeru y Guardarlo en Firebase
+     *  @return : exito: Promesa< {datosEmpresa1} >, else Promesa< {} >
+     *  @CausasDeUnError : Error de internet
+     *  @CausasDeUnError : Si no se obtuviese el token
+     */
+
+    const empresa = await this.obtenerEmpresaByRUC(rucEnter);
+    if (Object.entries(empresa).length === 0) {
+      // tslint:disable-next-line: no-string-throw
+      throw 'fail';
+    }
+    return this.dataApi.guardarDatosEmpresa(empresa);
+  }
+
+  // REFACTOR: renombrar a un nombre más descriptivo
+
+  obtenerDatosDeLaEmpresa(){
+    this.dataApi.obtenerEmpresa().subscribe((data: any) => {
+      if (Object.entries(data).length === 0 || data.ruc !== this.rucEmpresa) {
+        this.getAndSaveEmpresaOnfirebase(this.rucEmpresa);
+      }
+      this.datosDeEmpresa = data;
+    });
+  }
+
+  // REFACTOR: renombrar a un nombre más descriptivo
+  getDatosEmpresa(){
+    return this.datosDeEmpresa;
+  }
+
+/* ------------------------------------------------------------------------------------------------ */
+/* ------------------------------------------------------------------------------------------------ */
+/* ------------------------------------------------------------------------------------------------ */
+
 
 /* ---------------------------------------------------------------------------------------------- */
 /*                                     ENVIAR COMPROBANTE A SUNAT                                 */
@@ -123,11 +205,19 @@ obtenerCodigoComprobante(typoComprobante: string){
 
 formtearFecha(dateTime: any): string{
 
-  const fechaFormateada = new Date(moment.unix(dateTime.seconds).format('D MMM YYYY H:mm'));
-  const fechaString = formatDate(fechaFormateada, 'yyyy-dd-MMThh:mm:ss-05:00', 'en');
+  const fechaFormateada = new Date(moment.unix(dateTime.seconds).format('D MMM YYYY H:mm:ss'));
+  const fechaString = formatDate(fechaFormateada, 'yyyy-MM-ddThh:mm:ss-05:00', 'en');
+  return fechaString;
+}
+
+formtearFechaActual(): string{
+  const hoy = new Date();
+  const fechaFormateada = new Date(moment(hoy).format('D MMM YYYY H:mm:ss'));
+  const fechaString = formatDate(fechaFormateada, 'yyyy-MM-ddThh:mm:ss-05:00', 'en');
   // console.log('aaaaaaaaaaaaa', fechaString);
   return fechaString;
 }
+
 
 formatearVenta(venta: VentaInterface){
   console.log('Venta a ser Formateada', venta);
@@ -201,56 +291,82 @@ formatearDetalleVenta(itemDeVenta: ItemDeVentaInterface): SaleDetailInterface{
     };
 }
 
-
-/* ---------------------------------------------------------------------------------------------- */
-
-/* -------------------------------------------------------------------------- */
-/*                           enviar nota de credito                           */
-/* -------------------------------------------------------------------------- */
-
-formatearNotaDeCredito(venta: VentaInterface){
-  console.log('Venta a ser Formateada', venta);
-  console.log('Fecha de emision de la venta', venta.fechaEmision);
-  const productFormat = this.formatearDetalles(venta.listaItemsDeVenta);
-
-  const totalaPagar = venta.totalPagarVenta;
-  const montoBase = totalaPagar / 1.18;
-  const igv = totalaPagar - montoBase;
-  const montoOperGravadas = montoBase;
-
+formatearCliente(cliente: ClienteInterface): ClientInterface{
+  // como todos los documentos son DNI, segun
+  // TODO - mejorar el cliente interface
+  // TODO - agregar una funcion para obtener el codigo de tipo de documento segun sunat
+  // TODO - Adaptar al nueva ClienteInterface
   return {
-    tipDocAfectado: this.obtenerCodigoComprobante(venta.tipoComprobante), // '01',   // Factura
-    numDocfectado: `${venta.serieComprobante}-${venta.numeroComprobante}`, // 'F001-111', // numero y serie
-    codMotivo: '07',    //  Códigos de Tipo de Nota de Crédito Electrónica - 07:Devolucion por item
-    desMotivo: 'DEVOLUCION POR ITEM',
-    tipoDoc: '07', // nota de crédito
-    serie: 'FF01', // la nota de credito tiene una serie
-    fechaEmision: '2019-10-27T00:00:00-05:00', // Fecha de emision // NOTE - se debe gener aquí.
-    correlativo: '123', // correlacion  // NOTE - Tambien debe obtenerse aquí
-    tipoMoneda: 'PEN',
-    client: {}, // this.formatearCliente(venta.cliente),
-    company: {}, // this.formatearEmpresa(this.datosDeEmpresa), // ANCHOR
-    mtoOperGravadas: redondeoDecimal(montoOperGravadas, 2),
-    mtoIGV: redondeoDecimal(igv, 2),
-    totalImpuestos: redondeoDecimal(igv, 2),
-    valorVenta: redondeoDecimal(montoOperGravadas, 2),
-    mtoImpVenta: redondeoDecimal(totalaPagar, 2),
-    ublVersion: '2.1',
-    details: productFormat,
-    legends: [
-      {
-        code: '1000',
-        value: MontoALetras(totalaPagar)
-      }
-    ]
+    tipoDoc: this.ObtenerCodigoTipoDoc(cliente.tipoDoc), // el catalogo N6, DNI = 1, Tambien obtener el ruc
+    numDoc: cliente.numDoc,
+    rznSocial: cliente.nombre,
+    address: {
+      direccion: cliente.direccion
+    },
+    email: cliente.email,
+    telephone: cliente.celular
   };
+}
 
+ObtenerCodigoTipoDoc(typoDoc: string){
+  if (typoDoc === 'dni'){
+    return '1';
+  } else if (typoDoc === 'ruc') {
+    return '6';
+  } else{
+    return 'TYPO DE DOCUMENTO INVALIDO';
+  }
 }
 
 
+/* ---------------------------------------------------------------------------------------------- */
+
+/* ---------------------------------------------------------------------------------------------- */
+/*                           enviar nota de credito                                               */
+/* ---------------------------------------------------------------------------------------------- */
+
+  formatearNotaDeCredito(venta: VentaInterface, serieNotaCred: {serie: string, correlacion: string}){
+    console.log('Venta a ser Formateada', venta);
+    console.log('Fecha de emision de la venta', venta.fechaEmision);
+    const productFormat = this.formatearDetalles(venta.listaItemsDeVenta);
+
+    const totalaPagar = venta.totalPagarVenta;
+    const montoBase = totalaPagar / 1.18;
+    const igv = totalaPagar - montoBase;
+    const montoOperGravadas = montoBase;
+
+    return {
+      tipDocAfectado: this.obtenerCodigoComprobante(venta.tipoComprobante), // '01',   // Factura
+      numDocfectado: `${venta.serieComprobante}-${venta.numeroComprobante}`, // 'F001-111', // numero y serie
+      codMotivo: '06', //  Códigos de Tipo de Nota de Crédito Electrónica - 07:Devolucion por item
+      desMotivo: 'DEVOLUCION TOTAL',
+      tipoDoc: '07', // nota de crédito, nota de debito 08
+      serie: serieNotaCred.serie, // 'FF01', // la nota de credito, F si factura y B si boleta
+      correlativo: serieNotaCred.correlacion, // '123', // correlacion  // NOTE - Tambien debe obtenerse aquí
+      fechaEmision: this.formtearFechaActual(), // '2019-10-27T00:00:00-05:00', // Fecha de emision // NOTE - se debe gener aquí.
+      tipoMoneda: 'PEN',
+      client: this.formatearCliente(venta.cliente),
+      company: {}, // this.formatearEmpresa(this.datosDeEmpresa), // ANCHOR
+      mtoOperGravadas: redondeoDecimal(montoOperGravadas, 2),
+      mtoIGV: redondeoDecimal(igv, 2),
+      totalImpuestos: redondeoDecimal(igv, 2),
+      valorVenta: redondeoDecimal(montoOperGravadas, 2),
+      mtoImpVenta: redondeoDecimal(totalaPagar, 2),
+      ublVersion: '2.1',
+      details: productFormat,
+      legends: [
+        {
+          code: '1000',
+          value: MontoALetras(totalaPagar)
+        }
+      ]
+    };
+
+  }
 
 
-/* -------------------------------------------------------------------------- */
+/* ---------------------------------------------------------------------------------------------- */
+
 
 
   ObtenerCodigoMedida(medida: string){

@@ -27,5 +27,6 @@ export interface VentaInterface {
     montoBase?: number;
     estadoVenta?: 'registrado' | 'anulado' | 'enviado'; // string
     montoPagado?: number;
+    cdrAnulado?: CDRInterface;
 }
 

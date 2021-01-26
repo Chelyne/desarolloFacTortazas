@@ -14,6 +14,7 @@ import { formatDate } from '@angular/common';
 import { CDRInterface } from '../models/api-peru/cdr-interface';
 import { ItemDeVentaInterface } from '../models/venta/item-de-venta';
 import * as moment from 'moment';
+import { ContadorDeSerieInterface } from '../models/serie';
 // import { Console } from 'console';
 
 @Injectable({
@@ -928,46 +929,25 @@ export class DbDataService {
 /*                              consultas para datos de api                   */
 /* -------------------------------------------------------------------------- */
   async guardarDatosEmpresa(empresa: EmpresaInterface) {
-    await this.obtenerEmpresa().subscribe(data => {
-      this.datosEmpresa = data;
+    const promesa =  new Promise( (resolve, reject) => {
+      // NOTE: Si hay una empresa entonces remplazarlo
+      this.afs.collection('empresa').doc('datosEmpresa').update(empresa).then( data => {
+        console.log('datos guaradaso correctamente', data);
+        resolve('exito');
+      })
+      .catch(  error => {
+        console.log('Los datos no se guardaron correctamente', error);
+        reject('fail');
+      });
     });
-
-    if (this.datosEmpresa.length){
-      // Actualizar empresa
-      const id = this.datosEmpresa[0].id;
-      const promesa =  new Promise( (resolve) => {
-        // NOTE: Si hay una empresa entonces remplazarlo
-        this.afs.collection('empresa').doc(id).set(empresa);
-        // tslint:disable-next-line: no-unused-expression
-        resolve;
-      });
-
-      return promesa;
-    } else{
-      // agregar empresa
-      const promesa =  new Promise( (resolve, reject) => {
-        this.afs.collection('empresa').add(empresa);
-        // tslint:disable-next-line: no-unused-expression
-        resolve;
-      });
-      return promesa;
-    }
+    return promesa;
   }
 
   obtenerEmpresa(){
 
-    const empresa = this.afs.collection('empresa');
+    const empresa = this.afs.collection('empresa').doc('datosEmpresa');
 
-    return empresa.snapshotChanges()
-      .pipe(map(
-        changes => {
-          return changes.map(action => {
-            const data = action.payload.doc.data() as ProveedorInterface;
-            data.id = action.payload.doc.id;
-            return data;
-            });
-          }
-      ));
+    return empresa.valueChanges();
 
   }
 
@@ -1003,6 +983,25 @@ export class DbDataService {
     const promesa =  new Promise<void>( (resolve, reject) => {
       this.afs.collection('sedes').doc(sede.toLocaleLowerCase()).collection('ventas').doc(fechaString)
       .collection('ventasDia').doc(idVenta).update({cdr: cdrVenta});
+      resolve();
+    });
+
+    return promesa;
+  }
+
+  guardarCDRAnulado(idVenta: string, fechaEmision: any, sede: string, cdrAnulacion: CDRInterface){
+    // console.log('guuuuuuuuuuuuuuuardadr cdr', cdrVenta, sede, idVenta);
+    // const idFecha = venta.fechaEmision.getDay() + '-' + venta.fechaEmision.getMonth() + '-' + venta.fechaEmision.getFullYear();
+    // console.log('ffffffffffffffffffffffffffffff',  venta.fechaEmision);
+    const fecha: any = fechaEmision;
+    const fechaFormateada = new Date(moment.unix(fecha.seconds).format('D MMM YYYY H:mm'));
+    const fechaString = formatDate(fechaFormateada, 'dd-MM-yyyy', 'en');
+
+    // console.log('ffffffffeeeeeeeeeecha', fechaString, cdrVenta);
+
+    const promesa =  new Promise<void>( (resolve, reject) => {
+      this.afs.collection('sedes').doc(sede.toLocaleLowerCase()).collection('ventas').doc(fechaString)
+      .collection('ventasDia').doc(idVenta).update({cdrAnulado: cdrAnulacion});
       resolve();
     });
 
@@ -1111,6 +1110,33 @@ export class DbDataService {
     }));
   }
 
+  obtenerCorrelacionTypoDocumento(typoDocumento: string, sede: string) {
+    // tslint:disable-next-line:max-line-length
+
+    const consulta = this.afs.collection('sedes').doc(sede.toLocaleLowerCase())
+    .collection('serie', ref => ref.where('tipoComprobante', '==', typoDocumento));
+
+    return consulta.snapshotChanges().pipe(map(changes => {
+      return changes.map(action => {
+        const data = action.payload.doc.data() as ContadorDeSerieInterface;
+        data.id = action.payload.doc.id;
+        return data;
+      });
+    }));
+  }
+
+  incrementarCorrelacionTypoDocumento(idSerie: string, sede: string, correlacionActual: number) {
+    // const consulta = this.afs.collection('sedes').doc(sede.toLocaleLowerCase())
+    // .collection('serie').doc(idSerie).update({correlacion: correlacionActual + 1});
+
+    // const promesa =  new Promise( (resolve, reject) => {
+      this.afs.collection('sedes').doc(sede.toLocaleLowerCase())
+      .collection('serie').doc(idSerie).update({correlacion: correlacionActual + 1});
+    //   resolve;
+    // });
+    // return promesa;
+  }
+
   // ACTUALIZAR CORRELACION
 
   ActualizarCorrelacion(id: string, sede: string, correlacion1: number){
@@ -1133,6 +1159,8 @@ export class DbDataService {
 
     return promesa;
   }
+
+
 
   // ObtenerVents por vendedor
 
@@ -1166,5 +1194,5 @@ export class DbDataService {
           return data;
         });
       }));
-}
+  }
 }
