@@ -83,23 +83,67 @@ export class CajaChicaPage implements OnInit {
       doc.addImage(this.LogoEmpresa, 'JPEG', 370, 20, 30, 15);
       doc.setLineWidth(0.5);
       doc.line(120, 35, 290, 35);
-      doc.rect(30, 40, 387, 40); // empty square
+      doc.rect(30, 40, 387, 85); // empty square
       doc.setFontSize(12);
       doc.text( 'Empresa:', 40, 55);
       doc.text( 'RUC:', 40, 70);
       doc.text( 'Veterinarias Tooby ,' + this.sede, 75, 55);
       doc.text( this.RUC, 64, 70);
       doc.setFontSize(12);
-      doc.text( 'Fecha reporte:', 220, 55);
-      doc.text( formatDate(new Date(), 'dd-MM-yyyy', 'en'), 275, 55);
+      doc.text( 'Fecha reporte:', 300, 55);
+      doc.text( formatDate(new Date(), 'dd-MM-yyyy', 'en'), 355, 55);
       if (isNullOrUndefined(data)) {
-      doc.text( 'No se encontraron registros.', 35, 100);
+      doc.text( 'No se encontraron registros.', 90, 100);
       } else {
+        let totalVentas = 0;
+        let totalAnulados = 0;
+        let numBoletas = 0;
+        let numFacturas = 0;
+        let numNotas = 0;
+        let totalBoletas = 0;
+        let totalFacturas = 0;
+        let totalNotas = 0;
+        for (const item of data) {
+          if (item.estadoVenta === 'anulado'){
+            totalAnulados += item.totalPagarVenta;
+          }else {
+            totalVentas += item.totalPagarVenta;
+          }
+          if (item.tipoComprobante === 'boleta'){
+            numBoletas++;
+            if (item.estadoVenta !== 'anulado'){
+              totalBoletas += item.totalPagarVenta;
+            }
+
+          }
+          if (item.tipoComprobante === 'factura'){
+            numFacturas++;
+            if (item.estadoVenta !== 'anulado'){
+              totalFacturas += item.totalPagarVenta;
+            }
+
+          }
+          if (item.tipoComprobante === 'n. venta'){
+            numNotas++;
+            if (item.estadoVenta !== 'anulado'){
+              totalNotas += item.totalPagarVenta;
+            }
+
+          }
+        }
+        doc.text( 'Total Venta: ' + totalVentas.toFixed(2), 40, 115);
+        doc.text( 'Total Anulados: ' + totalAnulados.toFixed(2), 180, 115);
+        doc.text( 'N° Facturas: ' + numFacturas, 40, 85);
+        doc.text( 'N° Boletas: ' + numBoletas, 180, 85);
+        doc.text( 'N° Notas de Venta: ' + numNotas, 300, 85);
+        doc.text( 'Total Facturas: ' + totalFacturas.toFixed(2), 40, 100);
+        doc.text( 'Total Boletas: ' + totalBoletas.toFixed(2), 180, 100);
+        doc.text( 'Total N. Venta: ' + totalNotas.toFixed(2), 300, 100);
         doc.autoTable({
           // tslint:disable-next-line:max-line-length
-          head: [['#', 'Tipo transacción', 'Tipo documento', 'Documento', 'Fecha emisión', 'Cliente' , 'N. Documento', 'Moneda', 'Total']],
+          head: [['#', 'Tipo transacción', 'Tipo documento', 'Documento', 'Fecha emisión', 'Cliente' , 'N. Documento', 'Estado', 'Total']],
           body: this.datosReporteVentaGeneral,
-          startY: 90,
+          startY: 135,
           theme: 'grid',
           // foot:  [['ID', 'Name', 'Country']],
         });
@@ -133,7 +177,7 @@ export class CajaChicaPage implements OnInit {
              datos.fechaEmision ? this.datePipe.transform(new Date(moment.unix(datos.fechaEmision.seconds).format('D MMM YYYY H:mm')), 'short') : null,
              datos.cliente.nombre.toUpperCase() || null,
              datos.cliente.numDoc || null,
-             'PEN',
+             datos.estadoVenta,
              redondeoDecimal( datos.totalPagarVenta, 2).toFixed(2)
             ];
             this.datosReporteVentaGeneral.push(formato);
