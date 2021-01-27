@@ -75,7 +75,7 @@ export class CajaChicaPage implements OnInit {
   }
   ReporteVentaDiaGeneralPDF() {
     this.consultaVentaReporteGeneral().then( (data: any) => {
-      console.log(data);
+      console.log('datos', data);
       const doc = new jsPDF('portrait', 'px', 'a4') as jsPDFWithPlugin;
       doc.setFontSize(16);
       doc.setFont('bold');
@@ -92,17 +92,17 @@ export class CajaChicaPage implements OnInit {
       doc.setFontSize(12);
       doc.text( 'Fecha reporte:', 300, 55);
       doc.text( formatDate(new Date(), 'dd-MM-yyyy', 'en'), 355, 55);
+      let totalVentas = 0;
+      let totalAnulados = 0;
+      let numBoletas = 0;
+      let numFacturas = 0;
+      let numNotas = 0;
+      let totalBoletas = 0;
+      let totalFacturas = 0;
+      let totalNotas = 0;
       if (isNullOrUndefined(data)) {
-      doc.text( 'No se encontraron registros.', 90, 100);
+      doc.text( 'No se encontraron registros.', 40, 135);
       } else {
-        let totalVentas = 0;
-        let totalAnulados = 0;
-        let numBoletas = 0;
-        let numFacturas = 0;
-        let numNotas = 0;
-        let totalBoletas = 0;
-        let totalFacturas = 0;
-        let totalNotas = 0;
         for (const item of data) {
           if (item.estadoVenta === 'anulado'){
             totalAnulados += item.totalPagarVenta;
@@ -114,21 +114,18 @@ export class CajaChicaPage implements OnInit {
             if (item.estadoVenta !== 'anulado'){
               totalBoletas += item.totalPagarVenta;
             }
-
           }
           if (item.tipoComprobante === 'factura'){
             numFacturas++;
             if (item.estadoVenta !== 'anulado'){
               totalFacturas += item.totalPagarVenta;
             }
-
           }
           if (item.tipoComprobante === 'n. venta'){
             numNotas++;
             if (item.estadoVenta !== 'anulado'){
               totalNotas += item.totalPagarVenta;
             }
-
           }
         }
         doc.text( 'Total Venta: ' + totalVentas.toFixed(2), 40, 115);
@@ -141,7 +138,7 @@ export class CajaChicaPage implements OnInit {
         doc.text( 'Total N. Venta: ' + totalNotas.toFixed(2), 300, 100);
         doc.autoTable({
           // tslint:disable-next-line:max-line-length
-          head: [['#', 'Tipo transacción', 'Tipo documento', 'Documento', 'Fecha emisión', 'Cliente' , 'N. Documento', 'Estado', 'Total']],
+          head: [['#', 'Tipo transacción', 'Tipo Doc.', 'Documento', 'Fecha emisión', 'Cliente' , 'N. Doc.', 'Estado', 'Total']],
           body: this.datosReporteVentaGeneral,
           startY: 135,
           theme: 'grid',
@@ -157,7 +154,8 @@ export class CajaChicaPage implements OnInit {
     const dia = formatDate(new Date(), 'dd-MM-yyyy', 'en');
     const promesa = new Promise((resolve, reject) => {
       this.dataApi.ObtenerReporteVentaGeneralDia (this.sede.toLowerCase(), dia).subscribe( snapshot => {
-        if (isNullOrUndefined(snapshot)) {
+        console.log('snapshot', snapshot);
+        if (snapshot.length === 0) {
           this.datosReporteVentaGeneral = null;
           productosArray = null;
           resolve(productosArray);
@@ -881,7 +879,9 @@ export class CajaChicaPage implements OnInit {
   }
   ReporteTiket() {
     this.listaVendedoresDatos().then((data: any) => {
-      console.log('lista de vendedores', data, data.length);
+      console.log('lista de vendedores', data);
+      let index = 0;
+
       const doc = new jsPDF( 'p', 'mm', [45, 60]);
       doc.addImage(this.LogoEmpresa, 'JPEG', 11, 1, 22, 8);
       doc.setFontSize(6);
@@ -890,13 +890,13 @@ export class CajaChicaPage implements OnInit {
       doc.text('CUADRE PARCIAL Nro. ' + formatDate(new Date(), 'dd-MM', 'en'), 22.5, 16, {align: 'center'});
       doc.text('HORA:' +  formatDate(new Date(), 'HH:mm aa', 'en'), 22.5, 18, {align: 'center'});
       doc.text(this.sede, 22.5, 20, {align: 'center'});
-
       // tslint:disable-next-line:max-line-length
       doc.text( 'Fecha Inicio: ', 2 , 23, {align: 'left'});
       doc.text( formatDate(new Date(), 'dd/MM/yyyy', 'en'), 43 , 23, {align: 'right'});
 
       doc.text( 'Fecha Final: ', 2 , 25, {align: 'left'});
       doc.text( formatDate(new Date(), 'dd/MM/yyyy', 'en'), 43 , 25, {align: 'right'});
+      if (data) {
 
       doc.text( '____________________________________', 22.5, 26, {align: 'center'});
 
@@ -905,7 +905,7 @@ export class CajaChicaPage implements OnInit {
       doc.text( 'S/. ', 43 , 29, {align: 'right'});
       doc.text( '____________________________________', 22.5, 30, {align: 'center'});
       // tslint:disable-next-line:prefer-const
-      let index = 31;
+      index += 31;
       let montoFinal = 0;
       let numFacturas = 0;
       let numBoletas = 0;
@@ -948,21 +948,30 @@ export class CajaChicaPage implements OnInit {
       doc.text( '____________________________________', 22.5, index + 5, {align: 'center'});
       doc.text('Facturas', 2, index + 8 , {align: 'left'});
       doc.text( '' + numFacturas, 22.5 , index + 8, {align: 'center'});
-      doc.text( '' + montoFactura, 43 , index + 8, {align: 'right'});
+      doc.text( '' + montoFactura.toFixed(2), 43 , index + 8, {align: 'right'});
       doc.text('Boletas', 2, index + 10 , {align: 'left'});
       doc.text( '' + numBoletas, 22.5 , index + 10, {align: 'center'});
-      doc.text( '' + montoBoleta, 43 , index + 10, {align: 'right'});
+      doc.text( '' + montoBoleta.toFixed(2), 43 , index + 10, {align: 'right'});
       doc.text('N. venta', 2, index + 12 , {align: 'left'});
       doc.text( '' + numNotas, 22.5 , index + 12, {align: 'center'});
-      doc.text( '' + totalNotas, 43 , index + 12, {align: 'right'});
+      doc.text( '' + totalNotas.toFixed(2), 43 , index + 12, {align: 'right'});
       doc.text('Fact. Anuladas', 2, index + 14 , {align: 'left'});
       doc.text( '' + FacAnulada, 22.5 , index + 14, {align: 'center'});
-      doc.text( '' + MontoFacAnulado, 43 , index + 14, {align: 'right'});
+      doc.text( '' + MontoFacAnulado.toFixed(2), 43 , index + 14, {align: 'right'});
       doc.text('Bol. Anuladas', 2, index + 16 , {align: 'left'});
       doc.text( '' + BolAnuladas, 22.5 , index + 16, {align: 'center'});
-      doc.text( '' + montoBolAnulado, 43 , index + 16, {align: 'right'});
-      doc.text('Total: ' + montoFinal, 2, index + 18 , {align: 'left'});
+      doc.text( '' + montoBolAnulado.toFixed(2), 43 , index + 16, {align: 'right'});
+      doc.setFontSize(7);
 
+      doc.text('Total: ' + montoFinal.toFixed(2), 2, index + 19 , {align: 'left'});
+      index = index + 20;
+
+      }
+      else{
+      index += 28;
+      doc.text( 'No se encontraron registros ', 2 , 29, {align: 'left'});
+
+      }
 
       // doc.text( 'FechaF.: ' + formatDate(new Date(), 'dd/MM/yyyy', 'en'), 2 , 26, {align: 'left'});
       doc.save('tiket' + '.pdf');
