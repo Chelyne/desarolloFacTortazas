@@ -132,22 +132,27 @@ export class ApiPeruService {
 /* ---------------------------------------------------------------------------------------------- */
 
   enviarASunatAdaptador(venta: VentaInterface){
+
     const promesa = new Promise((resolve, reject) => {
-      this.dataApi.obtenerProductosDeVenta(venta.idListaProductos, this.sede).subscribe( (data: any) => {
-        console.log('Lista de productos de la venta obtenidos de firebase:', data);
-        // tslint:disable-next-line: deprecation
-        if (!isNullOrUndefined(data)){
-          venta.listaItemsDeVenta = data.productos;
-        }
-        const ventaFormateada = this.formatearVenta(venta);
-        console.log(ventaFormateada);
-        this.enviarComprobanteASunat(ventaFormateada).then(cdr => {
-          // console.log(cdr);
-          this.dataApi.guardarCDRr(venta.idVenta, venta.fechaEmision, this.sede, cdr).then(() => {
-            resolve(cdr);
-          });
-        }).catch(error => console.log('No se envio comprobante a la SUNAT', error));
-      });
+      if (venta.cdr && typeof(venta.cdr.sunatResponse.success) !== 'undefined' && venta.cdr.sunatResponse.success === true ){
+        reject(null);
+      } else {
+        this.dataApi.obtenerProductosDeVenta(venta.idListaProductos, this.sede).subscribe( (data: any) => {
+          console.log('Lista de productos de la venta obtenidos de firebase:', data);
+          // tslint:disable-next-line: deprecation
+          if (!isNullOrUndefined(data)){
+            venta.listaItemsDeVenta = data.productos;
+          }
+          const ventaFormateada = this.formatearVenta(venta);
+          console.log(ventaFormateada);
+          this.enviarComprobanteASunat(ventaFormateada).then(cdr => {
+            console.log('drin crd', cdr);
+            this.dataApi.guardarCDRr(venta.idVenta, venta.fechaEmision, this.sede, cdr).then(() => {
+              resolve(cdr);
+            });
+          }).catch(error => console.log('No se envio comprobante a la SUNAT', error));
+        });
+      }
     });
     return promesa;
   }
@@ -232,7 +237,7 @@ export class ApiPeruService {
           value: MontoALetras(totalaPagar)
         }
       ],
-      //descuentos: venta.descuentoVenta > 0 ? [descuento] : []
+      // descuentos: venta.descuentoVenta > 0 ? [descuento] : []
     };
 
     const descuento: ChangeInterface = {};
@@ -315,7 +320,7 @@ export class ApiPeruService {
   formtearFecha(dateTime: any): string{
 
     const fechaFormateada = new Date(moment.unix(dateTime.seconds).format('D MMM YYYY H:mm'));
-    const fechaString = formatDate(fechaFormateada, 'yyyy-dd-MMThh:mm:ss-05:00', 'en');
+    const fechaString = formatDate(fechaFormateada, 'yyyy-MM-ddThh:mm:ss-05:00', 'en');
     // console.log('aaaaaaaaaaaaa', fechaString);
     return fechaString;
   }

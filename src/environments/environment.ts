@@ -15,7 +15,7 @@ export const environment = {
   }
 };
 
-// CONEXIO BD OFICIAL EL QUE SE USA
+// PRODUCCION
 
 // export const environment = {
 //   production: false,

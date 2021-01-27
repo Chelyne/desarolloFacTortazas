@@ -18,6 +18,12 @@
                 <ion-label color="light">Consultar</ion-label>
             </ion-button>
         </ion-item>
+
+        <!-- <ion-item *ngIf="listaDeVentas.length > 0">
+            <ion-button slot="end" (click)="enviarComprobantesDelDia()">
+                <ion-label color="light">Enviar todos los comprobantes</ion-label>
+            </ion-button>
+        </ion-item> -->
         <!-- <ion-grid>
             <ion-row>
                 <ion-col size="12 " size-xs="12" size-sm="12" size-md="6" size-lg="3">
@@ -152,7 +158,7 @@
                                 <ion-button *ngIf="venta.cdr && !venta.cdr.sunatResponse.success" color="warning">
                                     <ion-label>Reenviar</ion-label>
                                 </ion-button>
-                                <ion-button *ngIf="!venta.cdr" color="success">
+                                <ion-button *ngIf="!venta.cdr" color="success" (click)="enviarUnComprobante(venta)">
                                     <ion-label>Enviar</ion-label>
                                 </ion-button>
                             </ion-item>

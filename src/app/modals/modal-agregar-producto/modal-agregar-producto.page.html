@@ -152,7 +152,7 @@
                             <ion-col>
                                 <ion-item lines="none">
                                     <ion-label color="primary" position="floating">Ingrese la codigo de barras</ion-label>
-                                    <ion-input maxLength="35" formControlName="codigoBarra" placeholder="Ingrese codigo de barras"></ion-input>
+                                    <ion-input maxLength="60" formControlName="codigoBarra" placeholder="Ingrese codigo de barras"></ion-input>
                                 </ion-item>
                                 <div class="alertDanger" *ngIf="codigoBarra.invalid && (codigoBarra.dirty || codigoBarra.touched)">
                                     <div class="mensajeError" *ngIf="!!codigoBarra.errors.required">

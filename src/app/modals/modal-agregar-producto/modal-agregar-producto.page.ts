@@ -67,12 +67,14 @@ export class ModalAgregarProductoPage implements OnInit {
     private storage: StorageService,
     // private imagePicker: ImagePicker,
   ) {
+    this.ObtenerCorrelacionProducto();
     this.productoForm = this.createFormGroup();
     this.ObtenerCategorias();
 
    }
 
   ngOnInit() {
+
     console.log(this.sede, this.categoria, this.subCategoria);
     console.log('foto', this.uploadImage);
 
@@ -84,8 +86,21 @@ export class ModalAgregarProductoPage implements OnInit {
 
   // btener lista de productos
    ObtenerCategorias(){
-    this.dbData.ObtenerListaCategorias(this.sedes, 20).subscribe(data => {
+    this.dbData.ObtenerListaCategorias(this.sedes).subscribe(data => {
       this.listaDeCategorias = data;
+    });
+  }
+
+   // btener correlacion del producto
+   ObtenerCorrelacionProducto(){
+    let correlacion: number;
+    console.log('----------------------------------------------');
+    //  this.dbData.ObtenerCorrelacionProducto(this.sedes);
+    this.dbData.ObtenerCorrelacionProducto(this.sedes).subscribe((datoo: any)  => {
+      console.log('correlacion', datoo);
+      correlacion = datoo.correlacionProducto;
+      this.productoForm.setControl('codigo', new FormControl( correlacion, [Validators.minLength(1), Validators.maxLength(20)]),
+      );
     });
   }
 
@@ -216,7 +231,7 @@ resetOrientation(srcBase64, srcOrientation, callback) {
       medida: new FormControl('unidad', [Validators.required]),
       marca: new FormControl('', [Validators.minLength(3), Validators.maxLength(45)]),
       codigo: new FormControl('', [Validators.minLength(1), Validators.maxLength(20)]),
-      codigoBarra: new FormControl('', [Validators.minLength(1), Validators.maxLength(20)]),
+      codigoBarra: new FormControl('', [Validators.minLength(1), Validators.maxLength(60)]),
       precio: new FormControl(''),
       cantStock: new FormControl('', [Validators.min(1)]),
       fechaDeVencimiento: new FormControl(''),
