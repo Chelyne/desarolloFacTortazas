@@ -67,12 +67,14 @@ export class ModalAgregarProductoPage implements OnInit {
     private storage: StorageService,
     // private imagePicker: ImagePicker,
   ) {
+    this.ObtenerCorrelacionProducto();
     this.productoForm = this.createFormGroup();
     this.ObtenerCategorias();
 
    }
 
   ngOnInit() {
+
     console.log(this.sede, this.categoria, this.subCategoria);
     console.log('foto', this.uploadImage);
 
@@ -86,6 +88,19 @@ export class ModalAgregarProductoPage implements OnInit {
    ObtenerCategorias(){
     this.dbData.ObtenerListaCategorias(this.sedes).subscribe(data => {
       this.listaDeCategorias = data;
+    });
+  }
+
+   // btener correlacion del producto
+   ObtenerCorrelacionProducto(){
+    let correlacion: number;
+    console.log('----------------------------------------------');
+    //  this.dbData.ObtenerCorrelacionProducto(this.sedes);
+    this.dbData.ObtenerCorrelacionProducto(this.sedes).subscribe((datoo: any)  => {
+      console.log('correlacion', datoo);
+      correlacion = datoo.correlacionProducto;
+      this.productoForm.setControl('codigo', new FormControl( correlacion, [Validators.minLength(1), Validators.maxLength(20)]),
+      );
     });
   }
 
