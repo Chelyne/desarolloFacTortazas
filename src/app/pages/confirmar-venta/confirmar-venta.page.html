@@ -72,7 +72,7 @@
         <ion-grid>
           <ion-row>
             <ion-col size="5">
-              <ion-item *ngIf="venta">
+              <ion-item *ngIf="venta" lines="none">
                 <ion-button  *ngIf="tipoComprobante!=='factura'" fill="outline" (click)="SeleccionarComprobante('factura')">
                   <ion-label color="primary">Factura</ion-label>
                 </ion-button>
@@ -108,17 +108,21 @@
                 <ion-label>NOTA DE VENTA</ion-label>
               </ion-item>
             </ion-col> -->
-            <ion-col size="3" >
+            <ion-col size="2" >
               <ion-item lines="none">
                 <ion-label>{{serieComprobante}}</ion-label>
-                <!-- <ion-buttons> -->
-                  <!-- <ion-button style="cursor: unset;" expand="block"> -->
-                    <ion-label (click)="finalizarNotaVenta()"> &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;</ion-label>
-                  <!-- </ion-button> -->
-                <!-- </ion-buttons> -->
               </ion-item>
             </ion-col>
-            <ion-col size="4" >
+            <ion-col size="2">
+              <ion-item lines="none">
+                <ion-buttons>
+                  <ion-button  class="notaVenta" fill="clear" [disabled]="generandoPago"  (click)="finalizarNotaVenta()">
+                    <ion-label> &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;</ion-label>
+                  </ion-button>
+                </ion-buttons>
+              </ion-item>
+            </ion-col>
+            <ion-col size="3" >
               <ion-item lines="none" >
                 <ion-back-button text="Regresar" color="primary" defaultHref="punto-venta"></ion-back-button>
                 <!-- <ion-button (click)="volver()">

@@ -78,7 +78,7 @@ export class DbDataService {
       this.ObtenerCorrelacionProducto(sede).subscribe((datasede: any) => {
         const correlacionActual = datasede.correlacionProducto;
         if (correlacionActual === correlacion){
-          //Incrementa la correlacion
+          // Incrementa la correlacion
             this.incrementarCorrelacion(correlacionActual + 1, sede1);
         }
       });
@@ -264,7 +264,7 @@ export class DbDataService {
   ObtenerListaDeVentas(sede: string, fachaventas: string) {
     const sede1 = sede.toLocaleLowerCase();
     // tslint:disable-next-line:max-line-length
-    this.ventaCollection = this.afs.collection('sedes').doc(sede1).collection('ventas').doc(fachaventas).collection('ventasDia', ref => ref.orderBy('numeroComprobante', 'desc'));
+    this.ventaCollection = this.afs.collection('sedes').doc(sede1).collection('ventas').doc(fachaventas).collection('ventasDia', ref => ref.orderBy('fechaEmision', 'desc'));
     // tslint:disable-next-line:max-line-length
     // this.productoCollection = this.afs.collection<ProductoInterface>('frutas', ref => ref.where('propietario', '==', propietario).orderBy('fechaRegistro', 'desc'));
     return this.ventas = this.ventaCollection.snapshotChanges()
@@ -498,7 +498,7 @@ export class DbDataService {
   ObtenerListaProductosTodos(sede: string) {
     const sede1 = sede.toLocaleLowerCase();
     // tslint:disable-next-line:max-line-length
-    this.productoCollection = this.afs.collection('sedes').doc(sede1).collection('productos');
+    this.productoCollection = this.afs.collection('sedes').doc(sede1).collection('productos', ref => ref.where('categoria', '==', 'farmacia'));
     // tslint:disable-next-line:max-line-length
     // this.productoCollection = this.afs.collection<ProductoInterface>('frutas', ref => ref.where('propietario', '==', propietario).orderBy('fechaRegistro', 'desc'));
     return this.productos = this.productoCollection.snapshotChanges()
@@ -515,6 +515,15 @@ export class DbDataService {
     const promesa = new Promise<void>((resolve, reject) => {
       this.afs.collection('sedes').doc(sede).collection('productos').doc(id).update({img: url}).then(() => {
         resolve();
+      });
+    });
+    return promesa;
+  }
+ // actualizarArrayNOmnre del producto
+  actualizarArrayNombre(sede: string, id: string, arraynombre: any) {
+    const promesa = new Promise((resolve, reject) => {
+      this.afs.collection('sedes').doc(sede).collection('productos').doc(id).update({arrayNombre: arraynombre}).then(data => {
+        resolve(data);
       });
     });
     return promesa;
@@ -1199,5 +1208,18 @@ export class DbDataService {
           return data;
         });
       }));
-}
+  }
+
+  // INGRESO Y EGRESO
+  guardarIngresoEgreso(ingresoEgreso: any, sede: string) {
+    const promesa = new Promise((resolve, reject) => {
+      const fecha = formatDate(new Date(), 'dd-MM-yyyy', 'en');
+      const sede1 =  sede.toLocaleLowerCase();
+      // tslint:disable-next-line:max-line-length
+      this.afs.collection('sedes').doc(sede1).collection('ingresosEgresos').doc(fecha).collection('ingresosEgresosDia').add(ingresoEgreso).then(data => {
+        resolve(data);
+      });
+    });
+    return promesa;
+  }
 }

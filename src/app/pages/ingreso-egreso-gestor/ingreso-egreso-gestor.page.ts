@@ -9,32 +9,32 @@ import { IngresoEgresoPage } from 'src/app/modals/ingreso-egreso/ingreso-egreso.
 })
 export class IngresoEgresoGestorPage implements OnInit {
 
-  saldo : number = 0;
+  saldo = 0;
 
   modalEvento: string;
   modalTag: string;
-  modalButtonTag:string;
+  modalButtonTag: string;
   modalSaldo: number;
 
 
   constructor( private modalCtlr: ModalController) {
-    //this.usuarioForm = this.createFormGroupUsuario();
-    //this.ObtenerUsuarios();
+    // this.usuarioForm = this.createFormGroupUsuario();
+    // this.ObtenerUsuarios();
   }
 
   ngOnInit() {
   }
 
-  //TODO -Cambiar nombre
-  exec(accion : string){
+  // TODO-Cambiar nombre
+  exec(accion: string){
     console.log(accion);
-    if (accion == 'Ingreso') {
+    if (accion === 'Ingreso') {
       this.modalEvento = 'Ingreso';
       this.modalTag = 'Monto a Ingresar';
       this.modalButtonTag = 'Ingresar monto';
       this.modalSaldo = this.saldo;
 
-    } else if (accion == 'Egreso') {
+    } else if (accion === 'Egreso') {
       this.modalEvento = 'Egreso';
       this.modalTag = 'Monto a Retirar';
       this.modalButtonTag = 'Retirar monto';
@@ -45,7 +45,6 @@ export class IngresoEgresoGestorPage implements OnInit {
     }
 
     this.abrirModal();
-
   }
 
   async abrirModal(){
@@ -60,10 +59,10 @@ export class IngresoEgresoGestorPage implements OnInit {
       }
     });
 
-    await modal.present()
+    await modal.present();
 
     const {data} = await modal.onDidDismiss();
-    if(data){
+    if (data){
       console.log(data);
       this.saldo = data.newMonto;
     }

@@ -7,6 +7,7 @@ import { IonicModule } from '@ionic/angular';
 import { CajaChicaPageRoutingModule } from './caja-chica-routing.module';
 
 import { CajaChicaPage } from './caja-chica.page';
+import { PoppoverEditarComponent } from '../../components/poppover-editar/poppover-editar.component';
 
 @NgModule({
   imports: [
@@ -15,6 +16,6 @@ import { CajaChicaPage } from './caja-chica.page';
     IonicModule,
     CajaChicaPageRoutingModule
   ],
-  declarations: [CajaChicaPage]
+  declarations: [CajaChicaPage, PoppoverEditarComponent]
 })
 export class CajaChicaPageModule {}

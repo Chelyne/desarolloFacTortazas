@@ -6,18 +6,26 @@
         </ion-buttons>
         <ion-title color="primary">Punto de Venta</ion-title>
         <ion-item lines="none" slot="end">
-            <ion-button (click)="modalVentas()" size="small" fill="outline">
-                <ion-icon name="clipboard-outline"></ion-icon> &nbsp;
-                <ion-label>Ventas</ion-label>
-            </ion-button>
-            <ion-button (click)="AgregarNuevoCliente()" size="small" fill="outline">
-                <ion-icon name="person-outline"></ion-icon> &nbsp;
-                <ion-label>Agregar Cliente</ion-label>
-            </ion-button>
-            <ion-button (click)="agregarProducto()" size="small" fill="outline">
-                <ion-icon name="gift-outline"></ion-icon> &nbsp;
-                <ion-label>Agregar Producto</ion-label>
-            </ion-button>
+          <ion-button (click)="execModalIngresoEgreso('Ingreso')" size="small" fill="outline">
+            <ion-icon name="trending-up-outline"></ion-icon> &nbsp;
+            <ion-label>Ingresos</ion-label>
+          </ion-button>
+          <ion-button (click)="execModalIngresoEgreso('Egreso')" size="small" fill="outline">
+            <ion-icon name="trending-down-outline"></ion-icon> &nbsp;
+            <ion-label>Egresos</ion-label>
+          </ion-button>
+          <ion-button (click)="modalVentas()" size="small" fill="outline">
+              <ion-icon name="clipboard-outline"></ion-icon> &nbsp;
+              <ion-label>Ventas</ion-label>
+          </ion-button>
+          <ion-button (click)="AgregarNuevoCliente()" size="small" fill="outline">
+              <ion-icon name="person-outline"></ion-icon> &nbsp;
+              <ion-label>Agregar Cliente</ion-label>
+          </ion-button>
+          <ion-button (click)="agregarProducto()" size="small" fill="outline">
+              <ion-icon name="gift-outline"></ion-icon> &nbsp;
+              <ion-label>Agregar Producto</ion-label>
+          </ion-button>
         </ion-item>
     </ion-toolbar>
     <ion-toolbar color="light">
