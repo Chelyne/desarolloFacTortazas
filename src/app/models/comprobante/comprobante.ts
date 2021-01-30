@@ -46,6 +46,40 @@ export interface ComprobanteInterface {
 
 }
 
+export interface NotaDeCreditoInterface {
+    tipoDoc?: string;
+    serie?: string;
+    correlativo?: string;
+    fechaEmision?: string; // fecha
+    client?: ClientInterface;
+    company?: CompanyInterface;
+    tipoMoneda?: string;
+    sumOtrosCargos?: number;
+    mtoOperGravadas?: number;
+    mtoOperInafectas?: number;
+    mtoOperExoneradas?: number;
+    mtoOperExportacion?: number;
+    mtoIGV?: number;
+    mtoISC?: number;
+    mtoOtrosTributos?: number;
+    icbper?: number;
+    mtoImpVenta?: number;
+    details?: SaleDetailInterface[];
+    legends?: LegendInterface[];
+    guias?: DocumentInterface[];
+    relDocs?: DocumentInterface[];
+    compra?: string;
+    mtoBaseIsc?: number;
+    mtoBaseOth?: number;
+    totalImpuestos?: number;
+    ublVersion?: string;
+    codMotivo?: string;
+    desMotivo?: string;
+    tipDocAfectado?: string;
+    numDocfectado?: string;
+    mtoOperGratuitas?: number;
+    perception?: SalePerceptionInterface;
+}
 
 export interface ClientInterface {
     tipoDoc?: string;

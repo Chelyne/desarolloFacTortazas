@@ -26,7 +26,8 @@ export class TestPagePage implements OnInit {
   }
 
   async obtenerEmpresaPorRuc(){
-    await this.apisPeru.obtenerEmpresaByRUC('20601831032');
+    const empresa = await this.apisPeru.obtenerEmpresaByRUC('20601831032');
+    console.log(empresa);
   }
 
   async obtenerTokenDeEmpresa(){
@@ -35,7 +36,9 @@ export class TestPagePage implements OnInit {
   }
 
   async guardarDatosDeEmpresa(){
-    await this.apisPeru.guardarDatosEmpresaFirebase('20601831032');
+  //  const empresa = await this.apisPeru.getAndSaveEmpresaOnfirebase('20601831032');
+   await this.apisPeru.getAndSaveEmpresaOnfirebase();
+
   }
 
   async obtenerDatosDeEmpresa(){
@@ -225,4 +228,224 @@ export class TestPagePage implements OnInit {
     };
     this.apisPeru.enviarASunatAdaptador(venta);
   }
+
+  enviarNotaCredito(){
+    console.log('Enviar nota de credito');
+
+    const venta: VentaInterface = {
+      montoPagado: 129,
+      serieComprobante: 'B001',
+      numeroComprobante: '224',
+      vendedor: {
+        token: 'token laptop',
+        celular: '910426974',
+        rol: 'Administrador',
+        sede: 'Andahuaylas',
+        foto: null,
+        correo: 'nerio@gmail.com',
+        apellidos: 'Cañari Huarcaya',
+        password: 'nerio123',
+        nombre: 'Nerio',
+        dni: '70148737',
+        id: 'nerio@gmail.com'
+      },
+      tipoComprobante: 'boleta',
+      bolsa: false,
+      cantidadBolsa: 0,
+      cliente: {
+        numDoc: '73517374',
+        direccion: '',
+        tipoDoc: 'dni',
+        email: '',
+        celular: '944217218',
+        id: '2GNsnalhwmIpOvv6vDIo',
+        nombre: 'wilmer arcaya layme'
+      },
+      idListaProductos: 'J5DP4B3L1W0HfjdJ27Gl',
+      estadoVenta: 'registrado',
+      montoNeto: 129,
+      igv: 19.677966101694906,
+      tipoPago: 'efectivo',
+      descuentoVenta: 0,
+      fechaEmision: {
+        seconds: 1611439573,
+        nanoseconds: 723000000
+      },
+      montoBase: 109.3220338983051,
+      totalPagarVenta: 129,
+      cdr: {
+        sunatResponse: {
+          success: true
+        }
+      },
+      // cdrAnulado: {
+      //     sunatResponse: {
+      //       success: true
+      //     }
+      // },
+      idVenta: 'JJa3WunEjd8oVErlYCC6'
+    };
+
+    this.apisPeru.enviarNotaDeCreditoAdaptador2(venta);
+
+  }
+  
+  enviarNotaCreditoFactura(){
+    console.log('Enviar nota de credito');
+
+    const venta: VentaInterface = {
+      cantidadBolsa: 0,
+      tipoComprobante: 'factura',
+      cliente: {
+        celular: '',
+        nombre: 'taipe huamani erick ruli',
+        direccion: 'Av. Santa Cruz Curibamba- Andahuaylas',
+        email: '',
+        numDoc: '10741636005',
+        tipoDoc: 'ruc',
+        id: 'lq4VYau4IiWsfd2f04IE'
+      },
+      fechaEmision: {
+        seconds: 1611014124,
+        nanoseconds: 216000000
+      },
+      bolsa: false,
+      igv: 38.59322033898303,
+      montoPagado: 300,
+      estadoVenta: 'registrado',
+      totalPagarVenta: 253,
+      idListaProductos: '8EMFNz3oI7t3Txjyr8EY',
+      descuentoVenta: 0,
+      montoNeto: 253,
+      montoBase: 214.40677966101697,
+      serieComprobante: 'F001',
+      tipoPago: 'efectivo',
+      cdr: {
+        sunatResponse: {
+          success: true
+        }
+      },
+      vendedor: {
+        nombre: 'Nerio',
+        rol: 'Administrador',
+        apellidos: 'Cañari Huarcaya',
+        password: 'nerio123',
+        sede: 'Andahuaylas',
+        token: 'token laptop',
+        dni: '70148737',
+        foto: null,
+        correo: 'nerio@gmail.com',
+        celular: '910426974',
+        id: 'nerio@gmail.com'
+      },
+      numeroComprobante: '3',
+      idVenta: 'woWbBVAm4GI7pzNljQdF'
+    };
+
+    this.apisPeru.enviarNotaDeCreditoAdaptador2(venta);
+
+  }
+
+  newSendSunat(){
+    // const venta: VentaInterface = {
+    //   cantidadBolsa: 0,
+    //   montoBase: 84.74576271186442,
+    //   fechaEmision: {
+    //     seconds: 1611254602,
+    //     nanoseconds: 40000000
+    //   },
+    //   totalPagarVenta: 100,
+    //   tipoComprobante: 'boleta',
+    //   estadoVenta: 'anulado',
+    //   montoNeto: 100,
+    //   cliente: {
+    //     id: '5FwjPZ7ClHegWoQqOQzN',
+    //     celular: '999999999',
+    //     tipoDoc: 'dni',
+    //     nombre: 'cliente varios',
+    //     email: 'cliente@gmail.com',
+    //     numDoc: '00000000',
+    //     direccion: 'jr. prueba'
+    //   },
+    //   tipoPago: 'efectivo',
+    //   montoPagado: 100,
+    //   idListaProductos: 'lkwl4BjQA8sntUdbhsB6',
+    //   vendedor: {
+    //     token: 'token laptop',
+    //     password: 'nerio123',
+    //     nombre: 'Nerio',
+    //     foto: null,
+    //     correo: 'nerio@gmail.com',
+    //     dni: '70148737',
+    //     apellidos: 'Cañari Huarcaya',
+    //     celular: '910426974',
+    //     rol: 'Administrador',
+    //     sede: 'Andahuaylas',
+    //     id: 'nerio@gmail.com'
+    //   },
+    //   igv: 15.254237288135585,
+    //   descuentoVenta: 0,
+    //   serieComprobante: 'B001',
+    //   numeroComprobante: '205',
+    //   bolsa: false,
+    //   cdr: {
+    //     sunatResponse: {
+    //       success: true,
+    //     }
+    //   },
+    //   idVenta: 'JDjjk7ZkRXKwtljSUtcz'
+    // };
+
+    const venta: VentaInterface = {
+      tipoPago: 'efectivo',
+      cliente: {
+        direccion: 'jr. prueba',
+        celular: '999999999',
+        email: 'cliente@gmail.com',
+        numDoc: '00000000',
+        tipoDoc: 'dni',
+        nombre: 'cliente varios',
+        id: '5FwjPZ7ClHegWoQqOQzN'
+      },
+      descuentoVenta: 0,
+      totalPagarVenta: 85,
+      montoPagado: 85,
+      tipoComprobante: 'boleta',
+      igv: 12.966101694915253,
+      montoBase: 72.03389830508475,
+      vendedor: {
+        celular: '910426974',
+        correo: 'nerio@gmail.com',
+        token: 'token laptop',
+        password: 'nerio123',
+        rol: 'Administrador',
+        foto: null,
+        sede: 'Andahuaylas',
+        id: 'nerio@gmail.com',
+        apellidos: 'Cañari Huarcaya',
+        dni: '70148737',
+        nombre: 'Nerio'
+      },
+      cantidadBolsa: 0,
+      serieComprobante: 'B001',
+      estadoVenta: 'anulado',
+      cdr: {
+        sunatResponse: {
+          success: true
+        }
+      },
+      numeroComprobante: '241',
+      bolsa: false,
+      fechaEmision: {
+        seconds: 1611343970,
+        nanoseconds: 66000000
+      },
+      idListaProductos: 'cU5otZjGwR7S8rHuCKRP',
+      montoNeto: 85,
+      idVenta: 'dwVJBZVkrSZqeEvSjeuQ'
+    };
+
+    this.apisPeru.enviarNotaDeCreditoAdaptador(venta);
+  }
+
 }

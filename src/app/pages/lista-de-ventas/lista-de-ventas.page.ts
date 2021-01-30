@@ -69,6 +69,8 @@ export class ListaDeVentasPage implements OnInit {
     this.dataApi.ObtenerListaDeVentas(this.sedes, this.ventasForm.value.fechadeventa).subscribe(data => {
       if (data.length > 0) {
         this.listaDeVentas = data;
+        console.log(this.listaDeVentas);
+
         this.sinDatos = false;
         this.buscando = false;
       } else {
