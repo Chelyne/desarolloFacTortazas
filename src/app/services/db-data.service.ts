@@ -1069,15 +1069,25 @@ export class DbDataService {
             const data = action.payload.data();
             return data;
           }
-          // CLEAN
-          // return changes.map(action => {
-          //   const data = action.payload.doc.data() as ItemDeVentaInterface;
-          //   // data.id = action.payload.doc.id;
-          //   console.log('yyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyy', data);
-          //   return data;
-          //   });
-          }
+        }
       ));
+  }
+
+  obtenerProductosDeVenta2(idProductoVenta: string, sede: string){
+    console.log('Id de un producto de venta en productVEnta', idProductoVenta);
+    return this.afs.collection('sedes').doc(sede.toLocaleLowerCase())
+    .collection('productosVenta').doc(idProductoVenta).ref.get()
+    .then((doc: any) => {
+      if (doc.exists) {
+        return doc.data().productos;
+      } else {
+        console.log('No such document!');
+        return [];
+      }
+    }).catch(err => {
+      console.log('looooooooooooooooooooooooooongeeeeeeeeeerr', err);
+      throw 'fail';
+    });
   }
 
 
@@ -1123,18 +1133,38 @@ export class DbDataService {
         return data;
       });
     }));
+
+  }
+
+  // obtenerCorrelacion notaCredito
+  obtenerCorrelacionTypoDocumentoV2(typoDocumento: string, sede: string) {
+
+    return this.afs.collection('sedes').doc(sede.toLocaleLowerCase())
+    .collection('serie').ref.where('tipoComprobante', '==', typoDocumento).limit(1).get()
+    .then((querySnapshot) => {
+      let serie: ContadorDeSerieInterface;
+      querySnapshot.forEach((doc) => {
+        console.log(doc.id, ' => ', doc.data());
+        serie = {...doc.data()};
+        serie.id = doc.id;
+      });
+      return serie;
+    }).catch(err => {
+      console.log('no se pudo obtener serie', err);
+      throw {};
+    });
   }
 
   incrementarCorrelacionTypoDocumento(idSerie: string, sede: string, correlacionActual: number) {
     // const consulta = this.afs.collection('sedes').doc(sede.toLocaleLowerCase())
     // .collection('serie').doc(idSerie).update({correlacion: correlacionActual + 1});
 
-    // const promesa =  new Promise( (resolve, reject) => {
+    const promesa =  new Promise<void>( (resolve, reject) => {
       this.afs.collection('sedes').doc(sede.toLocaleLowerCase())
       .collection('serie').doc(idSerie).update({correlacion: correlacionActual + 1});
-    //   resolve;
-    // });
-    // return promesa;
+      resolve();
+    });
+    return promesa;
   }
 
   // ACTUALIZAR CORRELACION

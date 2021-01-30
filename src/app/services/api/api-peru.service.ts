@@ -21,8 +21,14 @@ import { MontoALetras } from 'src/app/global/monto-a-letra';
 })
 export class ApiPeruService {
 
-  token: string;
+  userApiPeru = 'friendscode';
+  passwardApiPeru = 'friends2019peru';
+
+  rucEmpresa = '20601831032';
+
+  tokenEmpresa: string;
   datosDeEmpresa: EmpresaInterface;
+
   sede = this.storage.datosAdmi.sede;
 
 
@@ -39,15 +45,24 @@ export class ApiPeruService {
 /* ------------------------------------------------------------------------------------------------ */
 /*                                    configuración apisperu setting                                */
 /* ------------------------------------------------------------------------------------------------ */
+  setApiPeruDataUser(user: string, password: string){
+    this.userApiPeru = user;
+    this.passwardApiPeru = password;
+  }
 
-  login(){
-    // NOTE - return a userToken
+  async login(){
+    /**
+     *  @objetivo : obtener un UserToken de apis peru
+     *  @note   : Un UserToken tiene una duración de 24 horas.
+     *  @nota   : Si llega a apisPeru responde con un resolve
+     *  @return : Promesa<{token: string}>
+     */
     const myHeaders = new Headers();
     myHeaders.append('Content-Type', 'application/json');
 
     const raw = JSON.stringify({
-      username: 'friendscode',
-      password: 'friends2019peru'
+      username: this.userApiPeru,
+      password: this.passwardApiPeru
     });
 
     const requestOptions: RequestInit = {
@@ -58,19 +73,39 @@ export class ApiPeruService {
     };
 
     return fetch('https://facturacion.apisperu.com/api/v1/auth/login', requestOptions)
-      .then(response => response.json())
-      .then(result => result.token)
-      .catch(error => console.log('error', error));
+      .then(tokenResponse => tokenResponse.json())
+      // .then(result => result.token)
+      .catch(error => error);
+  }
+
+  async obtenerUserApiperuToken(){
+    /**
+     *  @objetivo : Validar y obtener un UserToken valido de api peru
+     *  @return : exito: promesa<token:string>, else: promesa<''>
+     *  @CausasDeUnError : Error de internet
+     *  @CausasDeUnError : Usuario o constraseña invalido de ApisPeru
+     */
+    const loginResponse = await this.login();
+
+    if (loginResponse.token){
+      return loginResponse.token;
+    }
+    return '';
   }
 
   async listarEmprasas(){
-
+    /**
+     *  @objetivo : obtener una lista de empresas de apisPeru
+     *  @return : Promesa< [datosEmpresa1, datosEmpresa2, ... ] >
+     *  @CausasDeUnError : Error de internet
+     *  @CausasDeUnError : Si no se obtuviese el token
+     */
     const myHeaders = new Headers();
-    const userToken = await this.login();
-    // console.log('Bearerrrrrrrrrrrrrrrrrrrrr ', 'Bearer '.concat(userToken));
-    myHeaders.append('Authorization', 'Bearer '.concat(userToken));
+    const userToken = await this.obtenerUserApiperuToken();
+    // tslint:disable-next-line: curly
+    if (!userToken) return [];
 
-    // const raw = JSON.stringify({});
+    myHeaders.append('Authorization', 'Bearer '.concat(userToken));
 
     const requestOptions: RequestInit = {
       method: 'GET',
@@ -80,26 +115,28 @@ export class ApiPeruService {
     };
 
     return fetch('https://facturacion.apisperu.com/api/v1/companies', requestOptions)
-      .then(response => response.json())
+      .then(listaEmpresas => listaEmpresas.json())
       // .then(result => console.log(result))
       .catch(error => console.log('error', error));
   }
 
 
   async obtenerEmpresaByRUC(rucEnter: string){
+    /**
+     *  @objetivo : Extraer la empresa de apisPeru deacuerdo al parametro
+     *  @return : exito: Promesa< {datosEmpresa1} >, else Promesa< {} >
+     *  @CausasDeUnError : Error de internet
+     *  @CausasDeUnError : Si no se obtuviese el token
+     */
     const listaDeEmpresas = await this.listarEmprasas();
-    // console.log('lista de empresas', listaDeEmpresas);
-
+    // console.log(rucEnter);
     for (const empresa of listaDeEmpresas) {
-      // console.log('sssssssssssssssssssssss', empresa);
-      // console.log(empresa.ruc);
       if (empresa.ruc === rucEnter){
-        // console.log('ruccccccccccccccccccccccccccccc', rucEnter, empresa);
         return empresa;
       }
     }
     // console.log('ruc failllllllllllllllllllllllllllllll');
-    return '';
+    return {};
   }
 
   async obtenerTokenDeEmpresa(rucEnter: string){
@@ -108,25 +145,32 @@ export class ApiPeruService {
     return empresa.token.code;
   }
 
-  async guardarDatosEmpresaFirebase(rucEnter: string){
+  async getAndSaveEmpresaOnfirebase(rucEnter = this.rucEmpresa){
+    /**
+     *  @objetivo : Obtener empresa de ApisPeru y Guardarlo en Firebase
+     *  @return : exito: Promesa< {datosEmpresa1} >, else Promesa< {} >
+     *  @CausasDeUnError : Error de internet
+     *  @CausasDeUnError : Si no se obtuviese el token
+     */
+
     const empresa = await this.obtenerEmpresaByRUC(rucEnter);
-    this.dataApi.guardarDatosEmpresa(empresa);
+    if (Object.entries(empresa).length === 0) {
+      // tslint:disable-next-line: no-string-throw
+      throw 'fail';
+    }
+    return this.dataApi.guardarDatosEmpresa(empresa);
   }
 
-  // REFACTOR: renombrar a un nombre más descriptivo
   obtenerDatosDeLaEmpresa(){
-    // TODO: Debe intentar obtener los datos de la empresa de fisebase
-    // Si no hubieran datos entonces obtenerlos de apiPeru y guardarlo en firebase
-
-    // La solución actual supone que siempre existirá los datos de la empresa en firebase
-    this.dataApi.obtenerEmpresa().subscribe(data => {
-      // console.log('esto debería imprimirse primero');
-      this.datosDeEmpresa = data[0];
-      // console.log(this.datosDeEmpresa);
+    this.dataApi.obtenerEmpresa().subscribe((data: any) => {
+      if (Object.entries(data).length === 0 || data.ruc !== this.rucEmpresa) {
+        this.getAndSaveEmpresaOnfirebase(this.rucEmpresa);
+      }
+      this.datosDeEmpresa = data;
+      console.log(this.datosDeEmpresa);
     });
   }
 
-  // REFACTOR: renombrar a un nombre más descriptivo
   getDatosEmpresa(){
     return this.datosDeEmpresa;
   }
@@ -135,14 +179,14 @@ export class ApiPeruService {
 /* ------------------------------------------------------------------------------------------------ */
 
 
-/* ---------------------------------------------------------------------------------------------- */
-/*                                     ENVIAR COMPROBANTE A SUNAT                                 */
-/* ---------------------------------------------------------------------------------------------- */
+/* ------------------------------------------------------------------------------------------------ */
+/*                                     ENVIAR COMPROBANTE A SUNAT                                   */
+/* ------------------------------------------------------------------------------------------------ */
 
   enviarASunatAdaptador(venta: VentaInterface){
 
     const promesa = new Promise((resolve, reject) => {
-      if (venta.cdr && typeof(venta.cdr.sunatResponse.success) !== 'undefined' && venta.cdr.sunatResponse.success === true ){
+      if (venta.cdr && venta.cdr.sunatResponse.success === true ){
         reject(null);
       } else {
         this.dataApi.obtenerProductosDeVenta(venta.idListaProductos, this.sede).subscribe( (data: any) => {
@@ -164,7 +208,6 @@ export class ApiPeruService {
     });
     return promesa;
   }
-
 
   // NOTE - Esta es la función más importante que se encarga de enviar una factura a sunat
   enviarComprobanteASunat(ventaFormateada: ComprobanteInterface){
@@ -323,25 +366,6 @@ export class ApiPeruService {
     };
   }
 
-
-
-  formtearFecha(dateTime: any): string{
-
-    const fechaFormateada = new Date(moment.unix(dateTime.seconds).format('D MMM YYYY H:mm:ss'));
-    const fechaString = formatDate(fechaFormateada, 'yyyy-MM-ddThh:mm:ss-05:00', 'en');
-    // console.log('aaaaaaaaaaaaa', fechaString);
-    return fechaString;
-  }
-
-  formtearFechaActual(): string{
-    const hoy = new Date();
-    console.log(hoy);
-    const fechaFormateada = new Date(moment(hoy).format('D MMM YYYY H:mm:ss'));
-    const fechaString = formatDate(fechaFormateada, 'yyyy-MM-ddThh:mm:ss-05:00', 'en');
-    // console.log('aaaaaaaaaaaaa', fechaString);
-    return fechaString;
-  }
-
   obtenerCodigoComprobante(typoComprobante: string){
 
     if (typoComprobante.toLowerCase() === 'factura'){
@@ -422,6 +446,10 @@ export class ApiPeruService {
 
   enviarNotaDeCreditoAdaptador(venta: VentaInterface){
     // console.log('EnviarNotaCreditoAdaptador: ', venta);
+    if (venta.cdrAnulado && venta.cdr.sunatResponse.success === true){
+      console.log('la boleta ya ha sido registradoo');
+      return;
+    }
 
     // solo enviar a sunat si ya tiene un cdr y estado exito
     if (venta.cdr && venta.cdr.sunatResponse.success === true ){
@@ -438,7 +466,7 @@ export class ApiPeruService {
         const typoComprobante = `n.credito.${venta.tipoComprobante}`;
         console.log('CORRELACION--------------------------------', typoComprobante);
 
-        this.obtenerSerie(typoComprobante).then((dataComprobante: any) => {
+        this.obtenerSerie2(typoComprobante).then((dataComprobante: any) => {
           console.log('DATOS DEL COMPROBANTE', dataComprobante);
           const IdSerie =  dataComprobante.id;
           const DatosSerie = {
@@ -453,9 +481,12 @@ export class ApiPeruService {
 
           this.enviarNotaCreditoASunat(notaCreditoFormateado).then(cdr => {
             console.log('cdr de nota de credito', cdr);
-            this.dataApi.incrementarCorrelacionTypoDocumento(IdSerie, this.sede, DatosSerie.correlacion); // .then(() => {
-            //   this.dataApi.guardarCDRAnulado(venta.idVenta, venta.fechaEmision, this.sede, cdr);
-            // });
+            this.dataApi.incrementarCorrelacionTypoDocumento(IdSerie, this.sede, DatosSerie.correlacion)
+            .then(() => {
+              this.dataApi.guardarCDRAnulado(venta.idVenta, venta.fechaEmision, this.sede, cdr).then(() => {
+                  console.log('se guardará cdr ');
+              });
+            });
           }).catch(error => console.log('No se envio comprobante a la SUNAT', error));
 
         }).catch(error => console.log('No se envio comprobante a la SUNAT', error));
@@ -466,6 +497,78 @@ export class ApiPeruService {
       console.log('no se enviará el comprobante porque no tiene cdr');
     }
 
+  }
+
+  async enviarNotaDeCreditoAdaptador2(venta: VentaInterface){
+    console.log('ENVIAR_NOTA_CREDITO_OOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO');
+    if (venta.cdrAnulado && venta.cdr.sunatResponse.success === true){
+      console.log('la boleta ya ha sido registradoo');
+      return;
+    }
+
+    if ((venta.cdr && venta.cdr.sunatResponse.success === true)){
+
+      let productos: any;
+
+      productos = await this.dataApi.obtenerProductosDeVenta2(venta.idListaProductos, this.sede).catch(err => err);
+      console.log('productooooooooooooooosssssssssssss', productos);
+      if (productos === 'fail'){
+        return 'fail';
+      }
+
+      venta.listaItemsDeVenta = productos;
+
+      const typoComprobante = `n.credito.${venta.tipoComprobante}`;
+      console.log('CORRELACION--------------------------------', typoComprobante);
+
+      const serie = await this.obtenerSerie2(typoComprobante).catch(err => err);
+      console.log('SERIE', serie);
+      if ( serie === 'fail'){
+        // tslint:disable-next-line: no-string-throw
+        throw 'fail';
+      }
+
+      const IdSerie =  serie.id;
+      const DatosSerie = {
+        serie: serie.serie,
+        correlacion: serie.correlacion
+      };
+
+      const notaCreditoFormateado = this.formatearNotaDeCredito(venta, DatosSerie);
+      console.log('NOTA DE CREDITO FORMATEADO', notaCreditoFormateado);
+
+      const cdrRespuesta = await this.enviarNotaCreditoASunat(notaCreditoFormateado).then(cdrr => {
+        return cdrr;
+      }).catch(err => 'fail');
+
+      console.log('cdr REspuesta', cdrRespuesta);
+      if (cdrRespuesta === 'fail'){
+        // tslint:disable-next-line: no-string-throw
+        throw 'fail';
+      }
+
+      console.log('incrementara la correlacion');
+      await this.dataApi.incrementarCorrelacionTypoDocumento(IdSerie, this.sede, DatosSerie.correlacion).then(() => console.log('se incremento correctamente'));
+
+      console.log('guardardá el cdrAnulado');
+      await this.dataApi.guardarCDRAnulado(venta.idVenta, venta.fechaEmision, this.sede, cdrRespuesta).then(() => console.log('se Guardo el cdrAnulado'));
+      console.log('Comprobante termino de enviar');
+
+    } else {
+      console.log('no se enviará el comprobante porque no tiene cdr');
+      console.log('El comprobante aun no ha sido enviado');
+    }
+  }
+
+  async obtenerSerie2(typoDocumento: string){
+    const valor = await  this.dataApi.obtenerCorrelacionTypoDocumentoV2(typoDocumento, this.sede).then(serie => serie).catch(err => err);
+    console.log(valor);
+
+    if (Object.entries(valor).length === 0) {
+      // tslint:disable-next-line: no-string-throw
+      throw 'fail';
+    }
+    return valor;
   }
 
   async obtenerSerie(typoDocumento: string){
@@ -546,76 +649,91 @@ export class ApiPeruService {
 
 /* ---------------------------------------------------------------------------------------------- */
 
+  formtearFecha(dateTime: any): string{
+
+    const fechaFormateada = new Date(moment.unix(dateTime.seconds).format('D MMM YYYY H:mm:ss'));
+    const fechaString = formatDate(fechaFormateada, 'yyyy-MM-ddThh:mm:ss-05:00', 'en');
+    // console.log('aaaaaaaaaaaaa', fechaString);
+    return fechaString;
+  }
+
+  formtearFechaActual(): string{
+    const hoy = new Date();
+    console.log(hoy);
+    const fechaFormateada = new Date(moment(hoy).format('D MMM YYYY H:mm:ss'));
+    const fechaString = formatDate(fechaFormateada, 'yyyy-MM-ddThh:mm:ss-05:00', 'en');
+    // console.log('aaaaaaaaaaaaa', fechaString);
+    return fechaString;
+  }
 
   ObtenerCodigoMedida(medida: string){
     switch (medida.toLowerCase()) {
-        case 'botellas': return 'BG';
-        case 'caja': return 'BO';
-        case 'docena': return 'BX';
-        case 'gramo': return 'DZN';
-        case 'juego': return 'GRM';
-        case 'kilogramo': return 'SET';
-        case 'kit': return 'KGM';
-        case 'libras': return 'KT';
-        case 'litro': return 'LBR';
-        case 'metro': return 'LTR';
-        case 'miligramos': return 'MTR';
-        case 'mililitro': return 'MGM';
-        case 'milimetro': return 'MLT';
-        case 'onzas': return 'MMT';
-        case 'pies': return 'ONZ';
-        case 'piezas': return 'FOT';
-        case 'pulgadas': return 'C62';
-        case 'unidad (bienes)': return 'INH';
-        case 'ciento de unidades': return 'NIU';
-        case 'bolsa': return 'CEN';
-        case 'balde': return 'BJ';
-        case 'barriles': return 'BLL';
-        case 'cartones': return 'CT';
-        case 'centimetro cuadrado': return 'CMK';
-        case 'latas': return 'CA';
-        case 'metro cuadrado': return 'MTK';
-        case 'milimetro cuadrado': return 'MMK';
-        case 'paquete': return 'PK';
-        case 'par': return 'PR';
-        case 'unidad servicios': return 'ZZ';
-        case 'cilindro': return 'CY';
-        case 'galon ingles': return 'GLI';
-        case 'pies cuadrados': return 'FTK';
-        case 'us galon': return 'GLL';
-        case 'bobinas': return '4A';
-        case 'centimetro cubico': return 'CMQ';
-        case 'centimetro lineal': return 'CMT';
-        case 'conos': return 'CJ';
-        case 'docena por 10**6': return 'DZP';
-        case 'fardo': return 'BE';
-        case 'gruesa': return 'GRO';
-        case 'hectolitro': return 'HLT';
-        case 'hoja': return 'LEF';
-        case 'kilometro': return 'KTM';
-        case 'kilovatio hora': return 'KWH';
-        case 'megawatt hora': return 'MWH';
-        case 'metro cubico': return 'MTQ';
-        case 'milimetro cubico': return 'MMQ';
-        case 'millares': return 'MLL';
-        case 'millon de unidades': return 'UM';
-        case 'paletas': return 'PF';
-        case 'pies cubicos': return 'FTQ';
-        case 'placas': return 'PG';
-        case 'pliego': return 'ST';
-        case 'resma': return 'RM';
-        case 'tambor': return 'DR';
-        case 'tonelada corta': return 'STN';
-        case 'tonelada larga': return 'LTN';
-        case 'toneladas': return 'TNE';
-        case 'tubos': return 'TU';
-        case 'yarda': return 'YRD';
-        case 'yarda cuadrada': return 'YDK';
-        default: return 'NIU';
-        // default: return 'MEDIDA NO REGISTRADA';
+      case 'gramos': return 'GRM';
+      case 'kilogramo': return 'KGM';
+      case 'litro': return 'LTR';
+      case 'unidad': return 'NIU';
+      case 'caja': return 'BX';
+      case 'paquete': return 'PK';
+      case 'botellas': return 'BO';
+      case 'docena': return 'DZN';
+      case 'kit': return 'KT';
+      case 'libras': return 'LBR';
+      case 'metro': return 'MTR';
+      case 'miligramos': return 'MGM';
+      case 'mililitro': return 'MLT';
+      case 'milimetro': return 'MMT';
+      case 'pulgadas': return 'INH';
+      case 'bolsa': return 'BG';
+      case 'par': return 'PR';
+      case 'unidad servicios': return 'ZZ';
+      case 'piezas': return 'C62';
+      case 'latas': return 'CA';
+      case 'juego': return 'SET';
+      case 'onzas': return 'ONZ';
+      case 'pies': return 'FOT';
+      case 'ciento de unidades': return 'CEN';
+      case 'balde': return 'BJ';
+      case 'barriles': return 'BLL';
+      case 'cartones': return 'CT';
+      case 'centimetro cuadrado': return 'CMK';
+      case 'metro cuadrado': return 'MTK';
+      case 'milimetro cuadrado': return 'MMK';
+      case 'cilindro': return 'CY';
+      case 'galon ingles': return 'GLI';
+      case 'pies cuadrados': return 'FTK';
+      case 'us galon': return 'GLL';
+      case 'bobinas': return '4A';
+      case 'centimetro cubico': return 'CMQ';
+      case 'centimetro lineal': return 'CMT';
+      case 'conos': return 'CJ';
+      case 'docena por 10**6': return 'DZP';
+      case 'fardo': return 'BE';
+      case 'gruesa': return 'GRO';
+      case 'hectolitro': return 'HLT';
+      case 'hoja': return 'LEF';
+      case 'kilometro': return 'KTM';
+      case 'kilovatio hora': return 'KWH';
+      case 'megawatt hora': return 'MWH';
+      case 'metro cubico': return 'MTQ';
+      case 'milimetro cubico': return 'MMQ';
+      case 'millares': return 'MLL';
+      case 'millon de unidades': return 'UM';
+      case 'paletas': return 'PF';
+      case 'pies cubicos': return 'FTQ';
+      case 'placas': return 'PG';
+      case 'pliego': return 'ST';
+      case 'resma': return 'RM';
+      case 'tambor': return 'DR';
+      case 'tonelada corta': return 'STN';
+      case 'tonelada larga': return 'LTN';
+      case 'toneladas': return 'TNE';
+      case 'tubos': return 'TU';
+      case 'yarda': return 'YRD';
+      case 'yarda cuadrada': return 'YDK';
+      default: return 'NIU';
+      // default: return 'MEDIDA NO REGISTRADA';
     }
   }
-
 
 
 

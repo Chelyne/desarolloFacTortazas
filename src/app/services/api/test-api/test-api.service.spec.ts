@@ -9,11 +9,54 @@ import { VentaInterface } from 'src/app/models/venta/venta';
 
 /** Librerias para Fifestor */
 import { AngularFireModule } from '@angular/fire';
-import { AngularFirestoreModule } from '@angular/fire/firestore';
+import { AngularFirestore, AngularFirestoreModule } from '@angular/fire/firestore';
 import { environment } from 'src/environments/environment';
+import { DbDataService } from '../../db-data.service';
+import { ClienteInterface } from 'src/app/models/cliente-interface';
+import { AnyMxRecord } from 'dns';
+
 
 describe('TestApiService', () => {
   let service: TestApiService;
+
+  // beforeAll(() => {
+  //   const ventaSinProductos: VentaInterface = {
+  //     numeroComprobante: '12',
+  //     bolsa: false,
+  //     idListaProductos: 'h1DpNvvWlBFmiev5SkD2',
+  //     tipoComprobante: 'n. venta',
+  //     fechaEmision: {
+  //       seconds: 1610318081,
+  //       nanoseconds: 855000000
+  //     },
+  //     tipoPago: 'efectivo',
+  //     vendedor: {
+  //       celular: '910426974',
+  //       nombre: 'nerio',
+  //       token: 'token laptop',
+  //       apellidos: 'cañari huarcaya',
+  //       rol: 'Administrador',
+  //       sede: 'Andahuaylas',
+  //       foto: null,
+  //       password: 'nerio123',
+  //       id: 'nerio@gmail.com',
+  //       correo: 'nerio@gmail.com',
+  //       dni: '70148737'
+  //     },
+  //     totalPagarVenta: 46,
+  //     cliente: {
+  //       email: 'cliente@gmail.com',
+  //       nombre: 'cliente varios',
+  //       tipoDoc: 'dni',
+  //       direccion: 'jr. prueba',
+  //       celular: '999999999',
+  //       numDoc: '00000000',
+  //       id: '5FwjPZ7ClHegWoQqOQzN'
+  //     },
+  //     serieComprobante: 'NV01',
+  //     idVenta: 'cwNG3OcbTLtwEn2C36EO'
+  //   };
+  // });
 
   beforeEach(() => {
     TestBed.configureTestingModule({
@@ -30,9 +73,9 @@ describe('TestApiService', () => {
     service.setApiPeruDataUser('hz', '123456');
   });
 
-  it('should be created', () => {
-    expect(service).toBeTruthy();
-  });
+  // it('should be created', () => {
+  //   expect(service).toBeTruthy();
+  // });
   // it('Test Obtención de un UserToken de apiPeru', async () => {
   //     const valor = await service.obtenerUserApiperuToken();
   //     if (valor){
@@ -59,47 +102,47 @@ describe('TestApiService', () => {
   //   const empresa1 = await service.obtenerEmpresaByRUC('220000000');
   //   expect(empresa1.ruc).not.toEqual('220000000');
   // });
-  it('Guardar emrpesa', async () => {
-    const valor = await service.getAndSaveEmpresaOnfirebase('20722440881')
-    .then( data => data).catch(err => err);
-    console.log('valor', valor);
-    if (valor === 'exito'){
-      expect(valor).toEqual('exito');
-    } else {
-      expect(valor).toEqual('fail');
-    }
-  });
-  it('Test obtener datos de la empresa', async () => {
-      service.obtenerDatosDeLaEmpresa();
-  });
+  // it('Guardar emrpesa', async () => {
+  //   const valor = await service.getAndSaveEmpresaOnfirebase('20722440881')
+  //   .then( data => data).catch(err => err);
+  //   console.log('valor', valor);
+  //   if (valor === 'exito'){
+  //     expect(valor).toEqual('exito');
+  //   } else {
+  //     expect(valor).toEqual('fail');
+  //   }
+  // });
+  // it('Test obtener datos de la empresa', async () => {
+  //     // service.obtenerDatosDeLaEmpresa();
+  // });
 
 
   // it('saludo', () => {
   //   expect(service.saludo()).toEqual('hola');
   // });
   it('Test de obtener medida', () => {
-    expect(service.ObtenerCodigoMedida('botellas')).toEqual('BG');
-    expect(service.ObtenerCodigoMedida('caja')).toEqual('BO');
-    expect(service.ObtenerCodigoMedida('docena')).toEqual('BX');
-    expect(service.ObtenerCodigoMedida('gramo')).toEqual('DZN');
-    expect(service.ObtenerCodigoMedida('juego')).toEqual('GRM');
-    expect(service.ObtenerCodigoMedida('kilogramo')).toEqual('SET');
-    expect(service.ObtenerCodigoMedida('kit')).toEqual('KGM');
-    expect(service.ObtenerCodigoMedida('libras')).toEqual('KT');
-    expect(service.ObtenerCodigoMedida('litro')).toEqual('LBR');
-    expect(service.ObtenerCodigoMedida('metro')).toEqual('LTR');
-    expect(service.ObtenerCodigoMedida('miligramos')).toEqual('MTR');
-    expect(service.ObtenerCodigoMedida('mililitro')).toEqual('MGM');
-    expect(service.ObtenerCodigoMedida('milimetro')).toEqual('MLT');
-    expect(service.ObtenerCodigoMedida('onzas')).toEqual('MMT');
-    expect(service.ObtenerCodigoMedida('pies')).toEqual('ONZ');
-    expect(service.ObtenerCodigoMedida('piezas')).toEqual('FOT');
-    expect(service.ObtenerCodigoMedida('pulgadas')).toEqual('C62');
-    expect(service.ObtenerCodigoMedida('unidad (bienes)')).toEqual('INH');
-    expect(service.ObtenerCodigoMedida('ciento de unidades')).toEqual('NIU');
-    expect(service.ObtenerCodigoMedida('bolsa')).toEqual('CEN');
+    expect(service.ObtenerCodigoMedida('botellas')).toEqual('BO');
+    expect(service.ObtenerCodigoMedida('caja')).toEqual('BX');
+    expect(service.ObtenerCodigoMedida('docena')).toEqual('DZN');
+    expect(service.ObtenerCodigoMedida('gramos')).toEqual('GRM');
+    expect(service.ObtenerCodigoMedida('juego')).toEqual('SET');
+    expect(service.ObtenerCodigoMedida('kilogramo')).toEqual('KGM');
+    expect(service.ObtenerCodigoMedida('kit')).toEqual('KT');
+    expect(service.ObtenerCodigoMedida('libras')).toEqual('LBR');
+    expect(service.ObtenerCodigoMedida('litro')).toEqual('LTR');
+    expect(service.ObtenerCodigoMedida('metro')).toEqual('MTR');
+    expect(service.ObtenerCodigoMedida('miligramos')).toEqual('MGM');
+    expect(service.ObtenerCodigoMedida('mililitro')).toEqual('MLT');
+    expect(service.ObtenerCodigoMedida('milimetro')).toEqual('MMT');
+    expect(service.ObtenerCodigoMedida('onzas')).toEqual('ONZ');
+    expect(service.ObtenerCodigoMedida('pies')).toEqual('FOT');
+    expect(service.ObtenerCodigoMedida('piezas')).toEqual('C62');
+    expect(service.ObtenerCodigoMedida('pulgadas')).toEqual('INH');
+    expect(service.ObtenerCodigoMedida('unidad')).toEqual('NIU');
+    expect(service.ObtenerCodigoMedida('ciento de unidades')).toEqual('CEN');
     expect(service.ObtenerCodigoMedida('balde')).toEqual('BJ');
     expect(service.ObtenerCodigoMedida('barriles')).toEqual('BLL');
+    expect(service.ObtenerCodigoMedida('bolsa')).toEqual('BG');
     expect(service.ObtenerCodigoMedida('cartones')).toEqual('CT');
     expect(service.ObtenerCodigoMedida('centimetro cuadrado')).toEqual('CMK');
     expect(service.ObtenerCodigoMedida('latas')).toEqual('CA');
@@ -502,6 +545,139 @@ describe('TestApiService', () => {
       console.log(service.formtearFechaActual());
     });
 
+
+
+});
+
+describe('TestEnviarComprobanteASunat', () => {
+  let service: TestApiService;
+  let dataApi: DbDataService;
+
+  beforeAll(() => {
+    const ventaSinProductos: VentaInterface = {
+      numeroComprobante: '12',
+      bolsa: false,
+      idListaProductos: 'h1DpNvvWlBFmiev5SkD2',
+      tipoComprobante: 'n. venta',
+      fechaEmision: {
+        seconds: 1610318081,
+        nanoseconds: 855000000
+      },
+      tipoPago: 'efectivo',
+      vendedor: {
+        celular: '910426974',
+        nombre: 'nerio',
+        token: 'token laptop',
+        apellidos: 'cañari huarcaya',
+        rol: 'Administrador',
+        sede: 'Andahuaylas',
+        foto: null,
+        password: 'nerio123',
+        id: 'nerio@gmail.com',
+        correo: 'nerio@gmail.com',
+        dni: '70148737'
+      },
+      totalPagarVenta: 46,
+      cliente: {
+        email: 'cliente@gmail.com',
+        nombre: 'cliente varios',
+        tipoDoc: 'dni',
+        direccion: 'jr. prueba',
+        celular: '999999999',
+        numDoc: '00000000',
+        id: '5FwjPZ7ClHegWoQqOQzN'
+      },
+      serieComprobante: 'NV01',
+      idVenta: 'cwNG3OcbTLtwEn2C36EO'
+    };
+
+  });
+
+  beforeEach(() => {
+    TestBed.configureTestingModule({
+      imports: [
+        AngularFireModule.initializeApp(environment.firebaseConfig),
+        AngularFirestoreModule
+      ],
+      declarations: [ ],
+      providers: [ ]
+    });
+
+    // service = new TestApiService();
+    service = TestBed.inject(TestApiService);
+    dataApi = TestBed.inject(DbDataService);
+    service.setApiPeruDataUser('hz', '123456');
+  });
+
+  /**
+   * testear cada pieza de enivar sunat
+   * x obtener productos
+   * formatearVenta
+   *    codigoTipoComprobante
+   *    formatearFecha
+   *    formatearCliente
+   *    formatearCompany
+   * enviarComprobante a sunat
+   * guardarCdr
+   * EnviarRespuesta
+   */
+  it('Description', () => {
+    // testear cada pieza de enivar sunat
+    // obtener productos
+    // formatearVenta
+    // enviarComprobante a sunat
+    // guardarCdr
+    // EnviarRespuesta
+  });
+  // it('obtenerProductos', async () => {
+  //   const codigo = 'J5DP4B3L1W0HfjdJ27Gl';
+  //   dataApi.obtenerProductosDeVenta(codigo, 'andahuaylas').subscribe((data: any) => {
+  //     console.log('productosssssssssssss', data.productos);
+  //   });
+  // });
+  // it('obtenerListaDeVentas', async () => {
+  //   dataApi.ObtenerListaDeVentas('andahuaylas', '23-01-2021').subscribe(data => {
+  //     if (data.length > 0) {
+  //       console.log('daaaaaaaaaaaaaaaaaaa: ');
+  //       console.log(data);
+  //     }
+  //   });
+  // });
+
+  // it('formatearCliente', async () => {
+  //   const cliente: ClienteInterface = {
+  //     celular: '944217218',
+  //     tipoDoc: 'dni',
+  //     email: '',
+  //     id: '2GNsnalhwmIpOvv6vDIo',
+  //     nombre: 'wilmer arcaya layme',
+  //     direccion: 'Direccion de prueba',
+  //     numDoc: '73517374'
+  //   };
+
+  //   console.log('foramatear cliente', service.formatearCliente(cliente));
+  //   expect(service.formatearCliente(cliente)).toEqual({
+  //     tipoDoc: '1',
+  //     numDoc: '73517374',
+  //     rznSocial: 'wilmer arcaya layme',
+  //     address: {
+  //       direccion: 'Direccion de prueba'
+  //     },
+  //     email: '',
+  //     telephone: '944217218'
+  //   });
+
+  // });
+
+  it('Obtener Correlacion por typoDocumento', async () => {
+    await dataApi.obtenerCorrelacionTypoDocumentoV2('n.credito.boleta', 'andahuaylas')
+    .then( (data: any) => console.log('datoSeeeeeeeeeeeeeeeeerie', data, data.correlacion));
+  });
+  it('Testear obtener productos sin obserbable', async () => {
+    await dataApi.obtenerProductosDeVenta2('oSskE7Ocl8fRoGgKHPS7', 'andahuaylas').then( data => {
+      console.log('OBTENERDATOS POR CORRELACIONXXXXXXXXXXXXXXXXXXXXXXXXX', data);
+    }).catch(err => console.log('FAllaaaaaaaaaaaaaaa', err));
+  });
 
 
 });
