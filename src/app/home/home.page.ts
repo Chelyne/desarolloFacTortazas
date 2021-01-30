@@ -285,5 +285,16 @@ export class HomePage {
         });
       } );
     }
+    prueba() {
+      const d = new Date();
+      const dia = d.getDate();
+      const mes = d.getMonth() + 1;
+      const anio = d.getFullYear();
+      let contador = 0;
+      while (contador < dia ) {
+        contador ++;
+        console.log(contador);
+      }
+    }
 
 }

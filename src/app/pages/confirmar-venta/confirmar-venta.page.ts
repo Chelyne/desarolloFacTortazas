@@ -438,7 +438,7 @@ export class ConfirmarVentaPage implements OnInit {
     console.log(this.tipoComprobante);
     switch (this.tipoComprobante) {
       case 'boleta':
-        let index = 39;
+        let index = 41;
         const doc = new jsPDF( 'p', 'mm', [45, index  + (this.venta.listaItemsDeVenta.length * 7) + 7 + 30 + 12]);
         doc.addImage(this.LogoEmpresa, 'JPEG', 11, 1, 22, 8);
         doc.setFontSize(6);
@@ -462,9 +462,37 @@ export class ConfirmarVentaPage implements OnInit {
         doc.text(this.venta.serieComprobante + '-' + this.digitosFaltantes('0', (8 - this.venta.numeroComprobante.length)) + this.venta.numeroComprobante, 22.5, 27, {align: 'center'});
         doc.text(this.venta.cliente.tipoDoc.toUpperCase() + ': ' + this.venta.cliente.numDoc , 22.5, 31, {align: 'center'});
         doc.text( 'Cliente: ', 22.5, 33, {align: 'center'});
-        doc.text( this.convertirMayuscula(this.venta.cliente.nombre), 22.5, 35, {align: 'center'});
+        if (this.venta.cliente.nombre.length  >= 40){
+          const prue = this.venta.cliente.nombre.split(' ');
+          let contador = 0;
+          let count = 0;
+          let restante = '';
+          let primero = '';
+          for (const iterator of prue) {
+            count++;
+            contador = contador + iterator.length + 1;
+            // primero = primero + ' ' + iterator;
+            if (contador >= 40) {
+              restante = restante + ' ' + iterator;
+            }else {
+              if (count === 1) {
+              primero =  iterator;
+              }
+              else{
+              primero = primero + ' ' + iterator;
+              }
+            }
+            console.log(count);
+          }
+          doc.text(this.convertirMayuscula(primero), 22.5, 35, {align: 'center'});
+          doc.text(this.convertirMayuscula(restante), 22.5, 37, {align: 'center'});
+          console.log('1' + primero, '2' + restante);
+          }else {
+            // console.log(prueba);
+          doc.text((this.convertirMayuscula(this.venta.cliente.nombre)), 22.5, 35, {align: 'center'});
+          }
         // tslint:disable-next-line:max-line-length
-        doc.text('Fecha: ' + formatDate(new Date(), 'dd/MM/yyyy', 'en') + '  ' + 'Hora: ' + formatDate(new Date(), 'HH:mm aa', 'en'), 22.5, 37, {align: 'center'});
+        doc.text('Fecha: ' + formatDate(new Date(), 'dd/MM/yyyy', 'en') + '  ' + 'Hora: ' + formatDate(new Date(), 'HH:mm aa', 'en'), 22.5, 39, {align: 'center'});
         doc.setFontSize(5);
 
         for (const c of this.venta.listaItemsDeVenta) {
@@ -521,7 +549,7 @@ export class ConfirmarVentaPage implements OnInit {
       case'factura': {
         console.log('es una facura');
         // tslint:disable-next-line:no-shadowed-variable
-        let index = 39;
+        let index = 41;
         // tslint:disable-next-line:no-shadowed-variable
         const doc = new jsPDF( 'p', 'mm', [45, index  + (this.venta.listaItemsDeVenta.length * 7) + 19 + 25 + 12]);
         doc.addImage(this.LogoEmpresa, 'JPEG', 11, 1, 22, 8);
@@ -546,9 +574,38 @@ export class ConfirmarVentaPage implements OnInit {
         doc.text(this.venta.serieComprobante + '-' + this.digitosFaltantes('0', (8 - this.venta.numeroComprobante.length)) + this.venta.numeroComprobante, 22.5, 27, {align: 'center'});
         doc.text(this.venta.cliente.tipoDoc.toUpperCase() + ': ' + this.venta.cliente.numDoc , 22.5, 31, {align: 'center'});
         doc.text( 'Cliente:', 22.5, 33, {align: 'center'});
-        doc.text( this.convertirMayuscula(this.venta.cliente.nombre), 22.5, 35, {align: 'center'});
+        // doc.text( this.convertirMayuscula(this.venta.cliente.nombre), 22.5, 35, {align: 'center'});
+        if (this.venta.cliente.nombre.length  >= 40){
+          const prue = this.venta.cliente.nombre.split(' ');
+          let contador = 0;
+          let count = 0;
+          let restante = '';
+          let primero = '';
+          for (const iterator of prue) {
+            count++;
+            contador = contador + iterator.length + 1;
+            // primero = primero + ' ' + iterator;
+            if (contador >= 40) {
+              restante = restante + ' ' + iterator;
+            }else {
+              if (count === 1) {
+              primero =  iterator;
+              }
+              else{
+              primero = primero + ' ' + iterator;
+              }
+            }
+            console.log(count);
+          }
+          doc.text(this.convertirMayuscula(primero), 22.5, 35, {align: 'center'});
+          doc.text(this.convertirMayuscula(restante), 22.5, 37, {align: 'center'});
+          console.log('1' + primero, '2' + restante);
+          }else {
+            // console.log(prueba);
+          doc.text((this.convertirMayuscula(this.venta.cliente.nombre)), 22.5, 35, {align: 'center'});
+          }
         // tslint:disable-next-line:max-line-length
-        doc.text('Fecha: ' + formatDate(new Date(), 'dd/MM/yyyy', 'en') + '  ' + 'Hora: ' + formatDate(new Date(), 'HH:mm aa', 'en'), 22.5, 37, {align: 'center'});
+        doc.text('Fecha: ' + formatDate(new Date(), 'dd/MM/yyyy', 'en') + '  ' + 'Hora: ' + formatDate(new Date(), 'HH:mm aa', 'en'), 22.5, 39, {align: 'center'});
         doc.setFontSize(5);
 
         for (const c of this.venta.listaItemsDeVenta) {
@@ -613,7 +670,7 @@ export class ConfirmarVentaPage implements OnInit {
       }
       case 'n. venta': {
         // tslint:disable-next-line:no-shadowed-variable
-        let index = 39;
+        let index = 41;
         // tslint:disable-next-line:no-shadowed-variable
         const doc = new jsPDF( 'p', 'mm', [45, index  + (this.venta.listaItemsDeVenta.length * 7) + 9 + 20 + 12]);
         doc.addImage(this.LogoEmpresa, 'JPEG', 11, 1, 22, 8);
@@ -638,9 +695,38 @@ export class ConfirmarVentaPage implements OnInit {
         doc.text(this.venta.serieComprobante + '-' + this.digitosFaltantes('0', (8 - this.venta.numeroComprobante.length)) + this.venta.numeroComprobante, 22.5, 27, {align: 'center'});
         doc.text(this.venta.cliente.tipoDoc.toUpperCase() + ': ' + this.venta.cliente.numDoc , 22.5, 31, {align: 'center'});
         doc.text( 'Cliente:', 22.5, 33, {align: 'center'});
-        doc.text( this.convertirMayuscula(this.venta.cliente.nombre), 22.5, 35, {align: 'center'});
+        // doc.text( this.convertirMayuscula(this.venta.cliente.nombre), 22.5, 35, {align: 'center'});
+        if (this.venta.cliente.nombre.length  >= 40){
+          const prue = this.venta.cliente.nombre.split(' ');
+          let contador = 0;
+          let count = 0;
+          let restante = '';
+          let primero = '';
+          for (const iterator of prue) {
+            count++;
+            contador = contador + iterator.length + 1;
+            // primero = primero + ' ' + iterator;
+            if (contador >= 40) {
+              restante = restante + ' ' + iterator;
+            }else {
+              if (count === 1) {
+              primero =  iterator;
+              }
+              else{
+              primero = primero + ' ' + iterator;
+              }
+            }
+            console.log(count);
+          }
+          doc.text(this.convertirMayuscula(primero), 22.5, 35, {align: 'center'});
+          doc.text(this.convertirMayuscula(restante), 22.5, 37, {align: 'center'});
+          console.log('1' + primero, '2' + restante);
+          }else {
+            // console.log(prueba);
+          doc.text((this.convertirMayuscula(this.venta.cliente.nombre)), 22.5, 35, {align: 'center'});
+          }
         // tslint:disable-next-line:max-line-length
-        doc.text('Fecha: ' + formatDate(new Date(), 'dd/MM/yyyy', 'en') + '  ' + 'Hora: ' + formatDate(new Date(), 'HH:mm aa', 'en'), 22.5, 37, {align: 'center'});
+        doc.text('Fecha: ' + formatDate(new Date(), 'dd/MM/yyyy', 'en') + '  ' + 'Hora: ' + formatDate(new Date(), 'HH:mm aa', 'en'), 22.5, 39, {align: 'center'});
         doc.setFontSize(5);
 
         for (const c of this.venta.listaItemsDeVenta) {
