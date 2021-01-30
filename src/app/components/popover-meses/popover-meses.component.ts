@@ -14,7 +14,7 @@ export class PopoverMesesComponent implements OnInit {
   ngOnInit() {
     console.log(this.mes);
   }
-  popAction(valor: string) {
+  popAction(valor: number) {
     this.popoverController.dismiss({
       action: valor
     });

@@ -16,6 +16,6 @@ import { PoppoverEditarComponent } from '../../components/poppover-editar/poppov
     IonicModule,
     CajaChicaPageRoutingModule
   ],
-  declarations: [CajaChicaPage, PoppoverEditarComponent]
+  declarations: [CajaChicaPage]
 })
 export class CajaChicaPageModule {}

@@ -1128,6 +1128,7 @@ export class DbDataService {
       }
     }).catch(err => {
       console.log('looooooooooooooooooooooooooongeeeeeeeeeerr', err);
+      // tslint:disable-next-line:no-string-throw
       throw 'fail';
     });
   }
@@ -1203,7 +1204,7 @@ export class DbDataService {
 
     const promesa =  new Promise<void>( (resolve, reject) => {
       this.afs.collection('sedes').doc(sede.toLocaleLowerCase())
-      .collection('serie').doc(idSerie).update({correlacion: correlacionActual + 1});
+      .collection('serie').doc(idSerie).update({correlacion: correlacionActual});
       resolve();
     });
     return promesa;
