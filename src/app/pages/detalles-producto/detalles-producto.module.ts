@@ -18,7 +18,7 @@ import { EditarProductoPage } from '../../modals/editar-producto/editar-producto
     IonicModule,
     DetallesProductoPageRoutingModule
   ],
-  declarations: [DetallesProductoPage, PoppoverEditarComponent, EditarProductoPage],
-  entryComponents: [PoppoverEditarComponent, EditarProductoPage]
+  declarations: [DetallesProductoPage, EditarProductoPage],
+  entryComponents: [EditarProductoPage]
 })
 export class DetallesProductoPageModule {}

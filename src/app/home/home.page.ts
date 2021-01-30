@@ -164,9 +164,22 @@ export class HomePage {
   }
 
   getAll() {
-    this.dataSrvc.ObtenerListaProductosTodos('Andahuaylas').subscribe(todos => {
+    this.dataSrvc.ObtenerListaProductosTodos('Abancay').subscribe(todos => {
       console.log(todos);
       this.todosProductos = todos;
+    });
+  }
+  SUBIRARRAY() {
+    let contador = 0;
+    this.todosProductos.forEach(element => {
+      const arrayLetras = element.nombre.toLowerCase().split(' ');
+      element.arrayLetras = arrayLetras;
+      // console.log('datos array' + contador + arrayLetras);
+      this.dataSrvc.actualizarArrayNombre('abancay', element.id, element.arrayLetras).then(() => {
+        console.log(contador, 'Actualizado array de ', element.nombre);
+        console.log(element.arrayLetras);
+        contador++;
+      });
     });
   }
 
@@ -192,7 +205,7 @@ export class HomePage {
   }
 
   consultar(nombre) {
-    const consulta = this.afs.collection('sedes').doc('andahuaylas').collection('productos', ref => ref.where('nombre', '==', nombre)
+    const consulta = this.afs.collection('sedes').doc('abancay').collection('productos', ref => ref.where('nombre', '==', nombre)
     .limit(1));
     return consulta.snapshotChanges()
             .pipe(map(changes => {
@@ -218,7 +231,7 @@ export class HomePage {
     let contador = 0;
     this.todosProductos.forEach(element => {
       if (element.codigoBarra) {
-        this.afs.collection('sedes').doc('andahuaylas').collection('productos')
+        this.afs.collection('sedes').doc('abancay').collection('productos')
         .doc(element.id).update({codigoBarra: null, codigo: element.codigoBarra.toString()}).then(() => {
           contador++;
           console.log('Actualizado ' + contador + ' ' + element.codigoBarra.toString());
@@ -239,34 +252,35 @@ export class HomePage {
         console.log(obj);
         obj.forEach( (res: any[]) => {
           let contador = 0;
-          // let contadorFallos = 0;
+          let contadorFallos = 0;
           this.listaFallos = [];
           res.forEach(element => {
             element.nombre = element.nombre.toLocaleLowerCase();
             element.codigoBarra = element.codigoBarra.toString();
             console.log(element);
               // tslint:disable-next-line:no-shadowed-variable
-            // const sus = this.consultar(element.nombre).subscribe((data: any) => {
-            //   sus.unsubscribe();
-            //   if (data.length > 0) {
-            //     contador++;
-            //     console.log(contador, data[0].id, element.Producto);
-            //     // this.afs.collection('sedes').doc('abancay').collection('productos')
-            //     // .doc(data[0].id).update({codigoBarra: element.codigoBarra.toString()}).then(() => {
-            //     //   contador++;
-            //     //   console.log('Actualizado ' + contador + ' ' + element.codigoBarra.toString());
-            //     // });
-            //   } else {
-            //     contadorFallos++;
-            //     console.log('FALLOOOOOOOOOOOOOOOOOOOOOOO', contadorFallos, element);
-            //     // this.presentToast('FALLOS' + element.nombre + 'Cant:' + contadorFallos);
-            //     this.listaFallos.push(element);
-            //   }
-            // });
-            this.afs.collection('sedes').doc('andahuaylas').collection('productos').add(element).then( resp => {
-              console.log(contador, 'Ingresado', resp);
-              contador++;
-              }).catch(error => {console.error('No se  pudo ingresar los datos', error); });
+            const sus = this.consultar(element.nombre).subscribe((data: any) => {
+              sus.unsubscribe();
+              if (data.length > 0) {
+                contador++;
+                console.log(contador, data[0].id, element.Producto);
+                this.afs.collection('sedes').doc('abancay').collection('productos')
+                .doc(data[0].id).update({codigoBarra: element.codigoBarra.toString()}).then(() => {
+                  contador++;
+                  console.log('Actualizado ' + contador + ' ' + element.codigoBarra.toString());
+                });
+              } else {
+                contadorFallos++;
+                console.log('FALLOOOOOOOOOOOOOOOOOOOOOOO', contadorFallos, element);
+                // this.presentToast('FALLOS' + element.nombre + 'Cant:' + contadorFallos);
+                this.listaFallos.push(element);
+              }
+            });
+            // nuevos
+            // this.afs.collection('sedes').doc('andahuaylas').collection('productos').add(element).then( resp => {
+            //   console.log(contador, 'Ingresado', resp);
+            //   contador++;
+            //   }).catch(error => {console.error('No se  pudo ingresar los datos', error); });
           });
           // contador++;
           // console.log(contador, ' ', res.dni);
@@ -285,16 +299,4 @@ export class HomePage {
         });
       } );
     }
-    prueba() {
-      const d = new Date();
-      const dia = d.getDate();
-      const mes = d.getMonth() + 1;
-      const anio = d.getFullYear();
-      let contador = 0;
-      while (contador < dia ) {
-        contador ++;
-        console.log(contador);
-      }
-    }
-
 }

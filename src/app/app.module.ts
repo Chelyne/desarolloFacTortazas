@@ -33,11 +33,12 @@ import { ModalDetallesServiciosPage } from './modals/modal-detalles-servicios/mo
 import { PipesModule } from './pipes/pipes.module';
 
 import { NgxQRCodeModule } from '@techiediaries/ngx-qrcode';
+import { PoppoverEditarComponent } from './components/poppover-editar/poppover-editar.component';
 registerLocaleData(localeEs);
 
 @NgModule({
-  declarations: [AppComponent, MenuComponent, ModalDetallesServiciosPage],
-  entryComponents: [ModalDetallesServiciosPage],
+  declarations: [AppComponent, MenuComponent, PoppoverEditarComponent, ModalDetallesServiciosPage],
+  entryComponents: [ModalDetallesServiciosPage, PoppoverEditarComponent],
   imports: [BrowserModule,
     IonicModule.forRoot(),
     AppRoutingModule,

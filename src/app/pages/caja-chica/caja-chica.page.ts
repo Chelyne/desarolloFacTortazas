@@ -573,6 +573,7 @@ export class CajaChicaPage implements OnInit {
     });
     return await modal.present();
   }
+
   buscador(ev) {
     console.log('Reporte general', ev);
   }

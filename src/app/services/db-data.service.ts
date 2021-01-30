@@ -14,6 +14,7 @@ import { formatDate } from '@angular/common';
 import { CDRInterface } from '../models/api-peru/cdr-interface';
 import { ItemDeVentaInterface } from '../models/venta/item-de-venta';
 import * as moment from 'moment';
+import { ContadorDeSerieInterface } from '../models/serie';
 import { database } from 'firebase';
 // import { Console } from 'console';
 
@@ -78,7 +79,7 @@ export class DbDataService {
       this.ObtenerCorrelacionProducto(sede).subscribe((datasede: any) => {
         const correlacionActual = datasede.correlacionProducto;
         if (correlacionActual === correlacion){
-          //Incrementa la correlacion
+          // Incrementa la correlacion
             this.incrementarCorrelacion(correlacionActual + 1, sede1);
         }
       });
@@ -264,7 +265,7 @@ export class DbDataService {
   ObtenerListaDeVentas(sede: string, fachaventas: string) {
     const sede1 = sede.toLocaleLowerCase();
     // tslint:disable-next-line:max-line-length
-    this.ventaCollection = this.afs.collection('sedes').doc(sede1).collection('ventas').doc(fachaventas).collection('ventasDia', ref => ref.orderBy('numeroComprobante', 'desc'));
+    this.ventaCollection = this.afs.collection('sedes').doc(sede1).collection('ventas').doc(fachaventas).collection('ventasDia', ref => ref.orderBy('fechaEmision', 'desc'));
     // tslint:disable-next-line:max-line-length
     // this.productoCollection = this.afs.collection<ProductoInterface>('frutas', ref => ref.where('propietario', '==', propietario).orderBy('fechaRegistro', 'desc'));
     return this.ventas = this.ventaCollection.snapshotChanges()
@@ -498,7 +499,7 @@ export class DbDataService {
   ObtenerListaProductosTodos(sede: string) {
     const sede1 = sede.toLocaleLowerCase();
     // tslint:disable-next-line:max-line-length
-    this.productoCollection = this.afs.collection('sedes').doc(sede1).collection('productos');
+    this.productoCollection = this.afs.collection('sedes').doc(sede1).collection('productos', ref => ref.where('categoria', '==', 'farmacia'));
     // tslint:disable-next-line:max-line-length
     // this.productoCollection = this.afs.collection<ProductoInterface>('frutas', ref => ref.where('propietario', '==', propietario).orderBy('fechaRegistro', 'desc'));
     return this.productos = this.productoCollection.snapshotChanges()
@@ -515,6 +516,15 @@ export class DbDataService {
     const promesa = new Promise<void>((resolve, reject) => {
       this.afs.collection('sedes').doc(sede).collection('productos').doc(id).update({img: url}).then(() => {
         resolve();
+      });
+    });
+    return promesa;
+  }
+ // actualizarArrayNOmnre del producto
+  actualizarArrayNombre(sede: string, id: string, arraynombre: any) {
+    const promesa = new Promise((resolve, reject) => {
+      this.afs.collection('sedes').doc(sede).collection('productos').doc(id).update({arrayNombre: arraynombre}).then(data => {
+        resolve(data);
       });
     });
     return promesa;
@@ -961,46 +971,25 @@ export class DbDataService {
 /*                              consultas para datos de api                   */
 /* -------------------------------------------------------------------------- */
   async guardarDatosEmpresa(empresa: EmpresaInterface) {
-    await this.obtenerEmpresa().subscribe(data => {
-      this.datosEmpresa = data;
+    const promesa =  new Promise( (resolve, reject) => {
+      // NOTE: Si hay una empresa entonces remplazarlo
+      this.afs.collection('empresa').doc('datosEmpresa').update(empresa).then( data => {
+        console.log('datos guaradaso correctamente', data);
+        resolve('exito');
+      })
+      .catch(  error => {
+        console.log('Los datos no se guardaron correctamente', error);
+        reject('fail');
+      });
     });
-
-    if (this.datosEmpresa.length){
-      // Actualizar empresa
-      const id = this.datosEmpresa[0].id;
-      const promesa =  new Promise( (resolve) => {
-        // NOTE: Si hay una empresa entonces remplazarlo
-        this.afs.collection('empresa').doc(id).set(empresa);
-        // tslint:disable-next-line: no-unused-expression
-        resolve;
-      });
-
-      return promesa;
-    } else{
-      // agregar empresa
-      const promesa =  new Promise( (resolve, reject) => {
-        this.afs.collection('empresa').add(empresa);
-        // tslint:disable-next-line: no-unused-expression
-        resolve;
-      });
-      return promesa;
-    }
+    return promesa;
   }
 
   obtenerEmpresa(){
 
-    const empresa = this.afs.collection('empresa');
+    const empresa = this.afs.collection('empresa').doc('datosEmpresa');
 
-    return empresa.snapshotChanges()
-      .pipe(map(
-        changes => {
-          return changes.map(action => {
-            const data = action.payload.doc.data() as ProveedorInterface;
-            data.id = action.payload.doc.id;
-            return data;
-            });
-          }
-      ));
+    return empresa.valueChanges();
 
   }
 
@@ -1036,6 +1025,25 @@ export class DbDataService {
     const promesa =  new Promise<void>( (resolve, reject) => {
       this.afs.collection('sedes').doc(sede.toLocaleLowerCase()).collection('ventas').doc(fechaString)
       .collection('ventasDia').doc(idVenta).update({cdr: cdrVenta});
+      resolve();
+    });
+
+    return promesa;
+  }
+
+  guardarCDRAnulado(idVenta: string, fechaEmision: any, sede: string, cdrAnulacion: CDRInterface){
+    // console.log('guuuuuuuuuuuuuuuardadr cdr', cdrVenta, sede, idVenta);
+    // const idFecha = venta.fechaEmision.getDay() + '-' + venta.fechaEmision.getMonth() + '-' + venta.fechaEmision.getFullYear();
+    // console.log('ffffffffffffffffffffffffffffff',  venta.fechaEmision);
+    const fecha: any = fechaEmision;
+    const fechaFormateada = new Date(moment.unix(fecha.seconds).format('D MMM YYYY H:mm'));
+    const fechaString = formatDate(fechaFormateada, 'dd-MM-yyyy', 'en');
+
+    // console.log('ffffffffeeeeeeeeeecha', fechaString, cdrVenta);
+
+    const promesa =  new Promise<void>( (resolve, reject) => {
+      this.afs.collection('sedes').doc(sede.toLocaleLowerCase()).collection('ventas').doc(fechaString)
+      .collection('ventasDia').doc(idVenta).update({cdrAnulado: cdrAnulacion});
       resolve();
     });
 
@@ -1103,15 +1111,26 @@ export class DbDataService {
             const data = action.payload.data();
             return data;
           }
-          // CLEAN
-          // return changes.map(action => {
-          //   const data = action.payload.doc.data() as ItemDeVentaInterface;
-          //   // data.id = action.payload.doc.id;
-          //   console.log('yyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyy', data);
-          //   return data;
-          //   });
-          }
+        }
       ));
+  }
+
+  obtenerProductosDeVenta2(idProductoVenta: string, sede: string){
+    console.log('Id de un producto de venta en productVEnta', idProductoVenta);
+    return this.afs.collection('sedes').doc(sede.toLocaleLowerCase())
+    .collection('productosVenta').doc(idProductoVenta).ref.get()
+    .then((doc: any) => {
+      if (doc.exists) {
+        return doc.data().productos;
+      } else {
+        console.log('No such document!');
+        return [];
+      }
+    }).catch(err => {
+      console.log('looooooooooooooooooooooooooongeeeeeeeeeerr', err);
+      // tslint:disable-next-line:no-string-throw
+      throw 'fail';
+    });
   }
 
 
@@ -1144,6 +1163,53 @@ export class DbDataService {
     }));
   }
 
+  obtenerCorrelacionTypoDocumento(typoDocumento: string, sede: string) {
+    // tslint:disable-next-line:max-line-length
+
+    const consulta = this.afs.collection('sedes').doc(sede.toLocaleLowerCase())
+    .collection('serie', ref => ref.where('tipoComprobante', '==', typoDocumento));
+
+    return consulta.snapshotChanges().pipe(map(changes => {
+      return changes.map(action => {
+        const data = action.payload.doc.data() as ContadorDeSerieInterface;
+        data.id = action.payload.doc.id;
+        return data;
+      });
+    }));
+
+  }
+
+  // obtenerCorrelacion notaCredito
+  obtenerCorrelacionTypoDocumentoV2(typoDocumento: string, sede: string) {
+
+    return this.afs.collection('sedes').doc(sede.toLocaleLowerCase())
+    .collection('serie').ref.where('tipoComprobante', '==', typoDocumento).limit(1).get()
+    .then((querySnapshot) => {
+      let serie: ContadorDeSerieInterface;
+      querySnapshot.forEach((doc) => {
+        console.log(doc.id, ' => ', doc.data());
+        serie = {...doc.data()};
+        serie.id = doc.id;
+      });
+      return serie;
+    }).catch(err => {
+      console.log('no se pudo obtener serie', err);
+      throw {};
+    });
+  }
+
+  incrementarCorrelacionTypoDocumento(idSerie: string, sede: string, correlacionActual: number) {
+    // const consulta = this.afs.collection('sedes').doc(sede.toLocaleLowerCase())
+    // .collection('serie').doc(idSerie).update({correlacion: correlacionActual + 1});
+
+    const promesa =  new Promise<void>( (resolve, reject) => {
+      this.afs.collection('sedes').doc(sede.toLocaleLowerCase())
+      .collection('serie').doc(idSerie).update({correlacion: correlacionActual});
+      resolve();
+    });
+    return promesa;
+  }
+
   // ACTUALIZAR CORRELACION
 
   ActualizarCorrelacion(id: string, sede: string, correlacion1: number){
@@ -1166,6 +1232,8 @@ export class DbDataService {
 
     return promesa;
   }
+
+
 
   // ObtenerVents por vendedor
 
@@ -1199,5 +1267,18 @@ export class DbDataService {
           return data;
         });
       }));
-}
+  }
+
+  // INGRESO Y EGRESO
+  guardarIngresoEgreso(ingresoEgreso: any, sede: string) {
+    const promesa = new Promise((resolve, reject) => {
+      const fecha = formatDate(new Date(), 'dd-MM-yyyy', 'en');
+      const sede1 =  sede.toLocaleLowerCase();
+      // tslint:disable-next-line:max-line-length
+      this.afs.collection('sedes').doc(sede1).collection('ingresosEgresos').doc(fecha).collection('ingresosEgresosDia').add(ingresoEgreso).then(data => {
+        resolve(data);
+      });
+    });
+    return promesa;
+  }
 }

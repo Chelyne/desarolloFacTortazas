@@ -122,7 +122,7 @@
             {
                 "icon": "receipt-outline",
                 "name": "Ventas",
-                "redirecTo": "#"
+                "redirecTo": "reporte-ventas"
             }
         ]
     },

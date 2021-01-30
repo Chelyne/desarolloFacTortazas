@@ -7,6 +7,7 @@ import { StorageService } from '../../services/storage.service';
 import { ApiPeruService } from 'src/app/services/api/api-peru.service';
 import { LoadingController, MenuController, ToastController } from '@ionic/angular';
 import { formatDate } from '@angular/common';
+import { ContadorDeSerieInterface } from '../../models/serie';
 
 @Component({
   selector: 'app-lista-de-ventas',
@@ -69,6 +70,8 @@ export class ListaDeVentasPage implements OnInit {
     this.dataApi.ObtenerListaDeVentas(this.sedes, this.ventasForm.value.fechadeventa).subscribe(data => {
       if (data.length > 0) {
         this.listaDeVentas = data;
+        console.log(this.listaDeVentas);
+
         this.sinDatos = false;
         this.buscando = false;
       } else {
@@ -93,9 +96,9 @@ export class ListaDeVentasPage implements OnInit {
   //   }
   // }
 
-  enviarUnComprobante(data) {
-    console.log(data);
-    this.apiPeru.enviarASunatAdaptador(data);
+  enviarUnComprobante(venta: VentaInterface) {
+    console.log(venta);
+    this.apiPeru.enviarASunatAdaptador(venta);
   }
 
 
@@ -110,19 +113,50 @@ export class ListaDeVentasPage implements OnInit {
 
   async enviarComprobantesDelDia() {
     // const lista = await this.obtenerListaVentas().then((listaventas: VentaInterface[]) => listaventas);
-    const lista = this.listaDeVentas;
+    const lista = [...this.listaDeVentas];
     if (lista.length > 0) {
       // console.log(lista);
       await this.presentLoading('Enviando comprobantes, Por favor espere...');
       for (const venta of lista) {
         // this.contadorComprobantes++;
         console.log(venta);
+        let cdrResponse: any;
         if ((venta.tipoComprobante === 'boleta' || venta.tipoComprobante === 'factura') && !venta.cdr) {
-          await this.apiPeru.enviarASunatAdaptador(venta).then(cdr => {
+
+          cdrResponse = await this.apiPeru.enviarASunatAdaptador(venta).then(cdr => {
             console.log(cdr);
+            return cdr;
+          }).catch(() => {
+            return {
+              sunatResponse: {
+                success: false
+              }
+            };
           });
+
         } else {
           console.log('Es nota de venta' , venta);
+        }
+        // tslint:disable-next-line:max-line-length
+        // if (venta.estadoVenta === 'anulado' && ((venta.cdr && venta.cdr.sunatResponse.success) || (cdrResponse && cdrResponse.sunatResponse.success)) ) {
+        //   console.log('ENVIAMOOOOO 11111111 JEJEJE');
+        //   if (!venta.cdrAnulado){
+        //     await this.apiPeru.enviarNotaDeCreditoAdaptador2(venta);
+        //   }
+        // }
+      }
+      const lista2 = [...this.listaDeVentas];
+      for (const venta of lista2) {
+         // tslint:disable-next-line:max-line-length
+        if (venta.estadoVenta === 'anulado' && venta.cdr && venta.cdr.sunatResponse.success) {
+          console.log('ENVIAMOOOOO 11111111 JEJEJE');
+          if (!venta.cdrAnulado){
+            await this.apiPeru.enviarNotaDeCreditoAdaptador2(venta);
+          }
+        } else {
+          if (venta.estadoVenta === 'anulado') {
+            console.log('comprobante ANULADO aun no emitido', venta);
+          }
         }
       }
       this.loading.dismiss();
