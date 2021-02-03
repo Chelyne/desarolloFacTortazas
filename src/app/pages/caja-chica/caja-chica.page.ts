@@ -19,6 +19,7 @@ import { isNullOrUndefined } from 'util';
 import { CajaChicaInterface } from '../../models/CajaChica';
 import { jsPDF } from 'jspdf';
 import { redondeoDecimal } from 'src/app/global/funciones-globales';
+import { promise } from 'protractor';
 // tslint:disable-next-line:class-name
 interface jsPDFWithPlugin extends jsPDF {
 
@@ -53,6 +54,8 @@ export class CajaChicaPage implements OnInit {
   productosArray;
   contadorConsultaProdcutos = 0;
   apilados = [];
+  Ingresos = 0;
+  Egresos = 0;
   constructor(private menuCtrl: MenuController,
               private router: Router,
               private afs: AngularFirestore,
@@ -83,7 +86,7 @@ export class CajaChicaPage implements OnInit {
       doc.addImage(this.LogoEmpresa, 'JPEG', 370, 20, 30, 15);
       doc.setLineWidth(0.5);
       doc.line(120, 35, 290, 35);
-      doc.rect(30, 40, 387, 85); // empty square
+      doc.rect(30, 40, 387, 100); // empty square
       doc.setFontSize(12);
       doc.text( 'Empresa:', 40, 55);
       doc.text( 'RUC:', 40, 70);
@@ -100,8 +103,10 @@ export class CajaChicaPage implements OnInit {
       let totalBoletas = 0;
       let totalFacturas = 0;
       let totalNotas = 0;
+      doc.text( 'Ingresos: ' + this.Ingresos.toFixed(2) , 40, 130);
+      doc.text( 'Egresos: ' + this.Egresos.toFixed(2) , 180, 130);
       if (isNullOrUndefined(data)) {
-      doc.text( 'No se encontraron registros.', 40, 135);
+      doc.text( 'No se encontraron registros.', 40, 150);
       } else {
         for (const item of data) {
           if (item.estadoVenta === 'anulado'){
@@ -138,9 +143,9 @@ export class CajaChicaPage implements OnInit {
         doc.text( 'Total N. Venta: ' + totalNotas.toFixed(2), 300, 100);
         doc.autoTable({
           // tslint:disable-next-line:max-line-length
-          head: [['#', 'Tipo transacción', 'Tipo Doc.', 'Documento', 'Fecha emisión', 'Cliente' , 'N. Doc.', 'Estado', 'Total']],
+          head: [['#', 'Tip. Trans.', 'Tipo Doc.', 'Documento', 'Fecha emisión', 'Cliente' , 'N. Doc.', 'Estado', 'M pago', 'Total']],
           body: this.datosReporteVentaGeneral,
-          startY: 135,
+          startY: 150,
           theme: 'grid',
           // foot:  [['ID', 'Name', 'Country']],
         });
@@ -149,6 +154,7 @@ export class CajaChicaPage implements OnInit {
     });
   }
   consultaVentaReporteGeneral() {
+    this.consultaIngresoEgreso();
     // tslint:disable-next-line:prefer-const
     let productosArray;
     const dia = formatDate(new Date(), 'dd-MM-yyyy', 'en');
@@ -175,7 +181,8 @@ export class CajaChicaPage implements OnInit {
              datos.fechaEmision ? this.datePipe.transform(new Date(moment.unix(datos.fechaEmision.seconds).format('D MMM YYYY H:mm')), 'short') : null,
              datos.cliente.nombre.toUpperCase() || null,
              datos.cliente.numDoc || null,
-             datos.estadoVenta,
+             this.convertirMayuscula(datos.estadoVenta),
+             this.convertirMayuscula(datos.tipoPago),
              redondeoDecimal( datos.totalPagarVenta, 2).toFixed(2)
             ];
             this.datosReporteVentaGeneral.push(formato);
@@ -185,6 +192,98 @@ export class CajaChicaPage implements OnInit {
       });
     });
     return promesa;
+  }
+  consultaIngresoEgreso() {
+    this.Ingresos = 0;
+    this.Egresos = 0;
+    const dia = formatDate(new Date(), 'dd-MM-yyyy', 'en');
+    const promesa = new Promise((resolve, reject) => {
+      this.dataApi.ObtenerIngresoEgresoDia(this.sede.toLowerCase(), dia).subscribe( snapshot => {
+        console.log('snapshot', snapshot);
+        if (snapshot.length === 0) {
+          this.Ingresos = 0;
+          this.Egresos = 0;
+          resolve(null);
+        } else {
+          for (const datos of snapshot) {
+            if (datos.tipo === 'ingreso'){
+              this.Ingresos += Number(datos.monto);
+              console.log(Number(datos.monto));
+            }
+            if (datos.tipo === 'egreso'){
+              this.Egresos += Number(datos.monto);
+            }
+          }
+          resolve(snapshot);
+          console.log(this.Ingresos, this.Egresos);
+        }
+      });
+
+    });
+    return promesa;
+
+  }
+  ReportePDFDiaIngresoEgreso(){
+    this.consultaIngresoEgreso().then((data: any) => {
+      console.log('datos', data);
+      const doc = new jsPDF('portrait', 'px', 'a4') as jsPDFWithPlugin;
+      doc.setFontSize(16);
+      doc.setFont('bold');
+      doc.text('Reporte General de ventas POS', 120, 30);
+      doc.addImage(this.LogoEmpresa, 'JPEG', 370, 20, 30, 15);
+      doc.setLineWidth(0.5);
+      doc.line(120, 35, 290, 35);
+      doc.rect(30, 40, 387, 60); // empty square
+      doc.setFontSize(12);
+      doc.text( 'Empresa:', 40, 55);
+      doc.text( 'RUC:', 40, 70);
+      doc.text( 'Veterinarias Tooby ,' + this.sede, 75, 55);
+      doc.text( this.RUC, 64, 70);
+      doc.setFontSize(12);
+      doc.text( 'Fecha reporte:', 300, 55);
+      doc.text( formatDate(new Date(), 'dd-MM-yyyy', 'en'), 355, 55);
+      if (isNullOrUndefined(data)) {
+        doc.text( 'No se encontraron registros.', 40, 115);
+        } else {
+          let ingreso = 0;
+          let egreso = 0;
+          let contador = 0;
+          // tslint:disable-next-line:prefer-const
+          let datosEgresoIngreso = [];
+          for (const item of data) {
+            contador++;
+            if (item.tipo === 'ingreso'){
+              ingreso += Number(item.monto);
+              console.log(Number(item.monto));
+            }
+            if (item.tipo === 'egreso'){
+              egreso += Number(item.monto);
+            }
+            // console.log(doc.id, '=>', doc.data());
+            let formato: any;
+            formato = [
+              contador,
+              item.tipo.toUpperCase(),
+              item.detalles.toUpperCase(),
+              item.monto
+            ];
+            datosEgresoIngreso.push(formato);
+
+          }
+          doc.text( 'Ingresos: ' + ingreso.toFixed(2)  , 40, 85);
+          doc.text( 'Egresos: ' + egreso.toFixed(2) , 180, 85);
+          doc.autoTable({
+            // tslint:disable-next-line:max-line-length
+            head: [['#', 'Tipo', 'Detalles', 'Monto']],
+            body: datosEgresoIngreso,
+            startY: 115 ,
+            theme: 'grid',
+            // foot:  [['ID', 'Name', 'Country']],
+          });
+        }
+      doc.save('reporteIngresoEgreso ' + formatDate(new Date(), 'dd-MM-yyyy', 'en') + '.pdf');
+
+    });
   }
   ReportePuntoVenta(datosCaja: CajaChicaInterface) {
     console.log('fecha consulta', datosCaja.FechaConsulta , ' dni', datosCaja.dniVendedor);
@@ -650,6 +749,9 @@ export class CajaChicaPage implements OnInit {
       this.convertirFecha(this.listaCajaChica);
       console.log('lista de caja chica', this.listaCajaChica);
     });
+  }
+  convertirMayuscula(letra: string) {
+    return letra.charAt(0).toUpperCase() + letra.slice(1);
   }
   convertirFecha(lista) {
     lista.forEach(element => {

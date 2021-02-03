@@ -822,6 +822,19 @@ export class DbDataService {
       });
     }));
   }
+  ObtenerIngresoEgresoDia(sede: string, dia: string) {
+    console.log('dia', dia);
+    let resultado: any;
+    resultado = this.afs.collection('sedes').doc(sede.toLocaleLowerCase()).collection('ingresosEgresos').doc(dia).collection('ingresosEgresosDia');
+    return resultado.snapshotChanges()
+    .pipe(map((changes: any) => {
+      return changes.map(action => {
+        const data = action.payload.doc.data();
+        data.idVenta = action.payload.doc.id;
+        return data;
+      });
+    }));
+  }
   ObtenerReporteVentaDiaVendedor(sede: string, dia: string, dniVendedor: string) {
     // console.log('service dia', dia);
     // tslint:disable-next-line:max-line-length
