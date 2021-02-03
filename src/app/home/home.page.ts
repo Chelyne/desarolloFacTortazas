@@ -244,59 +244,59 @@ export class HomePage {
     this.exportar.exportAsExcelFile(this.listaFallos, 'faltantes');
   }
 
-  subirDatos() {
-      // tslint:disable-next-line:prefer-const
-      let data = this.categorias.getData();
-      // console.log(this.datos);
-      data.forEach( (obj: []) => {
-        console.log(obj);
-        obj.forEach( (res: any[]) => {
-          let contador = 0;
-          let contadorFallos = 0;
-          this.listaFallos = [];
-          res.forEach(element => {
-            element.nombre = element.nombre.toLocaleLowerCase();
-            element.codigoBarra = element.codigoBarra.toString();
-            console.log(element);
-              // tslint:disable-next-line:no-shadowed-variable
-            const sus = this.consultar(element.nombre).subscribe((data: any) => {
-              sus.unsubscribe();
-              if (data.length > 0) {
-                contador++;
-                console.log(contador, data[0].id, element.Producto);
-                this.afs.collection('sedes').doc('abancay').collection('productos')
-                .doc(data[0].id).update({codigoBarra: element.codigoBarra.toString()}).then(() => {
-                  contador++;
-                  console.log('Actualizado ' + contador + ' ' + element.codigoBarra.toString());
-                });
-              } else {
-                contadorFallos++;
-                console.log('FALLOOOOOOOOOOOOOOOOOOOOOOO', contadorFallos, element);
-                // this.presentToast('FALLOS' + element.nombre + 'Cant:' + contadorFallos);
-                this.listaFallos.push(element);
-              }
-            });
-            // nuevos
-            // this.afs.collection('sedes').doc('andahuaylas').collection('productos').add(element).then( resp => {
-            //   console.log(contador, 'Ingresado', resp);
-            //   contador++;
-            //   }).catch(error => {console.error('No se  pudo ingresar los datos', error); });
-          });
-          // contador++;
-          // console.log(contador, ' ', res.dni);
-          // const dni = res.dni.toString();
-          // const dato = {
-          //   dni: res.dni.toString(),
-          //   codigo: res.codigo.toString(),
-          //   nombres: res.nombres.toString(),
-          //   apellidos: res.apellidos.toString(),
-          //   carrera : res.carrera.toString(),
-          //   facultad : res.facultad.toString(),
-          //   tipo : res.tipo.toString()
-          // };
-          // console.log('LISTA FALLOS', this.listaFallos);
-          console.log(res);
-        });
-      } );
-    }
+  // subirDatos() {
+  //     // tslint:disable-next-line:prefer-const
+  //     let data = this.categorias.getData();
+  //     // console.log(this.datos);
+  //     data.forEach( (obj: []) => {
+  //       console.log(obj);
+  //       obj.forEach( (res: any[]) => {
+  //         let contador = 0;
+  //         let contadorFallos = 0;
+  //         this.listaFallos = [];
+  //         res.forEach(element => {
+  //           element.nombre = element.nombre.toLocaleLowerCase();
+  //           element.codigo = element.codigo.toString();
+  //           console.log(element);
+  //             // tslint:disable-next-line:no-shadowed-variable
+  //           // const sus = this.consultar(element.nombre).subscribe((data: any) => {
+  //           //   sus.unsubscribe();
+  //           //   if (data.length > 0) {
+  //           //     contador++;
+  //           //     console.log(contador, data[0].id, element.Producto);
+  //           //     this.afs.collection('sedes').doc('abancay').collection('productos')
+  //           //     .doc(data[0].id).update({codigo: element.codigo.toString()}).then(() => {
+  //           //       contador++;
+  //           //       console.log('Actualizado ' + contador + ' ' + element.codigo.toString());
+  //           //     });
+  //           //   } else {
+  //           //     contadorFallos++;
+  //           //     console.log('FALLOOOOOOOOOOOOOOOOOOOOOOO', contadorFallos, element);
+  //           //     // this.presentToast('FALLOS' + element.nombre + 'Cant:' + contadorFallos);
+  //           //     this.listaFallos.push(element);
+  //           //   }
+  //           // });
+  //           // nuevos
+  //           this.afs.collection('sedes').doc('abancay').collection('productos').add(element).then( resp => {
+  //             console.log(contador, 'Ingresado', resp);
+  //             contador++;
+  //             }).catch(error => {console.error('No se  pudo ingresar los datos', error); });
+  //         });
+  //         // contador++;
+  //         // console.log(contador, ' ', res.dni);
+  //         // const dni = res.dni.toString();
+  //         // const dato = {
+  //         //   dni: res.dni.toString(),
+  //         //   codigo: res.codigo.toString(),
+  //         //   nombres: res.nombres.toString(),
+  //         //   apellidos: res.apellidos.toString(),
+  //         //   carrera : res.carrera.toString(),
+  //         //   facultad : res.facultad.toString(),
+  //         //   tipo : res.tipo.toString()
+  //         // };
+  //         // console.log('LISTA FALLOS', this.listaFallos);
+  //         console.log(res);
+  //       });
+  //     } );
+  //   }
 }

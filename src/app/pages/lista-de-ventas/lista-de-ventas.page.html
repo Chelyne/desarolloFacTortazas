@@ -19,11 +19,11 @@
             </ion-button>
         </ion-item>
 
-        <ion-item *ngIf="listaDeVentas.length > 0">
+        <!-- <ion-item *ngIf="listaDeVentas.length > 0">
             <ion-button slot="end" (click)="enviarComprobantesDelDia()">
                 <ion-label color="light">Enviar todos los comprobantes</ion-label>
             </ion-button>
-        </ion-item>
+        </ion-item> -->
         <!-- <ion-grid>
             <ion-row>
                 <ion-col size="12 " size-xs="12" size-sm="12" size-md="6" size-lg="3">
@@ -101,8 +101,8 @@
     </form>
     <div class="sinDatos" *ngIf="sinDatos===true">
         <div class="textoSindatos">
-          <ion-icon class="icono" name="people-outline" color="medium"></ion-icon> <br><br>
-          <ion-label color="medium">No existe ningun usuario registrado</ion-label> <br> <br>
+          <ion-icon class="icono" name="book-outline" color="medium"></ion-icon> <br><br>
+          <ion-label color="medium">No existe ningun comprobante registrado</ion-label> <br> <br>
           <!-- <ion-button [routerLink]="[ '/home']" fill="outline" shape="round">Seguir comprando
             <ion-icon name="chevron-forward-outline"></ion-icon>
           </ion-button> -->
