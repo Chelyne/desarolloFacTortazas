@@ -86,7 +86,7 @@ export class CajaChicaPage implements OnInit {
       doc.addImage(this.LogoEmpresa, 'JPEG', 370, 20, 30, 15);
       doc.setLineWidth(0.5);
       doc.line(120, 35, 290, 35);
-      doc.rect(30, 40, 387, 100); // empty square
+      doc.rect(30, 40, 387, 115); // empty square
       doc.setFontSize(12);
       doc.text( 'Empresa:', 40, 55);
       doc.text( 'RUC:', 40, 70);
@@ -103,16 +103,24 @@ export class CajaChicaPage implements OnInit {
       let totalBoletas = 0;
       let totalFacturas = 0;
       let totalNotas = 0;
-      doc.text( 'Ingresos: ' + this.Ingresos.toFixed(2) , 40, 130);
-      doc.text( 'Egresos: ' + this.Egresos.toFixed(2) , 180, 130);
+      let totalEfectivo = 0;
+      let totalETarjeta = 0;
+
+
       if (isNullOrUndefined(data)) {
-      doc.text( 'No se encontraron registros.', 40, 150);
+      doc.text( 'No se encontraron registros.', 40, 165);
       } else {
         for (const item of data) {
           if (item.estadoVenta === 'anulado'){
             totalAnulados += item.totalPagarVenta;
           }else {
             totalVentas += item.totalPagarVenta;
+            if (item.tipoPago === 'efectivo') {
+              totalEfectivo += item.totalPagarVenta;
+            }
+            if (item.tipoPago === 'tarjeta') {
+              totalETarjeta += item.totalPagarVenta;
+            }
           }
           if (item.tipoComprobante === 'boleta'){
             numBoletas++;
@@ -141,11 +149,16 @@ export class CajaChicaPage implements OnInit {
         doc.text( 'Total Facturas: ' + totalFacturas.toFixed(2), 40, 100);
         doc.text( 'Total Boletas: ' + totalBoletas.toFixed(2), 180, 100);
         doc.text( 'Total N. Venta: ' + totalNotas.toFixed(2), 300, 100);
+        doc.text( 'Ingresos: ' + this.Ingresos.toFixed(2) , 40, 130);
+        doc.text( 'Egresos: ' + this.Egresos.toFixed(2) , 180, 130);
+        doc.text( 'Total Efectivo: ' + totalEfectivo.toFixed(2) , 40, 145);
+        doc.text( 'Total Tarjeta: ' + totalETarjeta.toFixed(2) , 180, 145);
+        doc.text( 'Total Caja: ' + (totalVentas + this.Ingresos - this.Egresos - totalETarjeta).toFixed(2) , 300, 145);
         doc.autoTable({
           // tslint:disable-next-line:max-line-length
           head: [['#', 'Tip. Trans.', 'Tipo Doc.', 'Documento', 'Fecha emisión', 'Cliente' , 'N. Doc.', 'Estado', 'M pago', 'Total']],
           body: this.datosReporteVentaGeneral,
-          startY: 150,
+          startY: 165,
           theme: 'grid',
           // foot:  [['ID', 'Name', 'Country']],
         });
@@ -229,7 +242,7 @@ export class CajaChicaPage implements OnInit {
       const doc = new jsPDF('portrait', 'px', 'a4') as jsPDFWithPlugin;
       doc.setFontSize(16);
       doc.setFont('bold');
-      doc.text('Reporte General de ventas POS', 120, 30);
+      doc.text('Reporte de Ingresos y Egresos', 120, 30);
       doc.addImage(this.LogoEmpresa, 'JPEG', 370, 20, 30, 15);
       doc.setLineWidth(0.5);
       doc.line(120, 35, 290, 35);
