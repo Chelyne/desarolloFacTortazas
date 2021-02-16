@@ -220,7 +220,7 @@ export class HomePage {
   }
 
   getProductos() {
-    const sus = this.dataSrvc.ObtenerListaProductosSinCat(this.storage.datosAdmi.sede).subscribe(datos => {
+    const sus = this.dataSrvc.ObtenerListaProductosSinLIMITE(this.storage.datosAdmi.sede).subscribe(datos => {
       sus.unsubscribe();
       console.log(datos);
       this.todosProductos = datos;

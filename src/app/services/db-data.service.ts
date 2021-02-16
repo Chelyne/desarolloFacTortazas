@@ -201,6 +201,22 @@ export class DbDataService {
   ObtenerListaProductosSinCat(sede: string) {
     const sede1 = sede.toLocaleLowerCase();
     // tslint:disable-next-line:max-line-length
+    this.productoCollection = this.afs.collection('sedes').doc(sede1).collection('productos', ref => ref.orderBy('fechaRegistro', 'desc').limit(20));
+    // tslint:disable-next-line:max-line-length
+    // this.productoCollection = this.afs.collection<ProductoInterface>('frutas', ref => ref.where('propietario', '==', propietario).orderBy('fechaRegistro', 'desc'));
+    return this.productos = this.productoCollection.snapshotChanges()
+      .pipe(map(changes => {
+        return changes.map(action => {
+          const data = action.payload.doc.data() as ProductoInterface;
+          data.id = action.payload.doc.id;
+          return data;
+        });
+      }));
+  }
+
+  ObtenerListaProductosSinLIMITE(sede: string) {
+    const sede1 = sede.toLocaleLowerCase();
+    // tslint:disable-next-line:max-line-length
     this.productoCollection = this.afs.collection('sedes').doc(sede1).collection('productos', ref => ref.orderBy('fechaRegistro', 'desc'));
     // tslint:disable-next-line:max-line-length
     // this.productoCollection = this.afs.collection<ProductoInterface>('frutas', ref => ref.where('propietario', '==', propietario).orderBy('fechaRegistro', 'desc'));
@@ -217,7 +233,7 @@ export class DbDataService {
   ObtenerListaCategorias(sede: string) {
     const sede1 = sede.toLocaleLowerCase();
     // tslint:disable-next-line:max-line-length
-    this.categoriaCollection = this.afs.collection('sedes').doc(sede1).collection('categorias', ref => ref.orderBy('fechaRegistro', 'desc'));
+    this.categoriaCollection = this.afs.collection('sedes').doc(sede1).collection('categorias', ref => ref.orderBy('categoria', 'asc'));
     // tslint:disable-next-line:max-line-length
     // this.productoCollection = this.afs.collection<ProductoInterface>('frutas', ref => ref.where('propietario', '==', propietario).orderBy('fechaRegistro', 'desc'));
     return this.categorias = this.categoriaCollection.snapshotChanges()
