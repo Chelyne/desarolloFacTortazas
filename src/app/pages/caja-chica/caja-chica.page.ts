@@ -105,9 +105,20 @@ export class CajaChicaPage implements OnInit {
       let totalNotas = 0;
       let totalEfectivo = 0;
       let totalETarjeta = 0;
-
-
+      doc.text( 'Ingresos: ' + this.Ingresos.toFixed(2) , 40, 130);
+      doc.text( 'Egresos: ' + this.Egresos.toFixed(2) , 180, 130);
       if (isNullOrUndefined(data)) {
+      doc.text( 'Total Caja: ' + (totalVentas + this.Ingresos - this.Egresos - totalETarjeta).toFixed(2) , 300, 145);
+      doc.text( 'Total Venta: ' + totalVentas.toFixed(2), 40, 115);
+      doc.text( 'Total Anulados: ' + totalAnulados.toFixed(2), 180, 115);
+      doc.text( 'N° Facturas: ' + numFacturas, 40, 85);
+      doc.text( 'N° Boletas: ' + numBoletas, 180, 85);
+      doc.text( 'N° Notas de Venta: ' + numNotas, 300, 85);
+      doc.text( 'Total Facturas: ' + totalFacturas.toFixed(2), 40, 100);
+      doc.text( 'Total Boletas: ' + totalBoletas.toFixed(2), 180, 100);
+      doc.text( 'Total N. Venta: ' + totalNotas.toFixed(2), 300, 100);
+      doc.text( 'Total Efectivo: ' + totalEfectivo.toFixed(2) , 40, 145);
+      doc.text( 'Total Tarjeta: ' + totalETarjeta.toFixed(2) , 180, 145);
       doc.text( 'No se encontraron registros.', 40, 165);
       } else {
         for (const item of data) {
@@ -149,8 +160,6 @@ export class CajaChicaPage implements OnInit {
         doc.text( 'Total Facturas: ' + totalFacturas.toFixed(2), 40, 100);
         doc.text( 'Total Boletas: ' + totalBoletas.toFixed(2), 180, 100);
         doc.text( 'Total N. Venta: ' + totalNotas.toFixed(2), 300, 100);
-        doc.text( 'Ingresos: ' + this.Ingresos.toFixed(2) , 40, 130);
-        doc.text( 'Egresos: ' + this.Egresos.toFixed(2) , 180, 130);
         doc.text( 'Total Efectivo: ' + totalEfectivo.toFixed(2) , 40, 145);
         doc.text( 'Total Tarjeta: ' + totalETarjeta.toFixed(2) , 180, 145);
         doc.text( 'Total Caja: ' + (totalVentas + this.Ingresos - this.Egresos - totalETarjeta).toFixed(2) , 300, 145);
