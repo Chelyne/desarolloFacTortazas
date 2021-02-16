@@ -38,7 +38,7 @@ export class PuntoVentaPage implements OnInit {
   sinResultados: string;
 
   numeros = [1, 2, 3, 4, 5, 6, 7, 8, 9, 0, '.'];
-  categorias = [];
+  categorias;
   listaProductos = [];
   categoria: string;
   categoriaP;
@@ -47,6 +47,7 @@ export class PuntoVentaPage implements OnInit {
   private suscripcionProducto: Subscription;
 
   sinDatos;
+  sinCategorias;
 
   cliente;
 
@@ -108,7 +109,16 @@ export class PuntoVentaPage implements OnInit {
   }
 
   ngOnInit() {
-    this.categorias = this.categoriasService.getcategoriasNegocio('petshop');
+    this.dataApi.ObtenerListaCategorias(this.sede).subscribe(categorias => {
+      if (categorias.length > 0) {
+        this.categorias = categorias;
+        console.log('CATS: ', this.categorias);
+        this.sinCategorias = false;
+      } else {
+        this.sinCategorias = true;
+      }
+    });
+    // this.categorias = this.categoriasService.getcategoriasNegocio('petshop'); //categorias estaticos
     this.sinDatos = false;
 
     if (!isNullOrUndefined(this.storage.listaVenta)) {
@@ -167,7 +177,6 @@ export class PuntoVentaPage implements OnInit {
     }
     this.categoria = categoria;
     // const propietario = this.storage.datosNegocio.correo;
-    const sede1 = 'andahuaylas';
     if (document.getElementById(this.categoria)) {
       document.getElementById(this.categoria).scrollIntoView({
         behavior: 'smooth',
@@ -176,7 +185,7 @@ export class PuntoVentaPage implements OnInit {
       });
 
     }
-    this.dataApi.ObtenerProductosCategoria(sede1, categoria).subscribe(datos => {
+    this.dataApi.ObtenerProductosCategoria(this.sede, categoria).subscribe(datos => {
       if (datos.length > 0) {
         this.listaProductos =  datos;
         this.sinDatos = false;

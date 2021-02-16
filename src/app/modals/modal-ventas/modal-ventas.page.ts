@@ -81,12 +81,13 @@ export class ModalVentasPage implements OnInit {
     }
 
   obtenerTipoComprobante(serie: string) {
-    switch (serie) {
-      case 'B001':
+    const letra = serie[0];
+    switch (letra) {
+      case 'B':
         return 'boleta';
-      case 'F001':
+      case 'F':
         return 'factura';
-      case 'NV01':
+      case 'N':
         return 'n. venta';
     }
   }

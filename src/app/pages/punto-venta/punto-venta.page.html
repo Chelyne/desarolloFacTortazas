@@ -274,11 +274,23 @@
           <!-- <img src="https://images.vexels.com/media/users/3/153874/isolated/preview/5147b9d69f00249a07732a905bcb251e-buscar-configuraci--n-icono-de-trazo-de-color-by-vexels.png" alt=""> -->
                 <!-- </ion-content> -->
                 <ion-content class="categoriasContent" *ngIf="!listaProductos.length && !this.categoria && !productos">
+                  <div class="sinDatos" *ngIf="sinCategorias===true">
+                    <div class="textoSindatos">
+                        <ion-icon class="icono" name="gift-outline" color="medium"></ion-icon> <br><br>
+                        <ion-label color="medium">No hay categorias</ion-label>
+                    </div>
+                </div>
+                <div class="cargando" *ngIf="(sinCategorias===null || sinCategorias===undefined)">
+                    <div class="textoCargando">
+                        <ion-spinner name="lines-small" color="primary"></ion-spinner>
+                    </div>
+                </div>
                     <ion-grid class="categorias">
                         <ion-row>
                             <ion-col size-lg="3" size-md="3" size-sm="6" size-xs="6" *ngFor="let categoria of categorias">
                                 <ion-card (click)="listaProductosCategoria(categoria.categoria)">
-                                    <img [src]="categoria.img" alt="">
+                                    <img *ngIf="categoria.img" [src]="categoria.img" alt="">
+                                    <img *ngIf="!categoria.img" src="../../../assets/img/clinica.png" alt="">
                                     <ion-label [style.color]="categoria.color">{{categoria.categoria | uppercase}}</ion-label>
                                 </ion-card>
                             </ion-col>
