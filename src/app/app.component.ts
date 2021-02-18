@@ -33,9 +33,9 @@ export class AppComponent {
     // private localNotifications: LocalNotifications,
     private route: Router,
     private fcmSrv: AuthServiceService,
-    private splitPaneData: SpliPaneService
+    // private splitPaneData: SpliPaneService
   ) {
-    this.splitPaneData.setSplitPane(true);
+    // this.splitPaneData.setSplitPane(true);
     this.initializeApp();
     // this.platform.ready().then( () => {
     //   this.localNotifications.on('click').subscribe (res => {
@@ -46,6 +46,7 @@ export class AppComponent {
   }
   initializeApp() {
     this.platform.ready().then(() => {
+      this.menuCtrl.enable(false);
       this.storage.cargarDatosAdmiStorage().then(() => {
         this.storage.cargarVentsaCongeladas();
         this.statusBar.styleDefault();
@@ -53,7 +54,6 @@ export class AppComponent {
         this.splashScreen.hide();
         this.componentes = this.menu.getMenu();
         console.log('menu', this.componentes);
-        this.menuCtrl.enable(false);
         // this.fcmSrv.escuchaNotificaciones().pipe(
         //   tap(msg => {
         //     // this.presentToast(msg.body);
