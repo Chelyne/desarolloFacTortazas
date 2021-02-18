@@ -21,6 +21,7 @@ import { ClienteInterface } from '../../models/cliente-interface';
 import { AgregarEditarClientePage } from '../../modals/agregar-editar-cliente/agregar-editar-cliente.page';
 import { ModalAgregarProductoPage } from '../../modals/modal-agregar-producto/modal-agregar-producto.page';
 import { ModalVentasPage } from '../../modals/modal-ventas/modal-ventas.page';
+import { IngresoEgresoPage } from '../../modals/ingreso-egreso/ingreso-egreso.page';
 
 @Component({
   selector: 'app-punto-venta',
@@ -37,7 +38,7 @@ export class PuntoVentaPage implements OnInit {
   sinResultados: string;
 
   numeros = [1, 2, 3, 4, 5, 6, 7, 8, 9, 0, '.'];
-  categorias = [];
+  categorias;
   listaProductos = [];
   categoria: string;
   categoriaP;
@@ -46,6 +47,7 @@ export class PuntoVentaPage implements OnInit {
   private suscripcionProducto: Subscription;
 
   sinDatos;
+  sinCategorias;
 
   cliente;
 
@@ -79,6 +81,12 @@ export class PuntoVentaPage implements OnInit {
 
     cajaChica = false;
 
+    // MODAL INGRESOS EGRESOS
+
+    saldo = 0;
+    modalButtonTag: string;
+    modalSaldo: number;
+
   constructor(private menuCtrl: MenuController,
               private categoriasService: CategoriasService,
               private pagination: PaginationProductosService,
@@ -101,7 +109,16 @@ export class PuntoVentaPage implements OnInit {
   }
 
   ngOnInit() {
-    this.categorias = this.categoriasService.getcategoriasNegocio('petshop');
+    this.dataApi.ObtenerListaCategorias(this.sede).subscribe(categorias => {
+      if (categorias.length > 0) {
+        this.categorias = categorias;
+        console.log('CATS: ', this.categorias);
+        this.sinCategorias = false;
+      } else {
+        this.sinCategorias = true;
+      }
+    });
+    // this.categorias = this.categoriasService.getcategoriasNegocio('petshop'); //categorias estaticos
     this.sinDatos = false;
 
     if (!isNullOrUndefined(this.storage.listaVenta)) {
@@ -160,7 +177,6 @@ export class PuntoVentaPage implements OnInit {
     }
     this.categoria = categoria;
     // const propietario = this.storage.datosNegocio.correo;
-    const sede1 = 'andahuaylas';
     if (document.getElementById(this.categoria)) {
       document.getElementById(this.categoria).scrollIntoView({
         behavior: 'smooth',
@@ -169,7 +185,7 @@ export class PuntoVentaPage implements OnInit {
       });
 
     }
-    this.dataApi.ObtenerProductosCategoria(sede1, categoria).subscribe(datos => {
+    this.dataApi.ObtenerProductosCategoria(this.sede, categoria).subscribe(datos => {
       if (datos.length > 0) {
         this.listaProductos =  datos;
         this.sinDatos = false;
@@ -427,6 +443,7 @@ export class PuntoVentaPage implements OnInit {
       }
       // tslint:disable-next-line:max-line-length
       if (this.buscarNombre) {
+        // BUSCA POR NOMBRE
         // tslint:disable-next-line:max-line-length
         this.afs.collection('sedes').doc(this.storage.datosAdmi.sede.toLowerCase()).collection('productos', res => res.orderBy('nombre').startAt(lowercaseKey).endAt(lowercaseKey + '\uf8ff')).snapshotChanges()
         .pipe(map(changes => {
@@ -447,6 +464,39 @@ export class PuntoVentaPage implements OnInit {
             console.log(res );
             this.productos = res;
             this.buscando = false;
+          }
+        }, error => { console.log('error de subscribe'  + error); }
+        );
+
+        // BUSCA POR CODIGO PARA CONCATENAR
+        // tslint:disable-next-line:max-line-length
+        this.afs.collection('sedes').doc(this.storage.datosAdmi.sede.toLowerCase()).collection('productos', res => res.orderBy('codigoBarra').startAt(lowercaseKey).endAt(lowercaseKey + '\uf8ff')).snapshotChanges()
+        .pipe(map(changes => {
+          return changes.map(action => {
+            const data = action.payload.doc.data();
+            data.id = action.payload.doc.id;
+            return data;
+          });
+        }
+        )).subscribe(res => {
+          if (res.length === 0 ) {
+            console.log('no hay datos');
+            if (isNullOrUndefined(this.productos)) {
+              this.productos = null;
+              this.buscando = false;
+              this.sinResultados = 'No se encontraron productos';
+              this.presentToast(this.sinResultados, 'danger');
+            }
+          } else {
+            console.log(res );
+            if (isNullOrUndefined(this.productos)) {
+              this.productos = res;
+            } else {
+              this.productos.concat(res);
+            }
+            // this.productos = res;
+            this.buscando = false;
+            this.sinResultados = null;
           }
         }, error => { console.log('error de subscribe'  + error); }
         );
@@ -620,6 +670,150 @@ export class PuntoVentaPage implements OnInit {
       cssClass: 'modal-fullscreen'
     });
     return await modal.present();
+  }
+
+  // async modalIngresos(){
+  //   const modal =  await this.modalController.create({
+  //     component: AgregarEditarClientePage,
+  //     componentProps: {
+  //       eventoInvoker: this.modalEvento,
+  //       titleInvoker: this.modalTitle,
+  //       tagInvoker: this.modalTag,
+  //       dataInvoker: this.modalDataCliente
+  //     }
+  //   });
+  //   await modal.present();
+  // }
+
+  // buscador mas efectivo
+  async busquedaGeneral(texto: string) {
+    const nombres = texto.toLowerCase().split(' ');
+    console.log('nombres', nombres, nombres[0]);
+    this.productos = [];
+    await this.buscarInicio(nombres[0]);
+    await this.buscarcuerpo(nombres);
+    console.log('lista', this.productos);
+  }
+
+  buscarInicio(texto: string) {
+    // res.orderBy('codigoBarra').startAt(lowercaseKey).endAt(lowercaseKey + '\uf8ff')
+    this.afs.collection('sedes').doc(this.sede.toLowerCase()).collection('productos', ref => ref
+    // .where('nombre', 'array-contains-any', ['blanc'] )
+    .orderBy('nombre').startAt(texto.toLowerCase()).endAt(texto.toLowerCase() + '\uf8ff').limit(25)
+    ).snapshotChanges()
+    .pipe(map(changes => {
+      return changes.map((action: any) => {
+        const data = action.payload.doc.data();
+        data.id = action.payload.doc.id;
+        console.log('data', data);
+        return data;
+      });
+    })).subscribe(res => {
+      console.log('inicio', res);
+      for (const item of res) {
+        this.productos.push(item);
+      }
+      console.log('lista de busquedas', this.productos);
+    });
+  }
+
+  buscarcuerpo(arrayBuscar: any) {
+    console.log('array a buscar', arrayBuscar);
+    // res.orderBy('codigoBarra').startAt(lowercaseKey).endAt(lowercaseKey + '\uf8ff')
+    this.afs.collection('sedes').doc(this.sede.toLowerCase()).collection('productos', ref => ref
+    .where('arrayNombre', 'array-contains-any', arrayBuscar ).limit(25)
+    // .orderBy('completo').startAt('blanc').endAt('blanc' + '\uf8ff').limit(5)
+    ).snapshotChanges()
+    .pipe(map(changes => {
+      return changes.map((action: any) => {
+        const data = action.payload.doc.data();
+        data.id = action.payload.doc.id;
+        // console.log('data', data);
+        return data;
+      });
+    })).subscribe(res => {
+      if (res.length === 0 ) { // no existe datos de parrafo
+        if (this.productos.length === 0) {
+          console.log('no hay datos');
+          this.productos = null;
+          this.buscando = false;
+          this.sinResultados = 'No se encontró el producto';
+          this.presentToast(this.sinResultados, 'danger');
+
+        }else {
+          this.buscando = false;
+        }
+      } else { // existe datos de parrafo
+        // this.productos = res;
+        let contador = 0;
+        for (const item of res) {
+          contador ++;
+          if (!this.existeEnBusqueda(item)) {
+          this.productos.push(item);
+          }
+          if (contador === res.length) {
+            this.buscando = false;
+          }
+      }
+      }
+
+    });
+  }
+
+
+  existeEnBusqueda(producto: any) {
+    for (const item of this.productos) {
+      if (item.id === producto.id) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  // MODAL INGRESOS EGRESOS
+
+  // TODO-Cambiar nombre
+  execModalIngresoEgreso(accion: string){
+    console.log(accion);
+    if (accion === 'Ingreso') {
+      this.modalEvento = 'Ingreso';
+      this.modalTag = 'Monto a Ingresar';
+      this.modalButtonTag = 'Ingresar monto';
+      this.modalSaldo = this.saldo;
+
+    } else if (accion === 'Egreso') {
+      this.modalEvento = 'Egreso';
+      this.modalTag = 'Monto a Retirar';
+      this.modalButtonTag = 'Retirar monto';
+      this.modalSaldo = this.saldo;
+
+    } else{
+      console.log('La funcion no es valida');
+    }
+
+    this.abrirModalIngresosEgresos();
+  }
+
+  async abrirModalIngresosEgresos(){
+
+    const modal =  await this.modalCtlr.create({
+      component: IngresoEgresoPage,
+      componentProps: {
+        eventoInvoker: this.modalEvento,
+        buttonTagInvoer: this.modalButtonTag,
+        tagInvoker: this.modalTag,
+        saldoInvoker: this.modalSaldo
+      }
+    });
+
+    await modal.present();
+
+    const {data} = await modal.onDidDismiss();
+    if (data){
+      console.log(data);
+      this.saldo = data.newMonto;
+    }
+
   }
 
 }

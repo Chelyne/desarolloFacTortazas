@@ -1,6 +1,8 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
-import { ModalController, ToastController } from '@ionic/angular';
+import { ModalController, ToastController, LoadingController } from '@ionic/angular';
+import { DbDataService } from '../../services/db-data.service';
+import { StorageService } from '../../services/storage.service';
 
 @Component({
   selector: 'app-ingreso-egreso',
@@ -18,10 +20,13 @@ export class IngresoEgresoPage implements OnInit {
   @Input() saldoInvoker: number;
 
 
-
+  loading;
   constructor(
     private modalCtlr: ModalController,
-    private toastCtrl: ToastController
+    private toastCtrl: ToastController,
+    private dataApi: DbDataService,
+    private storage: StorageService,
+    private loadingController: LoadingController
   ) {
     this.ingresoEgresoForm = this.createFormIngresoEgreso();
   }
@@ -31,12 +36,15 @@ export class IngresoEgresoPage implements OnInit {
 
   createFormIngresoEgreso() {
     return new FormGroup({
-      monto: new FormControl('', [Validators.required,  Validators.pattern('[0-9]*[\.]?[0-9]+$')])
+      monto: new FormControl('', [Validators.required,  Validators.pattern('[0-9]*[\.]?[0-9]+$')]),
+      detalles: new FormControl('', [Validators.required]),
+      tipo: new FormControl('')
     });
   }
   // ^[_a-z0-9]+(\.[_a-z0-9]+)*@[a-z0-9-]+(\.[_a-z0-9]+)*\.([a-z]{2,4})$
 
   get monto() { return this.ingresoEgresoForm.get('monto'); }
+  get detalles() { return this.ingresoEgresoForm.get('detalles'); }
 
 
 
@@ -51,34 +59,39 @@ export class IngresoEgresoPage implements OnInit {
 
     } else {
       console.log('La fución no es valida');
-
     }
   }
 
-  IngresarMonto() {
-
-    const monto: number = parseFloat(this.ingresoEgresoForm.value.monto);
-    // console.log(this.ingresoEgresoForm.value);
-    // console.log(monto, this.saldoInvoker);
-    this.modalCtlr.dismiss({
-      newMonto: this.saldoInvoker + monto
+  async IngresarMonto() {
+    await this.presentLoading('guardando datos');
+    this.ingresoEgresoForm.value.tipo = 'ingreso';
+    this.dataApi.guardarIngresoEgreso(this.ingresoEgresoForm.value, this.storage.datosAdmi.sede).then(() => {
+      const monto: number = parseFloat(this.ingresoEgresoForm.value.monto);
+      // console.log(this.ingresoEgresoForm.value);
+      // console.log(monto, this.saldoInvoker);
+      this.modalCtlr.dismiss({
+        newMonto: this.saldoInvoker + monto
+      });
+      this.presentToast('Ingreso de monto exitoso.');
+      this.loading.dismiss();
     });
-
-    this.presentToast('Ingreso de monto exitoso.');
   }
 
-  EgresarMonto(){
-    const monto: number = parseFloat(this.ingresoEgresoForm.value.monto);
-
-    if (this.saldoInvoker >= monto) {
+  async EgresarMonto(){
+    await this.presentLoading('guardando datos');
+    this.ingresoEgresoForm.value.tipo = 'egreso';
+    this.dataApi.guardarIngresoEgreso(this.ingresoEgresoForm.value, this.storage.datosAdmi.sede).then(() => {
+      const monto: number = parseFloat(this.ingresoEgresoForm.value.monto);
+      // if (this.saldoInvoker >= monto) {
       this.modalCtlr.dismiss({
         newMonto: this.saldoInvoker - monto
       });
       this.presentToast('Retiro exitoso.');
-
-    } else {
-      this.saldoInsuficiente = true;
-    }
+      this.loading.dismiss();
+      // } else {
+      //   this.saldoInsuficiente = true;
+      // }
+    });
   }
 
 
@@ -91,7 +104,7 @@ export class IngresoEgresoPage implements OnInit {
     toast.present();
   }
 
-  salirDeModal(){
+  cerrarModal(){
     this.modalCtlr.dismiss();
   }
 
@@ -106,6 +119,14 @@ export class IngresoEgresoPage implements OnInit {
     }
   }
 
+  async presentLoading(mensaje: string) {
+    this.loading = await this.loadingController.create({
+      cssClass: 'my-custom-class',
+      message: mensaje,
+      // duration: 2000
+    });
+    await this.loading.present();
+  }
 
 
 

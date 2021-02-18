@@ -475,8 +475,9 @@ export class ApiPeruService {
       const IdSerie =  serie.id;
       const DatosSerie = {
         serie: serie.serie,
-        correlacion: serie.correlacion
+        correlacion: serie.correlacion + 1
       };
+      console.log('se usará la correlacion: ', DatosSerie.correlacion);
 
       const notaCreditoFormateado = this.formatearNotaDeCredito(venta, DatosSerie);
       console.log('NOTA DE CREDITO FORMATEADO', notaCreditoFormateado);

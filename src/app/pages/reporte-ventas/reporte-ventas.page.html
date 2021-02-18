@@ -1,0 +1,24 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons slot="start">
+        <ion-menu-button color="primary" menu="primerMenu">
+        </ion-menu-button>
+    </ion-buttons>
+    <ion-title color="primary">Reporte de Ventas</ion-title>
+    <ion-item lines="none" slot="end">
+      <ion-button (click)="ObtenerVentasMes()" size="small" fill="outline">
+        <ion-icon name="trending-up-outline"></ion-icon> &nbsp;
+        <ion-label>Ventas del Mes</ion-label>
+      </ion-button>
+      <ion-button  (click)="ReporteVentaMes($event)" size="small" fill="outline">
+        <ion-icon slot="start" name="albums-outline"></ion-icon>
+        <ion-label>Reporte Mes</ion-label>
+        <ion-icon slot="end" name="chevron-down-outline"></ion-icon>
+      </ion-button>
+    </ion-item>
+</ion-toolbar>
+</ion-header>
+
+<ion-content>
+
+</ion-content>

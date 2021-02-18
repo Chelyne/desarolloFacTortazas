@@ -80,7 +80,7 @@ export class DbDataService {
       this.ObtenerCorrelacionProducto(sede).subscribe((datasede: any) => {
         const correlacionActual = datasede.correlacionProducto;
         if (correlacionActual === correlacion){
-          //Incrementa la correlacion
+          // Incrementa la correlacion
             this.incrementarCorrelacion(correlacionActual + 1, sede1);
         }
       });
@@ -202,7 +202,23 @@ export class DbDataService {
   ObtenerListaProductosSinCat(sede: string) {
     const sede1 = sede.toLocaleLowerCase();
     // tslint:disable-next-line:max-line-length
-    this.productoCollection = this.afs.collection('sedes').doc(sede1).collection('productos', ref => ref.orderBy('fechaRegistro', 'desc').limit(10));
+    this.productoCollection = this.afs.collection('sedes').doc(sede1).collection('productos', ref => ref.orderBy('fechaRegistro', 'desc').limit(20));
+    // tslint:disable-next-line:max-line-length
+    // this.productoCollection = this.afs.collection<ProductoInterface>('frutas', ref => ref.where('propietario', '==', propietario).orderBy('fechaRegistro', 'desc'));
+    return this.productos = this.productoCollection.snapshotChanges()
+      .pipe(map(changes => {
+        return changes.map(action => {
+          const data = action.payload.doc.data() as ProductoInterface;
+          data.id = action.payload.doc.id;
+          return data;
+        });
+      }));
+  }
+
+  ObtenerListaProductosSinLIMITE(sede: string) {
+    const sede1 = sede.toLocaleLowerCase();
+    // tslint:disable-next-line:max-line-length
+    this.productoCollection = this.afs.collection('sedes').doc(sede1).collection('productos', ref => ref.orderBy('fechaRegistro', 'desc'));
     // tslint:disable-next-line:max-line-length
     // this.productoCollection = this.afs.collection<ProductoInterface>('frutas', ref => ref.where('propietario', '==', propietario).orderBy('fechaRegistro', 'desc'));
     return this.productos = this.productoCollection.snapshotChanges()
@@ -218,7 +234,7 @@ export class DbDataService {
   ObtenerListaCategorias(sede: string) {
     const sede1 = sede.toLocaleLowerCase();
     // tslint:disable-next-line:max-line-length
-    this.categoriaCollection = this.afs.collection('sedes').doc(sede1).collection('categorias', ref => ref.orderBy('fechaRegistro', 'desc'));
+    this.categoriaCollection = this.afs.collection('sedes').doc(sede1).collection('categorias', ref => ref.orderBy('categoria', 'asc'));
     // tslint:disable-next-line:max-line-length
     // this.productoCollection = this.afs.collection<ProductoInterface>('frutas', ref => ref.where('propietario', '==', propietario).orderBy('fechaRegistro', 'desc'));
     return this.categorias = this.categoriaCollection.snapshotChanges()
@@ -266,7 +282,7 @@ export class DbDataService {
   ObtenerListaDeVentas(sede: string, fachaventas: string) {
     const sede1 = sede.toLocaleLowerCase();
     // tslint:disable-next-line:max-line-length
-    this.ventaCollection = this.afs.collection('sedes').doc(sede1).collection('ventas').doc(fachaventas).collection('ventasDia', ref => ref.orderBy('numeroComprobante', 'desc'));
+    this.ventaCollection = this.afs.collection('sedes').doc(sede1).collection('ventas').doc(fachaventas).collection('ventasDia', ref => ref.orderBy('fechaEmision', 'desc'));
     // tslint:disable-next-line:max-line-length
     // this.productoCollection = this.afs.collection<ProductoInterface>('frutas', ref => ref.where('propietario', '==', propietario).orderBy('fechaRegistro', 'desc'));
     return this.ventas = this.ventaCollection.snapshotChanges()
@@ -500,7 +516,7 @@ export class DbDataService {
   ObtenerListaProductosTodos(sede: string) {
     const sede1 = sede.toLocaleLowerCase();
     // tslint:disable-next-line:max-line-length
-    this.productoCollection = this.afs.collection('sedes').doc(sede1).collection('productos');
+    this.productoCollection = this.afs.collection('sedes').doc(sede1).collection('productos', ref => ref.where('categoria', '==', 'farmacia'));
     // tslint:disable-next-line:max-line-length
     // this.productoCollection = this.afs.collection<ProductoInterface>('frutas', ref => ref.where('propietario', '==', propietario).orderBy('fechaRegistro', 'desc'));
     return this.productos = this.productoCollection.snapshotChanges()
@@ -517,6 +533,15 @@ export class DbDataService {
     const promesa = new Promise<void>((resolve, reject) => {
       this.afs.collection('sedes').doc(sede).collection('productos').doc(id).update({img: url}).then(() => {
         resolve();
+      });
+    });
+    return promesa;
+  }
+ // actualizarArrayNOmnre del producto
+  actualizarArrayNombre(sede: string, id: string, arraynombre: any) {
+    const promesa = new Promise((resolve, reject) => {
+      this.afs.collection('sedes').doc(sede).collection('productos').doc(id).update({arrayNombre: arraynombre}).then(data => {
+        resolve(data);
       });
     });
     return promesa;
@@ -805,6 +830,19 @@ export class DbDataService {
     console.log('service dia', dia);
     let resultado: any;
     resultado = this.afs.collection('sedes').doc(sede.toLocaleLowerCase()).collection('ventas').doc(dia).collection('ventasDia');
+    return resultado.snapshotChanges()
+    .pipe(map((changes: any) => {
+      return changes.map(action => {
+        const data = action.payload.doc.data();
+        data.idVenta = action.payload.doc.id;
+        return data;
+      });
+    }));
+  }
+  ObtenerIngresoEgresoDia(sede: string, dia: string) {
+    console.log('dia', dia);
+    let resultado: any;
+    resultado = this.afs.collection('sedes').doc(sede.toLocaleLowerCase()).collection('ingresosEgresos').doc(dia).collection('ingresosEgresosDia');
     return resultado.snapshotChanges()
     .pipe(map((changes: any) => {
       return changes.map(action => {
@@ -1120,6 +1158,7 @@ export class DbDataService {
       }
     }).catch(err => {
       console.log('looooooooooooooooooooooooooongeeeeeeeeeerr', err);
+      // tslint:disable-next-line:no-string-throw
       throw 'fail';
     });
   }
@@ -1195,7 +1234,7 @@ export class DbDataService {
 
     const promesa =  new Promise<void>( (resolve, reject) => {
       this.afs.collection('sedes').doc(sede.toLocaleLowerCase())
-      .collection('serie').doc(idSerie).update({correlacion: correlacionActual + 1});
+      .collection('serie').doc(idSerie).update({correlacion: correlacionActual});
       resolve();
     });
     return promesa;
@@ -1345,9 +1384,16 @@ export class DbDataService {
     });
   }
 
-
-
-
-
-
+  // INGRESO Y EGRESO
+  guardarIngresoEgreso(ingresoEgreso: any, sede: string) {
+    const promesa = new Promise((resolve, reject) => {
+      const fecha = formatDate(new Date(), 'dd-MM-yyyy', 'en');
+      const sede1 =  sede.toLocaleLowerCase();
+      // tslint:disable-next-line:max-line-length
+      this.afs.collection('sedes').doc(sede1).collection('ingresosEgresos').doc(fecha).collection('ingresosEgresosDia').add(ingresoEgreso).then(data => {
+        resolve(data);
+      });
+    });
+    return promesa;
+  }
 }
