@@ -6,6 +6,10 @@
     </ion-buttons>
     <ion-title color="primary">Reporte de Ventas</ion-title>
     <ion-item lines="none" slot="end">
+      <ion-button (click)="ReporteProoductosSede()" size="small" fill="outline">
+        <ion-icon name="trending-up-outline"></ion-icon> &nbsp;
+        <ion-label>R. Productos</ion-label>
+      </ion-button>
       <ion-button (click)="ObtenerVentasMes()" size="small" fill="outline">
         <ion-icon name="trending-up-outline"></ion-icon> &nbsp;
         <ion-label>Ventas del Mes</ion-label>
@@ -20,5 +24,14 @@
 </ion-header>
 
 <ion-content>
+  <form [formGroup]="ventasDiaForm">
+    <ion-item>
+        <ion-label>Fecha de Reporte</ion-label>
+        <ion-input slot="end" type="date" formControlName="fechadeventa" formatDate="dd-mm-yyyy" value="1994-12-1"></ion-input>
+        <ion-button  slot="end" (click)="ObtenerVentasDia($event)" >
+            <ion-label color="light">Consultar</ion-label>
+        </ion-button>
+    </ion-item>
+  </form>
 
 </ion-content>

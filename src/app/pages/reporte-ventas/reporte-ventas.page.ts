@@ -5,6 +5,11 @@ import { ExportarPDFService } from '../../services/exportar-pdf.service';
 import { formatDate } from '@angular/common';
 import * as moment from 'moment';
 import { PopoverMesesComponent } from '../../components/popover-meses/popover-meses.component';
+import { StorageService } from 'src/app/services/storage.service';
+import { FormGroup, FormControl } from '@angular/forms';
+import { isNullOrUndefined } from 'util';
+import { PoppoverEditarComponent } from '../../components/poppover-editar/poppover-editar.component';
+import { ReportesService } from '../../services/reportes.service';
 
 @Component({
   selector: 'app-reporte-ventas',
@@ -13,16 +18,84 @@ import { PopoverMesesComponent } from '../../components/popover-meses/popover-me
 })
 export class ReporteVentasPage implements OnInit {
   arrayMes = [];
+  sede: string;
+  ventasDiaForm: FormGroup;
+
   constructor( private dataSrvc: DbDataService,
                private excelService: ExportarPDFService,
                private menuCtrl: MenuController,
                private toastController: ToastController,
-               private popoverCtrl: PopoverController
-              ) { }
+               private popoverCtrl: PopoverController,
+               private storage: StorageService,
+               private reportesservice: ReportesService
+              ) {
+                this.sede = this.storage.datosAdmi.sede;
+                this.ventasDiaForm = this.createFormGroup();
+
+              }
 
   ngOnInit() {
     this.menuCtrl.enable(true);
     // this.ObtenerVentas();
+  }
+  createFormGroup() {
+    return new FormGroup({
+      fechadeventa: new FormControl(),
+    });
+  }
+  ReporteProoductosSede(){
+    const dataExcel = [];
+    const sus = this.dataSrvc.ObtenerListaProductosSinLIMITE(this.storage.datosAdmi.sede).subscribe((data: any) => {
+      sus.unsubscribe();
+      console.log(data);
+      if (isNullOrUndefined(data)){
+        this.presentToast('no hay productos de sede: ' + this.sede, 'danger');
+      }else{
+        for (const datos of data) {
+          const formato: any = {
+            'Nombre Producto': datos.nombre.toUpperCase(),
+            Codigo: datos.codigo ? datos.codigo : null,
+            'Codigo Barra': datos.codigoBarra ? datos.codigoBarra : null,
+            Stock: datos.cantStock,
+            Estado: null
+          };
+          dataExcel.push(formato);
+        }
+        this.excelService.exportAsExcelFile(dataExcel, 'ReporteProductos' + this.sede);
+
+      }
+    });
+  }
+  ObtenerVentasDia(ev: any) {
+    if (isNullOrUndefined(this.ventasDiaForm.value.fechadeventa)) {
+      this.presentToast('Ingrese Fecha', 'warning');
+
+    }else {
+      this.ventasDiaForm.value.fechadeventa = this.ventasDiaForm.value.fechadeventa.split('-').reverse().join('-');
+      console.log(this.ventasDiaForm.value.fechadeventa);
+      this.ReporteVentaGeneralDia(ev, this.ventasDiaForm.value.fechadeventa);
+    }
+  }
+  async ReporteVentaGeneralDia(ev: any, dia: any){
+    const popover = await this.popoverCtrl.create({
+      component: PoppoverEditarComponent,
+      event: ev,
+      translucent: true,
+      mode: 'ios',
+      componentProps: {
+        formato: true
+      }
+    });
+    await popover.present();
+
+    const { data } = await popover.onWillDismiss();
+    console.log(data);
+    if (data) {
+      switch (data.action) {
+        case 'a4': console.log('a4'); this.reportesservice.ReporteVentaDiaGeneralPDF(dia); break;
+        case 'ticked': console.log('ticked'); this.reportesservice.ReporteTiket(dia); break;
+      }
+    }
   }
   ObtenerVentasMes(){
     const d = new Date();
@@ -56,15 +129,17 @@ export class ReporteVentasPage implements OnInit {
   }
   // tslint:disable-next-line:member-ordering
   async ObtenerVentasMesAnio(mes: number, anio: number) {
+    // console.log('aaaaaaaaaaaaaaaaaaaaaaaaaaaa', this.sede.toLocaleLowerCase());
     this.arrayMes = [];
     let formato: string;
     // tslint:disable-next-line:no-shadowed-variable
     for (let contador = 1 ; contador <= 31; contador++) {
       formato = ((contador <= 9 ) ? '0' + contador : contador) + '-' + ((mes <= 9 ) ? '0' + mes : mes)  + '-' + anio;
-      await this.dataSrvc.listaVentasDia('andahuaylas', formato).subscribe((res: any) => {
+      await this.dataSrvc.listaVentasDia(this.sede.toLocaleLowerCase(), formato).subscribe((res: any) => {
         if (res.length === 0) {
-          console.log('no hay datos', formato );
+          console.log('no hay datos de dia', contador );
         }else {
+          console.log('datos de dia', contador );
           this.arrayMes = [...this.arrayMes, ...res];
           // console.log('fecha', formato, res);
         }
@@ -87,6 +162,7 @@ export class ReporteVentasPage implements OnInit {
 
     }else {
       let contador = 0;
+      console.log('datos', data);
       for (const datos of data) {
         contador++;
         // tslint:disable-next-line:prefer-const
@@ -106,7 +182,8 @@ export class ReporteVentasPage implements OnInit {
           'Metodo Pago': datos.tipoPago.toUpperCase(),
           'Fecha Emision': formatDate(FechaConsulta, 'dd-MM-yyyy', 'en'),
           'Cant. bolsa': datos.cantidadBolsa,
-          'Estado Comprobante': datos.estadoVenta
+          'Sede: ': datos.vendedor.sede,
+          'Estado Comprobante': datos.estadoVenta,
 
         };
         dataExcel.push(formato);
@@ -117,6 +194,7 @@ export class ReporteVentasPage implements OnInit {
     }
 
   }
+
   digitosFaltantes(caracter: string, num: number) {
     let final = '';
     for ( let i = 0; i < num; i++) {
