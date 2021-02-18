@@ -18,6 +18,11 @@
                 "icon": "receipt-outline",
                 "name": "Caja chica POS",
                 "redirecTo": "/caja-chica"
+            },
+            {
+                "icon": "receipt-outline",
+                "name": "Promociones",
+                "redirecTo": "/productos-compuestos"
             }
         ]
     },
@@ -120,5 +125,11 @@
                 "redirecTo": "reporte-ventas"
             }
         ]
+    },
+
+    {
+        "icon": "newspaper-outline",
+        "name": "Pedidos",
+        "redirecTo": "/pedidos"
     }
 ]

@@ -2,6 +2,7 @@ import { NgModule } from '@angular/core';
 import { PreloadAllModules, RouterModule, Routes } from '@angular/router';
 import { AuthGuard } from './guards/auth.guard';
 import { NoLoginGuard } from './guards/no-login.guard';
+import { NoVendedorGuard } from './guards/no-vendedor.guard';
 
 const routes: Routes = [
   {
@@ -130,17 +131,17 @@ const routes: Routes = [
   {
     path: 'lista-de-usarios',
     loadChildren: () => import('./pages/lista-de-usarios/lista-de-usarios.module').then( m => m.ListaDeUsariosPageModule),
-    canActivate: [AuthGuard]
+    canActivate: [AuthGuard, NoVendedorGuard]
   },
   {
     path: 'lista-de-clientes',
     loadChildren: () => import('./pages/lista-de-clientes/lista-de-clientes.module').then( m => m.ListaDeClientesPageModule),
-    canActivate: [AuthGuard]
+    canActivate: [AuthGuard, NoVendedorGuard]
   },
   {
     path: 'lista-de-proveedores',
     loadChildren: () => import('./pages/lista-de-proveedores/lista-de-proveedores.module').then( m => m.ListaDeProveedoresPageModule),
-    canActivate: [AuthGuard]
+    canActivate: [AuthGuard, NoVendedorGuard]
   },
 
   {
@@ -171,17 +172,17 @@ const routes: Routes = [
   {
     path: 'dashboard',
     loadChildren: () => import('./pages/dashboard/dashboard.module').then( m => m.DashboardPageModule),
-    canActivate: [AuthGuard]
+    canActivate: [AuthGuard, NoVendedorGuard]
   },
   {
     path: 'catalogo',
     loadChildren: () => import('./pages/catalogo/catalogo.module').then( m => m.CatalogoPageModule),
-    canActivate: [AuthGuard]
+    canActivate: [AuthGuard, NoVendedorGuard]
   },
   {
     path: 'lista-de-compras',
     loadChildren: () => import('./pages/lista-de-compras/lista-de-compras.module').then( m => m.ListaDeComprasPageModule),
-    canActivate: [AuthGuard]
+    canActivate: [AuthGuard, NoVendedorGuard]
   },
   {
     path: 'confirmar-venta',
@@ -191,7 +192,7 @@ const routes: Routes = [
   {
     path: 'compras',
     loadChildren: () => import('./pages/compras/compras.module').then( m => m.ComprasPageModule),
-    canActivate: [AuthGuard]
+    canActivate: [AuthGuard, NoVendedorGuard]
   },
   {
     path: 'modal-proveedores',
@@ -242,7 +243,7 @@ const routes: Routes = [
   {
     path: 'lista-de-ventas',
     loadChildren: () => import('./pages/lista-de-ventas/lista-de-ventas.module').then( m => m.ListaDeVentasPageModule),
-    canActivate: [AuthGuard]
+    canActivate: [AuthGuard, NoVendedorGuard]
   },
   {
     path: 'categorias',
@@ -266,7 +267,8 @@ const routes: Routes = [
   },
   {
     path: 'reporte-ventas',
-    loadChildren: () => import('./pages/reporte-ventas/reporte-ventas.module').then( m => m.ReporteVentasPageModule)
+    loadChildren: () => import('./pages/reporte-ventas/reporte-ventas.module').then( m => m.ReporteVentasPageModule),
+    canActivate: [AuthGuard, NoVendedorGuard]
   }
 
 

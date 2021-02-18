@@ -10,6 +10,7 @@ import { tap } from 'rxjs/operators';
 import { AuthServiceService } from './services/auth-service.service';
 import { MenuService } from './services/menu.service';
 import { Observable } from 'rxjs';
+import { SpliPaneService } from './services/spli-pane.service';
 
 @Component({
   selector: 'app-root',
@@ -31,8 +32,10 @@ export class AppComponent {
     private menuCtrl: MenuController,
     // private localNotifications: LocalNotifications,
     private route: Router,
-    private fcmSrv: AuthServiceService
+    private fcmSrv: AuthServiceService,
+    private splitPaneData: SpliPaneService
   ) {
+    this.splitPaneData.setSplitPane(true);
     this.initializeApp();
     // this.platform.ready().then( () => {
     //   this.localNotifications.on('click').subscribe (res => {
@@ -51,8 +54,6 @@ export class AppComponent {
         this.componentes = this.menu.getMenu();
         console.log('menu', this.componentes);
         this.menuCtrl.enable(false);
-
-
         // this.fcmSrv.escuchaNotificaciones().pipe(
         //   tap(msg => {
         //     // this.presentToast(msg.body);

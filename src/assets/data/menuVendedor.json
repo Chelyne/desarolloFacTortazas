@@ -1,0 +1,17 @@
+[
+    {
+        "icon": "calculator-outline",
+        "name": "POS",
+        "sub": [{
+                "icon": "receipt-outline",
+                "name": "Punto de Venta",
+                "redirecTo": "/punto-venta"
+            },
+            {
+                "icon": "receipt-outline",
+                "name": "Caja chica POS",
+                "redirecTo": "/caja-chica"
+            }
+        ]
+    }
+]
