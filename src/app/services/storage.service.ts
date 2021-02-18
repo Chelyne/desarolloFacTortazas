@@ -87,7 +87,7 @@ export class StorageService {
   }
 
   cargarDatosAdmiStorage() {
-    const promesa = new Promise<void>( (resolve, reject) => {
+    const promesa = new Promise( (resolve, reject) => {
       if (this.platform.is('cordova')) {
         // dispositivo
         // this.nativeStorage.getItem('datosAdmi')
@@ -104,9 +104,9 @@ export class StorageService {
         // escritorio
         if ( localStorage.getItem('datosAdmi') ) {
           this.datosAdmi = JSON.parse(localStorage.getItem('datosAdmi'));
+          resolve(this.datosAdmi);
         }
       }
-      resolve();
     });
     return promesa;
   }
