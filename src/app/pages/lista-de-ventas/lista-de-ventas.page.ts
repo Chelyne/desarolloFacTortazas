@@ -162,4 +162,9 @@ export class ListaDeVentasPage implements OnInit {
     });
     toast.present();
   }
+
+  // NOTE: No envia resumen diario solo formatea.
+  enviarResumenDiario(){
+    this.apiPeru.formatearResumenDiario(this.listaDeVentas);
+  }
 }

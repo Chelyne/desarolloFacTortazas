@@ -286,7 +286,7 @@ export class TestPagePage implements OnInit {
       idVenta: 'JJa3WunEjd8oVErlYCC6'
     };
 
-    this.apisPeru.enviarNotaDeCreditoAdaptador2(venta);
+    this.apisPeru.enviarNotaDeCreditoAdaptador(venta);
 
   }
   
@@ -342,7 +342,7 @@ export class TestPagePage implements OnInit {
       idVenta: 'woWbBVAm4GI7pzNljQdF'
     };
 
-    this.apisPeru.enviarNotaDeCreditoAdaptador2(venta);
+    this.apisPeru.enviarNotaDeCreditoAdaptador(venta);
 
   }
 

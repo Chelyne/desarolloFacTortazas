@@ -443,63 +443,7 @@ export class ApiPeruService {
 /* ---------------------------------------------------------------------------------------------- */
 /*                           enviar nota de credito                                               */
 /* ---------------------------------------------------------------------------------------------- */
-
-  enviarNotaDeCreditoAdaptador(venta: VentaInterface){
-    // console.log('EnviarNotaCreditoAdaptador: ', venta);
-    if (venta.cdrAnulado && venta.cdr.sunatResponse.success === true){
-      console.log('la boleta ya ha sido registradoo');
-      return;
-    }
-
-    // solo enviar a sunat si ya tiene un cdr y estado exito
-    if (venta.cdr && venta.cdr.sunatResponse.success === true ){
-      console.log('SE ENVIARÁ NOTA DE CREDITO');
-      this.dataApi.obtenerProductosDeVenta(venta.idListaProductos, this.sede).subscribe((data: any) => {
-        console.log('Lista de productos de la venta obtenidos de firebase:', data);
-
-        // tslint:disable-next-line: deprecation
-        if (!isNullOrUndefined(data)) {
-          venta.listaItemsDeVenta = data.productos;
-        }
-
-        // const ventaFormateada = this.formatearVenta(venta);
-        const typoComprobante = `n.credito.${venta.tipoComprobante}`;
-        console.log('CORRELACION--------------------------------', typoComprobante);
-
-        this.obtenerSerie2(typoComprobante).then((dataComprobante: any) => {
-          console.log('DATOS DEL COMPROBANTE', dataComprobante);
-          const IdSerie =  dataComprobante.id;
-          const DatosSerie = {
-            serie: dataComprobante.serie,
-            correlacion: dataComprobante.correlacion
-          };
-
-          console.log('DATOS DEL COMPROBANTE FORMATEADO', DatosSerie);
-
-          const notaCreditoFormateado = this.formatearNotaDeCredito(venta, DatosSerie);
-          console.log('NOTA DE CREDITO FORMATEADO', notaCreditoFormateado);
-
-          this.enviarNotaCreditoASunat(notaCreditoFormateado).then(cdr => {
-            console.log('cdr de nota de credito', cdr);
-            this.dataApi.incrementarCorrelacionTypoDocumento(IdSerie, this.sede, DatosSerie.correlacion)
-            .then(() => {
-              this.dataApi.guardarCDRAnulado(venta.idVenta, venta.fechaEmision, this.sede, cdr).then(() => {
-                  console.log('se guardará cdr ');
-              });
-            });
-          }).catch(error => console.log('No se envio comprobante a la SUNAT', error));
-
-        }).catch(error => console.log('No se envio comprobante a la SUNAT', error));
-
-      });
-
-    } else {
-      console.log('no se enviará el comprobante porque no tiene cdr');
-    }
-
-  }
-
-  async enviarNotaDeCreditoAdaptador2(venta: VentaInterface){
+  async enviarNotaDeCreditoAdaptador(venta: VentaInterface){
     console.log('ENVIAR_NOTA_CREDITO_OOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO');
     if (venta.cdrAnulado && venta.cdr.sunatResponse.success === true){
       console.log('la boleta ya ha sido registradoo');
@@ -521,7 +465,7 @@ export class ApiPeruService {
       const typoComprobante = `n.credito.${venta.tipoComprobante}`;
       console.log('CORRELACION--------------------------------', typoComprobante);
 
-      const serie = await this.obtenerSerie2(typoComprobante).catch(err => err);
+      const serie = await this.obtenerSerie(typoComprobante).catch(err => err);
       console.log('SERIE', serie);
       if ( serie === 'fail'){
         // tslint:disable-next-line: no-string-throw
@@ -536,6 +480,7 @@ export class ApiPeruService {
 
       const notaCreditoFormateado = this.formatearNotaDeCredito(venta, DatosSerie);
       console.log('NOTA DE CREDITO FORMATEADO', notaCreditoFormateado);
+      const fechaEmisionNotaCredito = notaCreditoFormateado.fechaEmision;
 
       const cdrRespuesta = await this.enviarNotaCreditoASunat(notaCreditoFormateado).then(cdrr => {
         return cdrr;
@@ -551,7 +496,8 @@ export class ApiPeruService {
       await this.dataApi.incrementarCorrelacionTypoDocumento(IdSerie, this.sede, DatosSerie.correlacion).then(() => console.log('se incremento correctamente'));
 
       console.log('guardardá el cdrAnulado');
-      await this.dataApi.guardarCDRAnulado(venta.idVenta, venta.fechaEmision, this.sede, cdrRespuesta).then(() => console.log('se Guardo el cdrAnulado'));
+      await this.dataApi.guardarCDRAnulado(venta.idVenta, venta.fechaEmision, this.sede, cdrRespuesta, fechaEmisionNotaCredito)
+      .then(() => console.log('se Guardo el cdrAnulado'));
       console.log('Comprobante termino de enviar');
 
     } else {
@@ -560,7 +506,7 @@ export class ApiPeruService {
     }
   }
 
-  async obtenerSerie2(typoDocumento: string){
+  async obtenerSerie(typoDocumento: string){
     const valor = await  this.dataApi.obtenerCorrelacionTypoDocumentoV2(typoDocumento, this.sede).then(serie => serie).catch(err => err);
     console.log(valor);
 
@@ -571,19 +517,6 @@ export class ApiPeruService {
     return valor;
   }
 
-  async obtenerSerie(typoDocumento: string){
-    let datosComprobante: any;
-
-    const promesa = new Promise((resolve, reject) => {
-      this.dataApi.obtenerCorrelacionTypoDocumento(typoDocumento, this.sede).subscribe(data => {
-        console.log(data);
-        datosComprobante = data[0];
-        resolve(datosComprobante);
-      });
-    });
-    return promesa;
-
-  }
 
   enviarNotaCreditoASunat(notaCreditoFormateado: NotaDeCreditoInterface){
     const myHeaders = new Headers();
@@ -613,10 +546,23 @@ export class ApiPeruService {
     console.log('Fecha de emision de la venta', venta.fechaEmision);
     const productFormat = this.formatearDetalles(venta.listaItemsDeVenta);
 
-    const totalaPagar = venta.totalPagarVenta;
-    const montoBase = totalaPagar / 1.18;
-    const igv = totalaPagar - montoBase;
-    const montoOperGravadas = montoBase;
+    let icbr: number;
+    if (venta.hasOwnProperty('cantidadBolsa')){
+      icbr = venta.cantidadBolsa * 0.3;
+    }else{
+      icbr = 0;
+    }
+
+    const totalaPagar = venta.totalPagarVenta - icbr;
+    // const totalaPagar = venta.montoNeto - icbr;
+    const MontoBase = totalaPagar / 1.18;
+    const igv = totalaPagar - MontoBase;
+    const montoOperGravadas = MontoBase;
+
+    // const totalaPagar = venta.totalPagarVenta;
+    // const montoBase = totalaPagar / 1.18;
+    // const igv = totalaPagar - montoBase;
+    // const montoOperGravadas = montoBase;
 
     return {
       tipDocAfectado: this.obtenerCodigoComprobante(venta.tipoComprobante), // '01',   // Factura
@@ -633,6 +579,7 @@ export class ApiPeruService {
       mtoOperGravadas: redondeoDecimal(montoOperGravadas, 2),
       mtoIGV: redondeoDecimal(igv, 2),
       totalImpuestos: redondeoDecimal(igv, 2),
+      icbper: redondeoDecimal(icbr, 2),
       // valorVenta: redondeoDecimal(montoOperGravadas, 2),
       mtoImpVenta: redondeoDecimal(totalaPagar, 2),
       ublVersion: '2.1',
@@ -648,7 +595,70 @@ export class ApiPeruService {
   }
 
 /* ---------------------------------------------------------------------------------------------- */
+/* ---------------------------------------------------------------------------------------------- */
+/* ---------------------------------------------------------------------------------------------- */
 
+/* ---------------------------------------------------------------------------------------------- */
+  formatearResumenDiario(listaDeVentas: VentaInterface[]){
+    let resumenDiarioFormateado: any = {};
+
+    const listaVentasFormateadas: any[] = [];
+    for (const venta of listaDeVentas) {
+      if (venta.tipoComprobante === 'boleta'){
+        listaVentasFormateadas.push(this.formatearVentaResumenDiario(venta));
+      }
+    }
+
+
+    resumenDiarioFormateado = {
+      fecGeneracion: '2019-10-29T00:00:00+00:00', // , '2019-10-27T00:00:00+00:00',
+      fecResumen: this.formtearFechaActual(),
+      correlativo: '001',
+      moneda: 'PEN',
+      company: this.formatearEmpresa(this.datosDeEmpresa),
+      details: listaVentasFormateadas
+    };
+    console.log('ESTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTEEEEEEEEES rESUMEN diario Formateado', resumenDiarioFormateado);
+  }
+
+  formatearVentaResumenDiario(venta: VentaInterface){
+
+    let icbr: number;
+    if (venta.hasOwnProperty('cantidadBolsa')){
+      icbr = venta.cantidadBolsa * 0.3;
+    }else{
+      icbr = 0;
+    }
+
+    const totalaPagar = venta.totalPagarVenta - icbr;
+    const MontoBase = totalaPagar / 1.18;
+    const igv = totalaPagar - MontoBase;
+    const montoOperGravadas = MontoBase;
+
+
+    return {
+      tipoDoc: this.obtenerCodigoComprobante(venta.tipoComprobante),  // Factura:01, Boleta:03 //
+      serieNro: `${venta.serieComprobante}-${venta.numeroComprobante}`,
+      estado: venta.estadoVenta === 'anulado' ? '3' : '1',
+      clienteTipo: this.ObtenerCodigoTipoDoc(venta.cliente.tipoDoc),
+      clienteNro: venta.cliente.numDoc,
+      mtoOperGravadas: redondeoDecimal(montoOperGravadas, 2),
+      mtoIGV: redondeoDecimal(igv, 2),
+      icbper: redondeoDecimal(icbr, 2),
+      // mtoOperInafectas: 0,
+      // mtoOperExoneradas: 0,
+      // mtoOperExportacion: 0,
+      // mtoOtrosCargos: 0,
+      total: redondeoDecimal(venta.totalPagarVenta, 2)
+    };
+  }
+
+/* ---------------------------------------------------------------------------------------------- */
+/* ---------------------------------------------------------------------------------------------- */
+/* ---------------------------------------------------------------------------------------------- */
+/* ---------------------------------------------------------------------------------------------- */
+
+/* ---------------------------------------------------------------------------------------------- */
   formtearFecha(dateTime: any): string{
 
     const fechaFormateada = new Date(moment.unix(dateTime.seconds).format('D MMM YYYY H:mm:ss'));

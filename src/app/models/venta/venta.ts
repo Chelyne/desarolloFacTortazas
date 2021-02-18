@@ -28,5 +28,6 @@ export interface VentaInterface {
     estadoVenta?: 'registrado' | 'anulado' | 'enviado'; // string
     montoPagado?: number;
     cdrAnulado?: CDRInterface;
+    fechaDeAnulacion?: string;
 }
 

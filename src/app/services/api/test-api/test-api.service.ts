@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { ClientInterface, ComprobanteInterface, SaleDetailInterface } from 'src/app/models/comprobante/comprobante';
+import { AddressInterface, ClientInterface, CompanyInterface, ComprobanteInterface, SaleDetailInterface } from 'src/app/models/comprobante/comprobante';
 import { ItemDeVentaInterface } from 'src/app/models/venta/item-de-venta';
 import { VentaInterface } from 'src/app/models/venta/venta';
 import * as moment from 'moment';
@@ -361,6 +361,41 @@ export class TestApiService {
     }
   }
 
+  formatearEmpresa(empresa: EmpresaInterface): CompanyInterface{
+    let empresaDireccion: AddressInterface = {};
+    const sede = this.sede.toLocaleLowerCase();
+
+    if (sede === 'andahuaylas'){
+      empresaDireccion = {
+        ubigueo: '030201',
+        direccion : 'AV. PERU NRO. 236 (FRENTE A PARQ LAMPA DE ORO C1P BLANCO) APURIMAC - ANDAHUAYLAS - ANDAHUAYLAS',
+        codigoPais: 'PE',
+        departamento: 'APURIMAC',
+        provincia: 'ANDAHUAYLAS',
+        distrito: 'ANDAHUAYLAS'
+      };
+    } else if (sede === 'abancay'){
+      empresaDireccion = {
+        ubigueo: '030101',
+        direccion : 'AV.SEOANE NRO. 100 (PARQUE EL OLIVO) APURIMAC - ABANCAY - ABANCAY',
+        codigoPais: 'PE',
+        departamento: 'APURIMAC',
+        provincia: 'ABANCAY',
+        distrito: 'ABANCAY'
+      };
+    } else {
+      console.log('direccion no valida');
+    }
+
+    return {
+      ruc: empresa.ruc,
+      nombreComercial: 'VETERINARIAS TOBBY',
+      razonSocial: empresa.razon_social,
+      address: empresaDireccion
+    };
+  }
+
+
 
 /* ---------------------------------------------------------------------------------------------- */
 
@@ -410,6 +445,67 @@ export class TestApiService {
 
 /* ---------------------------------------------------------------------------------------------- */
 
+/* ---------------------------------------------------------------------------------------------- */
+/*                           enviar resumen diario                                                */
+/* ---------------------------------------------------------------------------------------------- */
+  resumenDiarioAdaptador(listaDeVentas: VentaInterface){
+
+  }
+
+  formatearResumenDiario(listaDeVentas: VentaInterface[]){
+    let resumenDiarioFormateado: any = {};
+
+    const listaVentasFormateadas: any[] = [];
+    for (const venta of listaDeVentas) {
+      listaVentasFormateadas.push(this.formatearVentaResumenDiario(venta));
+    }
+
+
+    resumenDiarioFormateado = {
+      fecGeneracion: this.formtearFechaActual(), // , '2019-10-27T00:00:00+00:00',
+      fecResumen: '2019-10-29T00:00:00+00:00',
+      correlativo: '001',
+      moneda: 'PEN',
+      company: {},
+      details: listaVentasFormateadas
+    };
+  }
+
+  formatearVentaResumenDiario(venta: VentaInterface){
+
+    let icbr: number;
+    if (venta.hasOwnProperty('cantidadBolsa')){
+      icbr = venta.cantidadBolsa * 0.3;
+    }else{
+      icbr = 0;
+    }
+
+    const totalaPagar = venta.totalPagarVenta - icbr;
+    const MontoBase = totalaPagar / 1.18;
+    const igv = totalaPagar - MontoBase;
+    const montoOperGravadas = MontoBase;
+
+
+    return {
+      tipoDoc: this.obtenerCodigoComprobante(venta.tipoComprobante),  // Factura:01, Boleta:03 //
+      serieNro: `${venta.serieComprobante}-${venta.numeroComprobante}`,
+      estado: venta.estadoVenta === 'anulado' ? '3' : '1',
+      clienteTipo: this.ObtenerCodigoTipoDoc(venta.cliente.tipoDoc),
+      clienteNro: venta.cliente.numDoc,
+      mtoOperGravadas: redondeoDecimal(montoOperGravadas, 2),
+      mtoIGV: redondeoDecimal(igv, 2),
+      icbper: redondeoDecimal(icbr, 2),
+      // mtoOperInafectas: 0,
+      // mtoOperExoneradas: 0,
+      // mtoOperExportacion: 0,
+      // mtoOtrosCargos: 0,
+      total: redondeoDecimal(venta.totalPagarVenta, 2)
+    };
+  }
+
+
+
+/* ---------------------------------------------------------------------------------------------- */
 
   formtearFecha(dateTime: any): string{
 

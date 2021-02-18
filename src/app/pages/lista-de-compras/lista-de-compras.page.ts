@@ -127,19 +127,35 @@ export class ListaDeComprasPage implements OnInit {
 
   }
 
-  bloquearCompra(compraSelect: CompraInterface){
+  async bloquearCompra(compraSelect: CompraInterface){
 
     // console.log(compraSelect.anulado);
-    if (typeof(compraSelect.anulado) === 'undefined'){
+    // if (typeof(compraSelect.anulado) === 'undefined'){
+    if (!compraSelect.anulado){
       this.dataApi.toggleAnularCompra(compraSelect.id, false, this.sede);
+      // actualizar Stock de productos
+      for (const itemCompra of compraSelect.listaItemsDeCompra) {
+        console.log(itemCompra);
+        this.dataApi.decrementarStockProducto(itemCompra.producto.id, this.sede, itemCompra.cantidad);
+      }
     } else {
-      this.dataApi.toggleAnularCompra(compraSelect.id, compraSelect.anulado, this.sede);
+      this.dataApi.toggleAnularCompra(compraSelect.id, true, this.sede);
+      // actualizar Stock de productos
+      for (const itemCompra of compraSelect.listaItemsDeCompra) {
+        console.log(itemCompra);
+        this.dataApi.incrementarStockProducto(itemCompra.producto.id, this.sede, itemCompra.cantidad);
+      }
     }
   }
 
+  // TODO - es stock de producto debería debe decrementar si se carga modo Compras
   EditarCompra(compraSelect: CompraInterface){
     console.log('EditarCompraaaaaaaaaaaa', compraSelect);
     this.editCompra.setCompra(compraSelect);
+    for (const itemCompra of compraSelect.listaItemsDeCompra) {
+      // console.log(itemCompra);
+      this.dataApi.decrementarStockProducto(itemCompra.producto.id, this.sede, itemCompra.cantidad);
+    }
   }
 
 

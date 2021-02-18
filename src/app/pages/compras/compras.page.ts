@@ -61,7 +61,7 @@ export class ComprasPage implements OnInit {
 
   ngOnInit() {
     this.menuCtrl.enable(true);
-      // Pass a custom class to each select interface for styling
+    // Pass a custom class to each select interface for styling
     // const selects = document.querySelectorAll('.custom-options');
     // tslint:disable-next-line:prefer-for-of
     // for (let i = 0; i < selects.length; i++) {
@@ -157,7 +157,7 @@ export class ComprasPage implements OnInit {
   updateFormCompras(productSelect: ProductoInterface){
     return new FormGroup({
       nombre: new FormControl(productSelect.nombre, [Validators.required]),
-      descripcion: new FormControl(productSelect.descripcionProducto, []),
+      descripcion: new FormControl(productSelect.descripcionProducto ? productSelect.descripcionProducto : 'No hay descripcion', []),
       cantidad: new FormControl('', [Validators.required, Validators.pattern('^[0-9]*$')]),
       pu_compra: new FormControl('', [Validators.required, Validators.pattern('^[0-9]*\.?[0-9]*$')]),
       descuento: new FormControl('', [Validators.pattern('^[0-9]*\.?[0-9]*$')])
@@ -311,7 +311,7 @@ export class ComprasPage implements OnInit {
 
 
 
-  generarCompra(){
+  async generarCompra(){
     const compra = {
       proveedor: this.provedorObtenido,
       listaItemsDeCompra: this.listaItemsDeCompra,
@@ -324,6 +324,12 @@ export class ComprasPage implements OnInit {
       fechaRegistro: new Date()
 
     };
+
+    // actualizar Stock de productos
+    for (const itemCompra of compra.listaItemsDeCompra) {
+      console.log(itemCompra);
+      await this.dataApi.incrementarStockProducto(itemCompra.producto.id, this.sede, itemCompra.cantidad);
+    }
 
     this.dataApi.guardarCompra(compra, this.sede).then(
       () => {
@@ -352,6 +358,12 @@ export class ComprasPage implements OnInit {
       fechaRegistro: new Date()
 
     };
+
+    for (const itemCompra of compra.listaItemsDeCompra) {
+      console.log(itemCompra);
+      this.dataApi.incrementarStockProducto(itemCompra.producto.id, this.sede, itemCompra.cantidad);
+    }
+
 
     this.dataApi.actualizarCompra(this.compra.id, compra, this.sede).then(
       () => {
@@ -442,6 +454,46 @@ export class ComprasPage implements OnInit {
         console.log('Se ingreso Correctamente');
       }
     );
+  }
+
+  // async testFunc(){
+  //   console.log('_____Funcion test____');
+  //   const idProducto = '01xo7jxVqGvd0AuLxGGL';
+  //   const sede = 'andahuaylas';
+
+  //   // console.log(
+  //   //   '.............',
+  //   //   await this.dataApi.obtenerProductoById(idProducto, sede)
+  //   // );
+
+  //   // incrementar stock
+  //   console.log(
+  //     'ActualizarProducto',
+  //     await this.dataApi.incrementarStockProducto(idProducto, sede, 4)
+  //   );
+
+  //   // decrementar stock
+  //   // this.dataApi.decrementarStockProducto(idProducto, sede);
+
+
+  // }
+
+  async lecturaProd(){
+    const idProducto = '01xo7jxVqGvd0AuLxGGL';
+    const sede = 'andahuaylas';
+    console.log('El producto', await this.dataApi.obtenerProductoById(idProducto, sede));
+  }
+
+  async addProd(){
+    const idProducto = '01xo7jxVqGvd0AuLxGGL';
+    const sede = 'andahuaylas';
+    await this.dataApi.incrementarStockProducto(idProducto, sede, 5);
+  }
+
+  async substracProd(){
+    const idProducto = '01xo7jxVqGvd0AuLxGGL';
+    const sede = 'andahuaylas';
+    await this.dataApi.decrementarStockProducto(idProducto, sede, 3);
   }
 
 }

@@ -16,6 +16,7 @@ import { ItemDeVentaInterface } from '../models/venta/item-de-venta';
 import * as moment from 'moment';
 import { ContadorDeSerieInterface } from '../models/serie';
 import { database } from 'firebase';
+import { AnyCnameRecord } from 'dns';
 // import { Console } from 'console';
 
 @Injectable({
@@ -201,7 +202,7 @@ export class DbDataService {
   ObtenerListaProductosSinCat(sede: string) {
     const sede1 = sede.toLocaleLowerCase();
     // tslint:disable-next-line:max-line-length
-    this.productoCollection = this.afs.collection('sedes').doc(sede1).collection('productos', ref => ref.orderBy('fechaRegistro', 'desc'));
+    this.productoCollection = this.afs.collection('sedes').doc(sede1).collection('productos', ref => ref.orderBy('fechaRegistro', 'desc').limit(10));
     // tslint:disable-next-line:max-line-length
     // this.productoCollection = this.afs.collection<ProductoInterface>('frutas', ref => ref.where('propietario', '==', propietario).orderBy('fechaRegistro', 'desc'));
     return this.productos = this.productoCollection.snapshotChanges()
@@ -1022,7 +1023,7 @@ export class DbDataService {
     return promesa;
   }
 
-  guardarCDRAnulado(idVenta: string, fechaEmision: any, sede: string, cdrAnulacion: CDRInterface){
+  guardarCDRAnulado(idVenta: string, fechaEmision: any, sede: string, cdrAnulacion: CDRInterface, fechaAnulacion: string){
     // console.log('guuuuuuuuuuuuuuuardadr cdr', cdrVenta, sede, idVenta);
     // const idFecha = venta.fechaEmision.getDay() + '-' + venta.fechaEmision.getMonth() + '-' + venta.fechaEmision.getFullYear();
     // console.log('ffffffffffffffffffffffffffffff',  venta.fechaEmision);
@@ -1034,7 +1035,7 @@ export class DbDataService {
 
     const promesa =  new Promise<void>( (resolve, reject) => {
       this.afs.collection('sedes').doc(sede.toLocaleLowerCase()).collection('ventas').doc(fechaString)
-      .collection('ventasDia').doc(idVenta).update({cdrAnulado: cdrAnulacion});
+      .collection('ventasDia').doc(idVenta).update({cdrAnulado: cdrAnulacion, fechaDeAnulacion: fechaAnulacion});
       resolve();
     });
 
@@ -1258,4 +1259,95 @@ export class DbDataService {
         });
       }));
   }
+
+  obtenerProductoById(idProducto: string, sede: string){
+    console.log('Id de un producto de venta en productVEnta', idProducto);
+
+    return this.afs.collection('sedes').doc(sede.toLocaleLowerCase())
+    .collection('productos').doc(idProducto).ref.get()
+    .then((doc: any) => {
+      if (doc.exists) {
+        return {id: doc.id, ...doc.data()};
+      } else {
+        console.log('No such document!');
+        return {};
+      }
+    }).catch(err => {
+      console.log('error', err);
+      throw 'fail';
+    });
+  }
+
+
+  async incrementarStockProducto(idProducto: string, sede: string, cantidad: number){
+    console.log('Id de un producto de venta en productVEnta', idProducto);
+
+    const cantidadStock: any = await this.obtenerProductoById(idProducto, sede).then((producto: ProductoInterface) => {
+      console.log(producto);
+      if (!producto.cantStock){
+        return 0;
+      }
+      return producto.cantStock;
+    }).catch( err => {
+      console.log(err);
+      return 'fail';
+    });
+
+    console.log('cccccccccantidad stock', cantidadStock);
+
+    if (cantidadStock === 'fail'){
+      throw 'fail';
+    }
+
+    return this.afs.collection('sedes').doc(sede.toLocaleLowerCase())
+    .collection('productos').doc(idProducto).update({
+      cantStock: cantidadStock + cantidad
+    }).then(() => {
+      console.log('Stock de producto actualizado correctamente de: ', cantidadStock, 'a: ', cantidadStock + cantidad);
+      return 'exito';
+    }).catch(err => {
+      console.log('No sep pudo actualizar correctamente el producto');
+      console.log('Error', err);
+      throw 'fail';
+    });
+  }
+
+  async decrementarStockProducto(idProducto: string, sede: string, cantidad: number){
+    console.log('Id de un producto de venta en productVEnta', idProducto);
+
+    const cantidadStock: any = await this.obtenerProductoById(idProducto, sede).then((producto: ProductoInterface) => {
+      console.log(producto);
+      if (!producto.cantStock){
+        return 0;
+      }
+      return producto.cantStock;
+    }).catch( err => {
+      console.log(err);
+      return 'fail';
+    });
+
+    console.log('cccccccccantidad stock', cantidadStock);
+
+    if (cantidadStock === 'fail'){
+      throw 'fail';
+    }
+
+    return this.afs.collection('sedes').doc(sede.toLocaleLowerCase())
+    .collection('productos').doc(idProducto).update({
+      cantStock: cantidadStock - cantidad
+    }).then(() => {
+      console.log('Stock de producto actualizado correctamente de: ', cantidadStock, 'a: ', cantidadStock - cantidad);
+      return 'exito';
+    }).catch(err => {
+      console.log('No sep pudo actualizar correctamente el producto');
+      console.log('Error', err);
+      throw 'fail';
+    });
+  }
+
+
+
+
+
+
 }
