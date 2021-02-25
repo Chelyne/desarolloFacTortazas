@@ -30,7 +30,7 @@ export class ModalAgregarProductoPage implements OnInit {
 
   @Input() sede: string;
   @Input() categoria: string;
-  @Input() subCategoria: string;
+  // @Input() subCategoria: string; // NO ENVIA NADA
 
   listaDeCategorias: CategoriaInterface[] = [];
 
@@ -226,7 +226,7 @@ resetOrientation(srcBase64, srcOrientation, callback) {
     return new FormGroup({
       // tslint:disable-next-line:max-line-length
       nombre: new FormControl('', [Validators.required, Validators.minLength(2), Validators.maxLength(60)]),
-      categoriass: new FormControl('', [Validators.required]),
+      // categoriass: new FormControl('', [Validators.required]),
       cantidad: new FormControl('', [Validators.required, Validators.min(1)]),
       medida: new FormControl('unidad', [Validators.required]),
       marca: new FormControl('', [Validators.minLength(3), Validators.maxLength(45)]),
@@ -246,7 +246,7 @@ resetOrientation(srcBase64, srcOrientation, callback) {
   }
 
   get nombre() {return this.productoForm.get('nombre'); }
-  get categoriass() {return this.productoForm.get('categoriass'); }
+  get subCategoria() {return this.productoForm.get('subCategoria'); }
   get cantidad() {return this.productoForm.get('cantidad'); }
   get medida() {return this.productoForm.get('medida'); }
   get marca() {return this.productoForm.get('marca'); }
@@ -358,7 +358,7 @@ resetOrientation(srcBase64, srcOrientation, callback) {
           this.productoForm.value.img = url;
           this.productoForm.value.nombre = this.productoForm.value.nombre.toLowerCase();
           this.productoForm.value.categoria = this.categoria;
-          this.productoForm.value.subCategoria = this.productoForm.value.categoriass.toLowerCase();
+          this.productoForm.value.subCategoria = this.productoForm.value.subCategoria.toLowerCase();
           this.productoForm.value.sede = this.sede;
           this.productoForm.value.fechaRegistro = new Date();
           this.dbData.guardarProducto(this.productoForm.value, this.sede);
@@ -373,7 +373,7 @@ resetOrientation(srcBase64, srcOrientation, callback) {
           this.productoForm.value.img = null;
           this.productoForm.value.nombre = this.productoForm.value.nombre.toLowerCase();
           this.productoForm.value.categoria = this.categoria;
-          this.productoForm.value.subCategoria = this.productoForm.value.categoriass.toLowerCase();
+          this.productoForm.value.subCategoria = this.productoForm.value.subCategoria.toLowerCase();
           this.productoForm.value.sede = this.sede;
           this.productoForm.value.fechaRegistro = new Date();
           this.dbData.guardarProducto(this.productoForm.value, this.sede);

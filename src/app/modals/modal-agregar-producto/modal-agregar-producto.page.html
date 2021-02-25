@@ -5,7 +5,7 @@
                 <ion-icon color="primary" slot="icon-only" name="arrow-back-outline"></ion-icon>
             </ion-button>
         </ion-buttons>
-        <ion-title>Agregar productosVenta{{subCategoria | titlecase}}</ion-title>
+        <ion-title>Agregar nuevo producto</ion-title>
         <!-- <ion-toggle slot="end" color="primary"></ion-toggle>  GUARDADO PARA SUBIR IMAGENES PNG CON COLOR DE FONDO DINAMICO-->
     </ion-toolbar>
 </ion-header>
@@ -71,12 +71,12 @@
                             <ion-col>
                                 <ion-item lines="none">
                                     <ion-label color="primary" position="stacked">Categoria</ion-label>
-                                    <ion-select class="custom-options" value="item.categoria" interface="popover" formControlName="categoriass" placeholder="categorias" cancelText="Cancelar" okText="Aceptar" mode="ios">
+                                    <ion-select class="custom-options" value="item.categoria" interface="popover" formControlName="subCategoria" placeholder="categorias" cancelText="Cancelar" okText="Aceptar" mode="ios">
                                         <ion-select-option *ngFor="let item of listaDeCategorias" [value]="item.categoria">{{item.categoria}}</ion-select-option>
                                     </ion-select>
                                 </ion-item>
-                                <div class="alertDanger" *ngIf="categoriass.invalid && (categoriass.dirty || categoriass.touched)">
-                                    <div class="mensajeError" *ngIf="!!categoriass.errors.required">
+                                <div class="alertDanger" *ngIf="subCategoria.invalid && (subCategoria.dirty || subCategoria.touched)">
+                                    <div class="mensajeError" *ngIf="!!subCategoria.errors.required">
                                         Complete la categorias
                                     </div>
                                 </div>

@@ -145,21 +145,45 @@ export class ReporteVentasPage implements OnInit {
         }
         if (contador === 31) {
         console.log('todos datos', this.arrayMes);
-        this.exelVentas(this.arrayMes, mes, anio);
-
-
+        this.consultaProductosVenta(this.arrayMes).then(() => {
+          this.exelVentas(this.arrayMes, mes, anio);
+        });
         }
       });
     }
   }
-  exelVentas(data, mes: number, anio: number) {
-    console.log('datos');
+
+  consultaProductosVenta(data) {
+    const promesa = new Promise((resolve, reject) => {
+      let contador = 0;
+      for (const item of data) {
+        const consulta = this.dataSrvc.obtenerProductosDeVenta(item.idListaProductos, this.sede).subscribe((productos) => {
+          consulta.unsubscribe();
+          console.log('PRODS', productos);
+          let  nombres = '';
+          for (const item2 of productos.productos) {
+            if (item2.producto.subCategoria === 'cortes' || item2.producto.subCategoria === 'servicio') {
+              nombres = nombres + item2.producto.nombre.toUpperCase() + ', ';
+              item.productos = nombres;
+              console.log('nombres:' ,  nombres);
+            }
+          }
+          contador++;
+          if (contador === data.length) {
+            resolve(productos);
+          }
+        });
+      }
+    });
+    return promesa;
+  }
+  async exelVentas(data, mes: number, anio: number) {
+    console.log('PRODUCTOS', data);
     // tslint:disable-next-line:prefer-const
     let dataExcel = [];
     if (data.length === 0) {
       console.log('toast de no hay datos');
       this.presentToast('No existe datos del mes ', 'danger');
-
     }else {
       let contador = 0;
       console.log('datos', data);
@@ -184,7 +208,7 @@ export class ReporteVentasPage implements OnInit {
           'Cant. bolsa': datos.cantidadBolsa,
           'Sede: ': datos.vendedor.sede,
           'Estado Comprobante': datos.estadoVenta,
-
+          'Servicio ': datos.productos,
         };
         dataExcel.push(formato);
         if (contador === data.length){

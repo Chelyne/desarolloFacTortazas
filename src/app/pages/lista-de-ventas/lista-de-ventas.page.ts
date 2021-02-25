@@ -151,7 +151,7 @@ export class ListaDeVentasPage implements OnInit {
         if (venta.estadoVenta === 'anulado' && venta.cdr && venta.cdr.sunatResponse.success) {
           console.log('ENVIAMOOOOO 11111111 JEJEJE');
           if (!venta.cdrAnulado){
-            await this.apiPeru.enviarNotaDeCreditoAdaptador2(venta);
+            await this.apiPeru.enviarNotaDeCreditoAdaptador(venta);
           }
         } else {
           if (venta.estadoVenta === 'anulado') {

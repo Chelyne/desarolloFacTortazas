@@ -1060,7 +1060,7 @@ export class DbDataService {
     return promesa;
   }
 
-  guardarCDRAnulado(idVenta: string, fechaEmision: any, sede: string, cdrAnulacion: CDRInterface){
+  guardarCDRAnulado(idVenta: string, fechaEmision: any, sede: string, cdrAnulacion: CDRInterface, fechaAnulacion: string){
     // console.log('guuuuuuuuuuuuuuuardadr cdr', cdrVenta, sede, idVenta);
     // const idFecha = venta.fechaEmision.getDay() + '-' + venta.fechaEmision.getMonth() + '-' + venta.fechaEmision.getFullYear();
     // console.log('ffffffffffffffffffffffffffffff',  venta.fechaEmision);
@@ -1072,7 +1072,7 @@ export class DbDataService {
 
     const promesa =  new Promise<void>( (resolve, reject) => {
       this.afs.collection('sedes').doc(sede.toLocaleLowerCase()).collection('ventas').doc(fechaString)
-      .collection('ventasDia').doc(idVenta).update({cdrAnulado: cdrAnulacion});
+      .collection('ventasDia').doc(idVenta).update({cdrAnulado: cdrAnulacion, fechaDeAnulacion: fechaAnulacion});
       resolve();
     });
 

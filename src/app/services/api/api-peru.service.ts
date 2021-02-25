@@ -444,62 +444,7 @@ export class ApiPeruService {
 /*                           enviar nota de credito                                               */
 /* ---------------------------------------------------------------------------------------------- */
 
-  enviarNotaDeCreditoAdaptador(venta: VentaInterface){
-    // console.log('EnviarNotaCreditoAdaptador: ', venta);
-    if (venta.cdrAnulado && venta.cdr.sunatResponse.success === true){
-      console.log('la boleta ya ha sido registradoo');
-      return;
-    }
-
-    // solo enviar a sunat si ya tiene un cdr y estado exito
-    if (venta.cdr && venta.cdr.sunatResponse.success === true ){
-      console.log('SE ENVIARÁ NOTA DE CREDITO');
-      this.dataApi.obtenerProductosDeVenta(venta.idListaProductos, this.sede).subscribe((data: any) => {
-        console.log('Lista de productos de la venta obtenidos de firebase:', data);
-
-        // tslint:disable-next-line: deprecation
-        if (!isNullOrUndefined(data)) {
-          venta.listaItemsDeVenta = data.productos;
-        }
-
-        // const ventaFormateada = this.formatearVenta(venta);
-        const typoComprobante = `n.credito.${venta.tipoComprobante}`;
-        console.log('CORRELACION--------------------------------', typoComprobante);
-
-        this.obtenerSerie2(typoComprobante).then((dataComprobante: any) => {
-          console.log('DATOS DEL COMPROBANTE', dataComprobante);
-          const IdSerie =  dataComprobante.id;
-          const DatosSerie = {
-            serie: dataComprobante.serie,
-            correlacion: dataComprobante.correlacion
-          };
-
-          console.log('DATOS DEL COMPROBANTE FORMATEADO', DatosSerie);
-
-          const notaCreditoFormateado = this.formatearNotaDeCredito(venta, DatosSerie);
-          console.log('NOTA DE CREDITO FORMATEADO', notaCreditoFormateado);
-
-          this.enviarNotaCreditoASunat(notaCreditoFormateado).then(cdr => {
-            console.log('cdr de nota de credito', cdr);
-            this.dataApi.incrementarCorrelacionTypoDocumento(IdSerie, this.sede, DatosSerie.correlacion)
-            .then(() => {
-              this.dataApi.guardarCDRAnulado(venta.idVenta, venta.fechaEmision, this.sede, cdr).then(() => {
-                  console.log('se guardará cdr ');
-              });
-            });
-          }).catch(error => console.log('No se envio comprobante a la SUNAT', error));
-
-        }).catch(error => console.log('No se envio comprobante a la SUNAT', error));
-
-      });
-
-    } else {
-      console.log('no se enviará el comprobante porque no tiene cdr');
-    }
-
-  }
-
-  async enviarNotaDeCreditoAdaptador2(venta: VentaInterface){
+  async enviarNotaDeCreditoAdaptador(venta: VentaInterface){
     console.log('ENVIAR_NOTA_CREDITO_OOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO');
     if (venta.cdrAnulado && venta.cdr.sunatResponse.success === true){
       console.log('la boleta ya ha sido registradoo');
@@ -537,6 +482,7 @@ export class ApiPeruService {
 
       const notaCreditoFormateado = this.formatearNotaDeCredito(venta, DatosSerie);
       console.log('NOTA DE CREDITO FORMATEADO', notaCreditoFormateado);
+      const fechaEmisionNotaCredito = notaCreditoFormateado.fechaEmision;
 
       const cdrRespuesta = await this.enviarNotaCreditoASunat(notaCreditoFormateado).then(cdrr => {
         return cdrr;
@@ -552,7 +498,8 @@ export class ApiPeruService {
       await this.dataApi.incrementarCorrelacionTypoDocumento(IdSerie, this.sede, DatosSerie.correlacion).then(() => console.log('se incremento correctamente'));
 
       console.log('guardardá el cdrAnulado');
-      await this.dataApi.guardarCDRAnulado(venta.idVenta, venta.fechaEmision, this.sede, cdrRespuesta).then(() => console.log('se Guardo el cdrAnulado'));
+      await this.dataApi.guardarCDRAnulado(venta.idVenta, venta.fechaEmision, this.sede, cdrRespuesta, fechaEmisionNotaCredito)
+      .then(() => console.log('se Guardo el cdrAnulado'));
       console.log('Comprobante termino de enviar');
 
     } else {
