@@ -58,22 +58,30 @@ describe('BuscadorService', () => {
   //   service.probarBusquedas();
   // });
   it('Test is full string or number', () => {
-    expect(-1).toEqual(service.isFullStringoOrNamber('asdfvsgsdf'));
-    expect(1).toEqual(service.isFullStringoOrNamber('1234534534'));
-    expect(0).toEqual(service.isFullStringoOrNamber('sdfusdl234234'));
-    expect(0).toEqual(service.isFullStringoOrNamber('sdfusdl234234'));
-    expect(0).toEqual(service.isFullStringoOrNamber('1ddl234234sdf'));
+    expect('allString').toEqual(service.isFullStringoOrNamber('asdfvsgsdf'));
+    expect('allNumber').toEqual(service.isFullStringoOrNamber('1234534534'));
+    expect('both').toEqual(service.isFullStringoOrNamber('sdfusdl234234'));
+    expect('both').toEqual(service.isFullStringoOrNamber('sdfusdl234234'));
+    expect('both').toEqual(service.isFullStringoOrNamber('1ddl234234sdf'));
   });
-  // it('TestSearch final', () => {
-  //   // service.search('alcohol pads');
-  //   // service.search('alimento H');
-  //   // service.busqudaPorCodigoProductoExacto('168');
-  //   // service.busqudaPorCodigoProductoExacto('39');
+  it('Test pegs of search', async () => {
+    // service.busqudaPorCodigoProductoExacto('168');
+    // service.busqudaPorCodigoProductoExacto('39');
 
-  //   service.busquedaPorCodigoProductoP('39');
-  //   service.busquedaPorNombreP('alpiste');
-  //   service.busquedaPorCodigoBarraP("dsp'120");
-  // });
+    // service.busquedaPorCodigoProductoP('39');
+    // service.busquedaPorNombreP('alpiste');
+    // service.busquedaPorCodigoBarraP("dsp'120");
+
+    /** Busqueda de nombres por piezas */
+    // service.buscarcuerpoP('cadena de oro'.split(' ')).then( data => console.log('Buscar cuerpo', data));
+    // service.buscarcuerpoP('pechera chaleco'.split(' ')).then( data => console.log('pechera chaleco', data));
+    // service.buscarcuerpoP('alpiste'.split(' ')).then( data => console.log('alpiste', data));
+    // service.buscarcuerpoP('cadena de oro'.split(' ')); //.then( data => console.log('Buscar cuerpo',data));
+
+    // service.busquedaPorNombreP('pechera chaleco').then( data => console.log('pechera chaleco', data));
+    // service.busquedaPorNombreP('alpiste').then( data => console.log('alpiste', data));
+
+  });
   it('Test Search', async () => {
     // service.search('alimento H');
     // service.search('alpiste');
@@ -82,15 +90,38 @@ describe('BuscadorService', () => {
     // service.search('69');
     // service.search('6914131911347');
     // service.search("dsp'120");
+
+    const a = [
+      {id: '1'},
+      {id: '2'},
+      {id: '3'},
+      {id: '4'},
+      {id: '5'},
+      {id: '6'},
+      {id: '7'},
+    ];
+    const b = [
+      {id: '1'},
+      {id: '2'},
+      {id: '3'},
+      {id: '4'},
+      {id: '5'},
+      {id: '6'},
+      {id: '8'},
+      {id: '10'},
+    ];
+
+    console.log(service.unirArrayProductos(a, b));
+
   });
   it('Test Search Final', async () => {
-    // service.search('alimento H').then((searchResult) => console.log('searchR', searchResult));
-    // service.search('alpiste').then((searchResult) => console.log('searchR', searchResult));
-    // service.search('39').then((searchResult) => console.log('searchR', searchResult));
-
-    // service.search('69').then((searchResult) => console.log('searchR', searchResult));
-    service.search('6914131911347').then((searchResult) => console.log('searchR', searchResult));
-    service.search("dsp'120").then((searchResult) => console.log('searchR', searchResult));
-
+    service.search('alimento H').then((searchResult) => console.log('searchR', 'alimento H', searchResult));
+    service.search('alpiste').then((searchResult) => console.log('searchR', 'alpiste', searchResult));
+    service.search('39').then((searchResult) => console.log('searchR', '39', searchResult));
+    service.search('69').then((searchResult) => console.log('searchR', '69', searchResult));
+    service.search('3').then((searchResult) => console.log('searchR', '3', searchResult));
+    service.search('6914131911347').then((searchResult) => console.log('searchR', '6914131911347', searchResult));
+    service.search("dsp'120").then((searchResult) => console.log('searchR', "dsp'120", searchResult));
+    service.search('').then((searchResult) => console.log('searchR', 'vacio', searchResult));
   });
 });

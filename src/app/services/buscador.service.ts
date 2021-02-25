@@ -1,12 +1,9 @@
 import { Injectable } from '@angular/core';
 import { AngularFirestore } from '@angular/fire/firestore';
-import { from, Observable, of } from 'rxjs';
-import { concatMap, map } from 'rxjs/operators';
-import { isNullOrUndefined } from 'util';
+import {  map } from 'rxjs/operators';
 import { ProductoInterface } from '../models/ProductoInterface';
 import { StorageService } from './storage.service';
 
-import { allSettled } from 'promise.allsettled';
 
 @Injectable({
   providedIn: 'root'
@@ -54,57 +51,59 @@ export class BuscadorService {
     return dataList;
   }
 
+/* -------------------------------------------------------------------------- */
+/*                              función principal                             */
+/* -------------------------------------------------------------------------- */
   async search(target: string){
-    this.listaProductos = [];
+
+    if (!target.length){
+      return [];
+    }
+
     let listaResultante: ProductoInterface[] = [];
     target = target.toLocaleLowerCase();
 
     if (target.split(' ').length > 1){
-      // Buscar por palabra
-      await this.busquedaPorNombreP(target).then(this.modificaProductList).then( data => listaResultante = data);
+      await this.busquedaPorNombreP(target).then( data => listaResultante = data);
 
     } else {
+
       const flagFullStrOrNum = this.isFullStringoOrNamber(target);
 
-      if (flagFullStrOrNum === -1){
-        // Buscar por nombre
-        await this.busquedaPorNombreP(target).then(this.modificaProductList).then( data => listaResultante = data);
+      if (flagFullStrOrNum === 'allString'){
+        await this.busquedaPorNombreP(target).then( data => listaResultante = data);
 
-      } else if (flagFullStrOrNum === 1){
+      }
+      else if (flagFullStrOrNum === 'allNumber'){
         if (target.length <= 5){
-          // buscar por codigo Exacto
-          await this.busqudaPorCodigoProductoExactoP(target).then( this.modificaProductList).then( data => listaResultante = data);
+          await this.busquedaPorCodigoProductoExactoP(target).then( data => listaResultante = data);
 
           if (!listaResultante.length){
-            console.log('No se encontro producto con el codigo de producto');
-            // si no se encontro producto, buscar por codigoProducto similaes o
-            // codigo de Barra
+            // si no se encontro productos, buscar por codigo de producto o Barra similares
             let a: any[] = [];
             let b: any[] = [];
             await (
-              this.busquedaPorCodigoBarraP(target).then(this.modificaProductList).then( data => a = data),
-              this.busquedaPorCodigoProductoP(target).then(this.modificaProductList).then(data => b = data)
+              this.busquedaPorCodigoProductoP(target).then(data => a = data),
+              this.busquedaPorCodigoBarraP(target).then( data => b = data)
             );
-            console.log('Datos RESULTANTES', a, b);
             listaResultante = a.concat(b);
 
 
-          } else {
-            console.log('la lista ya contiene productos');
           }
+
         } else {
-          await this.busquedaPorCodigoBarraP(target).then(this.modificaProductList).then(data => listaResultante = data);
+          await this.busquedaPorCodigoBarraP(target).then(data => listaResultante = data);
         }
 
-      }else{
-        // flagFullStrOrNum === 0
-        // pude ser un codigo de barra
-        // puede ser un nombre
+      }
+      else{
+        // flagFullStrOrNum === 'both'
+        // pude ser un codigo de barra puede ser un nombre
         let a: any[] = [];
         let b: any[] = [];
         await (
-          this.busquedaPorCodigoBarraP(target).then(this.modificaProductList).then( data => a = data),
-          this.busquedaPorNombreP(target).then(this.modificaProductList).then(data => b = data)
+          this.busquedaPorCodigoBarraP(target).then( data => a = data),
+          this.busquedaPorNombreP(target).then(data => b = data)
         );
         listaResultante = a.concat(b);
 
@@ -118,9 +117,9 @@ export class BuscadorService {
 
   /**
    *  @objetivo : Verificar si el target es full string or numero
-   *  @return : fullString: -1, fullNumber: 1, both: 0
+   *  @return : 'allString'|'allNumber'|'both'
    */
-  isFullStringoOrNamber(target: string): number{
+  isFullStringoOrNamber(target: string): 'allString'|'allNumber'|'both'{
     let contador = 0;
     for (const caracter of target) {
       if (isNaN(parseInt(caracter, 10))) {
@@ -131,11 +130,11 @@ export class BuscadorService {
     }
 
     if (contador === -target.length){
-      return -1;
+      return 'allString'; // full string
     } else if (contador === target.length){
-      return 1;
+      return 'allNumber'; // full number
     }
-    return 0;
+    return 'both';
   }
 
 
@@ -143,10 +142,8 @@ export class BuscadorService {
   /* -------------------------------------------------------------------------- */
   /*                               usando promesas                              */
   /* -------------------------------------------------------------------------- */
-  busqudaPorCodigoProductoExactoP(target: string){
-    // BUSQUEDA POR CODIGO DE PRODUCTO
-    // tslint:disable-next-line:max-line-length
-    console.log('se ejecuta el codigo exacto');
+  async busquedaPorCodigoProductoExactoP(target: string){
+    // BUSQUEDA EXACTA POR CODIGO DE PRODUCTO
     return this.afs.collection('sedes').doc(this.sede.toLowerCase())
     .collection('productos').ref.where('codigo', '==', target).limit(this.LIMIT_SEARCH)
     .get().then((querySnapshot) => {
@@ -154,15 +151,12 @@ export class BuscadorService {
       querySnapshot.forEach( (doc) => {
         resultList.push({id: doc.id, ...doc.data()});
       });
-      console.log('Query snapshot', resultList);
       return resultList;
     });
   }
 
-  busquedaPorCodigoProductoP(target: string){
+  async busquedaPorCodigoProductoP(target: string){
     // BUSQUEDA POR CODIGO DE PRODUCTO
-    // tslint:disable-next-line:max-line-length
-    console.log('SECOND EN PROMISE');
     return this.afs.collection('sedes').doc(this.sede.toLowerCase()).collection('productos').ref.orderBy('codigo')
     .startAt(target).endAt(target + '\uf8ff').limit(this.LIMIT_SEARCH).get()
     .then((querySnapshot) => {
@@ -170,16 +164,13 @@ export class BuscadorService {
       querySnapshot.forEach( (doc) => {
         resultList.push({id: doc.id, ...doc.data()});
       });
-      console.log('Query snapshot', resultList);
       return resultList;
     });
 
   }
 
-  busquedaPorCodigoBarraP(target: string){
-    // BUSCA POR CODIGO BARRA PARA CONCATENAR
-    // tslint:disable-next-line:max-line-length
-    console.log('FIRST EN PROMISE');
+  async busquedaPorCodigoBarraP(target: string){
+    // BUSCA POR CODIGO BARRA
 
     return this.afs.collection('sedes').doc(this.sede.toLowerCase())
     .collection('productos').ref.orderBy('codigoBarra').startAt(target).endAt(target + '\uf8ff').limit(this.LIMIT_SEARCH)
@@ -188,14 +179,24 @@ export class BuscadorService {
       querySnapshot.forEach( (doc) => {
         resultList.push({id: doc.id, ...doc.data()});
       });
-      console.log('Query snapshot', resultList);
       return resultList;
     });
 
   }
 
-  busquedaPorNombreP(target: string){
-    // let resultadosLista: ProductoInterface[] = [];
+  async busquedaPorNombreP(target: string){
+    let a: any[] = [];
+    let b: any[] = [];
+    await (
+      this.busquedaPorNombreInicioP(target).then( data => a = data),
+      this.busquedaPorNombreCuerpoP(target.split(' ')).then( data => b = data)
+    );
+
+    return this.unirArrayProductos(a, b);
+  }
+
+  async busquedaPorNombreInicioP(target: string){
+    // BUSCA POR NOMBRE
 
     return this.afs.collection('sedes').doc(this.sede.toLowerCase())
     .collection('productos').ref.orderBy('nombre').startAt(target).endAt(target + '\uf8ff').limit(this.LIMIT_SEARCH)
@@ -204,15 +205,55 @@ export class BuscadorService {
       querySnapshot.forEach( (doc) => {
         resultList.push({id: doc.id, ...doc.data()});
       });
-      console.log('Query snapshot', resultList);
+      return resultList;
+    });
+  }
+
+  async busquedaPorNombreCuerpoP(arrayTargets: string[]){
+    return this.afs.collection('sedes').doc(this.sede.toLowerCase()).collection('productos').ref
+    .where('arrayNombre', 'array-contains-any', arrayTargets ).limit(25).get().then((querySnapshot) => {
+      const resultList: ProductoInterface[] = [];
+      querySnapshot.forEach( (doc) => {
+        resultList.push({id: doc.id, ...doc.data()});
+      });
       return resultList;
     });
   }
 
 
+
+
+
   /* -------------------------------------------------------------------------- */
   /* -------------------------------------------------------------------------- */
   /* -------------------------------------------------------------------------- */
+
+  unirArrayProductos(a: ProductoInterface[], b: ProductoInterface[]){
+    const arrayResultante: ProductoInterface[] = [];
+    // let estaInResultante = false;
+
+    const iterador = (listPruduct: ProductoInterface[]) => {
+
+      for (const product of listPruduct){
+        let estaInResultante = false;
+        for (const itemR of arrayResultante) {
+          if (product.id === itemR.id){
+            estaInResultante = true;
+            break;
+          }
+        }
+
+        if (!estaInResultante){
+          arrayResultante.push(product);
+        }
+      }
+    };
+
+    iterador(a);
+    iterador(b);
+
+    return arrayResultante;
+  }
 
 
 
