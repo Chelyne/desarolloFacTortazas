@@ -11,9 +11,9 @@ import { VentaInterface } from 'src/app/models/venta/venta';
 import { AngularFireModule } from '@angular/fire';
 import { AngularFirestore, AngularFirestoreModule } from '@angular/fire/firestore';
 import { environment } from 'src/environments/environment';
+
 import { DbDataService } from '../../db-data.service';
 import { ClienteInterface } from 'src/app/models/cliente-interface';
-import { AnyMxRecord } from 'dns';
 
 
 describe('TestApiService', () => {

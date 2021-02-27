@@ -19,6 +19,8 @@ import { database } from 'firebase';
 import { AnyCnameRecord } from 'dns';
 // import { Console } from 'console';
 
+import { formatearDateTime } from 'src/app/global/funciones-globales';
+
 @Injectable({
   providedIn: 'root'
 })
@@ -1061,6 +1063,33 @@ export class DbDataService {
     return promesa;
   }
 
+  guardarCDR2(idVenta: string, fechaEmision: any, sede: string, cdrVenta: CDRInterface){
+
+    const fecha = formatearDateTime('DD-MM-YYYY', fechaEmision);
+
+    if (fecha === 'INVALID_DATA_TIME'){
+      throw String('La fecha de emision no es valida');
+    }
+
+    return  this.afs.collection('sedes').doc(sede.toLocaleLowerCase()).collection('ventas').doc(fecha)
+    .collection('ventasDia').doc(idVenta).ref.update({cdr: cdrVenta}).then(() => 'exito').catch(err => {
+      throw err;
+    });
+    // .ref.get()
+    // .then((doc: any) => {
+    //   if (doc.exists) {
+    //     console.log({id: doc.id, ...doc.data()});
+    //     return {id: doc.id, ...doc.data()};
+    //   } else {
+    //     console.log('No such document!');
+    //     return {};
+    //   }
+    // }).catch(err => {
+    //   console.log('Error ocurrido', err);
+    //   throw 'fail';
+    // });
+  }
+
   guardarCDRAnulado(idVenta: string, fechaEmision: any, sede: string, cdrAnulacion: CDRInterface, fechaAnulacion: string){
     // console.log('guuuuuuuuuuuuuuuardadr cdr', cdrVenta, sede, idVenta);
     // const idFecha = venta.fechaEmision.getDay() + '-' + venta.fechaEmision.getMonth() + '-' + venta.fechaEmision.getFullYear();
@@ -1145,21 +1174,20 @@ export class DbDataService {
       ));
   }
 
-  obtenerProductosDeVenta2(idProductoVenta: string, sede: string){
-    console.log('Id de un producto de venta en productVEnta', idProductoVenta);
+  async obtenerProductosDeVenta2(idProductoVenta: string, sede: string){
+    // console.log('Id de un producto de venta en productVEnta', idProductoVenta);
     return this.afs.collection('sedes').doc(sede.toLocaleLowerCase())
     .collection('productosVenta').doc(idProductoVenta).ref.get()
     .then((doc: any) => {
       if (doc.exists) {
         return doc.data().productos;
       } else {
-        console.log('No such document!');
+        // console.log('No such document!');
         return [];
       }
     }).catch(err => {
-      console.log('looooooooooooooooooooooooooongeeeeeeeeeerr', err);
-      // tslint:disable-next-line:no-string-throw
-      throw 'fail';
+      console.log('Error al obtener items de Venta: ', err);
+      throw String('fail');
     });
   }
 

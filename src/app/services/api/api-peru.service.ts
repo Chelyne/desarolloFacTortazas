@@ -11,8 +11,11 @@ import { isNullOrUndefined } from 'util';
 import { DbDataService } from '../db-data.service';
 import { StorageService } from '../storage.service';
 
-import { redondeoDecimal } from 'src/app/global/funciones-globales';
+import { redondeoDecimal, formatearDateTime } from 'src/app/global/funciones-globales';
 import { MontoALetras } from 'src/app/global/monto-a-letra';
+import { apiPeruConfig } from './apiPeruConfig';
+import { ApiPeruConfigInterface, DatosApiPeruInterface, DatosEmpresaInterface } from './apiPeruInterfaces';
+import { CDRInterface } from 'src/app/models/api-peru/cdr-interface';
 
 
 
@@ -21,33 +24,68 @@ import { MontoALetras } from 'src/app/global/monto-a-letra';
 })
 export class ApiPeruService {
 
-  userApiPeru = 'friendscode';
-  passwardApiPeru = 'friends2019peru';
+  sede = this.storage.datosAdmi.sede.toLocaleLowerCase();
 
-  rucEmpresa = '20601831032';
+  // userApiPeru = 'friendscode';
+  // passwardApiPeru = 'friends2019peru';
 
-  tokenEmpresa: string;
-  datosDeEmpresa: EmpresaInterface;
+  // rucEmpresa = '20601831032';
 
-  sede = this.storage.datosAdmi.sede;
+  // tokenEmpresa: string;
+  datosDeEmpresaOnFirebase: EmpresaInterface;
+
+  datosApiPeru: DatosApiPeruInterface;
+  datosEmpresa: DatosEmpresaInterface;
+  // datosSede: AddressInterface;
+  sedeDireccion: AddressInterface;
 
 
   constructor(
     private dataApi: DbDataService,
     private storage: StorageService
   ) {
-    this.obtenerDatosDeLaEmpresa();
+    // TODO : DESCOMENTAR LINEA ABAJO
+    // this.obtenerDatosDeLaEmpresa();
+    this.sede = storage.datosAdmi.sede.toLocaleLowerCase();
+    this.setApiPeruConfig(apiPeruConfig);
   }
 
   // verificarVenta(venta: VentaInterface){
   // }
+  saludo(){
+    return 'hola';
+  }
+  getSede(){
+    return this.sede;
+  }
+
+  setApiPeruConfig(config: ApiPeruConfigInterface){
+    // console.log('CONFIGGGGGGGGGGGGGGGGG', config);
+
+    this.datosApiPeru = config.datosApiPeru;
+    // this.userApiPeru = config.datosApiPeru.usuario;
+    // this.passwardApiPeru = config.datosApiPeru.password;
+
+    this.datosEmpresa = config.datosEmpresa;
+    // this.rucEmpresa = this.datosEmpresa.ruc;
+    // this.tokenEmpresa = this.datosEmpresa.token;
+
+    // this.datosSede = config.sedes[this.sede];
+    // console.log(config.sedes[this.sede]);
+    this.sedeDireccion = config.sedes[this.sede].direccion;
+    // console.log('sedeDireccion', this.sedeDireccion);
+  }
+
+
 
 /* ------------------------------------------------------------------------------------------------ */
 /*                                    configuración apisperu setting                                */
 /* ------------------------------------------------------------------------------------------------ */
-  setApiPeruDataUser(user: string, password: string){
-    this.userApiPeru = user;
-    this.passwardApiPeru = password;
+  setApiPeruDataUser(newUser: string, newPassword: string){
+    this.datosApiPeru = {
+      usuario: newUser,
+      password: newPassword
+    };
   }
 
   async login(){
@@ -60,9 +98,11 @@ export class ApiPeruService {
     const myHeaders = new Headers();
     myHeaders.append('Content-Type', 'application/json');
 
+    console.log(this.datosApiPeru);
+
     const raw = JSON.stringify({
-      username: this.userApiPeru,
-      password: this.passwardApiPeru
+      username: this.datosApiPeru.usuario,
+      password: this.datosApiPeru.password
     });
 
     const requestOptions: RequestInit = {
@@ -145,7 +185,7 @@ export class ApiPeruService {
     return empresa.token.code;
   }
 
-  async getAndSaveEmpresaOnfirebase(rucEnter = this.rucEmpresa){
+  async getAndSaveEmpresaOnfirebase(rucEnter = this.datosEmpresa.ruc){
     /**
      *  @objetivo : Obtener empresa de ApisPeru y Guardarlo en Firebase
      *  @return : exito: Promesa< {datosEmpresa1} >, else Promesa< {} >
@@ -163,16 +203,16 @@ export class ApiPeruService {
 
   obtenerDatosDeLaEmpresa(){
     this.dataApi.obtenerEmpresa().subscribe((data: any) => {
-      if (Object.entries(data).length === 0 || data.ruc !== this.rucEmpresa) {
-        this.getAndSaveEmpresaOnfirebase(this.rucEmpresa);
+      if (Object.entries(data).length === 0 || data.ruc !== this.datosEmpresa.ruc) {
+        this.getAndSaveEmpresaOnfirebase(this.datosEmpresa.ruc);
       }
-      this.datosDeEmpresa = data;
-      console.log(this.datosDeEmpresa);
+      this.datosDeEmpresaOnFirebase = data;
+      console.log(this.datosDeEmpresaOnFirebase);
     });
   }
 
   getDatosEmpresa(){
-    return this.datosDeEmpresa;
+    return this.datosDeEmpresaOnFirebase;
   }
 /* ------------------------------------------------------------------------------------------------ */
 /* ------------------------------------------------------------------------------------------------ */
@@ -209,14 +249,91 @@ export class ApiPeruService {
     return promesa;
   }
 
+  async enviarASunatAdaptador2(venta: VentaInterface){
+    if (venta.cdr && venta.cdr.sunatResponse.success === true){
+      throw String('ya fue enviado');
+    } else {
+
+      let productos: any;
+      productos = await this.obtenerProductosDeVenta(venta.idListaProductos).catch(err => err);
+
+      if (productos === 'fail'){
+        throw String('Error de Conexion a Intenet, no se encontro lista de productos');
+      }
+
+      console.log('PRODUCTOS_DE_VENTA: ', productos);
+
+      if (!productos.length){
+        throw String(`no se encontro productos por idListaProductos: ${venta.idListaProductos}`);
+      }
+
+      venta.listaItemsDeVenta = productos;
+
+      const ventaFormateada: ComprobanteInterface = this.formatearVenta(venta);
+      console.log('VENTA_FORMATEADA', ventaFormateada);
+
+      if (ventaFormateada.fechaEmision === 'INVALID_DATA_TIME'){
+        throw String('Fecha de emisión invalida');
+      }
+
+      const cdrRespuesta = await this.enviarComprobanteASunat(ventaFormateada)
+        .catch(error => {
+          console.log('No se envio comprobante a la SUNAT', error);
+          return 'fail';
+        });
+
+      if (cdrRespuesta === 'fail'){
+        throw String('No se envio el comprobante a SUNAT');
+      }
+
+      console.log('Cdr', cdrRespuesta);
+
+      // un for de tres intentos para guardar cdr
+      let seGuardoCdr: string;
+      for (let i = 0; i < 3; i++) {
+
+        seGuardoCdr =  await this.guardarCDR(venta.idVenta, venta.fechaEmision, cdrRespuesta).then(exito => exito).catch(err => {
+            console.log('err');
+            return 'fail';
+          });
+
+        if ( seGuardoCdr === 'exito'){
+          break;
+        }
+      }
+
+      if ( seGuardoCdr === 'fail'){
+        throw String(`Se obtuvo el cdr pero no se pudo guardar, con Success: ${cdrRespuesta.sunatResponse.success}`);
+      }
+
+      return 'exito';
+    }
+  }
+
+  async guardarCDR(idVenta: string, fechaEmision: any, cdrRespuesta: CDRInterface){
+    return this.dataApi.guardarCDR2(idVenta, fechaEmision, this.sede, cdrRespuesta).then(exito => {
+      console.log('HOLA BETO, TUS HAS TENIDO EXITO');
+      return exito;
+    }).then(err => err);
+  }
+
+  async obtenerProductosDeVenta(idListaProductos: string){
+    if (!idListaProductos){
+      return [];
+    }
+    return this.dataApi.obtenerProductosDeVenta2(idListaProductos, this.sede).catch(err => {
+      throw err;
+    });
+  }
+
+
+
   // NOTE - Esta es la función más importante que se encarga de enviar una factura a sunat
   enviarComprobanteASunat(ventaFormateada: ComprobanteInterface){
     const myHeaders = new Headers();
-    // TODO: en caso de que no exita el token ver si emprea tiene el token
-    myHeaders.append('Authorization', 'Bearer '.concat(this.datosDeEmpresa.token.code));
+    myHeaders.append('Authorization', 'Bearer '.concat(this.datosEmpresa.token));
     myHeaders.append('Content-Type', 'application/json');
 
-    // TODO: Poner el tipo de dato a raw
     let raw: string;
 
     raw = JSON.stringify(ventaFormateada);
@@ -242,7 +359,7 @@ export class ApiPeruService {
         // this.dataApi.guardarCDR(venta, this.sede, cdr);
         // this.dataApi.guardarCDRr(idVenta, fechaEmision, sede, cdrVenta);
       } )
-      .catch(error => console.log('errorrrrrrrrrrrrrrrrrrrrrrrrr', error));
+      .catch(error => error);
   }
 
   formatearVenta(venta: VentaInterface): ComprobanteInterface{
@@ -270,10 +387,10 @@ export class ApiPeruService {
       tipoDoc: this.obtenerCodigoComprobante(venta.tipoComprobante),  // Factura:01, Boleta:03 //
       serie: venta.serieComprobante,
       correlativo: venta.numeroComprobante, // venta.numeroComprobante,
-      fechaEmision: this.formtearFecha(venta.fechaEmision), // TODO, formaterar fecha a Data-time
+      fechaEmision: formatearDateTime('YYYY-MM-DDTHH:mm:ss-05:00', venta.fechaEmision), // this.formtearFecha(venta.fechaEmision)
       tipoMoneda: 'PEN',
       client: this.formatearCliente(venta.cliente),
-      company: this.formatearEmpresa(this.datosDeEmpresa),
+      company: this.formatearEmpresa(this.datosEmpresa),
       mtoOperGravadas: redondeoDecimal(montoOperGravadas, 2),
       mtoIGV: redondeoDecimal(igv, 2),
       icbper: redondeoDecimal(icbr, 2),
@@ -405,37 +522,37 @@ export class ApiPeruService {
     }
   }
 
-  formatearEmpresa(empresa: EmpresaInterface): CompanyInterface{
-    let empresaDireccion: AddressInterface = {};
-    const sede = this.sede.toLocaleLowerCase();
+  formatearEmpresa(empresa: DatosEmpresaInterface): CompanyInterface{
+    // let empresaDireccion: AddressInterface = {};
+    // const sede = this.sede.toLocaleLowerCase();
 
-    if (sede === 'andahuaylas'){
-      empresaDireccion = {
-        ubigueo: '030201',
-        direccion : 'AV. PERU NRO. 236 (FRENTE A PARQ LAMPA DE ORO C1P BLANCO) APURIMAC - ANDAHUAYLAS - ANDAHUAYLAS',
-        codigoPais: 'PE',
-        departamento: 'APURIMAC',
-        provincia: 'ANDAHUAYLAS',
-        distrito: 'ANDAHUAYLAS'
-      };
-    } else if (sede === 'abancay'){
-      empresaDireccion = {
-        ubigueo: '030101',
-        direccion : 'AV.SEOANE NRO. 100 (PARQUE EL OLIVO) APURIMAC - ABANCAY - ABANCAY',
-        codigoPais: 'PE',
-        departamento: 'APURIMAC',
-        provincia: 'ABANCAY',
-        distrito: 'ABANCAY'
-      };
-    } else {
-      console.log('direccion no valida');
-    }
-
+    // if (sede === 'andahuaylas'){
+    //   empresaDireccion = {
+    //     ubigueo: '030201',
+    //     direccion : 'AV. PERU NRO. 236 (FRENTE Al PARQUE LAMPA DE ORO) APURIMAC - ANDAHUAYLAS - ANDAHUAYLAS',
+    //     codigoPais: 'PE',
+    //     departamento: 'APURIMAC',
+    //     provincia: 'ANDAHUAYLAS',
+    //     distrito: 'ANDAHUAYLAS'
+    //   };
+    // } else if (sede === 'abancay'){
+    //   empresaDireccion = {
+    //     ubigueo: '030101',
+    //     direccion : 'AV.SEOANE NRO. 100 (PARQUE EL OLIVO) APURIMAC - ABANCAY - ABANCAY',
+    //     codigoPais: 'PE',
+    //     departamento: 'APURIMAC',
+    //     provincia: 'ABANCAY',
+    //     distrito: 'ABANCAY'
+    //   };
+    // } else {
+    //   console.log('direccion no valida');
+    // }
+    // TODO - QUE PASA SI ALGUNO NO TIENE DATOS
     return {
       ruc: empresa.ruc,
-      nombreComercial: 'VETERINARIAS TOBBY',
+      nombreComercial: empresa.nombreComercial,
       razonSocial: empresa.razon_social,
-      address: empresaDireccion
+      address: this.sedeDireccion
     };
   }
 
@@ -521,7 +638,7 @@ export class ApiPeruService {
 
   enviarNotaCreditoASunat(notaCreditoFormateado: NotaDeCreditoInterface){
     const myHeaders = new Headers();
-    myHeaders.append('Authorization', 'Bearer '.concat(this.datosDeEmpresa.token.code));
+    myHeaders.append('Authorization', 'Bearer '.concat(this.datosEmpresa.token));
     myHeaders.append('Content-Type', 'application/json');
 
     // TODO: Poner el tipo de dato a raw
@@ -573,10 +690,10 @@ export class ApiPeruService {
       tipoDoc: '07', // nota de crédito, nota de debito 08
       serie: serieNotaCred.serie, // 'FF01', // la nota de credito, F si factura y B si boleta
       correlativo: `${serieNotaCred.correlacion}`, // '123', // correlacion  // NOTE - Tambien debe obtenerse aquí
-      fechaEmision: this.formtearFechaActual(), // '2019-10-27T00:00:00-05:00', // Fecha de emision // NOTE - se debe gener aquí.
+      fechaEmision: formatearDateTime('YYYY-MM-DDTHH:mm:ss-05:00'), // this.formtearFechaActual(), // '2019-10-27T00:00:00-05:00',
       tipoMoneda: 'PEN',
       client: this.formatearCliente(venta.cliente),
-      company:  this.formatearEmpresa(this.datosDeEmpresa),
+      company:  this.formatearEmpresa(this.datosEmpresa),
       mtoOperGravadas: redondeoDecimal(montoOperGravadas, 2),
       mtoIGV: redondeoDecimal(igv, 2),
       totalImpuestos: redondeoDecimal(igv, 2),
@@ -600,7 +717,7 @@ export class ApiPeruService {
 /* ---------------------------------------------------------------------------------------------- */
 
 /* ---------------------------------------------------------------------------------------------- */
-  formatearResumenDiario(listaDeVentas: VentaInterface[]){
+  formatearResumenDiario(listaDeVentas: VentaInterface[], fechaVenta: string){
     let resumenDiarioFormateado: any = {};
 
     const listaVentasFormateadas: any[] = [];
@@ -612,11 +729,11 @@ export class ApiPeruService {
 
 
     resumenDiarioFormateado = {
-      fecGeneracion: '2019-10-29T00:00:00+00:00', // , '2019-10-27T00:00:00+00:00',
-      fecResumen: this.formtearFechaActual(),
+      fecGeneracion: `${fechaVenta}T00:00:00+00:00`, // , '2019-10-27T00:00:00+00:00', // Día Generacion de Boletas
+      fecResumen: this.formtearFechaActual(),  // Dia que se gener el resumenDiario
       correlativo: '001',
       moneda: 'PEN',
-      company: this.formatearEmpresa(this.datosDeEmpresa),
+      company: this.formatearEmpresa(this.datosEmpresa),
       details: listaVentasFormateadas
     };
     console.log('ESTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTEEEEEEEEES rESUMEN diario Formateado', resumenDiarioFormateado);

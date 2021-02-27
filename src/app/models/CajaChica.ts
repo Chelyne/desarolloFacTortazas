@@ -8,5 +8,5 @@ export interface CajaChicaInterface {
     saldoFinal?: number;
     saldoInicial?: number;
     sede?: string;
-    FechaConsulta?: any;
+    FechaConsulta?: string|{seconds?: number, nanoseconds?: number }|Date;
 }

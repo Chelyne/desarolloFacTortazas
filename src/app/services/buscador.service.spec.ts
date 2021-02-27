@@ -115,13 +115,13 @@ describe('BuscadorService', () => {
 
   });
   it('Test Search Final', async () => {
-    service.search('alimento H').then((searchResult) => console.log('searchR', 'alimento H', searchResult));
-    service.search('alpiste').then((searchResult) => console.log('searchR', 'alpiste', searchResult));
-    service.search('39').then((searchResult) => console.log('searchR', '39', searchResult));
-    service.search('69').then((searchResult) => console.log('searchR', '69', searchResult));
-    service.search('3').then((searchResult) => console.log('searchR', '3', searchResult));
-    service.search('6914131911347').then((searchResult) => console.log('searchR', '6914131911347', searchResult));
-    service.search("dsp'120").then((searchResult) => console.log('searchR', "dsp'120", searchResult));
-    service.search('').then((searchResult) => console.log('searchR', 'vacio', searchResult));
+    service.Buscar('alimento H').then((searchResult) => console.log('searchR', 'alimento H', searchResult));
+    service.Buscar('alpiste').then((searchResult) => console.log('searchR', 'alpiste', searchResult));
+    service.Buscar('39').then((searchResult) => console.log('searchR', '39', searchResult));
+    service.Buscar('69').then((searchResult) => console.log('searchR', '69', searchResult));
+    service.Buscar('3').then((searchResult) => console.log('searchR', '3', searchResult));
+    service.Buscar('6914131911347').then((searchResult) => console.log('searchR', '6914131911347', searchResult));
+    service.Buscar("dsp'120").then((searchResult) => console.log('searchR', "dsp'120", searchResult));
+    service.Buscar('').then((searchResult) => console.log('searchR', 'vacio', searchResult));
   });
 });
