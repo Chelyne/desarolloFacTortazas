@@ -22,6 +22,7 @@ import { AgregarEditarClientePage } from '../../modals/agregar-editar-cliente/ag
 import { ModalAgregarProductoPage } from '../../modals/modal-agregar-producto/modal-agregar-producto.page';
 import { ModalVentasPage } from '../../modals/modal-ventas/modal-ventas.page';
 import { IngresoEgresoPage } from '../../modals/ingreso-egreso/ingreso-egreso.page';
+import { BuscadorService } from 'src/app/services/buscador.service';
 
 @Component({
   selector: 'app-punto-venta',
@@ -99,7 +100,8 @@ export class PuntoVentaPage implements OnInit {
               private rutaActiva: ActivatedRoute,
               private modalController: ModalController,
               private router: Router,
-              private modalCtlr: ModalController
+              private modalCtlr: ModalController,
+              private buscadorService: BuscadorService
   ) {
     this.menuCtrl.enable(true);
 
@@ -551,12 +553,35 @@ export class PuntoVentaPage implements OnInit {
           }, error => { console.log('error de subscribe'  + error); }
           );
         }
+
       }
+
      } else  {
       console.log('lowercase 0');
       this.productos = null;
       this.buscando = null;
      }
+  }
+
+  Search2(ev){
+    this.buscando = true;
+
+    const target = ev.detail.value;
+
+    if (target.length) {
+      this.buscadorService.Buscar(target).then( data => {
+        if (data.length){
+          this.productos = data;
+        } else {
+          this.productos = null;
+          this.presentToast('No se encontro el producto', 'danger');
+        }
+        this.buscando = false;
+      });
+    } else {
+      this.productos = null;
+      this.buscando = null;
+    }
   }
 
   // limpia el buscador

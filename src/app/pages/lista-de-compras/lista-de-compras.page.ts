@@ -148,14 +148,9 @@ export class ListaDeComprasPage implements OnInit {
     }
   }
 
-  // TODO - es stock de producto debería debe decrementar si se carga modo Compras
   EditarCompra(compraSelect: CompraInterface){
     console.log('EditarCompraaaaaaaaaaaa', compraSelect);
     this.editCompra.setCompra(compraSelect);
-    for (const itemCompra of compraSelect.listaItemsDeCompra) {
-      // console.log(itemCompra);
-      this.dataApi.decrementarStockProducto(itemCompra.producto.id, this.sede, itemCompra.cantidad);
-    }
   }
 
 

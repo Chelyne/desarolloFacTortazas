@@ -1,6 +1,5 @@
 import { Injectable } from '@angular/core';
 import { AngularFirestore } from '@angular/fire/firestore';
-import {  map } from 'rxjs/operators';
 import { ProductoInterface } from '../models/ProductoInterface';
 import { StorageService } from './storage.service';
 

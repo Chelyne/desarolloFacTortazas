@@ -22,17 +22,21 @@ class MockStorageService {
 }
 
 describe('description', () => {
+    /** VENTAS */
     let service: ApiPeruService;
-    let ventaSinProductos: VentaInterface;
+    let ventaSinProductosConCDR: VentaInterface;
     let ventaSinProductosNV: VentaInterface;
     let VentaConProductos: VentaInterface;
-    let cdrDePrueba: CDRInterface;
     let ventaSinProductosYSinCDR: VentaInterface;
     let ventaSinItemsDeLista: VentaInterface;
     let ventaConFechaInvalida: VentaInterface;
 
+    /** CDR's */
+    let cdrDePrueba: CDRInterface;
+
     beforeAll( () => {
-      ventaSinProductos = {
+      /** VENTAS */
+      ventaSinProductosConCDR = {
         cantidadBolsa: 0,
         montoBase: 84.74576271186442,
         fechaEmision: {
@@ -210,9 +214,6 @@ describe('description', () => {
         idVenta: 'JDjjk7ZkRXKwtljSUtcz'
       };
 
-
-
-
       VentaConProductos = {
         cliente: {
           email: '',
@@ -355,11 +356,15 @@ describe('description', () => {
           idVenta: 'cwNG3OcbTLtwEn2C36EO'
       };
 
+      /** CDR's */
+
       cdrDePrueba =  {
         sunatResponse: {
           success: true
         }
       };
+
+      /** Clientes */
 
     });
 
@@ -385,7 +390,7 @@ describe('description', () => {
     });
     it('test saludo', () => {
         expect('hola').toEqual(service.saludo());
-        console.log(ventaSinProductos);
+        console.log(ventaSinProductosConCDR);
     });
     it('test getSede', () => {
         expect('andahuaylas').toEqual(service.getSede());
@@ -397,9 +402,34 @@ describe('description', () => {
     //   service.login().then( data => console.log(data));
     // });
     it('Test EnviarComprobante a Sunat General', async () => {
-      console.log('-----------------------Enviar venta a sunat por pasos-----------------------');
-      await service.enviarASunatAdaptador2(ventaSinProductosYSinCDR).then( exito => console.log(exito)).catch( err => console.log(err));
+      // console.log('-----------------------Enviar venta a sunat por pasos-----------------------');
+      // await service.enviarASunatAdaptador2(ventaSinProductosYSinCDR).then( exito => console.log(exito)).catch( err => console.log(err));
     });
+    it('Test EnviarNotaDeCredito', async () => {
+      // console.log('-----------------------Enviar venta a sunat por pasos-----------------------');
+      // await service.enviarNotaDeCreditoAdaptador(ventaSinProductosConCDR).
+      // then( exito => console.log(exito)).catch( err => console.log(err));
+    });
+
+    it('Test Guardar Correlacion', () => {
+
+      // const  serie = {
+      //   tipoComprobante: 'n.credito.boleta',
+      //   correlacion: 14,
+      //   numero: '1',
+      //   disponible: true,
+      //   serie: 'BC01',
+      //   id: 'OmtymKkPvLdGhvxWmaLZ'
+      // };
+
+      // const IdSerie =  serie.id;
+      // const DatosSerie = {
+      //   serie: serie.serie,
+      //   correlacion: serie.correlacion + 1
+      // };
+      // service.incrementarCorrelacionNotaCredito(IdSerie, DatosSerie).then(() => console.log('se incremento correctamente'));
+    });
+
     it('Test EnviarComprobante a Sunat, por pasos', async () => {
       // console.log('-----------------------Enviar venta a sunat por pasos-----------------------');
 
@@ -420,12 +450,9 @@ describe('description', () => {
       /** Error se Obtuvo el cdr pero no se guardo */
 
     });
-    it('Test funcion enviar a Sunat, PEGS', async () => {
-      console.log('Venta Formateada', service.formatearVenta(VentaConProductos));
-    });
     // it('testear Buscar productos por codigo', async () => {
     //   /** Si la lista de productos esxiste devuel la litaDeproductos */
-    //   await service.obtenerProductosDeVenta(ventaSinProductos.idListaProductos)
+    //   await service.obtenerProductosDeVenta(ventaSinProductosConCDR.idListaProductos)
     //   .then( data => console.log('BuscarProductosByIdList', data));
 
     //   /** Si el producto no existe devuelve una lista vacia */
@@ -435,22 +462,55 @@ describe('description', () => {
     //   .catch( err => console.log(err));
     // });
     // it('Formatear venta sin productos', async () => {
-    //   // const productos = await service.obtenerProductosDeVenta(ventaSinProductos.idListaProductos).catch(err => err);
+    //   // const productos = await service.obtenerProductosDeVenta(ventaSinProductosConCDR.idListaProductos).catch(err => err);
     //   const productos = await service.obtenerProductosDeVenta('').catch(err => err);
     //   if (productos === 'fail'){
     //     console.log('No se pudo obtener productos');
     //   } else {
-    //     ventaSinProductos.listaItemsDeVenta = productos;
-    //     console.log('venta formateada venta sin productos', service.formatearVenta(ventaSinProductos));
+    //     ventaSinProductosConCDR.listaItemsDeVenta = productos;
+    //     console.log('venta formateada venta sin productos', service.formatearVenta(ventaSinProductosConCDR));
     //   }
     // });
     // it('Testear guardar Cdr de prueba', async () => {
     //   /** Envia cdr a venta que existe */
-    //   await service.guardarCDR(ventaSinProductos.idVenta, ventaSinProductos.fechaEmision, cdrDePrueba)
+    //   await service.guardarCDR(ventaSinProductosConCDR.idVenta, ventaSinProductosConCDR.fechaEmision, cdrDePrueba)
     //   .then( data => console.log(data)).catch( err => console.log(err));
 
     //   /** Envia cdr a venta que no existe */
-    //   await service.guardarCDR('betobetobeto', ventaSinProductos.fechaEmision, cdrDePrueba)
+    //   await service.guardarCDR('betobetobeto', ventaSinProductosConCDR.fechaEmision, cdrDePrueba)
     //   .then( data => console.log('Usted a tenido exito', data)).catch( err => console.log('fail', err));
-    // });
+    // });.
+
+
+    /**
+     *  ENVIAR A SUNAR BOLETA O FACTURA
+     *    Obtener lista de productos
+     *    formatear venta
+     *      formatearDetallesDeVenta
+     *         formatearDetalle
+     *            ObtenerCodigoMedida
+     *      obtenerCodigoDeComprobante
+     *      formatearcliente
+     *      FormatearEmpresa
+     *      icbr
+     *      Descuentos
+     *    Enviar a Sunat
+     *    Guardar cdr
+     */
+
+    /**
+     *  ENVIAR A SUNAR NOTA DE CREDITO
+     *    Obtener lista de productos
+     *    Obtener serie
+     *    formatear nota de credito
+     *      formatear detalles de venta
+     *        formatear detalles
+     *      obtener codigo de comprobante
+     *      formatear cliente
+     *      formatear empresa
+     *    Enviar nota de credito a sunat
+     *    Incrementar correlacion
+     *    GuardarCDR anulado
+     */
+
 });

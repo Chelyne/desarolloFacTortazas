@@ -989,15 +989,6 @@ export class DbDataService {
   //   return promesa;
   // }
 
-  ActualizarProductoStock(sede: string, productId: string, stock: number){
-    const promesa =  new Promise( (resolve, reject) => {
-      this.afs.collection('sedes').doc(sede).collection('productos').doc(productId).update({cantStock: stock});
-      resolve(resolve);
-    });
-
-    return promesa;
-  }
-
 
 /* -------------------------------------------------------------------------- */
 /*                              consultas para datos de api                   */
@@ -1075,6 +1066,7 @@ export class DbDataService {
     .collection('ventasDia').doc(idVenta).ref.update({cdr: cdrVenta}).then(() => 'exito').catch(err => {
       throw err;
     });
+    // TODO: Tomar como example
     // .ref.get()
     // .then((doc: any) => {
     //   if (doc.exists) {
@@ -1090,23 +1082,19 @@ export class DbDataService {
     // });
   }
 
-  guardarCDRAnulado(idVenta: string, fechaEmision: any, sede: string, cdrAnulacion: CDRInterface, fechaAnulacion: string){
-    // console.log('guuuuuuuuuuuuuuuardadr cdr', cdrVenta, sede, idVenta);
-    // const idFecha = venta.fechaEmision.getDay() + '-' + venta.fechaEmision.getMonth() + '-' + venta.fechaEmision.getFullYear();
-    // console.log('ffffffffffffffffffffffffffffff',  venta.fechaEmision);
-    const fecha: any = fechaEmision;
-    const fechaFormateada = new Date(moment.unix(fecha.seconds).format('D MMM YYYY H:mm'));
-    const fechaString = formatDate(fechaFormateada, 'dd-MM-yyyy', 'en');
+  async guardarCDRAnulado(idVenta: string, fechaEmision: any, sede: string, cdrAnulacion: CDRInterface, fechaAnulacion: string){
 
-    // console.log('ffffffffeeeeeeeeeecha', fechaString, cdrVenta);
+    const fecha = formatearDateTime('DD-MM-YYYY', fechaEmision);
 
-    const promesa =  new Promise<void>( (resolve, reject) => {
-      this.afs.collection('sedes').doc(sede.toLocaleLowerCase()).collection('ventas').doc(fechaString)
-      .collection('ventasDia').doc(idVenta).update({cdrAnulado: cdrAnulacion, fechaDeAnulacion: fechaAnulacion});
-      resolve();
+    if (fecha === 'INVALID_DATA_TIME'){
+      throw String('La fecha de emision no es valida');
+    }
+
+    return this.afs.collection('sedes').doc(sede.toLocaleLowerCase()).collection('ventas').doc(fecha)
+    .collection('ventasDia').doc(idVenta).ref.update({cdrAnulado: cdrAnulacion, fechaDeAnulacion: fechaAnulacion})
+    .then(() => 'exito').catch(err => {
+      throw err;
     });
-
-    return promesa;
   }
 
 
@@ -1257,15 +1245,13 @@ export class DbDataService {
   }
 
   incrementarCorrelacionTypoDocumento(idSerie: string, sede: string, correlacionActual: number) {
-    // const consulta = this.afs.collection('sedes').doc(sede.toLocaleLowerCase())
-    // .collection('serie').doc(idSerie).update({correlacion: correlacionActual + 1});
 
-    const promesa =  new Promise<void>( (resolve, reject) => {
-      this.afs.collection('sedes').doc(sede.toLocaleLowerCase())
-      .collection('serie').doc(idSerie).update({correlacion: correlacionActual});
-      resolve();
+    return this.afs.collection('sedes').doc(sede.toLocaleLowerCase()).collection('serie')
+    .doc(idSerie).ref.update({correlacion: correlacionActual}).then(() => 'exito')
+    .catch(err => {
+      throw err;
     });
-    return promesa;
+
   }
 
   // ACTUALIZAR CORRELACION
@@ -1341,7 +1327,7 @@ export class DbDataService {
       }
     }).catch(err => {
       console.log('error', err);
-      throw 'fail';
+      throw String('fail');
     });
   }
 
@@ -1363,7 +1349,7 @@ export class DbDataService {
     console.log('cccccccccantidad stock', cantidadStock);
 
     if (cantidadStock === 'fail'){
-      throw 'fail';
+      throw String('fail');
     }
 
     return this.afs.collection('sedes').doc(sede.toLocaleLowerCase())
@@ -1375,7 +1361,7 @@ export class DbDataService {
     }).catch(err => {
       console.log('No sep pudo actualizar correctamente el producto');
       console.log('Error', err);
-      throw 'fail';
+      throw String('fail');
     });
   }
 
@@ -1396,7 +1382,7 @@ export class DbDataService {
     console.log('cccccccccantidad stock', cantidadStock);
 
     if (cantidadStock === 'fail'){
-      throw 'fail';
+      throw String('fail');
     }
 
     return this.afs.collection('sedes').doc(sede.toLocaleLowerCase())
@@ -1408,7 +1394,7 @@ export class DbDataService {
     }).catch(err => {
       console.log('No sep pudo actualizar correctamente el producto');
       console.log('Error', err);
-      throw 'fail';
+      throw String('fail');
     });
   }
 

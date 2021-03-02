@@ -131,11 +131,19 @@ export class ModalVentasPage implements OnInit {
     const fechaEmisionFormateada = fechaString.split(' ')[0];
     console.log(fechaEmisionFormateada);
 
-
     if (ventaSelect.estadoVenta === 'registrado'){
       this.dataApi.toggleAnularVenta(ventaSelect.idVenta, 'anulado', this.sede, fechaEmisionFormateada);
     } else {
       this.dataApi.toggleAnularVenta(ventaSelect.idVenta, 'registrado', this.sede, fechaEmisionFormateada);
+    }
+
+
+  }
+
+  anularItemsDeVenta(listaItemsDeVenta: ItemDeVentaInterface[]){
+    for (const itemVenta of listaItemsDeVenta) {
+      console.log('itemDeVenta a Decrementar', itemVenta);
+      this.dataApi.incrementarStockProducto(itemVenta.producto.id, this.sede, itemVenta.cantidad);
     }
   }
 
@@ -169,6 +177,9 @@ export class ModalVentasPage implements OnInit {
     this.obtenerProductosVenta(venta.idListaProductos).then((datos: ItemDeVentaInterface[]) => {
       console.log(datos);
       venta.listaItemsDeVenta =  datos;
+      if (typoAccion === 'anular' && venta.listaItemsDeVenta.length) {
+        this.anularItemsDeVenta(venta.listaItemsDeVenta);
+      }
       const tipoComprobante = this.obtenerTipoComprobante(venta.serieComprobante);
       console.log(tipoComprobante);
       console.log(venta);

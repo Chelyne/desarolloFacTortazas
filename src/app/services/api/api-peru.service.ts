@@ -222,34 +222,7 @@ export class ApiPeruService {
 /* ------------------------------------------------------------------------------------------------ */
 /*                                     ENVIAR COMPROBANTE A SUNAT                                   */
 /* ------------------------------------------------------------------------------------------------ */
-
-  enviarASunatAdaptador(venta: VentaInterface){
-
-    const promesa = new Promise((resolve, reject) => {
-      if (venta.cdr && venta.cdr.sunatResponse.success === true ){
-        reject(null);
-      } else {
-        this.dataApi.obtenerProductosDeVenta(venta.idListaProductos, this.sede).subscribe( (data: any) => {
-          console.log('Lista de productos de la venta obtenidos de firebase:', data);
-          // tslint:disable-next-line: deprecation
-          if (!isNullOrUndefined(data)){
-            venta.listaItemsDeVenta = data.productos;
-          }
-          const ventaFormateada: ComprobanteInterface = this.formatearVenta(venta);
-          console.log(ventaFormateada);
-          this.enviarComprobanteASunat(ventaFormateada).then(cdr => {
-            console.log('drin crd', cdr);
-            this.dataApi.guardarCDRr(venta.idVenta, venta.fechaEmision, this.sede, cdr).then(() => {
-              resolve(cdr);
-            });
-          }).catch(error => console.log('No se envio comprobante a la SUNAT', error));
-        });
-      }
-    });
-    return promesa;
-  }
-
-  async enviarASunatAdaptador2(venta: VentaInterface){
+  async enviarASunatAdaptador(venta: VentaInterface){
     if (venta.cdr && venta.cdr.sunatResponse.success === true){
       throw String('ya fue enviado');
     } else {
@@ -283,7 +256,7 @@ export class ApiPeruService {
         });
 
       if (cdrRespuesta === 'fail'){
-        throw String('No se envio el comprobante a SUNAT');
+        throw String('COMPROBANTE NO ENVIADO A SUNAT');
       }
 
       console.log('Cdr', cdrRespuesta);
@@ -303,7 +276,8 @@ export class ApiPeruService {
       }
 
       if ( seGuardoCdr === 'fail'){
-        throw String(`Se obtuvo el cdr pero no se pudo guardar, con Success: ${cdrRespuesta.sunatResponse.success}`);
+        console.log(`Se obtuvo el cdr pero no se pudo guardar, con Success: ${cdrRespuesta.sunatResponse.success}`);
+        throw String('NO SE GUARDO EL CDR');
       }
 
       return 'exito';
@@ -312,7 +286,6 @@ export class ApiPeruService {
 
   async guardarCDR(idVenta: string, fechaEmision: any, cdrRespuesta: CDRInterface){
     return this.dataApi.guardarCDR2(idVenta, fechaEmision, this.sede, cdrRespuesta).then(exito => {
-      console.log('HOLA BETO, TUS HAS TENIDO EXITO');
       return exito;
     }).then(err => err);
   }
@@ -351,14 +324,7 @@ export class ApiPeruService {
 
     return fetch('https://facturacion.apisperu.com/api/v1/invoice/send', requestOptions)
       .then(response => response.json())
-      .then(cdr => {
-
-        // console.log('Sunat Respuesta: ', cdr);
-        return cdr;
-        // ?NOTE: Guardar resultado en la base de datos
-        // this.dataApi.guardarCDR(venta, this.sede, cdr);
-        // this.dataApi.guardarCDRr(idVenta, fechaEmision, sede, cdrVenta);
-      } )
+      .then(cdr => cdr)
       .catch(error => error);
   }
 
@@ -453,7 +419,7 @@ export class ApiPeruService {
     for (const itemDeVenta of itemsDeVenta) {
       listaFormateda.push(this.formatearDetalleVenta(itemDeVenta));
     }
-    console.log(listaFormateda);
+    // console.log(listaFormateda);
     return listaFormateda;
   }
 
@@ -468,7 +434,6 @@ export class ApiPeruService {
     const igvTotal = cantidadItems * igvUnitario;
 
     return {
-        // codProducto: 'P001', // TODO, PROBAR A ENVIAR SIN ESTE
         unidad: this.ObtenerCodigoMedida(itemDeVenta.producto.medida),
         descripcion: itemDeVenta.producto.nombre,
         cantidad: itemDeVenta.cantidad,
@@ -478,7 +443,7 @@ export class ApiPeruService {
         porcentajeIgv: 18,
         igv: redondeoDecimal(igvTotal, 2),
         tipAfeIgv: '10', // OperacionOnerosa: 10
-        totalImpuestos: redondeoDecimal(igvTotal, 2), // suma de todos los impues que hubiesen
+        totalImpuestos: redondeoDecimal(igvTotal, 2), // suma de todos los impuestos que hubiesen
         mtoPrecioUnitario: redondeoDecimal(precioUnit, 2)
     };
   }
@@ -490,16 +455,13 @@ export class ApiPeruService {
     } else if (typoComprobante.toLowerCase() === 'boleta'){
       return '03';
     } else {
-      console.log('Comprobante no valido');
+      // console.log('Comprobante no valido');
       return 'TYPO COMPROBANTE INVALID';
     }
   }
 
   formatearCliente(cliente: ClienteInterface): ClientInterface{
-    // como todos los documentos son DNI, segun
-    // TODO - mejorar el cliente interface
-    // TODO - agregar una funcion para obtener el codigo de tipo de documento segun sunat
-    // TODO - Adaptar al nueva ClienteInterface
+    // TODO - Que pasa si un dato del cliente falta
     return {
       tipoDoc: this.ObtenerCodigoTipoDoc(cliente.tipoDoc), // el catalogo N6, DNI = 1, Tambien obtener el ruc
       numDoc: cliente.numDoc,
@@ -523,30 +485,6 @@ export class ApiPeruService {
   }
 
   formatearEmpresa(empresa: DatosEmpresaInterface): CompanyInterface{
-    // let empresaDireccion: AddressInterface = {};
-    // const sede = this.sede.toLocaleLowerCase();
-
-    // if (sede === 'andahuaylas'){
-    //   empresaDireccion = {
-    //     ubigueo: '030201',
-    //     direccion : 'AV. PERU NRO. 236 (FRENTE Al PARQUE LAMPA DE ORO) APURIMAC - ANDAHUAYLAS - ANDAHUAYLAS',
-    //     codigoPais: 'PE',
-    //     departamento: 'APURIMAC',
-    //     provincia: 'ANDAHUAYLAS',
-    //     distrito: 'ANDAHUAYLAS'
-    //   };
-    // } else if (sede === 'abancay'){
-    //   empresaDireccion = {
-    //     ubigueo: '030101',
-    //     direccion : 'AV.SEOANE NRO. 100 (PARQUE EL OLIVO) APURIMAC - ABANCAY - ABANCAY',
-    //     codigoPais: 'PE',
-    //     departamento: 'APURIMAC',
-    //     provincia: 'ABANCAY',
-    //     distrito: 'ABANCAY'
-    //   };
-    // } else {
-    //   console.log('direccion no valida');
-    // }
     // TODO - QUE PASA SI ALGUNO NO TIENE DATOS
     return {
       ruc: empresa.ruc,
@@ -560,33 +498,34 @@ export class ApiPeruService {
 /* ---------------------------------------------------------------------------------------------- */
 /*                           enviar nota de credito                                               */
 /* ---------------------------------------------------------------------------------------------- */
+  // REFACTOR - NOTA DE CREDITO
   async enviarNotaDeCreditoAdaptador(venta: VentaInterface){
-    console.log('ENVIAR_NOTA_CREDITO_OOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO');
-    if (venta.cdrAnulado && venta.cdr.sunatResponse.success === true){
-      console.log('la boleta ya ha sido registradoo');
-      return;
+    console.log('______________________ENVIAR_NOTA_CREDITO______________________');
+    if (venta.cdrAnulado && venta.cdrAnulado.sunatResponse.success === true){
+      throw String(`Ya se ha emitido la Nota de Credito para el comprobante: ${venta.serieComprobante}-${venta.numeroComprobante}`);
     }
 
-    if ((venta.cdr && venta.cdr.sunatResponse.success === true)){
+    if (venta.cdr && venta.cdr.sunatResponse.success === true){
 
       let productos: any;
+      productos = await this.obtenerProductosDeVenta(venta.idListaProductos).catch(err => err);
 
-      productos = await this.dataApi.obtenerProductosDeVenta2(venta.idListaProductos, this.sede).catch(err => err);
-      console.log('productooooooooooooooosssssssssssss', productos);
       if (productos === 'fail'){
-        return 'fail';
+        throw String('Error de Conexion a Intenet, no se encontro lista de productos');
       }
 
+      console.log('PRODUCTOS_DE_VENTA: ', productos);
+
+      if (!productos.length){
+        throw String(`no se encontro productos por idListaProductos: ${venta.idListaProductos}`);
+      }
       venta.listaItemsDeVenta = productos;
 
       const typoComprobante = `n.credito.${venta.tipoComprobante}`;
-      console.log('CORRELACION--------------------------------', typoComprobante);
-
       const serie = await this.obtenerSerie(typoComprobante).catch(err => err);
-      console.log('SERIE', serie);
+
       if ( serie === 'fail'){
-        // tslint:disable-next-line: no-string-throw
-        throw 'fail';
+        throw String('No se pudo obtener la serie para Nota de Credito');
       }
 
       const IdSerie =  serie.id;
@@ -594,35 +533,79 @@ export class ApiPeruService {
         serie: serie.serie,
         correlacion: serie.correlacion + 1
       };
-      console.log('se usará la correlacion: ', DatosSerie.correlacion);
+
+      // console.log('se usará la correlacion: ', DatosSerie.correlacion);
 
       const notaCreditoFormateado = this.formatearNotaDeCredito(venta, DatosSerie);
-      console.log('NOTA DE CREDITO FORMATEADO', notaCreditoFormateado);
+
+      // console.log('NOTA DE CREDITO FORMATEADO', notaCreditoFormateado);
       const fechaEmisionNotaCredito = notaCreditoFormateado.fechaEmision;
 
-      const cdrRespuesta = await this.enviarNotaCreditoASunat(notaCreditoFormateado).then(cdrr => {
-        return cdrr;
-      }).catch(err => 'fail');
+      const cdrRespuesta = await this.enviarNotaCreditoASunat(notaCreditoFormateado).catch(err => 'fail');
 
-      console.log('cdr REspuesta', cdrRespuesta);
+      console.log('CDR NOTA DE CREDITO', cdrRespuesta);
+
       if (cdrRespuesta === 'fail'){
-        // tslint:disable-next-line: no-string-throw
-        throw 'fail';
+        throw String('COMPROBANTE NO ENVIADO A SUNAT');
       }
 
-      console.log('incrementara la correlacion');
-      await this.dataApi.incrementarCorrelacionTypoDocumento(IdSerie, this.sede, DatosSerie.correlacion).then(() => console.log('se incremento correctamente'));
+      let respIncremtarCorrelacion = true;
+      let guardarCDRAnulado = true;
 
-      console.log('guardardá el cdrAnulado');
-      await this.dataApi.guardarCDRAnulado(venta.idVenta, venta.fechaEmision, this.sede, cdrRespuesta, fechaEmisionNotaCredito)
-      .then(() => console.log('se Guardo el cdrAnulado'));
-      console.log('Comprobante termino de enviar');
+      await(
+        this.incrementarCorrelacionNotaCredito(IdSerie, DatosSerie).catch(() => {
+          respIncremtarCorrelacion = false;
+        }),
+        this.guardarCDRAnulado(venta.idVenta, venta.fechaEmision, cdrRespuesta, fechaEmisionNotaCredito).catch(() => {
+          guardarCDRAnulado = false;
+        })
+      );
+
+      if (!respIncremtarCorrelacion){
+        throw String('NO INCREMENTO LA CORRELACION');
+      }
+
+      if (!guardarCDRAnulado){
+        throw String('NO SE GUARDO EL CDR');
+      }
+
+      return 'exito';
 
     } else {
-      console.log('no se enviará el comprobante porque no tiene cdr');
-      console.log('El comprobante aun no ha sido enviado');
+      throw String(`El comprobante: ${venta.serieComprobante}-${venta.numeroComprobante}, aun no ha sido enviado a SUNAT`);
     }
   }
+
+  async incrementarCorrelacionNotaCredito(IdSerie: any, DatosSerie: {serie: string, correlacion: number}){
+    let seGuardoCdr: string;
+    for (let i = 0; i < 3; i++) {
+      seGuardoCdr = await this.dataApi.incrementarCorrelacionTypoDocumento(IdSerie, this.sede, DatosSerie.correlacion)
+      .catch(() => 'fail');
+
+      if ( seGuardoCdr === 'exito'){
+        console.log('SE GUARDO EN EL INTENTO Incrementar: ', i);
+        return 'exito';
+      }
+    }
+    throw String('fail');
+  }
+
+  async guardarCDRAnulado(idVenta: string, fechaEmisionVenta: any, cdrRespuesta: CDRInterface, fechaEmisionNotaCredito: string){
+    let seGuardoCdr: string;
+    for (let i = 0; i < 3; i++) {
+      seGuardoCdr = await this.dataApi.guardarCDRAnulado(idVenta, fechaEmisionVenta, this.sede, cdrRespuesta, fechaEmisionNotaCredito)
+      .then(() => 'exito').catch(() => 'fail');
+
+      if ( seGuardoCdr === 'exito'){
+        console.log('SE GUARDO EN EL INTENTO cdrAnulado: ', i);
+
+        return 'exito';
+      }
+    }
+
+    throw String('fail');
+  }
+
 
   async obtenerSerie(typoDocumento: string){
     const valor = await  this.dataApi.obtenerCorrelacionTypoDocumentoV2(typoDocumento, this.sede).then(serie => serie).catch(err => err);
@@ -641,7 +624,6 @@ export class ApiPeruService {
     myHeaders.append('Authorization', 'Bearer '.concat(this.datosEmpresa.token));
     myHeaders.append('Content-Type', 'application/json');
 
-    // TODO: Poner el tipo de dato a raw
     let raw: string;
     raw = JSON.stringify(notaCreditoFormateado);
 
@@ -654,14 +636,14 @@ export class ApiPeruService {
 
     return fetch('https://facturacion.apisperu.com/api/v1/note/send', requestOptions)
       .then(response => response.json())
-      // .then(result => console.log(result))
+      .then(cdr => cdr)
       .catch(error => console.log('error', error));
 
   }
 
   formatearNotaDeCredito(venta: VentaInterface, serieNotaCred: {serie: string, correlacion: number}): NotaDeCreditoInterface{
-    console.log('Venta a ser Formateada', venta);
-    console.log('Fecha de emision de la venta', venta.fechaEmision);
+    // console.log('Venta a ser Formateada', venta);
+    // console.log('Fecha de emision de la venta', venta.fechaEmision);
     const productFormat = this.formatearDetalles(venta.listaItemsDeVenta);
 
     let icbr: number;
@@ -777,6 +759,7 @@ export class ApiPeruService {
 /* ---------------------------------------------------------------------------------------------- */
 
 /* ---------------------------------------------------------------------------------------------- */
+  // CLEAN -FORMATEAR FECHA Y FORMATEAR FECHA ACTUAL
   formtearFecha(dateTime: any): string{
 
     const fechaFormateada = new Date(moment.unix(dateTime.seconds).format('D MMM YYYY H:mm:ss'));

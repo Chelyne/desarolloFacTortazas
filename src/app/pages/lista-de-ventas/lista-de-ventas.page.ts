@@ -17,7 +17,11 @@ import { ContadorDeSerieInterface } from '../../models/serie';
 export class ListaDeVentasPage implements OnInit {
   listaDeVentas: VentaInterface[] = [];
   sedes = this.storage.datosAdmi.sede;
-  fachaventas = '02-01-2021';
+  fechaventas = '02-01-2021';
+  fechaventasReverso = '2021-01-02';
+
+  fechaventaDDMMYYYY = '02-01-2021';
+  fechaventaYYYYMMDD = '2021-01-02';
 
 
   ventasForm: FormGroup;
@@ -65,8 +69,11 @@ export class ListaDeVentasPage implements OnInit {
   ObtenerVentas(){
     this.buscando = true;
     // const fecha = this.ventasForm.value.fechadeventa;
+    this.fechaventaYYYYMMDD = this.ventasForm.value.fechadeventa;
     this.ventasForm.value.fechadeventa = this.ventasForm.value.fechadeventa.split('-').reverse().join('-');
-    console.log(this.ventasForm.value.fechadeventa);
+    // console.log(this.ventasForm.value.fechadeventa);
+    this.fechaventaDDMMYYYY = this.ventasForm.value.fechadeventa;
+    console.log(this.fechaventaDDMMYYYY, this.fechaventaYYYYMMDD);
     this.dataApi.ObtenerListaDeVentas(this.sedes, this.ventasForm.value.fechadeventa).subscribe(data => {
       if (data.length > 0) {
         this.listaDeVentas = data;
@@ -81,7 +88,7 @@ export class ListaDeVentasPage implements OnInit {
     });
 
     // console.log('hola', this.sedes);
-    // console.log('ventas', this.fachaventas);
+    // console.log('ventas', this.fechaventas);
     // console.log('listaventas', this.listaDeVentas);
   }
 /* -------------------------------------------------------------------------- */
@@ -98,7 +105,8 @@ export class ListaDeVentasPage implements OnInit {
 
   enviarUnComprobante(venta: VentaInterface) {
     console.log(venta);
-    this.apiPeru.enviarASunatAdaptador(venta);
+    this.apiPeru.enviarASunatAdaptador(venta).then(exito => console.log('Comprobante enviado con ', exito))
+    .catch( err => console.log('Error al enviar el comprobante', err));
   }
 
 
@@ -112,58 +120,73 @@ export class ListaDeVentasPage implements OnInit {
   }
 
   async enviarComprobantesDelDia() {
-    // const lista = await this.obtenerListaVentas().then((listaventas: VentaInterface[]) => listaventas);
+    /**
+     * @PASO1 :Enviar boletas y factura a SUNAT
+     */
     const lista = [...this.listaDeVentas];
-    if (lista.length > 0) {
-      // console.log(lista);
+
+    if (lista.length) {
+
       await this.presentLoading('Enviando comprobantes, Por favor espere...');
+
       for (const venta of lista) {
-        // this.contadorComprobantes++;
-        console.log(venta);
-        let cdrResponse: any;
+
+        console.log('VENTA_A_SER_ENVIADA', venta);
+
+        let response: any;
+
         if ((venta.tipoComprobante === 'boleta' || venta.tipoComprobante === 'factura') && !venta.cdr) {
 
-          cdrResponse = await this.apiPeru.enviarASunatAdaptador(venta).then(cdr => {
-            console.log(cdr);
-            return cdr;
-          }).catch(() => {
-            return {
-              sunatResponse: {
-                success: false
-              }
-            };
-          });
+          response = await this.apiPeru.enviarASunatAdaptador(venta).catch( err => err);
+
+          if (response === 'COMPROBANTE NO ENVIADO A SUNAT' || response === 'NO SE GUARDO EL CDR'){
+            console.log('Error al Enviar Comprobantes: ', response);
+            this.loading.dismiss();
+            return;
+          }
 
         } else {
           console.log('Es nota de venta' , venta);
         }
-        // tslint:disable-next-line:max-line-length
-        // if (venta.estadoVenta === 'anulado' && ((venta.cdr && venta.cdr.sunatResponse.success) || (cdrResponse && cdrResponse.sunatResponse.success)) ) {
-        //   console.log('ENVIAMOOOOO 11111111 JEJEJE');
-        //   if (!venta.cdrAnulado){
-        //     await this.apiPeru.enviarNotaDeCreditoAdaptador2(venta);
-        //   }
-        // }
+
       }
+
+      /**
+       * @PASO2 :Enviar notas de credito
+       */
       const lista2 = [...this.listaDeVentas];
+
       for (const venta of lista2) {
-         // tslint:disable-next-line:max-line-length
+        let response: any;
         if (venta.estadoVenta === 'anulado' && venta.cdr && venta.cdr.sunatResponse.success) {
-          console.log('ENVIAMOOOOO 11111111 JEJEJE');
           if (!venta.cdrAnulado){
-            await this.apiPeru.enviarNotaDeCreditoAdaptador(venta);
+            response = await this.apiPeru.enviarNotaDeCreditoAdaptador(venta);
           }
         } else {
           if (venta.estadoVenta === 'anulado') {
-            console.log('comprobante ANULADO aun no emitido', venta);
+            console.log('comprobante A ser ANULADO aun no emitido a SUNAT', venta);
           }
         }
+
+        if (
+          response === 'COMPROBANTE NO ENVIADO A SUNAT' ||
+          response === 'NO SE GUARDO EL CDR' ||
+          response === 'NO INCREMENTO LA CORRELACION'
+        ){
+          console.log('Error al Enviar Comprobantes: ', response);
+          this.loading.dismiss();
+          return;
+        }
       }
+
       this.loading.dismiss();
+
       this.presentToast('Comprobantes enviados.');
+
     } else {
       this.presentToast('No hay ventas para enviar.');
     }
+
   }
 
   // async obtenerListaVentas() {
@@ -197,6 +220,7 @@ export class ListaDeVentasPage implements OnInit {
 
   // NOTE: No envia resumen diario solo formatea.
   enviarResumenDiario(){
-    this.apiPeru.formatearResumenDiario(this.listaDeVentas);
+    console.log(this.fechaventas);
+    this.apiPeru.formatearResumenDiario(this.listaDeVentas, this.fechaventaYYYYMMDD);
   }
 }

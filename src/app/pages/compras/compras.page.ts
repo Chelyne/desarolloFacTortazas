@@ -14,6 +14,7 @@ import { ModalProductoCompraPage } from '../../modals/modal-producto-compra/moda
 import { isNullOrUndefined } from 'util';
 
 import { GlobalService } from '../../global/global.service';
+import { BuscadorService } from 'src/app/services/buscador.service';
 
 
 @Component({
@@ -24,7 +25,10 @@ import { GlobalService } from '../../global/global.service';
 export class ComprasPage implements OnInit {
 
   sede = this.storage.datosAdmi.sede;
+
+  listaDeProductosObservada: ProductoInterface[] = [];
   listaDeProductos: ProductoInterface[] = [];
+
 
   productSelect: ProductoInterface = null;
 
@@ -38,21 +42,22 @@ export class ComprasPage implements OnInit {
 
   formComprobante: FormGroup;
 
-  // TODO - Subir a la parte superior
-  // NOTE - parece no ser necesario
   // COMPRA
   ACTUALIZAR_COMPRA = false;
+  compraAserActualizada: CompraInterface = {};
+
   compra: CompraInterface = {};
   listaItemsDeCompra: ItemDeCompraInterface[] = [];
   totalxCompra = 0;
+
   constructor(
     private dataApi: DbDataService,
     private storage: StorageService,
     private modalCtlr: ModalController,
     private menuCtrl: MenuController,
     private editCompra: EditarCompraService,
-    private toastCtrl: ToastController,
-    private globalService: GlobalService
+    private globalService: GlobalService,
+    private buscadorService: BuscadorService
   ) {
     this.ObtenerProductos();
     this.formItemDeCompras = this.createFormCompras();
@@ -61,16 +66,9 @@ export class ComprasPage implements OnInit {
 
   ngOnInit() {
     this.menuCtrl.enable(true);
-    // Pass a custom class to each select interface for styling
-    // const selects = document.querySelectorAll('.custom-options');
-    // tslint:disable-next-line:prefer-for-of
-    // for (let i = 0; i < selects.length; i++) {
-    //   selects[i].interfaceOptions = {
-    //     cssClass: 'ionSelects'
-    //   };
-    // }
 
-    this.ObtenerCompra();
+    this.ObtenerCompraFromService();
+
     if (Object.entries(this.compra).length !== 0){
       this.ACTUALIZAR_COMPRA = true;
       // this.formItemDeCompras = {};
@@ -85,19 +83,21 @@ export class ComprasPage implements OnInit {
       this.calcularTotalaPagar();
     }
 
-
   }
 
-  ObtenerCompra(){
-    this.compra = this.editCompra.getCompra();
-    // console.log('ssssssssssssssCompras',this.compra);
+
+  ObtenerCompraFromService(){
+    this.compra = {...this.editCompra.getCompra()};
+    // Utilizando el patron prototype
+    this.compraAserActualizada = JSON.parse(JSON.stringify(this.editCompra.getCompra()));
+    this.editCompra.setCompra({});
   }
 
 
   ObtenerProductos(){
     this.dataApi.ObtenerListaProductosSinCat(this.sede).subscribe(data => {
+      this.listaDeProductosObservada = data;
       this.listaDeProductos = data;
-      // console.log(data);
     });
   }
 
@@ -106,18 +106,15 @@ export class ComprasPage implements OnInit {
   /* -------------------------------------------------------------------------- */
   /*                                 //Buscador                                 */
   /* -------------------------------------------------------------------------- */
-  Search(ev) {
+  Search(ev){
     this.buscando = true;
 
-    const key = ev.detail.value;
-    const lowercaseKey = key.toLowerCase();
+    const target = ev.detail.value;
 
-    if (lowercaseKey.length) {
-      this.dataApi.ObtenerListaProductosByName(this.sede, lowercaseKey).subscribe(data => {
-        this.listaDeProductos = data;
-      });
+    if (target.length) {
+      this.buscadorService.Buscar(target).then( data => this.listaDeProductos = data);
     } else  {
-      this.ObtenerProductos();
+      this.listaDeProductos = this.listaDeProductosObservada;
     }
   }
 
@@ -178,26 +175,22 @@ export class ComprasPage implements OnInit {
 
 
   seleccionarProducto(productSelect: ProductoInterface){
-    // console.log(productSelect);
     this.productSelect = productSelect;
     this.formItemDeCompras = this.updateFormCompras(productSelect);
   }
 
 
+  AgregarItemAListaDeCompra(){
 
-  AgregarAListaDeCompra(){
-
-    // Agregar el item de compra
-    // console.log('Agregar a lista de compra');
     const item: ItemDeCompraInterface = this.CrearItemDeCompra();
-    // console.log('44444444444444444,', item)
     this.listaItemsDeCompra.push(item);
-    // console.log(this.listaItemsDeCompra);
+
     this.limpiarFormCompra();
+
     this.calcularTotalaPagar();
   }
 
-
+  // TODO: debería ser: ver a espacio de editar compra
   EditarItemDeCompra(itemCompra: ItemDeCompraInterface){
     this.productSelect = itemCompra.producto;
     this.formItemDeCompras = this.editFormCompras(itemCompra);
@@ -243,10 +236,10 @@ export class ComprasPage implements OnInit {
   CrearItemDeCompra(): ItemDeCompraInterface{
 
     const localPuCompra = parseFloat(this.formItemDeCompras.value.pu_compra);
-    // const localCantidad = parseInt(this.formItemDeCompras.value.cantidad, 10);
-    // tslint:disable-next-line: radix
-    const localCantidad = parseInt(this.formItemDeCompras.value.cantidad);
+
+    const localCantidad = parseInt(this.formItemDeCompras.value.cantidad, 10);
     let localDescuento = parseFloat(this.formItemDeCompras.value.descuento);
+
     if (isNaN(localDescuento)) {
       localDescuento = 0;
     }
@@ -269,6 +262,10 @@ export class ComprasPage implements OnInit {
     this.formItemDeCompras = this.createFormCompras();
   }
 
+  /* -------------------------------------------------------------------------- */
+  /* -------------------------------------------------------------------------- */
+  /* -------------------------------------------------------------------------- */
+
 
   /* -------------------------------------------------------------------------- */
   /*                                  proveedor                                 */
@@ -288,7 +285,9 @@ export class ComprasPage implements OnInit {
     }
   }
 
-
+  /* -------------------------------------------------------------------------- */
+  /* -------------------------------------------------------------------------- */
+  /* -------------------------------------------------------------------------- */
 
 
   /* -------------------------------------------------------------------------- */
@@ -325,25 +324,24 @@ export class ComprasPage implements OnInit {
 
     };
 
-    // actualizar Stock de productos
+    /** actualizar Stock de productos */
     for (const itemCompra of compra.listaItemsDeCompra) {
-      console.log(itemCompra);
       await this.dataApi.incrementarStockProducto(itemCompra.producto.id, this.sede, itemCompra.cantidad);
     }
 
     this.dataApi.guardarCompra(compra, this.sede).then(
       () => {
-        console.log('Se ingreso Correctamente');
         this.limpiarListaDeCompras();
+
+        /** Resetear formulario de comprobante */
         this.formComprobante = this.createFormComprobante();
-        this.presentToast('Guardo la compra con exito.');
+
+        this.globalService.presentToast('Guardó la compra con exito.', {color: 'success', duracion: 20000, position: 'top'});
       }
     );
 
-    // for (const itemDeCompra of compra.listaItemsDeCompra) {
-    //   this.ActualizarStockProducto(itemDeCompra.id, itemDeCompra.cantidad + itemDeCompra.producto.cantStock);
-    // }
   }
+
 
   ActualizarCompra(){
     const compra = {
@@ -359,10 +357,13 @@ export class ComprasPage implements OnInit {
 
     };
 
-    for (const itemCompra of compra.listaItemsDeCompra) {
-      console.log(itemCompra);
-      this.dataApi.incrementarStockProducto(itemCompra.producto.id, this.sede, itemCompra.cantidad);
-    }
+    // for (const itemCompra of compra.listaItemsDeCompra) {
+    //   console.log(itemCompra);
+    //   this.dataApi.incrementarStockProducto(itemCompra.producto.id, this.sede, itemCompra.cantidad);
+    // }
+
+    // this.actualizarStockItemsCompra(compra);
+    this.ActualizarStockProductos2(compra);
 
 
     this.dataApi.actualizarCompra(this.compra.id, compra, this.sede).then(
@@ -376,9 +377,104 @@ export class ComprasPage implements OnInit {
 
     // this.limpiarListaDeCompras();
     // this.formComprobante = this.createFormComprobante();
-    this.presentToast('Actualizó con exito la compra.');
+    // this.presentToast('Actualizó con exito la compra.');
+    this.globalService.presentToast('Actualizó la compra con exito.', {color: 'success', duracion: 2000, position: 'top'});
     this.editCompra.setCompra({});
   }
+
+  // CLEAN
+  actualizarStockItemsCompra(compraActual: CompraInterface){
+    console.log(compraActual.listaItemsDeCompra, this.compraAserActualizada.listaItemsDeCompra);
+    // Verificar si ambos productos estas en ambas listas
+    for (const itemCompra of compraActual.listaItemsDeCompra) {
+      let itemCompraEstaEnAmbos = false;
+      for (const itemAnterior of this.compraAserActualizada.listaItemsDeCompra) {
+        if (itemCompra.producto.id === itemAnterior.producto.id){
+          console.log('ME EJECUTE');
+          const diferencia = itemCompra.cantidad - itemAnterior.cantidad;
+          console.log('productos semejantes', diferencia);
+          if (diferencia > 0){
+            // incrementarDiferencia;
+            this.dataApi.incrementarStockProducto(itemCompra.producto.id, this.sede, diferencia);
+          } else if (diferencia < 0){
+            // Decrementar diferencia
+            this.dataApi.decrementarStockProducto(itemCompra.producto.id, this.sede, -diferencia);
+          }
+          itemCompraEstaEnAmbos = true;
+          break;
+        }
+      }
+      if (!itemCompraEstaEnAmbos){
+        this.dataApi.incrementarStockProducto(itemCompra.producto.id, this.sede, itemCompra.cantidad);
+      }
+    }
+
+    // Si un producto que esta en la lista anterio ya no se encuentra
+    for (const itemAnterior of this.compraAserActualizada.listaItemsDeCompra) {
+      let itemCompraEstaEnAmbos = false;
+      for (const itemCompra of compraActual.listaItemsDeCompra) {
+        if (itemCompra.producto.id === itemAnterior.producto.id){
+          itemCompraEstaEnAmbos = true;
+        }
+      }
+
+      if (!itemCompraEstaEnAmbos){
+        this.dataApi.decrementarStockProducto(itemAnterior.producto.id, this.sede, itemAnterior.cantidad);
+      }
+    }
+  }
+
+  ActualizarStockProductos2(compraActual: CompraInterface){
+    const interseccion: {id: string, cantidad: number}[] = [];
+    const soloActual: {id: string, cantidad: number}[] = [];
+    const soloAnterior: {id: string, cantidad: number}[] = [];
+
+    for (const itemCompra of compraActual.listaItemsDeCompra) {
+      let itemCompraEstaEnAmbos = false;
+      for (const itemAnterior of this.compraAserActualizada.listaItemsDeCompra) {
+        if (itemCompra.producto.id === itemAnterior.producto.id){
+          interseccion.push({id: itemCompra.producto.id, cantidad: itemCompra.cantidad - itemAnterior.cantidad});
+          itemCompraEstaEnAmbos = true;
+          break;
+        }
+      }
+      if (!itemCompraEstaEnAmbos){
+        soloActual.push({id: itemCompra.producto.id, cantidad: itemCompra.cantidad});
+      }
+    }
+
+    for (const itemAnterior of this.compraAserActualizada.listaItemsDeCompra) {
+      let itemCompraEstaEnAmbos = false;
+
+      for (const itemIntesec of interseccion) {
+        if (itemIntesec.id === itemAnterior.producto.id){
+          itemCompraEstaEnAmbos = true;
+        }
+      }
+
+      if (!itemCompraEstaEnAmbos){
+        soloAnterior.push({id: itemAnterior.producto.id, cantidad: -itemAnterior.cantidad});
+      }
+    }
+
+
+    console.log(interseccion, soloAnterior, soloActual);
+
+    const actulizarStock = (listaProductos: {id: string, cantidad: number}[]) => {
+      for (const producto of listaProductos) {
+        if (producto.cantidad > 0){
+          this.dataApi.incrementarStockProducto(producto.id, this.sede, producto.cantidad);
+        } else if (producto.cantidad < 0) {
+          this.dataApi.decrementarStockProducto(producto.id, this.sede, -producto.cantidad);
+        }
+      }
+    };
+
+    actulizarStock(interseccion);
+    actulizarStock(soloActual);
+    actulizarStock(soloAnterior);
+  }
+
 
   cancelarActulizarCompra(){
     this.editCompra.setCompra({});
@@ -396,13 +492,7 @@ export class ComprasPage implements OnInit {
   async abrirModalNuevoProducto(){
 
     const modal =  await this.modalCtlr.create({
-      component: AgregarProductoPage// ,
-      // componentProps: {
-      //   eventoInvoker: this.modalEvento,
-      //   titleInvoker: this.modalTitle,
-      //   tagInvoker: this.modalTag,
-      //   dataInvoker: this.modalDataCliente
-      // }
+      component: AgregarProductoPage
     });
 
     await modal.present();
@@ -422,6 +512,7 @@ export class ComprasPage implements OnInit {
     this.calcularTotalaPagar();
   }
 
+  // NOTE - ESTA FUNCION YA NO SE ESTA USANDO
   async agregarProductoCompra() {
     const modal = await this.modalCtlr.create({
       component: ModalProductoCompraPage,
@@ -430,6 +521,7 @@ export class ComprasPage implements OnInit {
     await modal.present();
 
     const data = await modal.onWillDismiss();
+    // tslint:disable-next-line: deprecation
     if (isNullOrUndefined(data.data)) {
     } else {
       console.log(data.data.data);
@@ -439,61 +531,32 @@ export class ComprasPage implements OnInit {
     }
   }
 
-  async presentToast(message: string){
-    const toast = await this.toastCtrl.create({
-      message,
-      duration: 2000
-    });
 
-    toast.present();
-  }
+  // CLEAN
+  /* ------------------------------------------------------------------------------------ */
+  /* Funciones utilizadas para testear  incrementar y decrementar Stock de producto       */
+  /* ------------------------------------------------------------------------------------ */
 
-  ActualizarStockProducto(productoId: string, stock: number){
-    this.dataApi.ActualizarProductoStock(this.sede, productoId, stock).then(
-      () => {
-        console.log('Se ingreso Correctamente');
-      }
-    );
-  }
-
-  // async testFunc(){
-  //   console.log('_____Funcion test____');
+  // async lecturaProd(){
   //   const idProducto = '01xo7jxVqGvd0AuLxGGL';
   //   const sede = 'andahuaylas';
-
-  //   // console.log(
-  //   //   '.............',
-  //   //   await this.dataApi.obtenerProductoById(idProducto, sede)
-  //   // );
-
-  //   // incrementar stock
-  //   console.log(
-  //     'ActualizarProducto',
-  //     await this.dataApi.incrementarStockProducto(idProducto, sede, 4)
-  //   );
-
-  //   // decrementar stock
-  //   // this.dataApi.decrementarStockProducto(idProducto, sede);
-
-
+  //   console.log('El producto', await this.dataApi.obtenerProductoById(idProducto, sede));
   // }
 
-  async lecturaProd(){
-    const idProducto = '01xo7jxVqGvd0AuLxGGL';
-    const sede = 'andahuaylas';
-    console.log('El producto', await this.dataApi.obtenerProductoById(idProducto, sede));
-  }
+  // async addProd(){
+  //   const idProducto = '01xo7jxVqGvd0AuLxGGL';
+  //   const sede = 'andahuaylas';
+  //   await this.dataApi.incrementarStockProducto(idProducto, sede, 5);
+  // }
 
-  async addProd(){
-    const idProducto = '01xo7jxVqGvd0AuLxGGL';
-    const sede = 'andahuaylas';
-    await this.dataApi.incrementarStockProducto(idProducto, sede, 5);
-  }
+  // async substracProd(){
+  //   const idProducto = '01xo7jxVqGvd0AuLxGGL';
+  //   const sede = 'andahuaylas';
+  //   await this.dataApi.decrementarStockProducto(idProducto, sede, 3);
+  // }
 
-  async substracProd(){
-    const idProducto = '01xo7jxVqGvd0AuLxGGL';
-    const sede = 'andahuaylas';
-    await this.dataApi.decrementarStockProducto(idProducto, sede, 3);
-  }
+  /* ------------------------------------------------------------------------------------ */
+  /* ------------------------------------------------------------------------------------ */
+  /* ------------------------------------------------------------------------------------ */
 
 }
