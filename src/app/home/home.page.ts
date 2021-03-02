@@ -243,6 +243,9 @@ export class HomePage {
   consultFallos() {
     this.exportar.exportAsExcelFile(this.listaFallos, 'faltantes');
   }
+  exelDatosGenerales() {
+    this.exportar.exportAsExcelFile(this.todosProductos, 'datosAbancay');
+  }
 
   // subirDatos() {
   //     // tslint:disable-next-line:prefer-const
@@ -256,7 +259,12 @@ export class HomePage {
   //         this.listaFallos = [];
   //         res.forEach(element => {
   //           element.nombre = element.nombre.toLocaleLowerCase();
+  //           if (element.codigo) {
   //           element.codigo = element.codigo.toString();
+  //           }
+  //           if (element.codigoBarra) {
+  //             element.codigoBarra = element.codigoBarra.toString();
+  //             }
   //           console.log(element);
   //             // tslint:disable-next-line:no-shadowed-variable
   //           // const sus = this.consultar(element.nombre).subscribe((data: any) => {
@@ -298,5 +306,5 @@ export class HomePage {
   //         console.log(res);
   //       });
   //     } );
-  //   }
+    // }
 }

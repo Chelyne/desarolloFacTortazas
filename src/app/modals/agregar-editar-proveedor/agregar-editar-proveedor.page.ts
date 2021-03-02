@@ -211,12 +211,12 @@ export class AgregarEditarProveedorPage implements OnInit {
         };
         const url = 'https://dni.optimizeperu.com/api/company/';
         this.http.get('https://dniruc.apisperu.com/api/v1/ruc/' + event.detail.value + '?token=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJlbWFpbCI6ImFpaXp4Ym92c2dxcnRpZ2J3cEBuaXdnaHguY29tIn0.BwArIEbkSUE_GuXwPjETGTLvl88rhANKTsVcA7NY-WE').subscribe((data: any) => {
-          if (!isNullOrUndefined(data) && data !== 'Peticiones diarias excedidas' && data.razonSocial) {
+          if (!isNullOrUndefined(data) && data !== 'Peticiones diarias excedidas' && data.razonSocial && data.direccion) {
             this.encontrado = true;
             console.log(data);
-            this.proveedorModalForm.value.direccion = data.direccion;
-            this.proveedorModalForm.value.nombre = data.razonSocial;
-            console.log(this.proveedorModalForm.value);
+            this.proveedorModalForm.setControl('nombre', new FormControl(data.razonSocial, [Validators.minLength(3)]));
+            this.proveedorModalForm.setControl('direccion', new FormControl(data.direccion, [Validators.minLength(3)]));
+            console.log(this.proveedorModalForm.value.direccion);
             this.consultando = false;
           } else {
             this.encontrado = false;

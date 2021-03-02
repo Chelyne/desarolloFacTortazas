@@ -27,7 +27,7 @@ import { ReactiveFormsModule, FormsModule } from '@angular/forms';
 // fecha en espaniol
 import { LOCALE_ID } from '@angular/core';
 import localeEs from '@angular/common/locales/es';
-import { registerLocaleData } from '@angular/common';
+import { registerLocaleData, DatePipe } from '@angular/common';
 import { ModalDetallesServiciosPage } from './modals/modal-detalles-servicios/modal-detalles-servicios.page';
 // import { BuscarClientePipe } from './pipes/buscar-cliente.pipe';
 import { PipesModule } from './pipes/pipes.module';
@@ -54,6 +54,7 @@ registerLocaleData(localeEs);
   providers: [
     StatusBar,
     SplashScreen,
+    DatePipe,
     { provide: RouteReuseStrategy, useClass: IonicRouteStrategy },
     // Camera,
     // FCM,

@@ -23,6 +23,7 @@ import { ModalAgregarProductoPage } from '../../modals/modal-agregar-producto/mo
 import { ModalVentasPage } from '../../modals/modal-ventas/modal-ventas.page';
 import { IngresoEgresoPage } from '../../modals/ingreso-egreso/ingreso-egreso.page';
 import { BuscadorService } from 'src/app/services/buscador.service';
+import { SpliPaneService } from '../../services/spli-pane.service';
 
 @Component({
   selector: 'app-punto-venta',
@@ -93,7 +94,7 @@ export class PuntoVentaPage implements OnInit {
               private pagination: PaginationProductosService,
               private dataApi: DbDataService,
               private afs: AngularFirestore,
-              private storage: StorageService,
+              public storage: StorageService,
               private toastController: ToastController,
               private popoverController: PopoverController,
               private confirmarVentaServ: ConfirmarVentaService,
@@ -101,13 +102,18 @@ export class PuntoVentaPage implements OnInit {
               private modalController: ModalController,
               private router: Router,
               private modalCtlr: ModalController,
-              private buscadorService: BuscadorService
+              private buscadorService: BuscadorService,
+              private splitPaneData: SpliPaneService
   ) {
     this.menuCtrl.enable(true);
 
     this.rutaActiva.queryParams.subscribe(params => {
       this.categoriaP = 'petshop';
     });
+  }
+
+  controlSplitMenu() {
+    this.splitPaneData.setSplitPane(!this.splitPaneData.getSplitPane());
   }
 
   ngOnInit() {
@@ -587,6 +593,13 @@ export class PuntoVentaPage implements OnInit {
   // limpia el buscador
   limpiarBuscador() {
     this.buscando = null;
+  }
+
+  focusLimpio(event) {
+    this.limpiarBuscador();
+    this.productos = null;
+    this.search.value = null;
+    this.search.setFocus();
   }
 
   cambiarModoBusqueda() {
