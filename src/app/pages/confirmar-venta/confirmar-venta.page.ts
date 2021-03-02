@@ -318,6 +318,10 @@ export class ConfirmarVentaPage implements OnInit {
         this.generarQR(this.RUC +  '|'  + '03' +  '|' + this.serieComprobante +  '|' + this.venta.numeroComprobante +  '|' +
         this.venta.totalPagarVenta +  '|' + fecha +  '|' + this.venta.cliente.numDoc);
         this.dataApi.confirmarVenta(this.venta, this.storage.datosAdmi.sede).then(data => {
+          // actualizar Stock de productos
+          for (const itemVenta of this.venta.listaItemsDeVenta) {
+            this.dataApi.decrementarStockProducto(itemVenta.producto.id, this.storage.datosAdmi.sede, itemVenta.cantidad);
+          }
           this.dataApi.ActualizarCorrelacion(numero[0].id, this.storage.datosAdmi.sede, numero[0].correlacion + 1);
           this.dataApi.ActualizarEstadoCorrelacion(numero[0].id, this.storage.datosAdmi.sede, true);
           this.resetFormPago();

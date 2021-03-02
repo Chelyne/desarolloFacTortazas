@@ -2,5 +2,5 @@ export interface CategoriaInterface {
     id?: string;
     img?: string;
     categoria?: string;
-    fechaTimeRegistro?: Date;
+    fechaTimeRegistro?: string|{seconds?: number, nanoseconds?: number }|Date;
 }

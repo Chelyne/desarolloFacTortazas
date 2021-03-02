@@ -15,6 +15,6 @@ export interface ProductoInterface {
     marca?: string;
     codigo?: string;
     codigoBarra?: string;
-    fechaTimeRegistro?: Date;
-    fechaDeVencimiento?: Date;
+    fechaTimeRegistro?: string|{seconds?: number, nanoseconds?: number }|Date;
+    fechaDeVencimiento?: string|{seconds?: number, nanoseconds?: number }|Date;
 }

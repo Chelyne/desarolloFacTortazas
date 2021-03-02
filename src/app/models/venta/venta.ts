@@ -6,7 +6,7 @@ import { AdmiInterface } from '../AdmiInterface';
 
 export interface VentaInterface {
     idVenta?: string;
-    fechaEmision?: Date |{};
+    fechaEmision?: string|{seconds?: number, nanoseconds?: number }|Date;
     tipoComprobante?: string;
     serieComprobante?: string;
     numeroComprobante?: string;
@@ -28,6 +28,6 @@ export interface VentaInterface {
     estadoVenta?: 'registrado' | 'anulado' | 'enviado'; // string
     montoPagado?: number;
     cdrAnulado?: CDRInterface;
-    fechaDeAnulacion?: string;
+    fechaDeAnulacion?: string|{seconds?: number, nanoseconds?: number }|Date;
 }
 
