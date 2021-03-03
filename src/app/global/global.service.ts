@@ -10,14 +10,19 @@ export class GlobalService {
     private toastCtrl: ToastController
   ) { }
 
-  async  presentToast(message: string){
+  async presentToast(
+    mensaje: string,
+    propiedades: {duracion?: number, position?: 'bottom'| 'top'| 'middle', color?: string} = {}
+  ) {
     const toast = await this.toastCtrl.create({
-      message,
-      duration: 2000
+      message: mensaje,
+      duration: propiedades.duracion ? propiedades.duracion : 1000,
+      position: propiedades.position ? propiedades.position : 'bottom',
+      color: propiedades.color ? propiedades.color : 'dark'
     });
-
     toast.present();
   }
+
 
 
 

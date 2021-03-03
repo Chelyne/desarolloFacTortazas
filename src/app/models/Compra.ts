@@ -10,8 +10,8 @@ export interface CompraInterface {
     typoComprobante?: string;
     serieComprobante?: string;
     numeroComprobante?: number;
-    fechaDeEmision?: Date;
-    fechaRegistro?: Date;
+    fechaDeEmision?: string|{seconds?: number, nanoseconds?: number }|Date;
+    fechaRegistro?: string|{seconds?: number, nanoseconds?: number }|Date;
     anulado?: boolean;
 }
 

@@ -43,7 +43,7 @@
           </ion-item>
         </ion-col> -->
                 <ion-col size="8">
-                    <ion-searchbar (ionFocus)="focusLimpio($event)" (ionClear)="limpiarBuscador()" (ionChange)="Search($event)" #search placeholder="Buscar producto" inputmode="text" debounce="800" animated="true"></ion-searchbar>
+                    <ion-searchbar (ionFocus)="focusLimpio($event)" (ionClear)="limpiarBuscador()" (ionChange)="Search2($event)" #search placeholder="Buscar producto" inputmode="text" debounce="800" animated="true"></ion-searchbar>
                 </ion-col>
                 <ion-col size="4">
                     <ion-item style="border-radius: 10px;" lines="none">
@@ -216,12 +216,12 @@
                         <ion-icon color="danger" name="sad-outline"></ion-icon><br>
                         <ion-label>{{sinResultados}}</ion-label>
                     </div>
-                    <div class="sinBuscar" *ngIf="buscando===null || buscando===undefined">
+                    <!-- <div class="sinBuscar" *ngIf="buscando===null || buscando===undefined">
                         <form>
                             <ion-icon color="primary" name="search"></ion-icon><br>
                             <ion-label>Realiza la busqueda de cualquier producto</ion-label>
                         </form>
-                    </div>
+                    </div> -->
                     <!-- <img src="https://images.vexels.com/media/users/3/153874/isolated/preview/5147b9d69f00249a07732a905bcb251e-buscar-configuraci--n-icono-de-trazo-de-color-by-vexels.png" alt=""> -->
                 </ion-content>
                 <!-- <ion-content class="productosContent" *ngIf="categoria && !productos">

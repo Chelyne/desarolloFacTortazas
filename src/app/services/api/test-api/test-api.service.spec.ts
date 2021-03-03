@@ -11,9 +11,9 @@ import { VentaInterface } from 'src/app/models/venta/venta';
 import { AngularFireModule } from '@angular/fire';
 import { AngularFirestore, AngularFirestoreModule } from '@angular/fire/firestore';
 import { environment } from 'src/environments/environment';
+
 import { DbDataService } from '../../db-data.service';
 import { ClienteInterface } from 'src/app/models/cliente-interface';
-import { AnyMxRecord } from 'dns';
 
 
 describe('TestApiService', () => {
@@ -552,11 +552,13 @@ describe('TestApiService', () => {
 describe('TestEnviarComprobanteASunat', () => {
   let service: TestApiService;
   let dataApi: DbDataService;
+  let ventaSinProductos: VentaInterface;
 
   beforeAll(() => {
-    const ventaSinProductos: VentaInterface = {
+    ventaSinProductos = {
       numeroComprobante: '12',
-      bolsa: false,
+      bolsa: true,
+      cantidadBolsa: 3,
       idListaProductos: 'h1DpNvvWlBFmiev5SkD2',
       tipoComprobante: 'n. venta',
       fechaEmision: {
@@ -677,6 +679,9 @@ describe('TestEnviarComprobanteASunat', () => {
     await dataApi.obtenerProductosDeVenta2('oSskE7Ocl8fRoGgKHPS7', 'andahuaylas').then( data => {
       console.log('OBTENERDATOS POR CORRELACIONXXXXXXXXXXXXXXXXXXXXXXXXX', data);
     }).catch(err => console.log('FAllaaaaaaaaaaaaaaa', err));
+  });
+  it('Description', async () => {
+    console.log('venta sin productos ', service.formatearVentaResumenDiario(ventaSinProductos));
   });
 
 

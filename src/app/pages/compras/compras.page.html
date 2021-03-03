@@ -14,6 +14,15 @@
 </ion-header>
 
 <ion-content class="ion-padding">
+  <!-- <ion-button (click)="addProd()">
+    incrementar producto
+  </ion-button>
+  <ion-button (click)="substracProd()">
+    decrementar producto
+  </ion-button>
+  <ion-button (click)="lecturaProd()">
+    leerProducto
+  </ion-button> -->
   <ion-card>
     <ion-card-header color="primary">
       <ion-card-title class="ion-text-center">
@@ -128,7 +137,7 @@
         <ion-col>{{itemCompra.producto.unidad!=null?itemCompra.producto.unidad:'NaN'}}</ion-col>
         <ion-col>{{itemCompra.cantidad}}</ion-col>
         <ion-col>????</ion-col>
-        <ion-col>{{itemCompra.PU_compra}}</ion-col>
+        <ion-col>{{itemCompra.pu_compra}}</ion-col>
         <ion-col>{{itemCompra.descuento}}</ion-col>
         <ion-col>????</ion-col>
         <ion-col>{{itemCompra.totalCompraxProducto}}</ion-col>
@@ -208,6 +217,9 @@
           <ion-col>
             <ion-label>Precio</ion-label>
           </ion-col>
+          <ion-col>
+            <ion-label>medida</ion-label>
+          </ion-col>
         </ion-row>
         <ion-row class="contentPROD" (click)="seleccionarProducto(prod)" *ngFor="let prod of listaDeProductos; let i = index">
           <ion-col size="1">
@@ -221,6 +233,9 @@
           </ion-col>
           <ion-col>
             <ion-label>{{prod.precio | number:'1.2'}}</ion-label>
+          </ion-col>
+          <ion-col>
+            <ion-label>{{prod.medida | titlecase}}</ion-label>
           </ion-col>
         </ion-row>
         <ion-item>
@@ -281,7 +296,7 @@
             <ion-label color="light">Limpiar</ion-label>
           </ion-button>
           <ion-button size="small"  block color="primary"
-          [disabled]="formItemDeCompras.invalid" slot="end" (click)="AgregarAListaDeCompra()">
+          [disabled]="formItemDeCompras.invalid" slot="end" (click)="AgregarItemAListaDeCompra()">
             <ion-label color="light">Agregar a lista</ion-label>
           </ion-button>
         </form>
