@@ -209,7 +209,7 @@ export class ReportesService {
       console.log('lista de vendedores', data);
       let index = 0;
 
-      const doc = new jsPDF( 'p', 'mm', [45, 60]);
+      const doc = new jsPDF( 'p', 'mm', [45, 70]);
       doc.addImage(this.LogoEmpresa, 'JPEG', 11, 1, 22, 8);
       doc.text('Reporte General de ventas POS', 22.5, 110, {align: 'center'});
 
@@ -244,10 +244,15 @@ export class ReportesService {
       let totalNotas = 0;
       let FacAnulada = 0;
       let BolAnuladas = 0;
+      let NotasAnuladas = 0; // notas anuladas
       let MontoFacAnulado = 0;
       let montoBolAnulado = 0;
+      let montoNotasAnulado = 0; // inicializar monto notas anuladas
       let montoBoleta = 0;
       let montoFactura = 0;
+      let montoTarjeta = 0;
+      let montoEfectivo = 0;
+
       for (const vendedor of data) {
         console.log('numNotas' , typeof(vendedor.numNotas), vendedor.numNotas);
         montoFinal += vendedor.montoFinal;
@@ -257,10 +262,15 @@ export class ReportesService {
         totalNotas += vendedor.totalNotas;
         FacAnulada += vendedor.FacAnuladas;
         BolAnuladas += vendedor.BolAnuladas;
+        NotasAnuladas += vendedor.NotasAnuladas; // notas anuladas
         MontoFacAnulado += vendedor.MontoFacAnulado;
         montoBolAnulado += vendedor.montoBolAnulado;
+        montoNotasAnulado += vendedor.montoNotasAnulado; // monto notas anuladas
         montoBoleta += vendedor.montoBoleta;
         montoFactura += vendedor.montoFactura;
+        montoTarjeta += vendedor.montoTarjeta;
+        montoEfectivo += vendedor.montoEfectivo;
+
 
         console.log('vendedor', vendedor);
         doc.text( vendedor.nombreVendedor, 2 , index + 2, {align: 'left'});
@@ -292,10 +302,26 @@ export class ReportesService {
       doc.text('Bol. Anuladas', 2, index + 16 , {align: 'left'});
       doc.text( '' + BolAnuladas, 22.5 , index + 16, {align: 'center'});
       doc.text( '' + montoBolAnulado.toFixed(2), 43 , index + 16, {align: 'right'});
-      doc.setFontSize(7);
+      doc.text('N.Ventas Anuladas', 2, index + 18 , {align: 'left'});
+      doc.text( '' + NotasAnuladas, 22.5 , index + 18, {align: 'center'});
+      doc.text( '' + montoNotasAnulado.toFixed(2), 43 , index + 18, {align: 'right'});
+      doc.text( '____________________________________', 22.5, index + 19, {align: 'center'});
+      doc.text('Total Efectivo', 2, index + 22 , {align: 'left'});
+      doc.text( '' + montoEfectivo.toFixed(2), 43 , index + 22, {align: 'right'});
+      doc.text('Total Tarjeta', 2, index + 24 , {align: 'left'});
+      doc.text( '' + montoTarjeta.toFixed(2), 43 , index + 24, {align: 'right'});
+      doc.text('Total Ventas', 2, index + 26 , {align: 'left'});
+      doc.text( '' + montoFinal.toFixed(2), 43 , index + 26, {align: 'right'});
+      doc.text('Ingresos', 2, index + 28 , {align: 'left'});
+      doc.text( '' + this.Ingresos.toFixed(2), 43 , index + 28, {align: 'right'});
+      doc.text('Egresos', 2, index + 30 , {align: 'left'});
+      doc.text( '' + this.Egresos.toFixed(2), 43 , index + 30, {align: 'right'});
+      doc.text( '____________________________________', 22.5, index + 31, {align: 'center'});
+      doc.setFontSize(6.5);
+      doc.text('TOTAL CAJA: ' + ( montoFinal + this.Ingresos - this.Egresos).toFixed(2), 2, index + 34 , {align: 'left'});
 
-      doc.text('Total: ' + montoFinal.toFixed(2), 2, index + 19 , {align: 'left'});
-      index = index + 20;
+
+      index = index + 35;
 
       }
       else{
@@ -340,8 +366,10 @@ export class ReportesService {
                 montoFactura: 0,
                 FacAnuladas: 0,
                 BolAnuladas: 0,
+                NotasAnuladas: 0,
                 MontoFacAnulado: 0,
                 montoBolAnulado: 0,
+                montoNotasAnulado: 0,
                 totalNotas: 0
               };
               arrayDni.push(dni);
@@ -358,6 +386,10 @@ export class ReportesService {
               if (venta.tipoComprobante === 'boleta' && venta.estadoVenta === 'anulado') {
                 vendedores[dni].BolAnuladas += 1;
                 vendedores[dni].montoBolAnulado += redondeoDecimal( venta.totalPagarVenta, 2);
+              }
+              if (venta.tipoComprobante === 'n. venta' && venta.estadoVenta === 'anulado') {
+                vendedores[dni].NotasAnuladas += 1;
+                vendedores[dni].montoNotasAnulado += redondeoDecimal( venta.totalPagarVenta, 2);
               }
               if (venta.tipoComprobante === 'boleta') {vendedores[dni].numBoletas += 1; }
               if (venta.tipoComprobante === 'factura') {vendedores[dni].numFacturas += 1; }

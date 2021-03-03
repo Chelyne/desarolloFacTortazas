@@ -3,7 +3,12 @@ import { FormGroup, FormControl, Validators } from '@angular/forms';
 import { DbDataService } from '../../services/db-data.service';
 import { formatDate } from '@angular/common';
 import * as moment from 'moment';
-import { VentaInterface } from '../../models/venta/venta';
+import { completarCeros } from '../../global/funciones-globales';
+import { BoletasFacturasService } from '../../services/boletas-facturas.service';
+import { VentaInterface } from 'src/app/models/venta/venta';
+import { NgxQrcodeElementTypes, NgxQrcodeErrorCorrectionLevels, QrcodeComponent } from '@techiediaries/ngx-qrcode';
+
+
 
 @Component({
   selector: 'app-buscar',
@@ -21,8 +26,12 @@ export class BuscarPage implements OnInit {
   total: string;
   comprobante: VentaInterface[] = [];
 
+  sinDatos;
+  buscando;
+
   constructor(
     private dataApi: DbDataService,
+    private comprobanteSrv: BoletasFacturasService
   ) {
     this.buscarForm = this.createFormGroup();
 
@@ -48,14 +57,20 @@ export class BuscarPage implements OnInit {
   get numeroComprobante() {return this.buscarForm.get('numeroComprobante'); }
   get numDoc() {return this.buscarForm.get('numDoc'); }
   get totalPagarVenta() {return this.buscarForm.get('totalPagarVenta'); }
-
+  getImage() {
+    const canvas = document.querySelector('canvas') as HTMLCanvasElement;
+    const imageData = canvas.toDataURL('image/jpeg').toString();
+    return imageData;
+    }
 
   guardarProducto() {
+    this.buscando = true;
+    this.comprobante = null;
     const fecha = this.buscarForm.value.fechaEmision;
     this.fechaventas = fecha.split('-').reverse().join('-');
 
     console.log(this.buscarForm.value);
-    this.serie = this.buscarForm.value.serieComprobante;
+    this.serie = this.buscarForm.value.serieComprobante.toUpperCase();
     const num = this.buscarForm.value.numeroComprobante;
     // tslint:disable-next-line: radix
     this.numero = '' + parseInt(num);
@@ -85,17 +100,47 @@ export class BuscarPage implements OnInit {
       }else if (this.serie === 'F002' || this.serie === 'B002' ){
         this.sede = 'abancay';
       }else{
-        console.log('sede no encontrado');
+        this.sede = ' ';
+        console.log('no existe sede');
       }
       console.log('sede', this.sede);
-      this.dataApi.ObtenerConprobante(this.sede, fachaventas, numero, serie).subscribe(data => {
+      this.dataApi.ObtenerConprobante(this.sede, fachaventas, numero, serie).subscribe((data: any) => {
         console.log('datos', data);
         this.comprobante = data;
+        if (data.length > 0) {
+          this.comprobante = data;
+          this.comprobante[0].numeroComprobante = completarCeros(data[0].numeroComprobante);
+          this.sinDatos = false;
+          this.buscando = false;
+          this.mensaje = null;
+          console.log('datos compr', this.comprobante);
+
+        } else {
+          this.sinDatos = true;
+          this.buscando = false;
+          this.mensaje = null;
+        }
+        // this.buscarForm.reset();
+
 
       });
     }else{
       this.mensaje = 'Complete todos los campos';
+      this.buscando = false;
     }
+  }
+
+  digitosFaltantes(caracter: string, num: number) {
+    console.log(num);
+    let final = '';
+    for ( let i = 0; i < num; i++) {
+      final = final + caracter;
+    }
+    console.log(final);
+    return final;
+  }
+  descargarComprobante(item: VentaInterface){
+    this.comprobanteSrv.generarComprobante(item);
   }
 
 }
