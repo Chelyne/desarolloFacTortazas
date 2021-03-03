@@ -40,14 +40,15 @@ export class CatalogoPage implements OnInit {
     private modalController: ModalController,
     private menuCtrl: MenuController,
     public alertController: AlertController,
-    private afs: AngularFirestore) {
+    private afs: AngularFirestore
+  ) {
     this.ObtenerProductos();
     this.ObtenerCategorias();
     this.menuCtrl.enable(true);
     this.route.queryParams.subscribe(params => {
       this.categoria = 'petshop';
     });
-   }
+  }
 
    ngOnInit() {
     this.categorias = this.categoriasService.getcategoriasNegocio(this.categoria);
@@ -189,29 +190,29 @@ export class CatalogoPage implements OnInit {
     await alert.present();
   }
 
-    async presentModalEditar(prod) {
-      const modal = await this.modalController.create({
-        component: EditarProductoPage,
-        cssClass: 'modal-fullscreen'  ,
+  async presentModalEditar(prod) {
+    const modal = await this.modalController.create({
+      component: EditarProductoPage,
+      cssClass: 'modal-fullscreen'  ,
 
-        componentProps: {
-          dataProducto: prod,
-        }
-      });
-      await modal.present();
-
-      const { data } =  await modal.onWillDismiss();
-      if (data) {
-        console.log('datos', data);
-        this.dataApi.ActualizarDataProducto(data.data);
+      componentProps: {
+        dataProducto: prod,
       }
-      }
+    });
+    await modal.present();
+
+    const { data } =  await modal.onWillDismiss();
+    if (data) {
+      console.log('datos', data);
+      this.dataApi.ActualizarDataProducto(data.data);
+    }
+    }
 
 
-      irLIstaProductos(categoria: string) {
-        console.log('ojo', categoria, this.sedes);
-        console.log('ESTMOS', this.categoria, this.sedes);
-        this.router.navigate(['/productos-lista', categoria, this.sedes]);
-      }
+    irLIstaProductos(categoria: string) {
+      console.log('ojo', categoria, this.sedes);
+      console.log('ESTMOS', this.categoria, this.sedes);
+      this.router.navigate(['/productos-lista', categoria, this.sedes]);
+    }
 
 }
