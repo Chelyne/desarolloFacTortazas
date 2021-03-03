@@ -56,10 +56,12 @@ export class ReporteVentasPage implements OnInit {
       }else{
         for (const datos of data) {
           const formato: any = {
+            UID: datos.id,
             'Nombre Producto': datos.nombre.toUpperCase(),
             Codigo: datos.codigo ? datos.codigo : null,
             'Codigo Barra': datos.codigoBarra ? datos.codigoBarra : null,
-            Stock: datos.cantStock,
+            Stock: datos.cantStock ? datos.cantStock  : null,
+            Categoria: datos.subCategoria ? datos.subCategoria : null,
             Estado: null
           };
           dataExcel.push(formato);

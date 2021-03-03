@@ -1,5 +1,5 @@
+import { redondeoDecimal, completarCeros } from './funciones-globales';
 import * as moment from 'moment';
-import { redondeoDecimal } from './funciones-globales';
 import { formatearDateTime, formatearFechaString } from './funciones-globales';
 
 // describe('FuncionesGlobales', () => {
@@ -7,6 +7,15 @@ import { formatearDateTime, formatearFechaString } from './funciones-globales';
 //     expect(new FuncionesGlobales()).toBeTruthy();
 //   });
 // });
+describe('Test CompletarCeros', () => {
+    it('parametrosCero', () => {
+      expect('00000000').toEqual(completarCeros(''));
+      expect('00000000').toEqual(completarCeros(undefined));
+    });
+    it('parametroNum', () => {
+      expect('00000125').toEqual(completarCeros(125));
+    });
+});
 
 describe('Test formatearDataTime', () => {
     it('Test moment', () => {
