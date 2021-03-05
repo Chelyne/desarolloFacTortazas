@@ -85,12 +85,7 @@
             {
                 "icon": "receipt-outline",
                 "name": "Categorias",
-                "redirecTo": "/catalogo"
-            },
-            {
-                "icon": "receipt-outline",
-                "name": "Marcas",
-                "redirecTo": "#"
+                "redirecTo": "/categorias"
             },
             {
                 "icon": "receipt-outline",
@@ -103,7 +98,7 @@
     {
         "icon": "people-outline",
         "name": "Usuarios",
-        "redirecTo": "/lista-de-usarios"
+        "redirecTo": "/usuarios"
     },
 
     {

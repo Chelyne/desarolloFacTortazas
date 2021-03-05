@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { ToastController } from '@ionic/angular';
+import { ToastController, LoadingController } from '@ionic/angular';
 
 @Injectable({
   providedIn: 'root'
@@ -7,21 +7,28 @@ import { ToastController } from '@ionic/angular';
 export class GlobalService {
 
   constructor(
-    private toastCtrl: ToastController
+    private toastCtrl: ToastController,
+    private loadingController: LoadingController
   ) { }
 
   async presentToast(
     mensaje: string,
-    propiedades: {duracion?: number, position?: 'bottom'| 'top'| 'middle', color?: string} = {}
+    propiedades: {duracion?: number, position?: 'bottom'| 'top'| 'middle', color?: string, icon?: string} = {}
   ) {
     const toast = await this.toastCtrl.create({
       message: mensaje,
-      duration: propiedades.duracion ? propiedades.duracion : 1000,
+      duration: propiedades.duracion ? propiedades.duracion : 2000,
       position: propiedades.position ? propiedades.position : 'bottom',
-      color: propiedades.color ? propiedades.color : 'dark'
+      color: propiedades.color ? propiedades.color : 'dark',
+      buttons: [
+        {
+          side: 'start',
+          icon: propiedades.icon ? propiedades.icon : 'notifications-outline',
+        }]
     });
     toast.present();
   }
+
 
 
 

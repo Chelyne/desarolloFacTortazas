@@ -9,12 +9,14 @@ import { ListaDeClientesPageRoutingModule } from './lista-de-clientes-routing.mo
 import { ListaDeClientesPage } from './lista-de-clientes.page';
 import { AgregarEditarClientePage } from 'src/app/modals/agregar-editar-cliente/agregar-editar-cliente.page';
 import { AgregarEditarClientePageModule } from 'src/app/modals/agregar-editar-cliente/agregar-editar-cliente.module';
+import { PipesModule } from '../../pipes/pipes.module';
 
 @NgModule({
   entryComponents: [
     AgregarEditarClientePage
   ],
   imports: [
+    PipesModule,
     CommonModule,
     FormsModule,
     IonicModule,

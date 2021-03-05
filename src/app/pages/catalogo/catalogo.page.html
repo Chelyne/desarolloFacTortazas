@@ -1,92 +1,69 @@
 <ion-header>
-    <ion-toolbar>
-        <ion-title>catalogo</ion-title>
-    </ion-toolbar>
+  <ion-toolbar>
+    <ion-title>Catálogo</ion-title>
+  </ion-toolbar>
 </ion-header>
 
 <ion-content>
-    <ion-grid>
-        <ion-row>
-            <ion-col size="12 " size-xs="12 " size-sm="12" size-md="6 " size-lg="6">
-                <ion-card>
-                    <ion-toolbar>
-                        <ion-button slot="end" shape="round" fill="outline" (click)="agregarProducto()">
-                            <ion-icon slot="start" name="add-circle-outline"></ion-icon>
-                            Nuevo Producto
-                        </ion-button>
-                        <ion-title>Lista de productos</ion-title>
-                    </ion-toolbar>
+  <ion-grid>
+    <ion-row>
+      <ion-col size-xs="0 " size-sm="1" size-md="2 " size-lg="2"></ion-col>
+      <ion-col size="12 " size-xs="12 " size-sm="10" size-md="8 " size-lg="8">
+        <ion-card>
+          <ion-toolbar>
+            <ion-button slot="end" shape="round" fill="outline" (click)="abrirModalNuevoProducto()">
+              <ion-icon slot="start" name="add-circle-outline"></ion-icon>
+              Nuevo Producto
+            </ion-button>
+            <ion-title>Lista de productos</ion-title>
+          </ion-toolbar>
+          <ion-card-content>
+            <ion-item>
+              <ion-searchbar (ionClear)="limpiarBuscador()" (ionChange)="Search($event)" #search placeholder="Buscar"
+                inputmode="text" debounce="1000" animated="true" mode="ios">
+              </ion-searchbar>
+            </ion-item>
+            <ion-list>
+              <ion-item *ngFor="let prod of listaDeProductos; let i = index">
+                <ion-avatar slot="start">
+                  <img *ngIf="prod.img" src="{{prod.img}}" alt="">
+                  <img *ngIf="!prod.img" src="../../../assets/img/pet chop.png" alt="">
+                </ion-avatar>
+                <ion-label>
+                  <ion-grid>
+                    <ion-row>
+                      <ion-col>
+                        <ion-label class="ion-text-wrap">{{prod.nombre | titlecase}}</ion-label>
+                      </ion-col>
+                    </ion-row>
+                    <ion-row>
+                      <ion-col>
+                        <h3>{{prod.cantidad}} {{prod.medida}}</h3>
+                        <h3><b>Stock: {{prod.cantStock}}</b></h3>
+                      </ion-col>
+                      <ion-col
+                        style=" display: flex; justify-content: center; align-content: center; align-items: center;">
+                        <h1 *ngIf="prod.precio" class="precio">S/. {{prod.precio | number:
+                          '1.2'}}</h1>
+                      </ion-col>
+                    </ion-row>
+                  </ion-grid>
+                </ion-label>
+                <ion-buttons slot="end">
+                  <ion-button (click)="presentModalEditar(prod)">
+                    <ion-icon slot="icon-only" color="primary" name="create-outline"></ion-icon>
+                  </ion-button>
 
-                    <ion-card-content>
-                        <ion-item>
-                            <ion-searchbar (ionClear)="limpiarBuscador()" (ionChange)="Search($event)" #search placeholder="Buscar" inputmode="text" debounce="1000" animated="true" mode="ios"></ion-searchbar>
-                        </ion-item>
-                        <ion-list>
-                            <ion-item *ngFor="let prod of listaDeProductos; let i = index">
-                                <ion-avatar slot="start">
-                                    <img *ngIf="prod.img" src="{{prod.img}}" alt="">
-                                    <img *ngIf="!prod.img" src="../../../assets/img/pet chop.png" alt="">
-                                </ion-avatar>
-                                <ion-label>
-                                    <ion-grid>
-                                        <ion-row>
-                                            <ion-col>
-                                                <ion-label class="ion-text-wrap">{{prod.nombre | titlecase}}</ion-label>
-                                            </ion-col>
-                                        </ion-row>
-                                        <ion-row>
-                                            <ion-col>
-                                                <h3>{{prod.cantidad}} {{prod.medida}}</h3>
-                                                <h3><b>Stock: {{prod.cantStock}}</b></h3>
-                                            </ion-col>
-                                            <ion-col style=" display: flex; justify-content: center; align-content: center; align-items: center;">
-                                                <h1 *ngIf="prod.precio" class="precio">S/. {{prod.precio | number: '1.2'}}</h1>
-                                            </ion-col>
-                                        </ion-row>
-                                    </ion-grid>
-                                </ion-label>
-                                <ion-buttons slot="end">
-                                    <ion-button (click)="presentModalEditar(prod)">
-                                        <ion-icon slot="icon-only" color="primary" name="reload-outline"></ion-icon>
-                                    </ion-button>
-
-                                    <ion-button (click)="borrarProducto(prod)">
-                                        <ion-icon slot="icon-only" color="danger" name="trash-outline"></ion-icon>
-                                    </ion-button>
-                                </ion-buttons>
-                            </ion-item>
-                        </ion-list>
-                    </ion-card-content>
-                </ion-card>
-            </ion-col>
-            <ion-col size="12 " size-xs="12 " size-sm="12" size-md="6 " size-lg="6">
-                <ion-card>
-                    <ion-toolbar>
-                        <ion-button slot="end" shape="round" fill="outline" (click)="agregarCategoria()">
-                            <ion-icon slot="start" name="add-circle-outline"></ion-icon>
-                            Nueva categoria
-                        </ion-button>
-                        <ion-title>Categorias</ion-title>
-                    </ion-toolbar>
-
-                    <ion-card-content>
-                        <ion-item>
-                            <ion-searchbar (ionClear)="limpiarBuscador()" (ionChange)="SearchCategorias($event)" #search placeholder="Buscar" inputmode="text" debounce="1000" animated="true" mode="ios"></ion-searchbar>
-                        </ion-item>
-                        <ion-list>
-                            <ion-item *ngFor="let cat of listaDeCategorias" (click)="irLIstaProductos(cat.categoria)">
-                                <ion-avatar slot="start">
-                                    <img *ngIf="cat.img" src="{{cat.img}}" alt="">
-                                    <img *ngIf="!cat.img" src="../../../assets/img/pet chop.png" alt="">
-                                </ion-avatar>
-                                <ion-label>
-                                    <h2>{{cat.categoria | titlecase}}</h2>
-                                </ion-label>
-                            </ion-item>
-                        </ion-list>
-                    </ion-card-content>
-                </ion-card>
-            </ion-col>
-        </ion-row>
-    </ion-grid>
+                  <ion-button (click)="borrarProducto(prod)">
+                    <ion-icon slot="icon-only" color="danger" name="trash-outline"></ion-icon>
+                  </ion-button>
+                </ion-buttons>
+              </ion-item>
+            </ion-list>
+          </ion-card-content>
+        </ion-card>
+      </ion-col>
+      <ion-col size-xs="0 " size-sm="1" size-md="2 " size-lg="2"></ion-col>
+    </ion-row>
+  </ion-grid>
 </ion-content>

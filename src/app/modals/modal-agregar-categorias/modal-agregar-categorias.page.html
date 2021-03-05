@@ -1,83 +1,88 @@
 <ion-header>
-    <ion-toolbar>
-        <ion-title>modal-agregar-categorias</ion-title>
-    </ion-toolbar>
+  <ion-toolbar>
+    <ion-buttons slot="end">
+      <ion-button (click)="cerrarModal()">
+        <ion-icon color="primary" slot="icon-only" name="close-outline"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+    <ion-title>Agregar Categoria</ion-title>
+  </ion-toolbar>
 </ion-header>
 
 <ion-content>
+  <div class="formulario">
     <form [formGroup]="categoriaForm">
-        <ion-grid>
-            <ion-row>
-                <ion-col size="12 " size-xs="12" size-sm="12" size-md="6" size-lg="3">
-                    <div style="display: flex; justify-content: center; align-items: center;">
-                        <ion-card class="imagenes">
-                            <div style="height:220px;">
-                                <input type="file" id="fileLoader" #fileLoader name="files" title="Load File" hidden accept=".jpg, .jpeg, .png" />
-                                <ion-toolbar color="secondary">
-                                    <ion-item color="transulcent" style="text-align: center;" lines="none">
-                                        <ion-icon slot="end" name="camera-outline" (click)="presentActionSheet(fileLoader)"></ion-icon>
-                                        <ion-icon slot="end" name="trash-outline" (click)="removePic()"></ion-icon>
-                                        <div style="width: 100%; text-align: center;">
-                                            <!--
-                                            <span *ngIf="processing">
-                                                <ion-spinner></ion-spinner>
-                                            </span>-->
-
-                                        </div>
-                                    </ion-item>
-                                </ion-toolbar>
-                                <div class="fotoProducto">
-                                    <img (click)="presentActionSheet(fileLoader)" *ngIf="!image" src="../../../assets/fondoImg.jpg" alt="">
-                                    <img (click)="presentActionSheet(fileLoader)" *ngIf="image" [src]="uploadImage" alt="foto">
-                                </div>
-                                <span *ngIf="uploadImage != null">
-                              <img id="checkinImage"   (load)="imageLoaded()" /> 
-                            </span>
-                            </div>
-                            <div class="alertDanger" *ngIf="sinFoto">
-                                <div class="mensajeError">
-                                    {{sinFoto}}
-                                </div>
-                            </div>
-                        </ion-card>
+      <ion-grid>
+        <ion-row>
+          <ion-col size-xs="0" size-sm="0" size-md="3" size-lg="3"></ion-col>
+          <ion-col size-xs="12" size-sm="12" size-md="6" size-lg="6">
+            <div>
+              <ion-card class="imagenes">
+                <div>
+                  <input type="file" id="fileLoader" #fileLoader name="files" title="Load File" hidden
+                    accept=".jpg, .jpeg, .png" />
+                  <ion-toolbar color="secondary">
+                    <ion-item color="transulcent" style="text-align: center;" lines="none">
+                      <ion-icon slot="end" name="camera-outline" (click)="subirFoto(fileLoader)"></ion-icon>
+                      <ion-icon slot="end" name="trash-outline" (click)="removePic()"></ion-icon>
+                    </ion-item>
+                  </ion-toolbar>
+                  <div class="fotoProducto">
+                    <img (click)="subirFoto(fileLoader)" *ngIf="!image" src="../../../assets/fondoImg.jpg" alt="">
+                    <img (click)="subirFoto(fileLoader)" *ngIf="image" [src]="uploadImage" alt="foto">
+                  </div>
+                  <span *ngIf="uploadImage != null">
+                    <img id="checkinImage" (load)="imageLoaded()" />
+                  </span>
+                </div>
+                <div class="alertDanger" *ngIf="sinFoto">
+                  <div class="mensajeError">
+                    {{sinFoto}}
+                  </div>
+                </div>
+              </ion-card>
+            </div>
+          </ion-col>
+          <ion-col size-xs="0" size-sm="0" size-md="3" size-lg="3"></ion-col>
+        </ion-row>
+        <ion-row>
+          <ion-col size-xs="12" size-sm="12" size-md="12" size-lg="12">
+            <ion-grid>
+              <ion-row>
+                <ion-col>
+                  <ion-item lines="none">
+                    <ion-label color="primary" position="floating">Nombre de categoria</ion-label>
+                    <ion-input maxLength="35" formControlName="categoria" placeholder="alimentos, bebidas, etc..">
+                    </ion-input>
+                  </ion-item>
+                  <div class="alertDanger" *ngIf="categoria.invalid && (categoria.dirty || categoria.touched)">
+                    <div class="mensajeError" *ngIf="!!categoria.errors.required">
+                      Complete la categoria
                     </div>
+                    <div class="mensajeError" *ngIf="!!categoria.errors.minlength">
+                      La categoria debe tener al menos 3 caracteres.
+                    </div>
+                    <div class="mensajeError" *ngIf="!!categoria.errors.maxlength">
+                      La categoria debe tener máximo 35 caracteres.
+                    </div>
+                  </div>
                 </ion-col>
-                <ion-col size="12 " size-xs="12" size-sm="12" size-md="6" size-lg="9">
-                    <ion-grid>
-                        <ion-row>
-                            <ion-col>
-                                <ion-item lines="none">
-                                    <ion-label color="primary" position="floating">Ingrese una categoria</ion-label>
-                                    <ion-input maxLength="35" formControlName="categoria" placeholder="Ingrese categoria"></ion-input>
-                                </ion-item>
-                                <div class="alertDanger" *ngIf="categoria.invalid && (categoria.dirty || categoria.touched)">
-                                    <div class="mensajeError" *ngIf="!!categoria.errors.required">
-                                        Complete el categoria
-                                    </div>
-                                    <div class="mensajeError" *ngIf="!!categoria.errors.minlength">
-                                        La categoria debe tener al menos 3 caracteres.
-                                    </div>
-                                    <div class="mensajeError" *ngIf="!!categoria.errors.maxlength">
-                                        La categoria debe tener máximo 35 caracteres.
-                                    </div>
-                                </div>
-                            </ion-col>
-                        </ion-row>
-                    </ion-grid>
-                </ion-col>
-            </ion-row>
-        </ion-grid>
+              </ion-row>
+            </ion-grid>
+          </ion-col>
+        </ion-row>
+      </ion-grid>
     </form>
+  </div>
 </ion-content>
 
 <ion-footer class="ion-no-border footer">
-    <div class="alertDanger" *ngIf="mensaje">
-        <div class="mensajeError">
-            {{mensaje}}
-        </div>
+  <div class="alertDanger" *ngIf="mensaje">
+    <div class="mensajeError">
+      {{mensaje}}
     </div>
-    <ion-button (click)="guardarCategotia()" shape="round" expand="block">
-        <ion-icon slot="icon-only" color="light" name="add-circle-outline"></ion-icon> &nbsp;
-        <ion-label color="light">Agregar Categoria</ion-label>
-    </ion-button>
+  </div>
+  <ion-button (click)="guardarCategoria()" expand="block">
+    <ion-label color="light">Agregar Categoria</ion-label>
+  </ion-button>
 </ion-footer>

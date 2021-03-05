@@ -2,9 +2,9 @@ import { Component, OnInit } from '@angular/core';
 import { ModalController, MenuController } from '@ionic/angular';
 import { AgregarEditarClientePage } from 'src/app/modals/agregar-editar-cliente/agregar-editar-cliente.page';
 import { ClienteInterface } from 'src/app/models/cliente-interface';
-import { DbDataService } from 'src/app/services/db-data.service';
-// import { RegistrarClienteService } from 'src/app/services/registrar-cliente.service';
-import { StorageService } from '../../services/storage.service';
+import { DataBaseService } from '../../services/data-base.service';
+import { isNullOrUndefined } from 'util';
+import { GlobalService } from '../../global/global.service';
 
 @Component({
   selector: 'app-lista-de-clientes',
@@ -15,17 +15,24 @@ export class ListaDeClientesPage implements OnInit {
 
   listaDeclientes: ClienteInterface[];
   clienteItem: ClienteInterface;
+  sinDatos: boolean;
+
+  dataModal = {
+    evento: '',
+    cliente: {}
+  };
 
 
   modalEvento: string;
   modalTitle: string;
   modalTag: string;
   modalDataCliente: ClienteInterface;
+  textoBuscar = '';
 
-  constructor(private dataApi: DbDataService,
+  constructor(private dataApi: DataBaseService,
               private modalCtlr: ModalController,
               private menuCtrl: MenuController,
-              private storage: StorageService) {
+              private servGlobal: GlobalService) {
     // this.usuarioForm = this.createFormGroupUsuario();
     this.ObtenerClientes();
   }
@@ -34,36 +41,31 @@ export class ListaDeClientesPage implements OnInit {
     this.menuCtrl.enable(true);
   }
 
+  buscarCliente(event) {
+    const texto = event.target.value;
+    this.textoBuscar = texto;
+  }
 
   ObtenerClientes(){
-    // console.log("getUsuarios");
-
-    this.dataApi.ObtenerListaDeClientes().subscribe(data => {
-      // console.log(data);
-      this.listaDeclientes = data;
-      // console.log(this.usuariosList.length);
+    this.dataApi.obtenerListaDeClientes().subscribe(data => {
+      if (data.length) {
+        this.sinDatos = false;
+        this.listaDeclientes = data;
+      } else {
+        this.sinDatos = true;
+      }
     });
 
   }
 
   AgregarNuevoCliente(){
-    this.modalEvento = 'guardarCliente';
-    this.modalTitle = 'Agregar Nuevo Cliente';
-    this.modalTag = 'Guardar';
+    this.dataModal.evento = 'agregar';
     this.abrirModal();
   }
 
   ActualizarDataCliente(cliente: ClienteInterface){
-
-    // console.log('xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx');
-    // console.log(cliente);
-    // console.log('xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx');
-
-    this.modalEvento = 'actualizarCliente';
-    this.modalTitle = 'Actualizar datos del Cliente';
-    this.modalTag = 'Actualizar';
-    this.modalDataCliente = cliente;
-
+    this.dataModal.evento = 'actualizar';
+    this.dataModal.cliente = cliente;
     setTimeout(() => {
       this.abrirModal();
     }, 10);
@@ -71,19 +73,43 @@ export class ListaDeClientesPage implements OnInit {
 
 
   async abrirModal(){
-
     const modal =  await this.modalCtlr.create({
       component: AgregarEditarClientePage,
       componentProps: {
-        eventoInvoker: this.modalEvento,
-        titleInvoker: this.modalTitle,
-        tagInvoker: this.modalTag,
-        dataInvoker: this.modalDataCliente
-
+        dataModal: this.dataModal
       }
     });
-
     await modal.present();
+
+    const {data} = await modal.onWillDismiss();
+    console.log(data);
+    if (data && data.data) {
+      if (data.evento === 'agregar') {
+        console.log('agregar', data.data);
+        this.agregar(data.data);
+      }
+      if (data.evento === 'actualizar') {
+        console.log('actualizar', data.data);
+        this.actualizar(data.id, data.data);
+      }
+    }
+  }
+
+
+  agregar(cliente: ClienteInterface){
+    this.dataApi.guardarCliente(cliente).then(() => {
+      this.servGlobal.presentToast('Cliente guardado correctamente', {color: 'success'});
+    }).catch(err => {
+      this.servGlobal.presentToast('No se pudo guardar el cliente', {color: 'danger'});
+    });
+  }
+
+  actualizar(id: string, cliente: ClienteInterface){
+    this.dataApi.actualizarCliente(id, cliente).then(() => {
+      this.servGlobal.presentToast('Cliente actualizado correctamente', {color: 'success'});
+    }).catch(err => {
+      this.servGlobal.presentToast('No se pudo actualizar los datos', {color: 'danger'});
+    });
   }
 
 

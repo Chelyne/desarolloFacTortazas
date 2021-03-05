@@ -1,19 +1,20 @@
 import { Pipe, PipeTransform } from '@angular/core';
 import { ClienteInterface } from '../models/cliente-interface';
+import { CategoriaInterface } from '../models/CategoriaInterface';
+import { GlobalService } from '../global/global.service';
 
 @Pipe({
   name: 'buscarCliente'
 })
 export class BuscarClientePipe implements PipeTransform {
+  constructor(private servGlobal: GlobalService) {}
 
   transform(clientes: ClienteInterface[], texto: string): ClienteInterface[] {
-    console.log(clientes, texto);
-    // return null;
     if (texto.length === 0) {
       return clientes;
     }
     texto = texto.toLocaleLowerCase();
-    return clientes.filter( cliente => {
+    const datos = clientes.filter( cliente => {
       if (cliente.numDoc) {
         return cliente.nombre.toLocaleLowerCase().includes(texto)
         || cliente.numDoc.toLocaleLowerCase().includes(texto);
@@ -21,6 +22,11 @@ export class BuscarClientePipe implements PipeTransform {
         return cliente.nombre.toLocaleLowerCase().includes(texto);
       }
     });
+
+    if (!datos.length) {
+      this.servGlobal.presentToast('No se encontró el cliente', {color: 'danger'});
+    }
+    return datos;
   }
 
 }

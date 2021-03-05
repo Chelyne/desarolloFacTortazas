@@ -1,15 +1,12 @@
-import { Component, OnInit, Input, ViewChild } from '@angular/core';
-import { ModalController, ActionSheetController, ToastController, LoadingController } from '@ionic/angular';
+import { Component, OnInit, Input } from '@angular/core';
+import { ModalController,  LoadingController } from '@ionic/angular';
 import { AngularFireStorage } from '@angular/fire/storage';
 import { DatePipe } from '@angular/common';
-// import { Camera, CameraOptions } from '@ionic-native/camera/ngx';
 import { FormGroup, FormControl, Validators } from '@angular/forms';
-import { isNullOrUndefined } from 'util';
-// import { ImagePicker } from '@ionic-native/image-picker/ngx';
-import { DbDataService } from '../../services/db-data.service';
-import { CategoriasService } from '../../services/categorias.service';
 import { CategoriaInterface } from '../../models/CategoriaInterface';
 import { StorageService } from '../../services/storage.service';
+import { DataBaseService } from '../../services/data-base.service';
+import { GlobalService } from 'src/app/global/global.service';
 
 
 @Component({
@@ -19,20 +16,9 @@ import { StorageService } from '../../services/storage.service';
   providers: [DatePipe]
 })
 export class ModalAgregarProductoPage implements OnInit {
-  sedes = this.storage.datosAdmi.sede;
+  sede = this.storage.datosAdmi.sede;
 
-  @ViewChild('inputTalla', {static: false}) inputTalla;
-  @ViewChild('inputInventario', {static: false}) inputInventario;
-  @ViewChild('inputPrecio', {static: false}) inputPrecio;
-
-  @ViewChild('inventario', {static: false}) inventario;
-  @ViewChild('precioTalla', {static: false}) precioTalla;
-
-  @Input() sede: string;
-  @Input() categoria: string;
-  // @Input() subCategoria: string; // NO ENVIA NADA
-
-  listaDeCategorias: CategoriaInterface[] = [];
+  listaDeCategorias: CategoriaInterface[] = [{categoria: 'accesorios'}];
 
 // ----------------
   processing: boolean;
@@ -46,65 +32,44 @@ export class ModalAgregarProductoPage implements OnInit {
   productoForm: FormGroup;
   mensaje: string;
 
-  tallas;
-  descripcion;
   loading;
+  correlacionActual;
 
-  constiable;
-  constiante = [];
-  // ----------
-  categorias = [];
   constructor(
+    private dataApi: DataBaseService,
+    private globalservice: GlobalService,
     private modalController: ModalController,
-    private dbData: DbDataService,
-    private actionSheetController: ActionSheetController,
-    // private camera: Camera,
-    private toastController: ToastController,
     private firebaseStorage: AngularFireStorage,
     private datePipe: DatePipe,
     private loadingController: LoadingController,
-    private categoriaService: CategoriasService,
     private storage: StorageService,
-    // private imagePicker: ImagePicker,
   ) {
     this.ObtenerCorrelacionProducto();
-    this.productoForm = this.createFormGroup();
+    this.productoForm = this.createFormAgregarProducto();
     this.ObtenerCategorias();
-
    }
 
   ngOnInit() {
-
-    console.log(this.sede, this.categoria, this.subCategoria);
-    console.log('foto', this.uploadImage);
-
-    this.categorias = this.categoriaService.getcategoriasNegocio(this.categoria);
-    console.log('categorias', this.categorias);
-    console.log('sede', this.sede);
-    console.log('categoria', this.categoria);
   }
-
-  // btener lista de productos
+  // obtener lista de categorias
    ObtenerCategorias(){
-    this.dbData.ObtenerListaCategorias(this.sedes).subscribe(data => {
+    this.dataApi.obtenerListaCategorias(this.sede).subscribe(data => {
       this.listaDeCategorias = data;
     });
   }
 
-   // btener correlacion del producto
+   // obtener correlacion del producto
    ObtenerCorrelacionProducto(){
-    let correlacion: number;
-    console.log('----------------------------------------------');
-    //  this.dbData.ObtenerCorrelacionProducto(this.sedes);
-    this.dbData.ObtenerCorrelacionProducto(this.sedes).subscribe((datoo: any)  => {
-      console.log('correlacion', datoo);
-      correlacion = datoo.correlacionProducto;
-      this.productoForm.setControl('codigo', new FormControl( correlacion, [Validators.minLength(1), Validators.maxLength(20)]),
-      );
+    this.dataApi.obtenerObjetoCorrelacionProducto(this.sede).subscribe((datoo: any)  => {
+      if (datoo.id) {
+        this.correlacionActual = datoo.correlacionProducto;
+        this.productoForm.setControl('codigo',
+        new FormControl( datoo.correlacionProducto, [Validators.minLength(1), Validators.maxLength(20)]) );
+      }
     });
   }
 
-  // --------------------------
+  // -------------------------- SUBIR IMAGEN
    presentActionSheet(fileLoader) {
     fileLoader.click();
     const that = this;
@@ -132,116 +97,113 @@ export class ModalAgregarProductoPage implements OnInit {
       }
     };
   }
-imageLoaded(){
-  this.processing = false;
-}
 
+  imageLoaded(){
+    this.processing = false;
+  }
 
-getOrientation(file, callback) {
-  const reader = new FileReader();
-  reader.onload = (e: any) =>  {
+  getOrientation(file, callback) {
+    const reader = new FileReader();
+    reader.onload = (e: any) =>  {
 
-    const view = new DataView(e.target.result);
-    if (view.getUint16(0, false) !== 0xFFD8) {
-      return callback(-2);
-    }
-    const length = view.byteLength;
-    let offset = 2;
-    while (offset < length) {
-      const marker = view.getUint16(offset, false);
-      offset += 2;
-      if (marker === 0xFFE1) {
-        if (view.getUint32(offset += 2, false) !== 0x45786966){
-          return callback(-1);
-        }
-        const little = view.getUint16(offset += 6, false) === 0x4949;
-        offset += view.getUint32(offset + 4, little);
-        const tags = view.getUint16(offset, little);
-        offset += 2;
-        for (let i = 0; i < tags; i++) {
-          if (view.getUint16(offset + (i * 12), little) === 0x0112) {
-            return callback(view.getUint16(offset + (i * 12) + 8, little));
-          }
-        }
-      } else if ((marker && 0xFF00) !== 0xFF00) {
-        break;
-      } else {
-        offset += view.getUint16(offset, false);
+      const view = new DataView(e.target.result);
+      if (view.getUint16(0, false) !== 0xFFD8) {
+        return callback(-2);
       }
-    }
-    return callback(-1);
-  };
-  reader.readAsArrayBuffer(file);
-  console.log('fotobase100', this.uploadImage);
+      const length = view.byteLength;
+      let offset = 2;
+      while (offset < length) {
+        const marker = view.getUint16(offset, false);
+        offset += 2;
+        if (marker === 0xFFE1) {
+          if (view.getUint32(offset += 2, false) !== 0x45786966){
+            return callback(-1);
+          }
+          const little = view.getUint16(offset += 6, false) === 0x4949;
+          offset += view.getUint32(offset + 4, little);
+          const tags = view.getUint16(offset, little);
+          offset += 2;
+          for (let i = 0; i < tags; i++) {
+            if (view.getUint16(offset + (i * 12), little) === 0x0112) {
+              return callback(view.getUint16(offset + (i * 12) + 8, little));
+            }
+          }
+        } else if ((marker && 0xFF00) !== 0xFF00) {
+          break;
+        } else {
+          offset += view.getUint16(offset, false);
+        }
+      }
+      return callback(-1);
+    };
+    reader.readAsArrayBuffer(file);
+    console.log('fotobase100', this.uploadImage);
 
-  this.image = this.uploadImage;
-}
-resetOrientation(srcBase64, srcOrientation, callback) {
-  const img = new Image();
+    this.image = this.uploadImage;
+  }
 
-  img.onload = () => {
-    const width = img.width;
-    const  height = img.height;
-    const  canvas = document.createElement('canvas');
-    const  ctx = canvas.getContext('2d');
+  resetOrientation(srcBase64, srcOrientation, callback) {
+    const img = new Image();
 
-    // set proper canvas dimensions before transform & export
-    if (4 < srcOrientation && srcOrientation < 9) {
-      canvas.width = height;
-      canvas.height = width;
-    } else {
-      canvas.width = width;
-      canvas.height = height;
-    }
+    img.onload = () => {
+      const width = img.width;
+      const  height = img.height;
+      const  canvas = document.createElement('canvas');
+      const  ctx = canvas.getContext('2d');
 
-    // transform context before drawing image
-    switch (srcOrientation) {
-      case 2: ctx.transform(-1, 0, 0, 1, width, 0); break;
-      case 3: ctx.transform(-1, 0, 0, -1, width, height); break;
-      case 4: ctx.transform(1, 0, 0, -1, 0, height); break;
-      case 5: ctx.transform(0, 1, 1, 0, 0, 0); break;
-      case 6: ctx.transform(0, 1, -1, 0, height, 0); break;
-      case 7: ctx.transform(0, -1, -1, 0, height, width); break;
-      case 8: ctx.transform(0, -1, 1, 0, 0, width); break;
-      default: break;
-    }
+      // set proper canvas dimensions before transform & export
+      if (4 < srcOrientation && srcOrientation < 9) {
+        canvas.width = height;
+        canvas.height = width;
+      } else {
+        canvas.width = width;
+        canvas.height = height;
+      }
 
-    // draw image
-    ctx.drawImage(img, 0, 0);
+      // transform context before drawing image
+      switch (srcOrientation) {
+        case 2: ctx.transform(-1, 0, 0, 1, width, 0); break;
+        case 3: ctx.transform(-1, 0, 0, -1, width, height); break;
+        case 4: ctx.transform(1, 0, 0, -1, 0, height); break;
+        case 5: ctx.transform(0, 1, 1, 0, 0, 0); break;
+        case 6: ctx.transform(0, 1, -1, 0, height, 0); break;
+        case 7: ctx.transform(0, -1, -1, 0, height, width); break;
+        case 8: ctx.transform(0, -1, 1, 0, 0, width); break;
+        default: break;
+      }
 
-    // export base64
-    callback(canvas.toDataURL());
-  };
+      // draw image
+      ctx.drawImage(img, 0, 0);
 
-  img.src = srcBase64;
-}
+      // export base64
+      callback(canvas.toDataURL());
+    };
+
+    img.src = srcBase64;
+  }
+
   removePic() {
     this.uploadImage   = '../../../assets/fondoImg.jpg';
   }
-  // -------------------------
+  // ------------------------- FIN SUBIR IMAGEN
 
-
-
-  createFormGroup() {
+  createFormAgregarProducto() {
     return new FormGroup({
-      // tslint:disable-next-line:max-line-length
       nombre: new FormControl('', [Validators.required, Validators.minLength(2), Validators.maxLength(60)]),
-      // categoriass: new FormControl('', [Validators.required]),
       cantidad: new FormControl('', [Validators.required, Validators.min(1)]),
       medida: new FormControl('unidad', [Validators.required]),
-      marca: new FormControl('', [Validators.minLength(3), Validators.maxLength(45)]),
+      marca: new FormControl('', [Validators.minLength(3), Validators.maxLength(65)]),
       codigo: new FormControl('', [Validators.minLength(1), Validators.maxLength(20)]),
-      codigoBarra: new FormControl('', [Validators.minLength(1), Validators.maxLength(60)]),
-      precio: new FormControl(''),
+      codigoBarra: new FormControl('', [Validators.minLength(1), Validators.maxLength(15)]),
+      precio: new FormControl('', [Validators.required]),
       cantStock: new FormControl('', [Validators.min(1)]),
-      fechaDeVencimiento: new FormControl(''),
+      fechaDeVencimiento: new FormControl(),
       img: new FormControl(''),
       fechaRegistro: new FormControl(''),
       sede: new FormControl(''),
-      categoria: new FormControl(''),
-      subCategoria: new FormControl(),
+      categoria: new FormControl(),
+      subCategoria: new FormControl(this.listaDeCategorias[0].categoria, [Validators.required]),
       descripcionProducto: new FormControl(),
-      nombreTalla: new FormControl(),
     });
   }
 
@@ -264,225 +226,70 @@ resetOrientation(srcBase64, srcOrientation, callback) {
     this.progress = 0;
   }
 
-  agregarDescripcion() {
-    this.descripcion = true;
-  }
-
-  agregarTallas() {
-    this.mensaje = null;
-    console.log(this.inputTalla);
-    if (this.tallas === undefined) {
-      this.tallas  = [];
-    } else if (this.tallas.length === 0 ) {
-      if (this.inputTalla.value && this.inputTalla.value.length > 0) {
-        // this.tallas.push({talla: this.inputTalla.value, inventario: this.inputInventario.value, precio: this.inputPrecio.value});
-        this.tallas.push(this.inputTalla.value);
-        console.log(this.tallas);
-        this.inputTalla.value = '';
-        // this.inputInventario.value = this.productoForm.value.cantStock;
-        // this.inputPrecio.value = this.productoForm.value.precio;
-        this.inputTalla.setFocus();
-        return;
-      } else {
-        this.presentToast('No puedes agregar un valor vacío');
-      }
-    }
-    if (this.tallas.length < 6 && this.tallas.length > 0) {
-      let existe = false;
-      this.tallas.forEach(element => {
-        console.log('VALIDANDO', element);
-        if (this.inputTalla.value === element.talla) {
-          this.presentToast('ya se agrego ese valor');
-          existe = true;
-        }
-      });
-      if (existe === false) {
-        if (this.inputTalla.value && this.inputTalla.value.length > 0) {
-          // this.tallas.push({talla: this.inputTalla.value, inventario: this.inputInventario.value, precio: this.inputPrecio.value});
-          this.tallas.push(this.inputTalla.value);
-          console.log(this.tallas);
-          this.inputTalla.value = '';
-          // this.inputInventario.value = this.productoForm.value.cantStock;
-          // this.inputPrecio.value = this.productoForm.value.precio;
-          this.inputTalla.setFocus();
-        } else {
-          this.presentToast('No puedes agregar un valor vacio');
-        }
-      }
-    } else if (this.tallas.length >= 6) {
-      this.presentToast('No puede agregar mas tallas');
-    }
-  }
-
-  quitarTalla(talla: number) {
-    console.log('TALLA', talla);
-    const indice =  this.tallas.indexOf(talla);
-    console.log('i: ', indice);
-    if (indice !== -1) {
-      const arreglo = this.tallas;
-      arreglo.splice(indice, 1);
-      this.tallas = arreglo;
-      console.log('quitado', this.tallas);
-    }
-  }
-
   guardarProducto() {
     this.sinFoto = null;
     this.mensaje = null;
-    console.log(this.productoForm.value);
-    console.log('vemos: ', this.precioTalla, this.inventario);
-    // this.image = this.uploadImage;
-    // this.image = null;
-    // if (isNullOrUndefined(this.image)) {
-    //   this.sinFoto = 'Por favor suba una foto';
-    // }
 
-    // if (this.subCategoria === 'farmacia') {
-    //   this.productoForm.removeControl('precio');
-    // }
-
-    if (this.productoForm.valid && this.categoria) {
-      // if ( this.tallas && this.tallas.length > 0) {
-      //   this.productoForm.addControl('tallas', new FormControl(this.tallas));
-      // } else {
-      //   this.productoForm.removeControl('nombreTalla');
-      //   this.productoForm.removeControl('tallas');
-      // }
-      // if (isNullOrUndefined(this.productoForm.value.descripcionProducto)) {
-      //   this.productoForm.removeControl('descripcionProducto');
-      // }
+    if (this.productoForm.valid ) {
+      this.productoForm.value.nombre = this.productoForm.value.nombre.toLowerCase();
+      this.productoForm.value.categoria = 'petshop'; // SOLO TOOBY
+      this.productoForm.value.subCategoria = this.productoForm.value.subCategoria.toLowerCase();
+      this.productoForm.value.sede = this.sede;
+      this.productoForm.value.fechaRegistro = new Date();
       if (this.image){
         this.presentLoading('Agregando producto');
         this.uploadImages(this.image).then( url => {
           console.log('La url:', url);
           this.productoForm.value.img = url;
-          this.productoForm.value.nombre = this.productoForm.value.nombre.toLowerCase();
-          this.productoForm.value.categoria = this.categoria;
-          this.productoForm.value.subCategoria = this.productoForm.value.subCategoria.toLowerCase();
-          this.productoForm.value.sede = this.sede;
-          this.productoForm.value.fechaRegistro = new Date();
-          this.dbData.guardarProducto(this.productoForm.value, this.sede);
-          this.cerrarModal();
-          this.loading.dismiss();
-          this.presentToast('Se agregó correctamente.');
-          this.onResetForm();
+          this.dataApi.guardarProductoIncrementaCodigo(this.productoForm.value, this.sede, this.correlacionActual).then( resp => {
+            this.cerrarModal();
+            this.loading.dismiss();
+            this.globalservice.presentToast('Se agregó correctamente.', {color: 'success', position: 'top'});
+            this.onResetForm();
+
+          }).catch( err => {
+            if (err === 'fail'){
+              this.globalservice.presentToast('No se pudo agregar el producto.', {color: 'danger', position: 'top'});
+            }else {
+              this.globalservice.presentToast('Se agrego el producto, pero no se incremento el codigo del producto.',
+              {color: 'Warning', position: 'top'});
+
+            }
+          });
         }).catch(err => {
-          this.presentToast('error al subir imagen');
+          this.globalservice.presentToast('error al subir imagen.', {color: 'danger', position: 'top'});
+
         });
       }else{
           this.productoForm.value.img = null;
-          this.productoForm.value.nombre = this.productoForm.value.nombre.toLowerCase();
-          this.productoForm.value.categoria = this.categoria;
-          this.productoForm.value.subCategoria = this.productoForm.value.subCategoria.toLowerCase();
-          this.productoForm.value.sede = this.sede;
-          this.productoForm.value.fechaRegistro = new Date();
-          this.dbData.guardarProducto(this.productoForm.value, this.sede);
-          this.cerrarModal();
-          this.presentToast('Se agregó correctamente.');
-          this.onResetForm();
+          this.dataApi.guardarProductoIncrementaCodigo(this.productoForm.value, this.sede, this.correlacionActual).then( resp => {
+            this.cerrarModal();
+            this.onResetForm();
+            this.globalservice.presentToast('Se agregó correctamente.', {color: 'success', position: 'top'});
+
+          }).catch( err => {
+            if (err === 'fail'){
+              this.globalservice.presentToast('No se pudo agregar el producto.', {color: 'danger', position: 'top'});
+            }else {
+              this.globalservice.presentToast('Se agrego el producto, pero no se incremento el codigo del producto.',
+              {color: 'Warning', position: 'top'});
+
+            }
+          });
       }
     }
-    if (this.productoForm.invalid) {
+    else {
       this.mensaje = 'Complete todos los campos';
     }
   }
 
-  // subir constias imagenes
-  // getImages() {
-  //   this.listaImgenes = [];
-  //   const options = {
-  //     maximumImagesCount: 5,
-  //     outputType: 1
-  //   };
-  //   this.imagePicker.getPictures(options).then((results) => {
-  //     results.forEach(element => {
-  //       this.listaImgenes.push('data:image/jpeg;base64,' + element);
-  //       // alert('Image URI: ' + element);
-  //     });
-  //     // tslint:disable-next-line:prefer-for-of
-  //     // for (let i = 0; i < results.length; i++) {
-  //     //     console.log('Image URI: ' + results[i]);
-  //     //     // alert('Image URI: ' + results[i]);
-  //     // }
-  //   }, (err) => { });
-  // }
-
-  async SubirFoto() {
-    const actionSheet = await this.actionSheetController.create({
-      buttons: [{
-        text: 'Cargar desde Galería',
-        icon: 'images',
-        handler: () => {
-          this.image = null;
-          this.sinFoto = null;
-          // this.Openalbum();
-        }
-      },
-      {
-        text: 'Usar la Cámara',
-        icon: 'camera',
-        handler: () => {
-          this.image = null;
-          this.sinFoto = null;
-        }
-      },
-      {
-        text: 'Cancelar',
-        icon: 'close-circle-outline',
-        role: 'cancel'
-      }]
-    });
-    await actionSheet.present();
-  }
-
-  // Opencamera() {
-  //   this.camera.getPicture({
-  //     destinationType: this.camera.DestinationType.DATA_URL,
-  //     sourceType: this.camera.PictureSourceType.CAMERA,
-  //     mediaType: this.camera.MediaType.PICTURE,
-  //     allowEdit: false,
-  //     encodingType: this.camera.EncodingType.PNG,
-  //     targetHeight: 720, // 1024,
-  //     targetWidth: 720, // 1024,
-  //     correctOrientation: true,
-  //     saveToPhotoAlbum: true,
-  //     quality: 1,
-  //   }).then( resultado => {
-  //     this.image = 'data:image/jpeg;base64,' + resultado;
-  //   }).catch(error => {
-  //     console.log(error);
-  //   });
-  // }
-
-  // Openalbum() {
-  //   this.camera.getPicture({
-  //     destinationType: this.camera.DestinationType.DATA_URL,
-  //     sourceType: this.camera.PictureSourceType.PHOTOLIBRARY,
-  //     mediaType: this.camera.MediaType.PICTURE,
-  //     allowEdit: false,
-  //     encodingType: this.camera.EncodingType.PNG,
-  //     targetHeight: 720, // 1024,
-  //     targetWidth: 720, // 1024,
-  //     correctOrientation: true,
-  //     saveToPhotoAlbum: true,
-  //     quality: 1,
-  //   }).then( resultado => {
-  //     this.image = 'data:image/jpeg;base64,' + resultado;
-  //     // this.uploadImage(this.image);
-  //   }).catch(error => {
-  //     // window.alert(error);
-  //   });
-  // }
   // TODO - modificar subir imagen a firebase
   uploadImages(image) {
     console.log('subir imagen');
     return new Promise<any>((resolve, reject) => {
-      // tslint:disable-next-line:prefer-const
-      let storageRef = this.firebaseStorage.storage.ref();
+      const storageRef = this.firebaseStorage.storage.ref();
       const id = this.sede + this.datePipe.transform(new Date(), 'medium');
-      // tslint:disable-next-line:prefer-const
-      let imageRef = storageRef.child('productos/' + id);
-      // tslint:disable-next-line:only-arrow-functions
+      const imageRef = storageRef.child('productos/' + id);
       imageRef.putString(image, 'data_url')
       .then(snapshot => {
         this.progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
@@ -508,17 +315,8 @@ resetOrientation(srcBase64, srcOrientation, callback) {
     await this.loading.present();
   }
 
-  async presentToast(mensaje: string) {
-    const toast = await this.toastController.create({
-      message: mensaje,
-      duration: 2000
-    });
-    toast.present();
-  }
-
   cerrarModal() {
     this.modalController.dismiss();
-    this.tallas = [];
   }
 
 }

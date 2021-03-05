@@ -153,17 +153,17 @@ export class CategoriasService {
   };
   constructor(private http: HttpClient) { }
 
-  getcategoriasNegocio(tipo: string) {
-    switch (tipo) {
-      case 'petshop':
-        return this.negocioCategoria.petShop;
-      case 'farmacia':
-        return this.negocioCategoria.farmacia;
-      case 'estetica':
-        return this.negocioCategoria.estetica;
-    }
-    return;
-  }
+  // getcategoriasNegocio(tipo: string) {
+  //   switch (tipo) {
+  //     case 'petshop':
+  //       return this.negocioCategoria.petShop;
+  //     case 'farmacia':
+  //       return this.negocioCategoria.farmacia;
+  //     case 'estetica':
+  //       return this.negocioCategoria.estetica;
+  //   }
+  //   return;
+  // }
 
   getData() {
     return this.http.get('../../assets/data/tooby.json');

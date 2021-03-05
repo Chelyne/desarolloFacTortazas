@@ -1,9 +1,7 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
-import { ModalController, ToastController } from '@ionic/angular';
+import { ModalController } from '@ionic/angular';
 import { ClienteInterface } from 'src/app/models/cliente-interface';
-import { DbDataService } from 'src/app/services/db-data.service';
-import { StorageService } from '../../services/storage.service';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { isNullOrUndefined } from 'util';
 
@@ -15,41 +13,34 @@ import { isNullOrUndefined } from 'util';
 export class AgregarEditarClientePage implements OnInit {
 
   clienteModalForm: FormGroup;
-  // passwordTypeInput  =  'password';
-
-  @Input() eventoInvoker: string;
-  @Input() titleInvoker: string;
-  @Input() tagInvoker: string;
-  @Input() dataInvoker: ClienteInterface;
   typoDocumento = 'dni';
+
+  @Input() dataModal: {
+    evento: 'actualizar' | 'agregar',
+    cliente?: ClienteInterface
+  };
 
   consultando: boolean;
   encontrado: boolean;
+
   constructor(
-    private dataApi: DbDataService,
     private modalCtlr: ModalController,
-    private toastCtrl: ToastController,
-    private storage: StorageService,
     private http: HttpClient
   ) {
 
     this.clienteModalForm = this.createFormCliente();
-    console.log(this.eventoInvoker, this.tagInvoker, this.dataInvoker);
   }
 
   ngOnInit() {
-    if ( this.eventoInvoker === 'actualizarCliente' ){
+    if ( this.dataModal.evento === 'actualizar' ){
       this.clienteModalForm = this.formForUpdate();
     }
-    console.log(this.eventoInvoker, this.tagInvoker, this.dataInvoker);
   }
-
 
   createFormCliente(){
     return new FormGroup({
       nombre: new FormControl('', [Validators.required, Validators.minLength(3)]),
       tipoDoc: new FormControl('dni', [Validators.required]),
-      // apellidos: new FormControl('', [Validators.required, Validators.minLength(3), Validators.pattern('^[a-zA-ZÀ-ÿ\u00f1\u00d1 ]+$')]),
       numDoc: new FormControl('', [Validators.required, Validators.minLength(8), Validators.maxLength(11)]),
       celular: new FormControl('', [Validators.minLength(9), Validators.maxLength(9)]),
       direccion: new FormControl('', [Validators.minLength(3)]),
@@ -66,14 +57,12 @@ export class AgregarEditarClientePage implements OnInit {
 
   formForUpdate() {
     return new FormGroup({
-      nombre: new FormControl(this.dataInvoker.nombre, [Validators.required, Validators.minLength(3), Validators.pattern('^[a-zA-ZÀ-ÿ\u00f1\u00d1 ]+$')]),
-      tipoDoc: new FormControl(this.dataInvoker.tipoDoc, [Validators.required]),
-      // tslint:disable-next-line:max-line-length
-      // apellidos: new FormControl(this.dataInvoker.apellidos, [Validators.required, Validators.minLength(3), Validators.pattern('^[a-zA-ZÀ-ÿ\u00f1\u00d1 ]+$')]),
-      numDoc: new FormControl(this.dataInvoker.numDoc, [Validators.required, Validators.minLength(8), Validators.maxLength(11)]),
-      celular: new FormControl(this.dataInvoker.celular, [Validators.minLength(9), Validators.maxLength(9)]),
-      direccion: new FormControl(this.dataInvoker.direccion, [Validators.minLength(3)]),
-      email: new FormControl(this.dataInvoker.email, [Validators.minLength(3), Validators.pattern('^[_a-z0-9]+(\.[_a-z0-9]+)*@[a-z0-9-]+(\.[_a-z0-9]+)*\.([a-z]{2,4})$')])
+      nombre: new FormControl(this.dataModal.cliente.nombre, [Validators.required, Validators.minLength(3), Validators.pattern('^[a-zA-ZÀ-ÿ\u00f1\u00d1 ]+$')]),
+      tipoDoc: new FormControl(this.dataModal.cliente.tipoDoc, [Validators.required]),
+      numDoc: new FormControl(this.dataModal.cliente.numDoc, [Validators.required, Validators.minLength(8), Validators.maxLength(11)]),
+      celular: new FormControl(this.dataModal.cliente.celular, [Validators.minLength(9), Validators.maxLength(9)]),
+      direccion: new FormControl(this.dataModal.cliente.direccion, [Validators.minLength(3)]),
+      email: new FormControl(this.dataModal.cliente.email, [Validators.minLength(3), Validators.pattern('^[_a-z0-9]+(\.[_a-z0-9]+)*@[a-z0-9-]+(\.[_a-z0-9]+)*\.([a-z]{2,4})$')])
     });
   }
 
@@ -99,69 +88,37 @@ export class AgregarEditarClientePage implements OnInit {
   }
 
   execFun(){
-    if (this.eventoInvoker === 'guardarCliente'){
-      this.guardarCliente();
-
+    if (this.dataModal.evento === 'agregar'){
+      this.clienteModalForm.value.nombre = this.nombre.value.toLowerCase();
+      this.modalCtlr.dismiss({
+        data: this.clienteModalForm.value,
+        evento: this.dataModal.evento
+      }).then(() => {
+        this.clienteModalForm.reset();
+      });
     }
-    else if (this.eventoInvoker === 'actualizarCliente'){
-      this.actualizarCliente();
-
+    else if (this.dataModal.evento === 'actualizar'){
+      this.clienteModalForm.value.nombre = this.nombre.value.toLowerCase();
+      this.modalCtlr.dismiss({
+        data: this.clienteModalForm.value,
+        evento: this.dataModal.evento,
+        id: this.dataModal.cliente.id
+      }).then(() => {
+        this.clienteModalForm.reset();
+      });
     } else {
       console.log('La función no existe');
-
     }
-  }
-
-  guardarCliente(){
-    this.clienteModalForm.value.nombre = this.nombre.value.toLowerCase();
-    // this.clienteModalForm.value.apellidos = this.apellidos.value.toLowerCase();
-
-    this.dataApi.guardarCliente(this.clienteModalForm.value).then(
-      () => {
-        console.log('Se ingreso Correctamente');
-        this.presentToast('Se ingreso correctamente');
-        this.clienteModalForm.reset();
-        this.modalCtlr.dismiss();
-      }
-    );
-
-  }
-
-
-  actualizarCliente(){
-    this.clienteModalForm.value.nombre = this.nombre.value.toLowerCase();
-    // this.clienteModalForm.value.apellidos = this.apellidos.value.toLowerCase();
-
-    this.dataApi.actualizarCliente(this.dataInvoker.id, this.clienteModalForm.value).then(
-      () => {
-        console.log('Se ingreso Correctamente');
-        this.presentToast('Datos actualizados correctamente');
-        this.modalCtlr.dismiss();
-      }
-    );
-
   }
 
   cerrarModal(){
     this.modalCtlr.dismiss();
   }
 
-
-  async presentToast(message: string){
-    const toast = await this.toastCtrl.create({
-      message,
-      duration: 2000
-    });
-
-    toast.present();
-  }
-
   numberOnlyValidation(event: any) {
     const pattern = /[0-9]/;
     const inputChar = String.fromCharCode(event.charCode);
-
     if (!pattern.test(inputChar)) {
-      // invalid character, prevent input
       event.preventDefault();
     }
   }
@@ -169,15 +126,12 @@ export class AgregarEditarClientePage implements OnInit {
   stringOnlyValidation(event: any) {
     const pattern = /[a-zA-ZÀ-ÿ\u00f1\u00d1 ]/;
     const inputChar = String.fromCharCode(event.charCode);
-
     if (!pattern.test(inputChar)) {
-      // invalid character, prevent input
       event.preventDefault();
     }
   }
 
   // CONSULTA DATOS SUNAT
-
   consultaSunat(event) {
     console.log(event.detail.value);
     if (this.typoDocumento === 'dni') {

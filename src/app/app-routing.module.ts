@@ -41,11 +41,6 @@ const routes: Routes = [
     canActivate: [AuthGuard]
   },
   {
-    path: 'agregar-producto/:sede/:categoria',
-    loadChildren: () => import('./pages/agregar-producto/agregar-producto.module').then( m => m.AgregarProductoPageModule),
-    canActivate: [AuthGuard]
-  },
-  {
     path: 'modal-agregar-producto',
     // tslint:disable-next-line:max-line-length
     loadChildren: () => import('./modals/modal-agregar-producto/modal-agregar-producto.module').then( m => m.ModalAgregarProductoPageModule),
@@ -116,11 +111,6 @@ const routes: Routes = [
     path: 'modal-agregar-descuento',
     // tslint:disable-next-line:max-line-length
     loadChildren: () => import('./modals/modal-agregar-descuento/modal-agregar-descuento.module').then( m => m.ModalAgregarDescuentoPageModule),
-    canActivate: [AuthGuard]
-  },
-  {
-    path: 'servicios/:tipo',
-    loadChildren: () => import('./pages/servicios/servicios.module').then( m => m.ServiciosPageModule),
     canActivate: [AuthGuard]
   },
   {
@@ -269,6 +259,10 @@ const routes: Routes = [
     path: 'reporte-ventas',
     loadChildren: () => import('./pages/reporte-ventas/reporte-ventas.module').then( m => m.ReporteVentasPageModule),
     canActivate: [AuthGuard, NoVendedorGuard]
+  },
+  {
+    path: 'usuarios',
+    loadChildren: () => import('./pages/usuarios/usuarios.module').then( m => m.UsuariosPageModule)
   }
 
 
