@@ -47,7 +47,7 @@ export class ListaDeClientesPage implements OnInit {
   }
 
   ObtenerClientes(){
-    this.dataApi.ObtenerListaDeClientes().subscribe(data => {
+    this.dataApi.obtenerListaDeClientes().subscribe(data => {
       if (data.length) {
         this.sinDatos = false;
         this.listaDeclientes = data;

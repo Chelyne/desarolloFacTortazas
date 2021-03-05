@@ -36,7 +36,7 @@ export class CategoriasPage implements OnInit {
 
   // Obtener lista de productos
   ObtenerCategorias(){
-    this.dataApi.ObtenerListaCategorias(this.sede).subscribe(data => {
+    this.dataApi.obtenerListaCategorias(this.sede).subscribe(data => {
       console.log(data);
       if (data.length) {
         this.listaDeCategorias = data;

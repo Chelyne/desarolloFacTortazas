@@ -16,6 +16,6 @@ import { ModalAgregarProductoPage } from './modal-agregar-producto.page';
     IonicModule,
     ModalAgregarProductoPageRoutingModule
   ],
-  declarations: []
+  declarations: [ModalAgregarProductoPage]
 })
 export class ModalAgregarProductoPageModule {}

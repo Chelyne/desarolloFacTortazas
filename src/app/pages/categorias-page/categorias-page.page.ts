@@ -32,25 +32,26 @@ export class CategoriasPagePage implements OnInit {
 
   ngOnInit() {
     console.log(this.categorias);
-    this.categorias = this.categoriasService.getcategoriasNegocio(this.categoria);
+    // this.categorias = this.categoriasService.getcategoriasNegocio(this.categoria);
     this.ultimaCategoria = 4;
   }
 
-  loadData(event) {
-    // const propietario = this.storage.datosNegocio.correo;
-    setTimeout(() => {
-      const siguiente = this.categoriasService.getcategoriasNegocio(this.categoria).slice(this.ultimaCategoria, this.ultimaCategoria + 4);
-      if (siguiente.length > 0) {
-        this.ultimaCategoria = this.ultimaCategoria + 4;
-        siguiente.forEach(element => {
-          this.categorias.push(element);
-          event.target.complete();
-        });
-      } else {
-        event.target.disabled = true;
-      }
-    }, 500);
-  }
+  // loadData(event) {
+  //   // const propietario = this.storage.datosNegocio.correo;
+  //   setTimeout(() => {
+  // tslint:disable-next-line:max-line-length
+  //     const siguiente = this.categoriasService.getcategoriasNegocio(this.categoria).slice(this.ultimaCategoria, this.ultimaCategoria + 4);
+  //     if (siguiente.length > 0) {
+  //       this.ultimaCategoria = this.ultimaCategoria + 4;
+  //       siguiente.forEach(element => {
+  //         this.categorias.push(element);
+  //         event.target.complete();
+  //       });
+  //     } else {
+  //       event.target.disabled = true;
+  //     }
+  //   }, 500);
+  // }
 
   receiveMessage($event) {
     if (isNullOrUndefined(this.sinProductos)) {
