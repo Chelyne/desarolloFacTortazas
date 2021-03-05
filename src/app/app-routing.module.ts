@@ -269,6 +269,10 @@ const routes: Routes = [
     path: 'reporte-ventas',
     loadChildren: () => import('./pages/reporte-ventas/reporte-ventas.module').then( m => m.ReporteVentasPageModule),
     canActivate: [AuthGuard, NoVendedorGuard]
+  },
+  {
+    path: 'usuarios',
+    loadChildren: () => import('./pages/usuarios/usuarios.module').then( m => m.UsuariosPageModule)
   }
 
 

@@ -11,7 +11,7 @@ import { AgregarEditarUsuarioPage } from 'src/app/modals/agregar-editar-usuario/
 import { AgregarEditarUsuarioPageModule } from 'src/app/modals/agregar-editar-usuario/agregar-editar-usuario.module';
 
 @NgModule({
-  entryComponents:[
+  entryComponents: [
     AgregarEditarUsuarioPage
   ],
   imports: [

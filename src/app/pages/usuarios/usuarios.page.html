@@ -1,0 +1,59 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-menu-button color="primary" menu="primerMenu">
+      </ion-menu-button>
+    </ion-buttons>
+    <ion-title color="primary">Lista de usuarios</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding">
+  <ion-grid>
+    <ion-row>
+      <ion-col>
+        <ion-card>
+          <ion-card-content>
+            <ion-item lines="none">
+              <ion-label color="primary">Usuarios</ion-label>
+              <ion-button slot="end" size="small" fill="outline" (click)="AgregarNuevoUsuario()">
+                <ion-icon name="add-circle-outline" color="primary"></ion-icon> &nbsp;
+                <ion-label color="primary">Agregar Usuario</ion-label>
+              </ion-button>
+            </ion-item>
+          </ion-card-content>
+        </ion-card>
+      </ion-col>
+    </ion-row>
+    <ion-row>
+      <ion-col size-lg="2.4" size-md="3" size-sm="4" size-xs="6" *ngFor="let usuario of listaDeUsuarios">
+        <ion-card class="usuario">
+          <div class="img">
+            <img src="https://articles.business/uploads/images/demo/user-avatar.jpg" alt="">
+            <ion-badge>{{usuario.rol}}</ion-badge>
+          </div>
+          <ion-card-content>
+            <ion-card-title>{{(((usuario.nombre + ' ' + usuario.apellidos).length > 20) ? ((usuario.nombre + ' ' + usuario.apellidos).slice(0, 20) + '...') : (usuario.nombre + ' ' + usuario.apellidos)) | titlecase}}</ion-card-title>
+            <ion-card-subtitle>{{usuario.sede}}</ion-card-subtitle>
+          </ion-card-content>
+          <ion-button size="small" color="success" (click)="ActualizarDataUsuario(usuario)">
+            <ion-icon name="create-outline" color="light"></ion-icon> &nbsp;
+            <ion-label color="light">Editar</ion-label>
+          </ion-button>
+        </ion-card>
+      </ion-col>
+    </ion-row>
+  </ion-grid>
+  <div class="sinDatos" *ngIf="sinDatos===true">
+    <div class="textoSindatos">
+      <ion-icon class="icono" name="people-outline" color="medium"></ion-icon> <br><br>
+      <ion-label color="medium">No existe ningun usuario registrado</ion-label> <br> <br>
+
+    </div>
+  </div>
+  <div class="cargando" *ngIf="(sinDatos===null || sinDatos===undefined)">
+    <div class="textoCargando">
+      <ion-spinner name="crescent" color="primary"></ion-spinner>
+    </div>
+  </div>
+</ion-content>

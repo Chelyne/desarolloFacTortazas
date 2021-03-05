@@ -7,9 +7,11 @@ import { IonicModule } from '@ionic/angular';
 import { CategoriasPageRoutingModule } from './categorias-routing.module';
 
 import { CategoriasPage } from './categorias.page';
+import { PipesModule } from '../../pipes/pipes.module';
 
 @NgModule({
   imports: [
+    PipesModule,
     CommonModule,
     FormsModule,
     IonicModule,

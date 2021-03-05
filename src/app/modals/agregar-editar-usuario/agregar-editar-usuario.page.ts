@@ -16,10 +16,10 @@ export class AgregarEditarUsuarioPage implements OnInit {
 
   passwordTypeInput  =  'password';
 
-  @Input() eventoInvoker: string;
-  @Input() titleInvoker: string;
-  @Input() tagInvoker: string;
-  @Input() dataInvoker: AdmiInterface;
+  @Input() dataModal: {
+    evento: 'actualizar' | 'agregar',
+    usuario?: AdmiInterface
+  };
 
   emailPattern: any = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
 
@@ -35,7 +35,7 @@ export class AgregarEditarUsuarioPage implements OnInit {
 
 
   ngOnInit() {
-    if ( this.eventoInvoker === 'actualizarUsuario' ){
+    if ( this.dataModal.evento === 'actualizar' ){
       this.usuarioModalForm = this.formForUpdate();
     }
   }
@@ -55,15 +55,15 @@ export class AgregarEditarUsuarioPage implements OnInit {
   formForUpdate() {
     return new FormGroup({
       // tslint:disable-next-line:max-line-length
-      nombre: new FormControl(this.dataInvoker.nombre, [Validators.required, Validators.minLength(3), Validators.maxLength(40), Validators.pattern('^[a-zA-ZÀ-ÿ\u00f1\u00d1 ]+$')]),
+      nombre: new FormControl(this.dataModal.usuario.nombre, [Validators.required, Validators.minLength(3), Validators.maxLength(40), Validators.pattern('^[a-zA-ZÀ-ÿ\u00f1\u00d1 ]+$')]),
       // tslint:disable-next-line:max-line-length
-      apellidos: new FormControl(this.dataInvoker.apellidos, [Validators.required, Validators.minLength(3), Validators.maxLength(60), Validators.pattern('^[a-zA-ZÀ-ÿ\u00f1\u00d1 ]+$')]),
-      dni: new FormControl(this.dataInvoker.dni, [Validators.required, Validators.minLength(8), Validators.maxLength(8)]),
+      apellidos: new FormControl(this.dataModal.usuario.apellidos, [Validators.required, Validators.minLength(3), Validators.maxLength(60), Validators.pattern('^[a-zA-ZÀ-ÿ\u00f1\u00d1 ]+$')]),
+      dni: new FormControl(this.dataModal.usuario.dni, [Validators.required, Validators.minLength(8), Validators.maxLength(8)]),
       // tslint:disable-next-line:max-line-length
-      correo: new FormControl(this.dataInvoker.correo, [Validators.required, Validators.minLength(8), Validators.pattern(this.emailPattern)]),
-      password: new FormControl(this.dataInvoker.password, [Validators.required, Validators.minLength(6)]),
-      rol: new FormControl(this.dataInvoker.rol, Validators.required),
-      sede: new FormControl(this.dataInvoker.sede)
+      correo: new FormControl(this.dataModal.usuario.correo, [Validators.required, Validators.minLength(8), Validators.pattern(this.emailPattern)]),
+      password: new FormControl(this.dataModal.usuario.password, [Validators.required, Validators.minLength(6)]),
+      rol: new FormControl(this.dataModal.usuario.rol, Validators.required),
+      sede: new FormControl(this.dataModal.usuario.sede)
     });
   }
 
@@ -75,11 +75,11 @@ export class AgregarEditarUsuarioPage implements OnInit {
   get rol() { return this.usuarioModalForm.get('rol'); }
 
   execFun(){
-    if (this.eventoInvoker === 'guardarUsuario'){
+    if (this.dataModal.evento === 'agregar'){
       this.guardarUsuario();
 
     }
-    else if (this.eventoInvoker === 'actualizarUsuario'){
+    else if (this.dataModal.evento === 'actualizar'){
       this.actualizarUsuario();
 
     } else {
@@ -108,7 +108,7 @@ export class AgregarEditarUsuarioPage implements OnInit {
     this.usuarioModalForm.value.nombre = this.nombre.value.toLowerCase();
     this.usuarioModalForm.value.apellidos = this.apellidos.value.toLowerCase();
 
-    this.dataApi.actualizarUsuario(this.dataInvoker.correo, this.usuarioModalForm.value).then(
+    this.dataApi.actualizarUsuario(this.dataModal.usuario.correo, this.usuarioModalForm.value).then(
       () => {
         console.log('Se ingreso Correctamente');
         this.presentToast('Datos actualizados correctamente');

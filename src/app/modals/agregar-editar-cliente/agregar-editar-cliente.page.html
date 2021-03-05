@@ -1,6 +1,6 @@
 <ion-header>
   <ion-toolbar>
-    <ion-title>{{titleInvoker | titlecase}}</ion-title>
+    <ion-title>{{dataModal.evento | titlecase}} Cliente</ion-title>
     <ion-buttons slot="end">
       <ion-button (click)="cerrarModal()">
         <ion-icon color="primary" slot="icon-only" name="close-outline"></ion-icon>
@@ -70,22 +70,6 @@
       </div>
     </div>
 
-    <!-- <ion-item>
-      <ion-label color="primary" position="floating">Apellidos</ion-label>
-      <ion-input maxlength="60" type="text" formControlName="apellidos" placeholder="Apellidos" (keypress)="stringOnlyValidation($event)"></ion-input>
-    </ion-item>
-    <div class="alertDanger" *ngIf="apellidos.invalid && (apellidos.dirty || apellidos.touched)">
-      <div class="mensajeError" *ngIf="apellidos.errors.required">
-        *Complete el apellido del cliente
-      </div>
-      <div class="mensajeError" *ngIf="apellidos.errors.minlength">
-        *Ingrese mínimo 3 caracteres
-      </div>
-      <div class="mensajeError" *ngIf="apellidos.errors.pattern">
-        *No puede ingresar números en el apellido del cliente
-      </div>
-    </div> -->
-
     <ion-item>
       <ion-label color="primary" position="floating">Celular</ion-label>
       <ion-input maxlength="9" type="text" (keypress)="numberOnlyValidation($event)" formControlName="celular" placeholder="Celular"></ion-input>
@@ -133,7 +117,7 @@
 <ion-footer>
   <ion-item>
     <ion-button slot="end" (click)="execFun()" [disabled]="clienteModalForm.invalid">
-      <ion-label color="light">{{tagInvoker}}</ion-label>
+      <ion-label color="light">{{dataModal.evento}}</ion-label>
     </ion-button>
   </ion-item>
 </ion-footer>

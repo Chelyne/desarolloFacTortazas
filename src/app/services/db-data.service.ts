@@ -641,12 +641,10 @@ export class DbDataService {
   // Guardar Nuevo CLIENTE
   // TODO -  Refactorizar en los lugares donde se usa
   guardarCliente(newCliente: ClienteInterface) {
-
     const promesa =  new Promise<void>( (resolve, reject) => {
       this.afs.collection('clientes').add(newCliente);
       resolve();
     });
-
     return promesa;
   }
 
@@ -677,7 +675,6 @@ export class DbDataService {
             });
           }
       ));
-
   }
 
   ObtenerListaDeproductos() {

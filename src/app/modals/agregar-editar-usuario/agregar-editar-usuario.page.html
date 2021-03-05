@@ -1,6 +1,6 @@
 <ion-header>
   <ion-toolbar>
-    <ion-title>{{titleInvoker | titlecase}}</ion-title>
+    <ion-title>{{dataModal.evento | titlecase}} Usuario</ion-title>
     <ion-buttons slot="end">
       <ion-button (click)="salirDeModal()">
         <ion-icon slot="icon-only" name="close-outline" color="primary"></ion-icon>
@@ -118,7 +118,7 @@
 <ion-footer>
   <ion-item>
     <ion-button  slot="end" (click)="execFun()" [disabled]="usuarioModalForm.invalid">
-      <ion-label color="light">{{tagInvoker}}</ion-label>
+      <ion-label color="light">{{dataModal.evento}}</ion-label>
     </ion-button>
   </ion-item>
 </ion-footer>
