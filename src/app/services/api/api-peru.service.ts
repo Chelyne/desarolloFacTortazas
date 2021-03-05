@@ -780,23 +780,23 @@ export class ApiPeruService {
   ObtenerCodigoMedida(medida: string){
     switch (medida.toLowerCase()) {
       case 'gramos': return 'GRM';
-      case 'kilogramo': return 'KGM';
-      case 'litro': return 'LTR';
+      case 'servicios': return 'ZZ';
+      case 'kilogramos': return 'KGM';
+      case 'litros': return 'LTR';
       case 'unidad': return 'NIU';
-      case 'caja': return 'BX';
-      case 'paquete': return 'PK';
+      case 'cajas': return 'BX';
+      case 'paquetes': return 'PK';
       case 'botellas': return 'BO';
       case 'docena': return 'DZN';
       case 'kit': return 'KT';
       case 'libras': return 'LBR';
-      case 'metro': return 'MTR';
+      case 'metros': return 'MTR';
       case 'miligramos': return 'MGM';
-      case 'mililitro': return 'MLT';
-      case 'milimetro': return 'MMT';
+      case 'mililitros': return 'MLT';
+      case 'milimetros': return 'MMT';
       case 'pulgadas': return 'INH';
-      case 'bolsa': return 'BG';
+      case 'bolsas': return 'BG';
       case 'par': return 'PR';
-      case 'unidad servicios': return 'ZZ';
       case 'piezas': return 'C62';
       case 'latas': return 'CA';
       case 'juego': return 'SET';
