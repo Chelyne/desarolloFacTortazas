@@ -1,8 +1,6 @@
 import { Component, OnInit, Input } from '@angular/core';
-import { ModalController, ActionSheetController, LoadingController } from '@ionic/angular';
+import { ModalController, LoadingController } from '@ionic/angular';
 import { FormGroup, Validators, FormControl } from '@angular/forms';
-// import { Camera, CameraOptions } from '@ionic-native/camera/ngx';
-import { DbDataService } from '../../services/db-data.service';
 import { AngularFireStorage } from '@angular/fire/storage';
 import { DatePipe } from '@angular/common';
 import { isNullOrUndefined } from 'util';
@@ -28,26 +26,19 @@ export class EditarProductoPage implements OnInit {
   progress = 0;
 
   loading;
-  constructor(private modalCtrl: ModalController,
-              // private camera: Camera,
-              private actionSheetController: ActionSheetController,
-              private dataApi: DbDataService,
-              private datePipe: DatePipe,
-              private firebaseStorage: AngularFireStorage,
-              private loadingController: LoadingController
-              ) {
-
-              //  this.updateForm = this.createFormGroup();
-
-   }
+  constructor(
+    private modalCtrl: ModalController,
+    private datePipe: DatePipe,
+    private firebaseStorage: AngularFireStorage,
+    private loadingController: LoadingController
+  ) {}
 
   ngOnInit() {
     this.updateForm = this.createFormGroup();
-    console.log('holaola', this.dataProducto);
   }
 
     // --------------------------
-    presentActionSheet(fileLoader) {
+  presentActionSheet(fileLoader) {
       fileLoader.click();
       const that = this;
       fileLoader.onchange = () => {
@@ -73,7 +64,8 @@ export class EditarProductoPage implements OnInit {
           reader.readAsDataURL(file);
         }
       };
-    }
+  }
+
   imageLoaded(){
     this.processing = false;
   }
@@ -111,6 +103,7 @@ export class EditarProductoPage implements OnInit {
 
     this.image = this.uploadImage;
   }
+
   resetOrientation(srcBase64, srcOrientation, callback) {
     const img = new Image();
 
@@ -150,31 +143,31 @@ export class EditarProductoPage implements OnInit {
 
     img.src = srcBase64;
   }
-    removePic() {
-      this.uploadImage   = '../../../assets/fondoImg.jpg';
-    }
+
+  removePic() {
+    this.image = this.dataProducto.img;
+    console.log('elim', this.uploadImage);
+  }
     // -------------------------
 
   createFormGroup() {
     return new FormGroup({
       id: new FormControl(this.dataProducto.id),
-      sede: new FormControl(this.dataProducto.sede),
       nombre: new FormControl(this.dataProducto.nombre, [Validators.required, Validators.minLength(2), Validators.maxLength(60)]),
       cantidad: new FormControl(this.dataProducto.cantidad, [Validators.required, Validators.min(1)]),
       medida: new FormControl(this.dataProducto.medida, [Validators.required]),
       marca: new FormControl(this.dataProducto.marca, [Validators.minLength(3), Validators.maxLength(65)]),
-      codigo: new FormControl(this.dataProducto.codigo),
-      codigoBarra: new FormControl(this.dataProducto.codigoBarra),
-      precio: new FormControl(this.dataProducto.precio, []),
-      cantStock: new FormControl(this.dataProducto.cantStock, [ Validators.min(0)]),
+      codigo: new FormControl(this.dataProducto.codigo, [Validators.minLength(1), Validators.maxLength(20)]),
+      codigoBarra: new FormControl(this.dataProducto.codigoBarra, [Validators.minLength(1), Validators.maxLength(15)]),
+      precio: new FormControl(this.dataProducto.precio, [Validators.required]),
+      cantStock: new FormControl(this.dataProducto.cantStock, [ Validators.min(1)]),
       fechaDeVencimiento: new FormControl(this.dataProducto.fechaDeVencimiento),
-      tallas: new FormControl(this.dataProducto.tallas),
-      categoria: new FormControl(this.dataProducto.categoria),
       img: new FormControl(this.dataProducto.img),
+      sede: new FormControl(this.dataProducto.sede),
+      categoria: new FormControl(this.dataProducto.subCategoria, [Validators.required]),
       descripcionProducto: new FormControl(this.dataProducto.descripcionProducto),
     });
   }
-
 
   get nombre() {return this.updateForm.get('nombre'); }
   get cantidad() {return this.updateForm.get('cantidad'); }
@@ -187,36 +180,23 @@ export class EditarProductoPage implements OnInit {
   get fechaDeVencimiento() {return this.updateForm.get('fechaDeVencimiento'); }
 
   actualizarProducto() {
-    console.log(this.updateForm.value, this.cantStock);
-    // if (this.dataProducto.categoria === 'farmacia') {
-    //   this.updateForm.removeControl('precio');
-    //   console.log(this.updateForm.value);
-    // }
     if (isNullOrUndefined(this.updateForm.value.img)) {
       this.updateForm.removeControl('img');
     }
-    // if (isNullOrUndefined(this.updateForm.value.tallas)) {
-    //   this.updateForm.removeControl('tallas');
-    // }
-    console.log(this.updateForm.value);
-    console.log(this.updateForm.valid);
     if (this.updateForm.valid) {
-      console.log(this.updateForm.value);
       this.updateForm.value.nombre = this.updateForm.value.nombre.toLowerCase();
       if (this.image) {
         this.presentLoading();
         this.uploadImages(this.image).then (url => {
           this.updateForm.value.img = url;
-          console.log(this.updateForm.value);
           this.modalCtrl.dismiss({
-            data: this.updateForm.value
+            producto: this.updateForm.value
           });
           this.loading.dismiss();
         });
       } else {
-        console.log(this.updateForm.value);
         this.modalCtrl.dismiss({
-          data: this.updateForm.value
+          producto: this.updateForm.value
         });
       }
     } else {
@@ -224,34 +204,19 @@ export class EditarProductoPage implements OnInit {
     }
   }
 
-  quitarTalla(talla: number) {
-    console.log('TALLA', talla);
-    const indice =  this.dataProducto.tallas.indexOf(talla);
-    console.log('i: ', indice);
-    if (indice !== -1) {
-      const arreglo = this.dataProducto.tallas;
-      arreglo.splice(indice, 1);
-      this.dataProducto.tallas = arreglo;
-      console.log('quitado', this.dataProducto.tallas);
-    }
-  }
-
   uploadImages(image) {
     return new Promise<any>((resolve, reject) => {
-      // tslint:disable-next-line:prefer-const
-      let storageRef = this.firebaseStorage.storage.ref();
+      const storageRef = this.firebaseStorage.storage.ref();
       const id = this.dataProducto.sede + this.datePipe.transform(new Date(), 'medium');
-      // tslint:disable-next-line:prefer-const
-      let imageRef = storageRef.child('productos/' + id);
-      // tslint:disable-next-line:only-arrow-functions
+      const imageRef = storageRef.child('productos/' + id);
       imageRef.putString(image, 'data_url')
       .then(snapshot => {
         this.progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-        console.log(this.progress);
-        console.log('Upload is ' + this.progress + '% done');
-        console.log(snapshot);
+        // console.log(this.progress);
+        // console.log('Upload is ' + this.progress + '% done');
+        // console.log(snapshot);
         snapshot.ref.getDownloadURL().then((downloadURL) => {
-          console.log('File available at', downloadURL);
+          // console.log('File available at', downloadURL);
           resolve(downloadURL);
         });
       }, err => {
@@ -263,71 +228,6 @@ export class EditarProductoPage implements OnInit {
   cerrarModal() {
     this.modalCtrl.dismiss();
   }
-
-  // async SubirFoto() {
-  //   const actionSheet = await this.actionSheetController.create({
-  //     buttons: [{
-  //       text: 'Cargar desde Galería',
-  //       icon: 'images',
-  //       handler: () => {
-  //         this.image = null;
-  //         this.Openalbum();
-  //       }
-  //     },
-  //     {
-  //       text: 'Usar la Cámara',
-  //       icon: 'camera',
-  //       handler: () => {
-  //         this.image = null;
-  //         this.Opencamera();
-  //       }
-  //     },
-  //     {
-  //       text: 'Cancelar',
-  //       icon: 'close-circle-outline',
-  //       role: 'cancel'
-  //     }]
-  //   });
-  //   await actionSheet.present();
-  // }
-
-  // Opencamera() {
-  //   this.camera.getPicture({
-  //     destinationType: this.camera.DestinationType.DATA_URL,
-  //     sourceType: this.camera.PictureSourceType.CAMERA,
-  //     mediaType: this.camera.MediaType.PICTURE,
-  //     allowEdit: false,
-  //     encodingType: this.camera.EncodingType.PNG,
-  //     targetHeight: 720, // 1024,
-  //     targetWidth: 720, // 1024,
-  //     correctOrientation: true,
-  //     saveToPhotoAlbum: true,
-  //     quality: 0.6,
-  //   }).then( resultado => {
-  //     this.image = 'data:image/jpeg;base64,' + resultado;
-  //   }).catch(error => {
-  //     console.log(error);
-  //   });
-  // }
-
-  // Openalbum() {
-  //   this.camera.getPicture({
-  //     destinationType: this.camera.DestinationType.DATA_URL,
-  //     sourceType: this.camera.PictureSourceType.PHOTOLIBRARY,
-  //     mediaType: this.camera.MediaType.PICTURE,
-  //     allowEdit: false,
-  //     encodingType: this.camera.EncodingType.PNG,
-  //     targetHeight: 720, // 1024,
-  //     targetWidth: 720, // 1024,
-  //     correctOrientation: true,
-  //     saveToPhotoAlbum: true,
-  //     quality: 0.6,
-  //   }).then( resultado => {
-  //     this.image = 'data:image/jpeg;base64,' + resultado;
-  //   }).catch(error => {
-  //     // window.alert(error);
-  //   });
-  // }
 
   async presentLoading() {
     this.loading = await this.loadingController.create({

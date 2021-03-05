@@ -168,7 +168,6 @@ export class DbDataService {
   }
 
 
-
   ObtenerListaProductos(sede: string, categoria: string, subCategoria: string) {
     const sede1 = sede.toLocaleLowerCase();
     // tslint:disable-next-line:max-line-length

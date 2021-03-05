@@ -796,7 +796,7 @@ export class ApiPeruService {
       case 'pulgadas': return 'INH';
       case 'bolsa': return 'BG';
       case 'par': return 'PR';
-      case 'unidad servicios': return 'ZZ';
+      case 'servicios': return 'ZZ';
       case 'piezas': return 'C62';
       case 'latas': return 'CA';
       case 'juego': return 'SET';

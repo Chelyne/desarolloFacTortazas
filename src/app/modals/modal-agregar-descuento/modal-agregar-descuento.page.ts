@@ -27,7 +27,7 @@ export class ModalAgregarDescuentoPage implements OnInit {
               private alertController: AlertController) { }
 
   ngOnInit() {
-    this.listaCategorias = this.categorias.getcategoriasNegocio('petshop');
+    // this.listaCategorias = this.categorias.getcategoriasNegocio('petshop');
   }
 
   cerrarModal() {
