@@ -6,7 +6,6 @@
       </ion-button>
     </ion-buttons>
     <ion-title>Agregar Nuevo Producto</ion-title>
-    <!-- <ion-toggle slot="end" color="primary"></ion-toggle>  GUARDADO PARA SUBIR IMAGENES PNG CON COLOR DE FONDO DINAMICO-->
   </ion-toolbar>
 </ion-header>
 
@@ -25,10 +24,6 @@
                     <ion-icon slot="end" name="camera-outline" (click)="presentActionSheet(fileLoader)"></ion-icon>
                     <ion-icon slot="end" name="trash-outline" (click)="removePic()"></ion-icon>
                     <div style="width: 100%; text-align: center;">
-                      <!--
-                                                <span *ngIf="processing">
-                                                    <ion-spinner></ion-spinner>
-                                                </span>-->
                     </div>
                   </ion-item>
                 </ion-toolbar>
@@ -91,7 +86,8 @@
                     formControlName="subCategoria" placeholder="categorias" cancelText="Cancelar" okText="Aceptar"
                     mode="ios">
                     <ion-select-option *ngFor="let item of listaDeCategorias" [value]="item.categoria">
-                      {{item.categoria}}</ion-select-option>
+                      {{item.categoria}}
+                    </ion-select-option>
                   </ion-select>
                 </ion-item>
                 <div class="alertDanger" *ngIf="subCategoria.invalid && (subCategoria.dirty || subCategoria.touched)">
@@ -105,27 +101,7 @@
                   <ion-label color="primary" position="stacked">Medida (*)</ion-label>
                   <ion-select class="custom-options" interface="popover" formControlName="medida" placeholder="medida"
                     cancelText="Cancelar" okText="Aceptar" mode="ios">
-                    <ion-select-option value="gramos">Gramos</ion-select-option>
-                    <ion-select-option value="servicios">Servicios</ion-select-option>
-                    <ion-select-option value="kilogramos">Kilogramos</ion-select-option>
-                    <ion-select-option value="litros">Litros</ion-select-option>
-                    <ion-select-option value="unidad">Unidad</ion-select-option>
-                    <ion-select-option value="cajas">Cajas</ion-select-option>
-                    <ion-select-option value="paquetes">Paquetes</ion-select-option>
-                    <ion-select-option value="sacos">Sacos</ion-select-option>
-                    <ion-select-option value="botellas">Botellas</ion-select-option>
-                    <ion-select-option value="docena">Docena</ion-select-option>
-                    <ion-select-option value="kit">Kit</ion-select-option>
-                    <ion-select-option value="libras">Libras</ion-select-option>
-                    <ion-select-option value="metros">Metros</ion-select-option>
-                    <ion-select-option value="miligramos">Miligramos</ion-select-option>
-                    <ion-select-option value="mililitros">Mililitros</ion-select-option>
-                    <ion-select-option value="milimetros">Milimetros</ion-select-option>
-                    <ion-select-option value="pulgadas">Pulgadas</ion-select-option>
-                    <ion-select-option value="bolsas">Bolsas</ion-select-option>
-                    <ion-select-option value="par">Par</ion-select-option>
-                    <ion-select-option value="piezas">Piezas</ion-select-option>
-                    <ion-select-option value="latas">Latas</ion-select-option>
+                    <ion-select-option *ngFor="let med of medidas" [value]="med.nombre">{{med.tag | titlecase}}</ion-select-option>
                   </ion-select>
                 </ion-item>
                 <div class="alertDanger" *ngIf="medida.invalid && (medida.dirty || medida.touched)">
@@ -149,7 +125,6 @@
                     La cantidad minima es 1
                   </div>
                 </div>
-
               </ion-col>
               <ion-col>
                 <ion-item lines="none">

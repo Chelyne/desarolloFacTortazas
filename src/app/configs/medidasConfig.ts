@@ -1,0 +1,23 @@
+export const MEDIDAS = [
+    {nombre: 'gramos', tag: 'Gramos'},
+    {nombre: 'servicios', tag: 'Servicios'},
+    {nombre: 'kilogramos', tag: 'Kilogramos'},
+    {nombre: 'litros', tag: 'Litros'},
+    {nombre: 'unidad', tag: 'Unidad'},
+    {nombre: 'cajas', tag: 'Cajas'},
+    {nombre: 'paquetes', tag: 'Paquetes'},
+    {nombre: 'sacos', tag: 'Sacos'},
+    {nombre: 'botellas', tag: 'Botellas'},
+    {nombre: 'docena', tag: 'Docena'},
+    {nombre: 'kit', tag: 'Kit'},
+    {nombre: 'libras', tag: 'Libras'},
+    {nombre: 'metros', tag: 'Metros'},
+    {nombre: 'miligramos', tag: 'Miligramos'},
+    {nombre: 'mililitros', tag: 'Mililitros'},
+    {nombre: 'milimetros', tag: 'Milimetros'},
+    {nombre: 'pulgadas', tag: 'Pulgadas'},
+    {nombre: 'bolsas', tag: 'Bolsas'},
+    {nombre: 'par', tag: 'Par'},
+    {nombre: 'piezas', tag: 'Piezas'},
+    {nombre: 'latas', tag: 'Latas'}
+];

@@ -133,6 +133,6 @@ export class CatalogoPage implements OnInit {
 
       });
     }
-    }
+  }
 
 }

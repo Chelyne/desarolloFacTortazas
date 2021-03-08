@@ -7,6 +7,7 @@ import { IonicModule } from '@ionic/angular';
 import { ComprasPageRoutingModule } from './compras-routing.module';
 
 import { ComprasPage } from './compras.page';
+import { ModalEditarItemCompraPage } from 'src/app/modals/modal-editar-item-compra/modal-editar-item-compra.page';
 
 @NgModule({
   imports: [
@@ -16,6 +17,6 @@ import { ComprasPage } from './compras.page';
     ComprasPageRoutingModule,
     ReactiveFormsModule
   ],
-  declarations: [ComprasPage]
+  declarations: [ComprasPage],
 })
 export class ComprasPageModule {}

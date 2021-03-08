@@ -28,6 +28,9 @@ describe('DataBaseService', () => {
   it('should be created', () => {
     expect(service).toBeTruthy();
   });
+  it('saludo', () => {
+    expect(service.saludo()).toEqual('hola');
+  });
   // it('borrado', () => {
   //   expect('hola').toEqual(service.saludo());
   // });
@@ -37,4 +40,25 @@ describe('DataBaseService', () => {
   //     console.log(datos);
   //   });
   // });
+
+  it('Probar Incrementar stock', async () => {
+    // service.incrementarStockProducto('01xo7jxVqGvd0AuLxGGL', 'andahuaylas', 3);
+    service.incrementarStockProducto('algo', 'andahuaylas', 3).then( exito => {
+      console.log('EXITO DE INCREMENTAR', exito);
+    }).catch( err => {
+      console.log('ERROR DE INCREMENTAR', err);
+    });
+
+    // service.incrementarStockProducto('01xo7jxVqGvd0AuLxGGL', 'andahuaylas', 3).then( exito => {
+    //   console.log('EXITO DE INCREMENTAR', exito);
+    // }).catch( err => {
+    //   console.log('ERROR DE INCREMENTAR', err);
+    // });
+    service.decrementarStockProducto('01xo7jxVqGvd0AuLxGGL', 'andahuaylas', 10).then( exito => {
+      console.log('EXITO DE INCREMENTAR', exito);
+    }).catch( err => {
+      console.log('ERROR DE INCREMENTAR', err);
+    });
+
+  });
 });

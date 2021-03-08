@@ -1,6 +1,6 @@
 <ion-header>
   <ion-toolbar>
-    <ion-title>{{titleInvoker | titlecase}}</ion-title>
+    <ion-title>{{dataModal.evento | titlecase}} Proveedor</ion-title>
     <ion-buttons slot="end">
       <ion-button (click)="cerrarModal()">
         <ion-icon color="primary" slot="icon-only" name="close-outline"></ion-icon>
@@ -132,7 +132,7 @@
 <ion-footer>
   <ion-item lines="none">
     <ion-button slot="end" size="small" (click)="execFun()" [disabled]="proveedorModalForm.invalid">
-      <ion-label color="light">{{tagInvoker}}</ion-label>
+      <ion-label color="light">{{dataModal.evento}}</ion-label>
     </ion-button>
   </ion-item>
 </ion-footer>

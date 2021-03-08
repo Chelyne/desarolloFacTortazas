@@ -17,53 +17,23 @@
 <ion-content class="ion-padding">
   <ion-grid>
     <ion-row class="headerProveedores">
-      <ion-col size="0.5">
-        <ion-label>#</ion-label>
-      </ion-col>
-      <ion-col>
-        <ion-label>Nombre</ion-label>
-      </ion-col>
-      <ion-col>
-        <ion-label>RUC / DNI</ion-label>
-      </ion-col>
-      <ion-col>
-        <ion-label>Telefono</ion-label>
-      </ion-col>
-      <ion-col>
-        <ion-label>Direccion</ion-label>
-      </ion-col>
-      <ion-col>
-        <ion-label>Email</ion-label>
-      </ion-col>
-      <ion-col>
-        <ion-label>Acciones</ion-label>
-      </ion-col>
+      <ion-col size="0.5"><ion-label>#</ion-label></ion-col>
+      <ion-col><ion-label>Nombre</ion-label></ion-col>
+      <ion-col><ion-label>RUC / DNI</ion-label></ion-col>
+      <ion-col><ion-label>Telefono</ion-label></ion-col>
+      <ion-col><ion-label>Direccion</ion-label></ion-col>
+      <ion-col><ion-label>Email</ion-label></ion-col>
+      <ion-col><ion-label>Acciones</ion-label></ion-col>
     </ion-row>
-    <ion-row class="ion-justify-content-center ion-align-items-center contentProveedores" *ngFor="let provedor of listaDeProveedores; let i=index">
-      <ion-col size="0.5">
-        <ion-label>{{i+1}}</ion-label>
-      </ion-col>
+    <ion-row class="ion-justify-content-center ion-align-items-center contentProveedores"
+    *ngFor="let provedor of listaDeProveedores; let i=index">
+      <ion-col size="0.5"><ion-label>{{i+1}}</ion-label></ion-col>
+      <ion-col><ion-label>{{provedor.nombre | titlecase}}</ion-label></ion-col>
+      <ion-col><ion-label>{{provedor.numeroDocumento}}</ion-label></ion-col>
+      <ion-col><ion-label>{{provedor.telefono}}</ion-label></ion-col>
+      <ion-col><ion-label>{{provedor.direccion | titlecase}}</ion-label></ion-col>
+      <ion-col><ion-label>{{provedor.email}}</ion-label></ion-col>
       <ion-col>
-        <ion-label>{{provedor.nombre | titlecase}}</ion-label>
-      </ion-col>
-      <ion-col>
-        <ion-label>{{provedor.numeroDocumento}}</ion-label>
-      </ion-col>
-      <ion-col>
-        <ion-label>{{provedor.telefono}}</ion-label>
-      </ion-col>
-      <ion-col>
-        <ion-label>{{provedor.direccion | titlecase}}</ion-label>
-      </ion-col>
-      <ion-col>
-        <ion-label>{{provedor.email}}</ion-label>
-      </ion-col>
-      <ion-col>
-        <!-- <ion-label>
-          <ion-button (click)="SeleccionarProveedor(provedor)" *ngIf="esModal">
-            Seleccionar
-          </ion-button>
-        </ion-label> -->
         <ion-label>
           <ion-button color="success" size="small" (click)="ActualizarDataProveedor(provedor)">
             <ion-icon name="create-outline"></ion-icon>
@@ -77,11 +47,4 @@
       </ion-col>
     </ion-row>
   </ion-grid>
-
-  <!-- <ion-label>{{objeto.nombre}}</ion-label>
-  <ion-label>{{objeto.nulo}}</ion-label>
-  <ion-label>{{objeto.correo}}</ion-label> -->
-  <!-- <ion-button (click)="handleButtonClick()" expand="block" fill="clear" shape="round">
-    Click me
-  </ion-button> -->
 </ion-content>

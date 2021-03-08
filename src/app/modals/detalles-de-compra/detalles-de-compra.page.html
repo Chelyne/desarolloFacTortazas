@@ -10,63 +10,20 @@
 </ion-header>
 
 <ion-content class="ion-padding">
-
-  <!-- <ion-list-header lines="inset" color="primary">
-    <ion-label>Nombre</ion-label>
-    <ion-label>Apellidos</ion-label>
-    <ion-label>DNI</ion-label>
-    <ion-label>Telefono</ion-label>
-    <ion-label>Direccion</ion-label>
-    <ion-label>Email</ion-label>
-    <ion-label></ion-label>
-  </ion-list-header>
-  <ion-item *ngFor="let itemCompra of compra.listaItemsDeCompra; let i = index">
-    <ion-label>{{itemCompra.producto.nombre}}</ion-label>
-    <ion-label>{{itemCompra.PU_compra}}</ion-label>
-    <ion-label>{{itemCompra.cantidad}}</ion-label>
-    <ion-label>{{itemCompra.totalCompraxProducto}}</ion-label>
-
-    <ion-label>
-      <ion-button>
-        Actualizar
-      </ion-button>
-    </ion-label>
-  </ion-item> -->
-
   <ion-grid>
     <ion-row class="header-lista-de-productos">
-      <ion-col size="0.5">
-        <ion-label color="light">#</ion-label>
-      </ion-col>
-      <ion-col size="5.5">
-        <ion-label color="light">nombre</ion-label>
-      </ion-col>
-      <ion-col size="2">
-        <ion-label color="light">PU compra</ion-label>
-      </ion-col>
-      <ion-col size="2">
-        <ion-label color="light">Cantidad</ion-label>
-      </ion-col>
-      <ion-col size="2">
-        <ion-label color="light">Total</ion-label>
-      </ion-col>
+      <ion-col size="0.5"><ion-label color="light">#</ion-label></ion-col>
+      <ion-col size="5.5"><ion-label color="light">nombre</ion-label></ion-col>
+      <ion-col size="2"><ion-label color="light">PU compra</ion-label></ion-col>
+      <ion-col size="2"><ion-label color="light">Cantidad</ion-label></ion-col>
+      <ion-col size="2"><ion-label color="light">Total</ion-label></ion-col>
     </ion-row>
     <ion-row class="contentListaCompra" *ngFor="let itemCompra of compra.listaItemsDeCompra; let i = index">
-      <ion-col size="0.5">
-        {{i+1}}
-      </ion-col>
-      <ion-col size="5.5">
-        {{itemCompra.producto.nombre | titlecase}}
-      </ion-col>
-      <ion-col size="2">
-        {{itemCompra.pu_compra | number:'1.2'}}
-      </ion-col>
-      <ion-col size="2">
-        {{itemCompra.cantidad}}
-      </ion-col>
-      <ion-col size="2">
-        {{itemCompra.totalCompraxProducto | number:'1.2'}}
-      </ion-col>
+      <ion-col size="0.5">{{i+1}}</ion-col>
+      <ion-col size="5.5">{{itemCompra.producto.nombre | titlecase}}</ion-col>
+      <ion-col size="2">{{itemCompra.pu_compra | number:'1.2'}}</ion-col>
+      <ion-col size="2">{{itemCompra.cantidad}}</ion-col>
+      <ion-col size="2">{{itemCompra.totalCompraxProducto | number:'1.2'}}</ion-col>
     </ion-row>
     <ion-row>
       <ion-col>
@@ -76,7 +33,6 @@
       </ion-col>
     </ion-row>
   </ion-grid>
-
 </ion-content>
 
 <ion-footer>

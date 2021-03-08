@@ -8,6 +8,9 @@ import { StorageService } from '../../services/storage.service';
 import { DataBaseService } from '../../services/data-base.service';
 import { GlobalService } from 'src/app/global/global.service';
 
+import { MEDIDAS } from 'src/app/configs/medidasConfig';
+
+
 
 @Component({
   selector: 'app-modal-agregar-producto',
@@ -34,6 +37,8 @@ export class ModalAgregarProductoPage implements OnInit {
 
   loading;
   correlacionActual;
+
+  medidas = MEDIDAS;
 
   constructor(
     private dataApi: DataBaseService,

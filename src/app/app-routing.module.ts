@@ -263,6 +263,11 @@ const routes: Routes = [
   {
     path: 'usuarios',
     loadChildren: () => import('./pages/usuarios/usuarios.module').then( m => m.UsuariosPageModule)
+  },
+  {
+    path: 'modal-editar-item-compra',
+    loadChildren: () => import('./modals/modal-editar-item-compra/modal-editar-item-compra.module').
+    then( m => m.ModalEditarItemCompraPageModule)
   }
 
 

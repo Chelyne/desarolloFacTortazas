@@ -16,10 +16,15 @@ export class AgregarEditarProveedorPage implements OnInit {
 
   proveedorModalForm: FormGroup;
 
-  @Input() eventoInvoker: string;
-  @Input() tagInvoker: string;
-  @Input() titleInvoker: string;
-  @Input() dataInvoker: ProveedorInterface;
+  // @Input() eventoInvoker: string;
+  // @Input() tagInvoker: string;
+  // @Input() titleInvoker: string;
+  // @Input() dataInvoker: ProveedorInterface;
+  @Input() dataModal: {
+    evento: 'actualizar' | 'agregar',
+    proveedor?: ProveedorInterface
+  };
+
 
   typoDocumento = 'ruc';
   consultando: boolean;
@@ -37,11 +42,17 @@ export class AgregarEditarProveedorPage implements OnInit {
 
 
   ngOnInit() {
-    if ( this.eventoInvoker === 'actualizarProveedor' ){
+    // if ( this.dataModal.evento === 'actualizar' ){
+    //   this.proveedorModalForm = this.formForUpdate();
+    // }
+
+    // console.log('datainvoker', this.dataInvoker);
+  }
+
+  ionViewWillEnter(){
+    if ( this.dataModal.evento === 'actualizar' ){
       this.proveedorModalForm = this.formForUpdate();
     }
-
-    console.log('datainvoker', this.dataInvoker);
   }
 
   createFormProveedor() {
@@ -66,13 +77,13 @@ export class AgregarEditarProveedorPage implements OnInit {
 
   formForUpdate(){
     return new FormGroup({
-      nombre: new FormControl(this.dataInvoker.nombre, [Validators.required, Validators.minLength(3)]),
+      nombre: new FormControl(this.dataModal.proveedor.nombre, [Validators.required, Validators.minLength(3)]),
       // ruc: new FormControl(this.dataInvoker.ruc, [Validators.required, Validators.minLength(11), Validators.maxLength(11)]),
-      tipoDocumento: new FormControl(this.dataInvoker.tipoDocumento, [Validators.required]),
-      numeroDocumento: new FormControl(this.dataInvoker.numeroDocumento, [Validators.required]),
-      telefono: new FormControl(this.dataInvoker.telefono, [Validators.minLength(6), Validators.maxLength(9)]),
-      direccion: new FormControl(this.dataInvoker.direccion, [Validators.minLength(3)]),
-      email: new FormControl(this.dataInvoker.email, [Validators.minLength(3), Validators.pattern('^[_a-z0-9]+(\.[_a-z0-9]+)*@[a-z0-9-]+(\.[_a-z0-9]+)*\.([a-z]{2,4})$')])
+      tipoDocumento: new FormControl(this.dataModal.proveedor.tipoDocumento, [Validators.required]),
+      numeroDocumento: new FormControl(this.dataModal.proveedor.numeroDocumento, [Validators.required]),
+      telefono: new FormControl(this.dataModal.proveedor.telefono, [Validators.minLength(6), Validators.maxLength(9)]),
+      direccion: new FormControl(this.dataModal.proveedor.direccion, [Validators.minLength(3)]),
+      email: new FormControl(this.dataModal.proveedor.email, [Validators.minLength(3), Validators.pattern('^[_a-z0-9]+(\.[_a-z0-9]+)*@[a-z0-9-]+(\.[_a-z0-9]+)*\.([a-z]{2,4})$')])
     });
   }
 
@@ -99,11 +110,11 @@ export class AgregarEditarProveedorPage implements OnInit {
 
 
   execFun(){
-    if (this.eventoInvoker === 'guardarProveedor'){
+    if (this.dataModal.evento === 'agregar'){
       this.guardarProveedor();
 
     }
-    else if (this.eventoInvoker === 'actualizarProveedor'){
+    else if (this.dataModal.evento === 'actualizar'){
       this.actualizarProveedor();
 
     } else {
@@ -125,7 +136,7 @@ export class AgregarEditarProveedorPage implements OnInit {
 
   actualizarProveedor(){
 
-    this.dataApi.actualizarProveedor(this.dataInvoker.id, this.proveedorModalForm.value).then(
+    this.dataApi.actualizarProveedor(this.dataModal.proveedor.id, this.proveedorModalForm.value).then(
         () => {
           console.log('Se ingreso Correctamente');
           this.presentToast('Datos actualizados correctamente');

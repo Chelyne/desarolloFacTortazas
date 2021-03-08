@@ -5,6 +5,9 @@ import { AngularFireStorage } from '@angular/fire/storage';
 import { DatePipe } from '@angular/common';
 import { isNullOrUndefined } from 'util';
 
+import { MEDIDAS } from 'src/app/configs/medidasConfig';
+
+
 @Component({
   selector: 'app-editar-producto',
   templateUrl: './editar-producto.page.html',
@@ -12,6 +15,8 @@ import { isNullOrUndefined } from 'util';
   providers: [DatePipe]
 })
 export class EditarProductoPage implements OnInit {
+  medidas = MEDIDAS;
+
   @Input()dataProducto;
 
   // ----------------

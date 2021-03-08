@@ -1,0 +1,46 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title>modalEditarItemCompra</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <form [formGroup]="formItemDeCompras">
+    <ion-item lines="none">
+      <ion-label position="floating" color="primary">Nombre del producto<ion-text color="danger">*</ion-text></ion-label>
+      <ion-input  type="text" formControlName="nombre" placeholder="Nombre" required  readonly></ion-input>
+    </ion-item>
+    <ion-item lines="none">
+      <ion-label position="floating" color="primary">Cantidades<ion-text color="danger">*</ion-text></ion-label>
+      <ion-input type="text" formControlName="cantidad" placeholder="00" required></ion-input>
+      <div class="alertDanger" *ngIf="cantidad.invalid && (cantidad.dirty || cantidad.touched)">
+        <div class="mensajeError" *ngIf="cantidad.errors.required">
+          *Ingrese cantidad
+        </div>
+        <div class="mensajeError" *ngIf="cantidad.errors.pattern">
+          *solo ingrese numeros
+        </div>
+      </div>
+    </ion-item>
+    <ion-item lines="none">
+      <ion-label position="floating" color="primary">Precio Unitario de compra(s/.)<ion-text color="danger">*</ion-text></ion-label>
+      <ion-input type="text" formControlName="pu_compra" placeholder="Precio" placeholder="00.00" required></ion-input>
+      <div class="alertDanger" *ngIf="pu_compra.invalid && (pu_compra.dirty || pu_compra.touched)">
+        <div class="mensajeError" *ngIf="pu_compra.errors.required">
+          *Ingrese precio unitario compra
+        </div>
+        <div class="mensajeError" *ngIf="pu_compra.errors.pattern">
+          *solo formato de moneda 00.00
+        </div>
+      </div>
+    </ion-item>
+    <ion-button size="small" block color="primary" slot="end" (click)="cerrarModal()">
+      <ion-label color="light">cancelar</ion-label>
+    </ion-button>
+    <ion-button size="small"  block color="primary"
+    [disabled]="formItemDeCompras.invalid" slot="end" (click)="modificarItemDeCompra()">
+      <ion-label color="light">Modificar</ion-label>
+    </ion-button>
+  </form>
+
+</ion-content>

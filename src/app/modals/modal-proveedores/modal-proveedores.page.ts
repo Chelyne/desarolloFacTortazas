@@ -1,8 +1,7 @@
 import { Component, OnInit } from '@angular/core';
-import { DbDataService } from '../../services/db-data.service';
 import { ProveedorInterface } from '../../models/proveedor';
 import { ModalController } from '@ionic/angular';
-import { StorageService } from '../../services/storage.service';
+import { DataBaseService } from 'src/app/services/data-base.service';
 
 @Component({
   selector: 'app-modal-proveedores',
@@ -11,25 +10,28 @@ import { StorageService } from '../../services/storage.service';
 })
 export class ModalProveedoresPage implements OnInit {
   listaDeProveedores: ProveedorInterface[];
-  sinDatos;
-  constructor(private dataApi: DbDataService,
-              private modalCtlr: ModalController,
-              private storage: StorageService) { }
+  hayDatos = false;
+
+  constructor(
+    private dataApi: DataBaseService,
+    private modalCtlr: ModalController,
+  ){
+
+  }
 
   ngOnInit() {
     this.ObtenerProveedores();
   }
 
   ObtenerProveedores(){
-    this.dataApi.ObtenerListaDeProveedores().subscribe(data => {
-      if (data.length > 0) {
+    this.dataApi.obtenerProveedores().subscribe(data => {
+      if (data.length) {
         this.listaDeProveedores = data;
-        this.sinDatos = false;
+        this.hayDatos = true;
       } else {
-        this.sinDatos = true;
+        this.hayDatos = false;
       }
     });
-
   }
 
   SeleccionarProveedor(proveedorSelect: ProveedorInterface){
