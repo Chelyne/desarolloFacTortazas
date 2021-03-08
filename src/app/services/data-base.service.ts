@@ -4,8 +4,11 @@ import { map } from 'rxjs/operators';
 import { CategoriaInterface } from '../models/CategoriaInterface';
 import { ClienteInterface } from '../models/cliente-interface';
 import { ProductoInterface } from '../models/ProductoInterface';
+import { CompraInterface } from '../models/Compra';
+import { VentaInterface } from '../models/venta/venta';
+import { formatDate } from '@angular/common';
+import { ProveedorInterface } from '../models/proveedor';
 import { AdmiInterface } from '../models/AdmiInterface';
-import { VentaInterface } from 'src/app/models/venta/venta';
 
 @Injectable({
   providedIn: 'root'
@@ -45,7 +48,7 @@ export class DataBaseService {
 
   async guardarProductoIncrementaCodigo(newProducto: ProductoInterface, sede: string, correlacionActual: number) {
     const correlacion = parseInt(newProducto.codigo, 10);
-    return this.guardarProducto(newProducto, sede).then(async (idProducto) => {
+    this.guardarProducto(newProducto, sede).then(async (idProducto) => {
       if (idProducto) {
         if (correlacionActual === correlacion ){
           // Incrementa la correlacion
@@ -53,17 +56,14 @@ export class DataBaseService {
           if (resp === 'exito'){
             return 'exito';
           }else {
-            throw String('warnig');
+            throw String('no se pudo incrementar la correlacion');
           }
         }
+        throw String('fail');
 
       }
-    }).catch(err => {
-      if (err === 'warning') {
-        console.log('');
-        throw String('no se pudo incrementar la correlacion');
-      }
-      throw String('fail');
+
+
     });
   }
 
@@ -78,20 +78,61 @@ export class DataBaseService {
       throw String('fail');
     });
   }
-  // CAJA CHICA
-  guardarCajaChica(newcajaChica) {
-    return this.afs.collection('CajaChica').ref.add(newcajaChica).then(data => {
-      if (data.id) {
-        return data.id;
-      } else {
-        return '';
-      }
-    }).catch(err => {
-      throw String('fail');
-    });
-  }
 
-  // ----------------------------------------------------------- */
+  // PUNTO DE VENTA CONFIRMAR VENTA Y GUARDAR
+
+  confirmarVenta(venta: VentaInterface, sede: string) {
+    console.log(venta);
+    const data = {
+      productos: venta.listaItemsDeVenta
+    };
+    const id = formatDate(new Date(), 'dd-MM-yyyy', 'en');
+    const promesa = new Promise( (resolve, reject) => {
+      this.afs.collection('sedes').doc(sede.toLocaleLowerCase()).collection('productosVenta').add(data).then( guardado => {
+        console.log(guardado);
+        const dataVenta = {
+          idListaProductos: guardado.id,
+          cliente: venta.cliente,
+          vendedor: venta.vendedor,
+          tipoComprobante: venta.tipoComprobante,
+          serieComprobante: venta.serieComprobante,
+          numeroComprobante: venta.numeroComprobante,
+          fechaEmision: new Date(),
+          bolsa: venta.bolsa,
+          cantidadBolsa: venta.cantidadBolsa,
+          tipoPago: venta.tipoPago,
+          estadoVenta: venta.estadoVenta,
+          montoNeto: venta.montoNeto,
+          descuentoVenta: venta.descuentoVenta,
+          totalPagarVenta: venta.totalPagarVenta,
+          igv: venta.igv,
+          montoBase: venta.montoBase,
+          montoPagado: venta.montoPagado
+
+        };
+        // tslint:disable-next-line:max-line-length
+        this.afs.collection('sedes').doc(sede.toLocaleLowerCase()).collection('ventas').doc(id).collection('ventasDia').add(dataVenta).then(ventas => {
+          resolve(ventas.id);
+        });
+      });
+    });
+    return promesa;
+  }
+  // ------------------------------LIBIO----------------------------- */
+
+    // TODO: HACIENDO ESTO
+    guardarCompra(newCompra: CompraInterface, sede: string) {
+      return this.afs.collection('sedes').doc(sede.toLocaleLowerCase()).collection('compras').ref.add(newCompra)
+      .then(data => {
+        if (data.id) {
+          return data.id;
+        } else {
+          return '';
+        }
+      }).catch(err => {
+        throw String('fail');
+      });
+    }
   // ----------------------------------------------------------- */
   // ----------------------------------------------------------- */
 
@@ -111,7 +152,6 @@ export class DataBaseService {
           ...action.payload.doc.data()
         });
       });
-
       return datos;
     }));
   }
@@ -130,7 +170,7 @@ export class DataBaseService {
     return datos;
     }));
   }
-    // PRODUCTOS
+
   obtenerObjetoCorrelacionProducto(sede: string) {
     const sede1 = sede.toLocaleLowerCase();
     return this.afs.doc(`sedes/${sede1}`).snapshotChanges().pipe(map((action: any) => {
@@ -163,6 +203,115 @@ export class DataBaseService {
       return datos;
     }));
   }
+
+  async obtenerProductoPorId(idProducto: string, sede: string){
+    return this.afs.collection('sedes').doc(sede.toLocaleLowerCase())
+    .collection('productos').doc(idProducto).ref.get()
+    .then((doc: any) => {
+      if (doc.exists) {
+        return {id: doc.id, ...doc.data()};
+      } else {
+        console.log('Producto no encontrado!');
+        return {};
+      }
+    }).catch(err => {
+      console.log('error', err);
+      throw String('fail');
+    });
+  }
+
+  // ObtenerProductos por categoria
+  ObtenerProductosCategoria(sede: string, subCategoria: string) {
+    return this.afs.collection('sedes').doc(sede.toLocaleLowerCase())
+    .collection('productos' , ref => ref.where('subCategoria', '==', subCategoria).orderBy('fechaRegistro', 'desc'))
+    .snapshotChanges().pipe(map(changes => {
+      const datos: ProductoInterface[] = [];
+      changes.map(action => {
+        datos.push({
+          id: action.payload.doc.id,
+          ...action.payload.doc.data()
+        });
+      });
+      return datos;
+    }));
+  }
+
+  // OBTENER CORRELACION COMPROBANTE
+  obtenerCorrelacionComprobante(serie: string, sede: string) {
+    return this.afs.collection('sedes').doc(sede.toLocaleLowerCase())
+    .collection('serie', ref => ref.where('serie', '==', serie).limit(1))
+    .snapshotChanges().pipe(map(changes => {
+      const datos: ProductoInterface[] = [];
+      changes.map(action => {
+        datos.push({
+          id: action.payload.doc.id,
+          ...action.payload.doc.data()
+        });
+      });
+      return datos;
+    }));
+  }
+  // caja chica
+  validarCajaChicaVendedor(estadoCaja: string, dni: string) {
+    console.log('obteniedno caja de: ', dni, ' con el estado ABIERTO: ', estadoCaja);
+    return this.afs.collection('CajaChica').ref.where( 'dniVendedor', '==', dni).where('estado', '==', estadoCaja)
+    .get().then( snapshot => {
+      if (snapshot.empty) {
+        return false;
+      } else {
+        return true;
+      }
+    });
+  }
+
+  // OBTENER LISTA DE VENTAS
+  ObtenerListaDeVentas(sede: string, fachaventas: string) {
+    return this.afs.collection('sedes').doc(sede.toLocaleLowerCase()).collection('ventas').doc(fachaventas)
+    .collection('ventasDia', ref => ref.orderBy('fechaEmision', 'desc'))
+    .snapshotChanges().pipe(map(changes => {
+      return changes.map(action => {
+        const data = action.payload.doc.data() as VentaInterface;
+        data.idVenta = action.payload.doc.id;
+        return data;
+      });
+    }));
+  }
+
+  // OBTENER PRODUCTOS DE VENTAS
+  async obtenerProductosDeVenta(idProductoVenta: string, sede: string){
+    // console.log('Id de un producto de venta en productVEnta', idProductoVenta);
+    return this.afs.collection('sedes').doc(sede.toLocaleLowerCase())
+    .collection('productosVenta').doc(idProductoVenta).ref.get()
+    .then((doc: any) => {
+      if (doc.exists) {
+        return doc.data().productos;
+      } else {
+        // console.log('No such document!');
+        return [];
+      }
+    }).catch(err => {
+      console.log('Error al obtener items de Venta: ', err);
+      throw String('fail');
+    });
+  }
+
+  // INGRESO Y EGRESO
+  obtenerIngresoEgresoDia(sede: string, fecha: string) {
+    return this.afs.collection('sedes').doc(sede.toLocaleLowerCase())
+    .collection('ingresosEgresos').doc(fecha).collection('ingresosEgresosDia').ref.get()
+    .then((querySnapshot) => {
+      const datos: any[] = [];
+      querySnapshot.forEach((doc) => {
+        datos.push( {...doc.data(), id: doc.id});
+      });
+      return datos;
+    }).catch(err => {
+      console.log('no se pudo obtener los ingresos', err);
+      throw String ('fail');
+    });
+  }
+  // -----------------------CELINE------------------------------------ */
+
   obtenerListaProductosSinLIMITE(sede: string) {
     const sede1 = sede.toLocaleLowerCase();
     return this.afs.collection('sedes').doc(sede1).collection('productos', ref => ref.orderBy('fechaRegistro', 'desc').limit(5))
@@ -196,18 +345,6 @@ export class DataBaseService {
       }));
     }
 
-    validarCajaChicaVendedor(estadoCaja: string, dni: string) {
-      console.log('obteniedno caja de: ', dni, ' con el estado ABIERTO: ', estadoCaja);
-      return this.afs.collection('CajaChica').ref.where( 'dniVendedor', '==', dni).where('estado', '==', estadoCaja)
-      .get().then( snapshot => {
-        if (snapshot.empty) {
-          return false;
-        } else {
-          return true;
-        }
-      });
-    }
-
     // USUARIOS
     obtenerUsuariosPorSede(sede: string) {
       return this.afs.collection('Roles', ref => ref.where('sede', '==', sede ))
@@ -223,22 +360,6 @@ export class DataBaseService {
 
         return datos;
       }));
-    }
-
-    // INGRESO Y EGRESO
-    obtenerIngresoEgresoDia(sede: string, dia: string) {
-      return this.afs.collection('sedes').doc(sede.toLocaleLowerCase()).collection('ingresosEgresos').doc(dia).collection('ingresosEgresosDia').ref.get()
-      .then((querySnapshot) => {
-        const datos: any[] = [];
-        querySnapshot.forEach((doc) => {
-          // console.log(doc.id, ' => ', doc.data());
-          datos.push( {...doc.data(), id: doc.id});
-        });
-        return datos;
-      }).catch(err => {
-        console.log('no se pudo obtener los ingresos', err);
-        throw String ('fail');
-      });
     }
 
     // REPORTES
@@ -271,22 +392,6 @@ export class DataBaseService {
       });
     }
 
-    async obtenerProductosDeVenta(idProductoVenta: string, sede: string){
-      // console.log('Id de un producto de venta en productVEnta', idProductoVenta);
-      return this.afs.collection('sedes').doc(sede.toLocaleLowerCase())
-      .collection('productosVenta').doc(idProductoVenta).ref.get()
-      .then((doc: any) => {
-        if (doc.exists) {
-          return doc.data().productos;
-        } else {
-          // console.log('No such document!');
-          return [];
-        }
-      }).catch(err => {
-        console.log('Error al obtener items de Venta: ', err);
-        throw String('fail');
-      });
-    }
     // COMPROBANTES
     obtenerComprobante(sede: string, fachaventas: string, numero: string, serie: string) {
      return this.afs.collection('sedes').doc(sede.toLocaleLowerCase()).collection('ventas').doc(fachaventas).collection('ventasDia').
@@ -302,7 +407,41 @@ export class DataBaseService {
       throw String ('fail');
     });
     }
-  // ----------------------------------------------------------- */
+  // ------------------------LIBIO----------------------------------- */
+  obtenerProveedores() {
+    return this.afs.collection('proveedores')
+    .snapshotChanges().pipe(map(changes => {
+      const datos: ProveedorInterface[] = [];
+
+      changes.map(action => {
+        datos.push({
+          id: action.payload.doc.id,
+          ...action.payload.doc.data() as ProveedorInterface
+        });
+      });
+
+      return datos;
+
+    }));
+
+  }
+
+  obtenerComprasPorSede(sede: string) {
+    return this.afs.collection('sedes').doc(sede.toLocaleLowerCase())
+    .collection('compras' , ref => ref.orderBy('fechaRegistro', 'desc').limit(20))
+    .snapshotChanges().pipe(map(changes => {
+      const datos: CompraInterface[] = [];
+
+      changes.map(action => {
+        datos.push({
+          id: action.payload.doc.id,
+          ...action.payload.doc.data() as CompraInterface
+        });
+      });
+
+      return datos;
+    }));
+  }
   // ----------------------------------------------------------- */
   // ----------------------------------------------------------- */
 
@@ -315,6 +454,78 @@ export class DataBaseService {
     return this.afs.collection('sedes').doc(sede.toLocaleLowerCase()).ref.update({correlacionProducto: newCorrelacion})
     .then(() => 'exito').catch(err => {
       console.log('error', err);
+      throw String('fail');
+    });
+  }
+
+  async incrementarStockProducto(idProducto: string, sede: string, cantidad: number){
+
+    const cantidadStock: any = await this.obtenerProductoPorId(idProducto, sede).then((producto: ProductoInterface) => {
+        if (!producto.id){
+          return 'PRODUCTO_NO_REGISTRADO';
+        }
+
+        if (!producto.cantStock){
+          return 0;
+        }
+        return producto.cantStock;
+      }).catch( err => {
+        console.log('llego a este error', err);
+        return 'fail';
+      });
+
+    if (cantidadStock === 'PRODUCTO_NO_REGISTRADO'){
+      throw String('PRODUCTO_NO_REGISTRADO');
+    }
+
+    if (cantidadStock === 'fail'){
+      throw String('fail');
+    }
+
+    return this.afs.collection('sedes').doc(sede.toLocaleLowerCase())
+    .collection('productos').doc(idProducto).update({cantStock: cantidadStock + cantidad})
+    .then(() => {
+      console.log('Stock de producto actualizado correctamente de: ', cantidadStock, 'a: ', cantidadStock + cantidad);
+      return 'exito';
+    }).catch(err => {
+      console.log('No sep pudo actualizar correctamente el producto');
+      console.log('Error', err);
+      throw String('fail');
+    });
+  }
+
+  async decrementarStockProducto(idProducto: string, sede: string, cantidad: number){
+
+    const cantidadStock: any = await this.obtenerProductoPorId(idProducto, sede).then((producto: ProductoInterface) => {
+      if (!producto.id){
+        return 'PRODUCTO_NO_REGISTRADO';
+      }
+
+      if (!producto.cantStock){
+        return 0;
+      }
+      return producto.cantStock;
+    }).catch( err => {
+      console.log(err);
+      return 'fail';
+    });
+
+    if (cantidadStock === 'PRODUCTO_NO_REGISTRADO'){
+      throw String('PRODUCTO_NO_REGISTRADO');
+    }
+
+    if (cantidadStock === 'fail'){
+      throw String('fail');
+    }
+
+    return this.afs.collection('sedes').doc(sede.toLocaleLowerCase())
+    .collection('productos').doc(idProducto).update({cantStock: cantidadStock - cantidad})
+    .then(() => {
+      console.log('Stock de producto actualizado correctamente de: ', cantidadStock, 'a: ', cantidadStock - cantidad);
+      return 'exito';
+    }).catch(err => {
+      console.log('No sep pudo actualizar correctamente el producto');
+      console.log('Error', err);
       throw String('fail');
     });
   }
@@ -349,6 +560,24 @@ export class DataBaseService {
       });
   }
 
+  // ACTUALIZAR CORRELACION
+  actualizarCorrelacion(id: string, sede: string, correlacion1: number){
+    return this.afs.collection('sedes').doc(sede.toLocaleLowerCase())
+    .collection('serie').doc(id).update({correlacion: correlacion1}).then(() => 'exito')
+    .catch(err => {
+      throw String('fail');
+    });
+  }
+
+  // ANULAR VENTA
+  toggleAnularVenta(idVenta: string, nuevoEstado: string, sede: string, fechaEmision: string) {
+    return this.afs.collection('sedes').doc(sede.toLocaleLowerCase()).collection('ventas').doc(fechaEmision)
+    .collection('ventasDia').doc(idVenta).update({estadoVenta: nuevoEstado}).then(() => 'exito')
+    .catch(err => {
+      throw String('fail');
+    });
+  }
+  // --------------------------CELINE--------------------------------- */
   // ACTUALIZAR CAJA CHICA
   actualizarCajaChica(id: string, datoCajaChica: any){
     const caja = {
@@ -374,7 +603,23 @@ export class DataBaseService {
     });
 
   }
-  // ----------------------------------------------------------- */
+  // -------------------------------LIBIO---------------------------- */
+  async actualizarCompra(idCompra: string, datosCompra: CompraInterface, sede: string) {
+    return this.afs.collection('sedes').doc(sede.toLocaleLowerCase()).collection('compras').doc(idCompra).ref
+    .update(datosCompra).then(() => 'exito')
+    .catch(err => {
+      throw String('fail');
+    });
+  }
+
+  async toggleAnularCompra(idCompra: string, esAnulado: boolean, sede: string) {
+    return this.afs.collection('sedes').doc(sede.toLocaleLowerCase()).collection('compras').doc(idCompra).ref
+    .update({anulado: !esAnulado})
+    .then(() => 'exito').catch(err => {
+      console.log(err);
+      throw String('fail');
+    });
+  }
   // ----------------------------------------------------------- */
   // ----------------------------------------------------------- */
 
@@ -400,6 +645,7 @@ export class DataBaseService {
       throw String('fail');
     });
   }
+
   eliminarCajaChica(idCaja: string) {
     return this.afs.doc<ProductoInterface>(`CajaChica/${idCaja}`).ref.delete()
     .then(() => 'exito').catch(err => {
@@ -408,7 +654,14 @@ export class DataBaseService {
     });
 
   }
-  // ----------------------------------------------------------- */
+  // -----------------------------LIBIO------------------------------ */
+  eliminarProveedor(idProveedor: string) {
+    return this.afs.doc<ProductoInterface>(`proveedores/${idProveedor}`).ref.delete()
+    .then(() => 'exito').catch(err => {
+      console.log('error', err);
+      throw String('fail');
+    });
+  }
   // ----------------------------------------------------------- */
   // ----------------------------------------------------------- */
 
