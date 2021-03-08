@@ -6,3 +6,14 @@
         font-family: Nunito;
     }
 }
+
+.alertDanger {
+    color: var(--ion-color-danger);
+    border-radius: 3px;
+    width: 100%;
+}
+.mensajeError {
+    font-size: 12px;
+    padding: 5px;
+    text-align: left;
+}

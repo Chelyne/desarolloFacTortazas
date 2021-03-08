@@ -4,13 +4,9 @@ import { Platform, MenuController, AlertController } from '@ionic/angular';
 import { SplashScreen } from '@ionic-native/splash-screen/ngx';
 import { StatusBar } from '@ionic-native/status-bar/ngx';
 import { StorageService } from './services/storage.service';
-// import { LocalNotifications } from '@ionic-native/local-notifications/ngx';
-import { Router } from '@angular/router';
-import { tap } from 'rxjs/operators';
 import { AuthServiceService } from './services/auth-service.service';
 import { MenuService } from './services/menu.service';
 import { Observable } from 'rxjs';
-import { SpliPaneService } from './services/spli-pane.service';
 
 @Component({
   selector: 'app-root',
@@ -30,12 +26,7 @@ export class AppComponent {
     private statusBar: StatusBar,
     public storage: StorageService,
     private menuCtrl: MenuController,
-    // private localNotifications: LocalNotifications,
-    private route: Router,
-    private fcmSrv: AuthServiceService,
-    // private splitPaneData: SpliPaneService
   ) {
-    // this.splitPaneData.setSplitPane(true);
     this.initializeApp();
     // this.platform.ready().then( () => {
     //   this.localNotifications.on('click').subscribe (res => {

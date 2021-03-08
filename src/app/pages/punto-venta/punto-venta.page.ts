@@ -1,19 +1,13 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
-import { MenuController, ToastController, PopoverController, ModalController } from '@ionic/angular';
-import { CategoriasService } from '../../services/categorias.service';
-import { PaginationProductosService } from '../../services/pagination-productos.service';
-import { Subscription } from 'rxjs';
+import { MenuController, PopoverController, ModalController } from '@ionic/angular';
 
 import { VentaInterface } from 'src/app/models/venta/venta';
 import { ItemDeVentaInterface } from 'src/app/models/venta/item-de-venta';
 import { ProductoInterface } from 'src/app/models/ProductoInterface';
-import { DbDataService } from '../../services/db-data.service';
-import { AngularFirestore } from '@angular/fire/firestore';
-import { map } from 'rxjs/operators';
 import { StorageService } from '../../services/storage.service';
 import { PoppoverClientesComponent } from '../../components/poppover-clientes/poppover-clientes.component';
 
-import { ActivatedRoute, Router } from '@angular/router';
+import { Router } from '@angular/router';
 import { ConfirmarVentaService } from 'src/app/services/confirmar-venta.service';
 import { VentasCongeladasPage } from '../../modals/ventas-congeladas/ventas-congeladas.page';
 import { isNullOrUndefined } from 'util';
@@ -23,7 +17,8 @@ import { ModalAgregarProductoPage } from '../../modals/modal-agregar-producto/mo
 import { ModalVentasPage } from '../../modals/modal-ventas/modal-ventas.page';
 import { IngresoEgresoPage } from '../../modals/ingreso-egreso/ingreso-egreso.page';
 import { BuscadorService } from 'src/app/services/buscador.service';
-import { SpliPaneService } from '../../services/spli-pane.service';
+import { GlobalService } from '../../global/global.service';
+import { DataBaseService } from '../../services/data-base.service';
 
 @Component({
   selector: 'app-punto-venta',
@@ -39,14 +34,11 @@ export class PuntoVentaPage implements OnInit {
 
   sinResultados: string;
 
-  numeros = [1, 2, 3, 4, 5, 6, 7, 8, 9, 0, '.'];
   categorias;
   listaProductos = [];
   categoria: string;
-  categoriaP;
 
   listaVenta = [];
-  private suscripcionProducto: Subscription;
 
   sinDatos;
   sinCategorias;
@@ -55,69 +47,42 @@ export class PuntoVentaPage implements OnInit {
 
   buscarNombre = true;
 
-  // ADD NUEOV CLIENTE
-  modalEvento: string;
-  modalTitle: string;
-  modalTag: string;
-  modalDataCliente: ClienteInterface;
-
-
+  // ADD NUEVO CLIENTE INGRESO EGRESO
+  dataModal = {
+    evento: '',
+  };
 
   // Ventas
-    listaDeVentas: VentaInterface[] = [];
-
-    venta: VentaInterface;
-
-    importeTotalPagar: number;
+  listaDeVentas: VentaInterface[] = [];
+  venta: VentaInterface;
+  importeTotalPagar: number;
 
 
   // ObjetoVentas o ItemsDeVenta
-    // listaItemsDeVenta:ItemDeVentaInterface[] = [];
-    listaItemsDeVenta: ItemDeVentaInterface[] = [];
-
-
+  // listaItemsDeVenta:ItemDeVentaInterface[] = [];
+  listaItemsDeVenta: ItemDeVentaInterface[] = [];
 
   // Productos
-    listaDeProductos: ProductoInterface[];
-    productoItem: ProductoInterface;
-
-    cajaChica = false;
-
-    // MODAL INGRESOS EGRESOS
-
-    saldo = 0;
-    modalButtonTag: string;
-    modalSaldo: number;
+  listaDeProductos: ProductoInterface[];
+  productoItem: ProductoInterface;
+  cajaChica = false;
 
   constructor(private menuCtrl: MenuController,
-              private categoriasService: CategoriasService,
-              private pagination: PaginationProductosService,
-              private dataApi: DbDataService,
-              private afs: AngularFirestore,
+              private dataApi: DataBaseService,
               public storage: StorageService,
-              private toastController: ToastController,
               private popoverController: PopoverController,
               private confirmarVentaServ: ConfirmarVentaService,
-              private rutaActiva: ActivatedRoute,
               private modalController: ModalController,
               private router: Router,
               private modalCtlr: ModalController,
               private buscadorService: BuscadorService,
-              private splitPaneData: SpliPaneService
+              private servGlobal: GlobalService
   ) {
     this.menuCtrl.enable(true);
-
-    this.rutaActiva.queryParams.subscribe(params => {
-      this.categoriaP = 'petshop';
-    });
-  }
-
-  controlSplitMenu() {
-    this.splitPaneData.setSplitPane(!this.splitPaneData.getSplitPane());
   }
 
   ngOnInit() {
-    this.dataApi.ObtenerListaCategorias(this.sede).subscribe(categorias => {
+    this.dataApi.obtenerListaCategorias(this.sede).subscribe(categorias => {
       if (categorias.length > 0) {
         this.categorias = categorias;
         console.log('CATS: ', this.categorias);
@@ -126,14 +91,11 @@ export class PuntoVentaPage implements OnInit {
         this.sinCategorias = true;
       }
     });
-    // this.categorias = this.categoriasService.getcategoriasNegocio('petshop'); //categorias estaticos
     this.sinDatos = false;
 
     if (!isNullOrUndefined(this.storage.listaVenta)) {
       this.listaDeVentas = this.storage.listaVenta;
     }
-    console.log('sede', this.sede);
-    console.log('categoria', this.categoriaP);
   }
 
   ionViewWillEnter() {
@@ -144,12 +106,12 @@ export class PuntoVentaPage implements OnInit {
       this.calcularTotalaPagar();
       this.cliente = '';
     }
-
   }
 
   ionViewDidEnter() {
-    this.dataApi.EstadoCajaChicaVendedor('Aperturado', this.storage.datosAdmi.dni).subscribe(data => {
-      if (data.length > 0) {
+    this.dataApi.validarCajaChicaVendedor('Aperturado', this.storage.datosAdmi.dni).then(data => {
+      console.log('CAJA, ', data);
+      if (data) {
         this.cajaChica = true;
       } else {
         this.cajaChica = false;
@@ -158,21 +120,11 @@ export class PuntoVentaPage implements OnInit {
   }
 
   // agregar producto
-  agregarProducto() {
-    this.abrirModalNuevoProducto();
-  }
-
   async abrirModalNuevoProducto(){
-
     const modal =  await this.modalCtlr.create({
       component: ModalAgregarProductoPage,
-      cssClass: 'modal-fullscreen',
-      componentProps: {
-        sede: this.sede,
-        categoria: this.categoriaP,
-      }
+      cssClass: 'modal-fullscreen'
     });
-
     await modal.present();
   }
 
@@ -197,45 +149,11 @@ export class PuntoVentaPage implements OnInit {
       if (datos.length > 0) {
         this.listaProductos =  datos;
         this.sinDatos = false;
-
       } else {
-        console.log('NO HAY PRODUCTOS');
         this.sinDatos = true;
       }
     });
-    // this.suscripcionProducto = this.pagination.getProductos(sede1, this.categoria, null).subscribe( data => {
-    //   if (data !== null) {
-    //     this.listaProductos.push(...data);
-    //     this.sinDatos = false;
-    //   } else {
-    //     this.sinDatos = true;
-    //   }
-    // });
   }
-
-  loadData(event) {
-    // const propietario = this.storage.datosNegocio.correo;
-    setTimeout(() => {
-      const sede1 = 'andahuaylas';
-      this.suscripcionProducto = this.pagination.getProductos(sede1, this.categoria, 'normal').subscribe( data => {
-        if (data !== null) {
-          this.listaProductos.push(...data);
-          event.target.complete();
-          // this.sinDatos = false;
-        } else {
-          // this.sinDatos = true;
-          event.target.disabled = true;
-        }
-      });
-    }, 500);
-  }
-
-
-  // addListaVenta(data) {
-  //   this.listaVenta.push(data);
-  // }
-
-  //
 
   AgregarItemDeVenta(prodItem: ProductoInterface){
 
@@ -258,9 +176,13 @@ export class PuntoVentaPage implements OnInit {
     }
 
     this.calcularTotalaPagar();
+    this.servGlobal.presentToast('Agregado a lista de venta', {icon: 'cart-outline', duracion: 500, position: 'top'});
   }
 
   CrearItemDeVenta(prodItem: ProductoInterface): ItemDeVentaInterface{
+    if (!prodItem.precio) {
+      prodItem.precio = 0;
+    }
     return {
       producto: prodItem,
       idProducto: prodItem.id,
@@ -344,10 +266,10 @@ export class PuntoVentaPage implements OnInit {
       this.importeTotalPagar = 0;
       console.log(this.listaDeVentas);
       this.storage.congelarVenta(this.listaDeVentas).then(() => {
-        this.presentToast('Se guardo la lista de venta', 'success');
+        this.servGlobal.presentToast('Se guardo la lista de venta', {color: 'success'});
       });
     } else {
-      this.presentToast('Selecione un cliente', 'danger');
+      this.servGlobal.presentToast('Selecione un cliente', {color: 'danger'});
     }
   }
 
@@ -396,180 +318,33 @@ export class PuntoVentaPage implements OnInit {
     this.listaDeVentas = [];
   }
 
+  hayProductosVentaCero() {
+    for (const item of this.listaItemsDeVenta) {
+      if (item.totalxprod === 0) {
+        return true;
+      }
+    }
+    return false;
+  }
+
   irPagar(){
     if (this.cliente) {
-      if (this.listaItemsDeVenta.length > 0) {
+      if (this.listaItemsDeVenta.length > 0 && !this.hayProductosVentaCero()) {
         if (this.cajaChica) {
           this.confirmarVentaServ.setVenta(this.CrearItemDeVentas());
           this.router.navigate(['/confirmar-venta']);
         } else {
-          this.presentToast('Por favor aperture su caja chica para vender', 'danger');
+          this.servGlobal.presentToast('Por favor aperture su caja chica para vender', {color: 'danger'});
         }
       } else {
-        this.presentToast('Por favor agregue productos a vender', 'danger');
+        this.servGlobal.presentToast('Por favor agregue productos a vender o verifique que no haya productos con precio S/. 0.00', {color: 'danger', duracion: 3000});
       }
     } else {
-      this.presentToast('Por favor seleccione un cliente', 'danger');
+      this.servGlobal.presentToast('Por favor seleccione un cliente', {color: 'danger'});
     }
   }
 
-  buscarCodigo() {
-
-  }
-
-
-   // implementacion de buscador ed productos
-   Search(ev) {
-    this.sinResultados = null;
-    this.buscando = true;
-    console.log(ev.detail.value);
-    const key = ev.detail.value;
-    console.log('dato a buscar', key);
-    const lowercaseKey = key.toLowerCase();
-    // const lowercaseKey = key; // esto es para buscar sin convertir en minuscula
-    console.log('dato convertido en minuscula', key);
-    // console.log(lowercaseKey);
-    if ( lowercaseKey.length > 0) {
-      // console.log('sede', this.sede);
-      console.log('lowercase> 0', lowercaseKey);
-      let contador = 0;
-      for (let iterator of lowercaseKey) {
-        console.log(iterator);
-        iterator = parseInt(iterator, 10);
-        if (isNaN(iterator)) {
-          contador--;
-        } else {
-          contador++;
-        }
-        console.log('conbtador', contador);
-        if (contador >= 1) {
-          this.buscarNombre = false;
-          break;
-        } else {
-          this.buscarNombre = true;
-        }
-      }
-      // tslint:disable-next-line:max-line-length
-      if (this.buscarNombre) {
-        // BUSCA POR NOMBRE
-        // tslint:disable-next-line:max-line-length
-        this.afs.collection('sedes').doc(this.storage.datosAdmi.sede.toLowerCase()).collection('productos', res => res.orderBy('nombre').startAt(lowercaseKey).endAt(lowercaseKey + '\uf8ff')).snapshotChanges()
-        .pipe(map(changes => {
-          return changes.map(action => {
-            const data = action.payload.doc.data();
-            data.id = action.payload.doc.id;
-            return data;
-          });
-        }
-        )).subscribe(res => {
-          if (res.length === 0 ) {
-            console.log('no hay datos');
-            this.productos = null;
-            this.buscando = false;
-            this.sinResultados = 'No se encontraron productos';
-            this.presentToast(this.sinResultados, 'danger');
-          } else {
-            console.log(res );
-            this.productos = res;
-            this.buscando = false;
-          }
-        }, error => { console.log('error de subscribe'  + error); }
-        );
-
-        // BUSCA POR CODIGO PARA CONCATENAR
-        // tslint:disable-next-line:max-line-length
-        this.afs.collection('sedes').doc(this.storage.datosAdmi.sede.toLowerCase()).collection('productos', res => res.orderBy('codigoBarra').startAt(lowercaseKey).endAt(lowercaseKey + '\uf8ff')).snapshotChanges()
-        .pipe(map(changes => {
-          return changes.map(action => {
-            const data = action.payload.doc.data();
-            data.id = action.payload.doc.id;
-            return data;
-          });
-        }
-        )).subscribe(res => {
-          if (res.length === 0 ) {
-            console.log('no hay datos');
-            if (isNullOrUndefined(this.productos)) {
-              this.productos = null;
-              this.buscando = false;
-              this.sinResultados = 'No se encontraron productos';
-              this.presentToast(this.sinResultados, 'danger');
-            }
-          } else {
-            console.log(res );
-            if (isNullOrUndefined(this.productos)) {
-              this.productos = res;
-            } else {
-              this.productos.concat(res);
-            }
-            // this.productos = res;
-            this.buscando = false;
-            this.sinResultados = null;
-          }
-        }, error => { console.log('error de subscribe'  + error); }
-        );
-      } else {
-
-        if (lowercaseKey.length > 10) {
-          // tslint:disable-next-line:max-line-length
-          this.afs.collection('sedes').doc(this.storage.datosAdmi.sede.toLowerCase()).collection('productos', res => res.orderBy('codigoBarra').startAt(lowercaseKey).endAt(lowercaseKey + '\uf8ff')).snapshotChanges()
-          .pipe(map(changes => {
-            return changes.map(action => {
-              const data = action.payload.doc.data();
-              data.id = action.payload.doc.id;
-              return data;
-            });
-          }
-          )).subscribe(res => {
-            if (res.length === 0 ) {
-              console.log('no hay datos');
-              this.productos = null;
-              this.buscando = false;
-              this.sinResultados = 'No se encontraron productos';
-              this.presentToast(this.sinResultados, 'danger');
-            } else {
-              console.log(res );
-              this.productos = res;
-              this.buscando = false;
-            }
-          }, error => { console.log('error de subscribe'  + error); }
-          );
-        } else {
-          // tslint:disable-next-line:max-line-length
-          this.afs.collection('sedes').doc(this.storage.datosAdmi.sede.toLowerCase()).collection('productos', res => res.orderBy('codigo').startAt(lowercaseKey).endAt(lowercaseKey + '\uf8ff')).snapshotChanges()
-          .pipe(map(changes => {
-            return changes.map(action => {
-              const data = action.payload.doc.data();
-              data.id = action.payload.doc.id;
-              return data;
-            });
-          }
-          )).subscribe(res => {
-            if (res.length === 0 ) {
-              console.log('no hay datos');
-              this.productos = null;
-              this.buscando = false;
-              this.sinResultados = 'No se encontraron productos';
-              this.presentToast(this.sinResultados, 'danger');
-            } else {
-              console.log(res );
-              this.productos = res;
-              this.buscando = false;
-            }
-          }, error => { console.log('error de subscribe'  + error); }
-          );
-        }
-
-      }
-
-     } else  {
-      console.log('lowercase 0');
-      this.productos = null;
-      this.buscando = null;
-     }
-  }
-
-  Search2(ev){
+  buscador(ev){
     this.buscando = true;
 
     const target = ev.detail.value;
@@ -580,7 +355,7 @@ export class PuntoVentaPage implements OnInit {
           this.productos = data;
         } else {
           this.productos = null;
-          this.presentToast('No se encontro el producto', 'danger');
+          this.servGlobal.presentToast('No se encontro el producto', {color: 'danger'});
         }
         this.buscando = false;
       });
@@ -612,26 +387,8 @@ export class PuntoVentaPage implements OnInit {
 
    // FIN BUSCADOR DE PRODUCTOS
 
-
-  async presentToast(mensaje: string, color1: string) {
-    const toast = await this.toastController.create({
-      message: mensaje,
-      duration: 2000,
-      position: 'top',
-      color: color1
-    });
-    toast.present();
-  }
-
   // busqueda de clientes
   async abrirPoppoverClientes(ev: any) {
-    // let clientes;
-    // this.dataApi.ObtenerListaDeClientes().subscribe(datos => {
-    //   console.log(datos);
-    //   if (datos.length > 0) {
-    //     clientes = datos;
-    //   }
-    // });
     console.log(ev);
     const popover = await this.popoverController.create({
       component: PoppoverClientesComponent,
@@ -640,7 +397,6 @@ export class PuntoVentaPage implements OnInit {
       translucent: true,
       mode: 'ios',
       componentProps: {
-        // listaClientes: clientes,
         seleccionado: this.cliente
       }
     });
@@ -650,10 +406,6 @@ export class PuntoVentaPage implements OnInit {
     console.log(data);
     if (data && data.cliente) {
       this.cliente = data.cliente;
-      // switch (data.cliente) {
-      //   case 'Editar': this.presentModalEditar(); break;
-      //   case 'Eliminar': this.presentAlertConfirmEliminar(); break;
-      // }
     }
   }
 
@@ -681,25 +433,35 @@ export class PuntoVentaPage implements OnInit {
 
   // AGREGAR NUEVO CLIENTE
   AgregarNuevoCliente(){
-    this.modalEvento = 'guardarCliente';
-    this.modalTitle = 'Agregar Nuevo Cliente';
-    this.modalTag = 'Guardar';
+    this.dataModal.evento = 'agregar';
     this.abrirModal();
   }
 
   async abrirModal(){
-
-    const modal =  await this.modalController.create({
+    const modal =  await this.modalCtlr.create({
       component: AgregarEditarClientePage,
       componentProps: {
-        eventoInvoker: this.modalEvento,
-        titleInvoker: this.modalTitle,
-        tagInvoker: this.modalTag,
-        dataInvoker: this.modalDataCliente
-
+        dataModal: this.dataModal
       }
     });
     await modal.present();
+
+    const {data} = await modal.onWillDismiss();
+    console.log(data);
+    if (data && data.data) {
+      if (data.evento === 'agregar') {
+        console.log('agregar', data.data);
+        this.agregar(data.data);
+      }
+    }
+  }
+
+  agregar(cliente: ClienteInterface){
+    this.dataApi.guardarCliente(cliente).then(() => {
+      this.servGlobal.presentToast('Cliente guardado correctamente', {color: 'success'});
+    }).catch(err => {
+      this.servGlobal.presentToast('No se pudo guardar el cliente', {color: 'danger'});
+    });
   }
 
   async modalVentas() {
@@ -710,149 +472,27 @@ export class PuntoVentaPage implements OnInit {
     return await modal.present();
   }
 
-  // async modalIngresos(){
-  //   const modal =  await this.modalController.create({
-  //     component: AgregarEditarClientePage,
-  //     componentProps: {
-  //       eventoInvoker: this.modalEvento,
-  //       titleInvoker: this.modalTitle,
-  //       tagInvoker: this.modalTag,
-  //       dataInvoker: this.modalDataCliente
-  //     }
-  //   });
-  //   await modal.present();
-  // }
-
-  // buscador mas efectivo
-  async busquedaGeneral(texto: string) {
-    const nombres = texto.toLowerCase().split(' ');
-    console.log('nombres', nombres, nombres[0]);
-    this.productos = [];
-    await this.buscarInicio(nombres[0]);
-    await this.buscarcuerpo(nombres);
-    console.log('lista', this.productos);
-  }
-
-  buscarInicio(texto: string) {
-    // res.orderBy('codigoBarra').startAt(lowercaseKey).endAt(lowercaseKey + '\uf8ff')
-    this.afs.collection('sedes').doc(this.sede.toLowerCase()).collection('productos', ref => ref
-    // .where('nombre', 'array-contains-any', ['blanc'] )
-    .orderBy('nombre').startAt(texto.toLowerCase()).endAt(texto.toLowerCase() + '\uf8ff').limit(25)
-    ).snapshotChanges()
-    .pipe(map(changes => {
-      return changes.map((action: any) => {
-        const data = action.payload.doc.data();
-        data.id = action.payload.doc.id;
-        console.log('data', data);
-        return data;
-      });
-    })).subscribe(res => {
-      console.log('inicio', res);
-      for (const item of res) {
-        this.productos.push(item);
-      }
-      console.log('lista de busquedas', this.productos);
-    });
-  }
-
-  buscarcuerpo(arrayBuscar: any) {
-    console.log('array a buscar', arrayBuscar);
-    // res.orderBy('codigoBarra').startAt(lowercaseKey).endAt(lowercaseKey + '\uf8ff')
-    this.afs.collection('sedes').doc(this.sede.toLowerCase()).collection('productos', ref => ref
-    .where('arrayNombre', 'array-contains-any', arrayBuscar ).limit(25)
-    // .orderBy('completo').startAt('blanc').endAt('blanc' + '\uf8ff').limit(5)
-    ).snapshotChanges()
-    .pipe(map(changes => {
-      return changes.map((action: any) => {
-        const data = action.payload.doc.data();
-        data.id = action.payload.doc.id;
-        // console.log('data', data);
-        return data;
-      });
-    })).subscribe(res => {
-      if (res.length === 0 ) { // no existe datos de parrafo
-        if (this.productos.length === 0) {
-          console.log('no hay datos');
-          this.productos = null;
-          this.buscando = false;
-          this.sinResultados = 'No se encontró el producto';
-          this.presentToast(this.sinResultados, 'danger');
-
-        }else {
-          this.buscando = false;
-        }
-      } else { // existe datos de parrafo
-        // this.productos = res;
-        let contador = 0;
-        for (const item of res) {
-          contador ++;
-          if (!this.existeEnBusqueda(item)) {
-          this.productos.push(item);
-          }
-          if (contador === res.length) {
-            this.buscando = false;
-          }
-      }
-      }
-
-    });
-  }
-
-
-  existeEnBusqueda(producto: any) {
-    for (const item of this.productos) {
-      if (item.id === producto.id) {
-        return true;
-      }
-    }
-    return false;
-  }
-
   // MODAL INGRESOS EGRESOS
-
-  // TODO-Cambiar nombre
-  execModalIngresoEgreso(accion: string){
+  modalIngresoEgreso(accion: string){
     console.log(accion);
     if (accion === 'Ingreso') {
-      this.modalEvento = 'Ingreso';
-      this.modalTag = 'Monto a Ingresar';
-      this.modalButtonTag = 'Ingresar monto';
-      this.modalSaldo = this.saldo;
-
+      this.dataModal.evento = 'ingreso';
     } else if (accion === 'Egreso') {
-      this.modalEvento = 'Egreso';
-      this.modalTag = 'Monto a Retirar';
-      this.modalButtonTag = 'Retirar monto';
-      this.modalSaldo = this.saldo;
-
+      this.dataModal.evento = 'egreso';
     } else{
       console.log('La funcion no es valida');
     }
-
     this.abrirModalIngresosEgresos();
   }
 
   async abrirModalIngresosEgresos(){
-
     const modal =  await this.modalCtlr.create({
       component: IngresoEgresoPage,
       componentProps: {
-        eventoInvoker: this.modalEvento,
-        buttonTagInvoer: this.modalButtonTag,
-        tagInvoker: this.modalTag,
-        saldoInvoker: this.modalSaldo
+        dataModal: this.dataModal
       }
     });
-
     await modal.present();
-
-    const {data} = await modal.onDidDismiss();
-    if (data){
-      console.log(data);
-      this.saldo = data.newMonto;
-    }
-
   }
-
 }
 
