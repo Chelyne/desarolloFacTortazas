@@ -118,6 +118,18 @@ export class DataBaseService {
     });
     return promesa;
   }
+   // CAJA CHICA
+   guardarCajaChica(newcajaChica) {
+    return this.afs.collection('CajaChica').ref.add(newcajaChica).then(data => {
+      if (data.id) {
+        return data.id;
+      } else {
+        return '';
+      }
+    }).catch(err => {
+      throw String('fail');
+    });
+  }
   // ------------------------------LIBIO----------------------------- */
 
     // TODO: HACIENDO ESTO

@@ -16,7 +16,7 @@ import { ItemDeVentaInterface } from '../models/venta/item-de-venta';
 import * as moment from 'moment';
 import { ContadorDeSerieInterface } from '../models/serie';
 import { database } from 'firebase';
-import { AnyCnameRecord } from 'dns';
+// import { AnyCnameRecord } from 'dns';
 // import { Console } from 'console';
 
 import { formatearDateTime } from 'src/app/global/funciones-globales';
