@@ -15,20 +15,36 @@ export const apiPeruConfig = {
             direccion: {
                 ubigueo: '030201',
                 direccion : 'AV. PERU NRO. 236 (FRENTE Al PARQUE LAMPA DE ORO) APURIMAC - ANDAHUAYLAS - ANDAHUAYLAS',
+                direccionCorta: 'Av. Peru 236 Andahuaylas Apurimac',
+                referencia: 'Parque Lampa de Oro',
+                telefono: '983905066',
                 codigoPais: 'PE',
                 departamento: 'APURIMAC',
                 provincia: 'ANDAHUAYLAS',
                 distrito: 'ANDAHUAYLAS'
+            },
+            caja1: {
+                boleta: 'B001',
+                factura: 'F001',
+                notaVenta: 'NV01'
             }
         },
         abancay: {
             direccion: {
                 ubigueo: '030101',
                 direccion : 'AV.SEOANE NRO. 100 (PARQUE EL OLIVO) APURIMAC - ABANCAY - ABANCAY',
+                direccionCorta: 'Av. Seoane 100 Abancay Apurimac',
+                referencia: 'Parque el Olivo',
+                telefono: '988907777',
                 codigoPais: 'PE',
                 departamento: 'APURIMAC',
                 provincia: 'ABANCAY',
                 distrito: 'ABANCAY'
+            },
+            caja1: {
+                boleta: 'B002',
+                factura: 'F002',
+                notaVenta: 'NV02'
             }
         }
     }

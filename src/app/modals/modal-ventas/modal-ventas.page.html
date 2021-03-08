@@ -1,6 +1,6 @@
 <ion-header>
   <ion-toolbar>
-    <ion-title>Lista de Ventas</ion-title>
+    <ion-title color="primary">Lista de Ventas</ion-title>
     <ion-buttons slot="end">
       <ion-button (click)="cerrarModal()">
         <ion-icon slot="icon-only" color="primary" name="close-outline"></ion-icon>
@@ -11,7 +11,7 @@
 
 <ion-content class="ion-padding">
   <ion-grid>
-    <ion-row class="headerVentas">
+    <ion-row *ngIf="listaVentas" class="headerVentas">
       <ion-col size-lg="1">
         <ion-label>Serie</ion-label>
       </ion-col>
@@ -31,6 +31,12 @@
         <ion-label>Acciones</ion-label>
       </ion-col>
     </ion-row>
+    <div class="sinDatosVenta" *ngIf="!listaVentas || listaVentas.length === 0">
+      <div class="textoSindatos">
+        <ion-icon class="icono" name="storefront-outline" color="medium"></ion-icon> <br><br>
+        <ion-label color="medium">Aún no hay ventas</ion-label>
+      </div>
+    </div>
     <ion-row class="ion-justify-content-center ion-align-items-center" *ngFor="let venta of listaVentas" [class]="venta.estadoVenta == 'anulado'? 'red' : 'green'">
       <ion-col size-lg="1">
         <ion-label>{{venta.serieComprobante}}</ion-label>

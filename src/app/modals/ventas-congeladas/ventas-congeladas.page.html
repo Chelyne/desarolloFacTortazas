@@ -10,7 +10,7 @@
 </ion-header>
 
 <ion-content class="ion-padding">
-  <div class="sinDatosVenta" *ngIf="this.storage.listaVenta.length === 0">
+  <div class="sinDatosVenta" *ngIf="!this.storage.listaVenta || this.storage.listaVenta.length === 0">
     <div class="textoSindatos">
       <ion-icon class="icono" name="cart-outline" color="medium"></ion-icon> <br><br>
       <ion-label color="medium">No hay ventas congeladas</ion-label>

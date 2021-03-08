@@ -22,11 +22,6 @@ export class ListaDeClientesPage implements OnInit {
     cliente: {}
   };
 
-
-  modalEvento: string;
-  modalTitle: string;
-  modalTag: string;
-  modalDataCliente: ClienteInterface;
   textoBuscar = '';
 
   constructor(private dataApi: DataBaseService,
