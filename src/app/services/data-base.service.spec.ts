@@ -28,6 +28,16 @@ describe('DataBaseService', () => {
   it('should be created', () => {
     expect(service).toBeTruthy();
   });
+  it('obtener ingresos y egresos', () => {
+    service.obtenerIngresoEgresoDia('andahuaylas', '05-03-2021').then(resp => {
+      console.log(resp);
+    });
+  });
+  it('obtener productos  sede', () => {
+    service.obtenerListaProductosSinLIMITE('talavera').subscribe(resp => {
+      console.log(resp);
+    });
+  });
   // it('borrado', () => {
   //   expect('hola').toEqual(service.saludo());
   // });

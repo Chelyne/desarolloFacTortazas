@@ -4,17 +4,13 @@
       <ion-menu-button color="primary" menu="primerMenu">
       </ion-menu-button>
     </ion-buttons>
-    <ion-title>Caja Chica</ion-title>
-    <ion-item  lines="none" slot="end">
-      <!-- <ion-button (click)="tiket()" color="secondary">
-        <ion-icon slot="start" name="cart"></ion-icon>
-        tiket
-      </ion-button> -->
-      <ion-button  (click)="ReportePDFDiaIngresoEgreso()" color="secondary"> 
+    <ion-title color="primary">Caja Chica</ion-title>
+    <ion-item lines="none" slot="end">
+      <ion-button *ngIf="rolDatosAdmi === 'Administrador'" (click)="ReportePDFDiaIngresoEgreso()" color="secondary">
         <ion-icon slot="start" name="albums-outline"></ion-icon>
         R. Ingreso/Egreso
       </ion-button>
-      <ion-button  (click)="ReporteVentaGeneralDia($event)" color="secondary"> 
+      <ion-button *ngIf="rolDatosAdmi === 'Administrador'" (click)="ReporteVentaGeneralDia($event)" color="secondary">
         <ion-icon slot="start" name="albums-outline"></ion-icon>
         Reporte General
         <ion-icon slot="end" name="chevron-down-outline"></ion-icon>
@@ -28,9 +24,6 @@
 </ion-header>
 
 <ion-content class="ion-padding">
-  <!-- <ion-toolbar color="primary">
-    <ion-title color="light">Listado de cajas</ion-title>
-  </ion-toolbar> -->
   <ion-card>
     <ion-card-header color="secondary">
       <ion-card-title>Listado de caja</ion-card-title>
@@ -44,81 +37,91 @@
             <ion-select-option value="ecgresos">Egresos</ion-select-option>
           </ion-select>
         </ion-item>
-        <ion-searchbar style="width: 40%;" slot="end" (ionClear)="limpiar()" (ionChange)="Search($event)" #search placeholder="Buscar" inputmode="text" debounce="1000" animated="true" mode="ios"></ion-searchbar>
+        <ion-searchbar style="width: 40%;" slot="end" placeholder="Buscar" inputmode="text" debounce="1000"
+          animated="true" mode="ios"></ion-searchbar>
       </ion-item>
       <ion-grid fixed>
         <ion-row class="header">
-          <ion-col size="0.3"><ion-label color="light">#</ion-label></ion-col>
-          <ion-col size ="1.5"><ion-label color="light">Vendedor</ion-label></ion-col>
-          <ion-col size ="1.5"><ion-label color="light">Apertura</ion-label></ion-col>
-          <ion-col size ="1.5"><ion-label color="light">Cierre</ion-label></ion-col>
-          <ion-col size ="1"><ion-label color="light">Saldo Inicial</ion-label></ion-col>
-          <ion-col size ="1"><ion-label color="light">Saldo Final</ion-label></ion-col>
-          <ion-col size ="1.5"><ion-label color="light">Estado</ion-label></ion-col>
-          <ion-col size ="3.7"><ion-label color="light">Acciones</ion-label></ion-col>
+          <ion-col size="0.3">
+            <ion-label color="light">#</ion-label>
+          </ion-col>
+          <ion-col size="1.5">
+            <ion-label color="light">Vendedor</ion-label>
+          </ion-col>
+          <ion-col size="1.5">
+            <ion-label color="light">Apertura</ion-label>
+          </ion-col>
+          <ion-col size="1.5">
+            <ion-label color="light">Cierre</ion-label>
+          </ion-col>
+          <ion-col size="1">
+            <ion-label color="light">Saldo Inicial</ion-label>
+          </ion-col>
+          <ion-col size="1">
+            <ion-label color="light">Saldo Final</ion-label>
+          </ion-col>
+          <ion-col size="1.5">
+            <ion-label color="light">Estado</ion-label>
+          </ion-col>
+          <ion-col size="3.7">
+            <ion-label color="light">Acciones</ion-label>
+          </ion-col>
         </ion-row>
         <ion-row style="text-align: center;" *ngFor="let item of listaCajaChica; let i=index ">
-          <ion-col size="0.3"><ion-label>{{i+1}}</ion-label></ion-col>
-          <ion-col size="1.5"><ion-label>{{item.nombreVendedor}}</ion-label></ion-col>
-          <ion-col size="1.5"><ion-label>{{item.FechaApertura}}</ion-label></ion-col>
-          <ion-col size="1.5"><ion-label>{{item.FechaCierre}}</ion-label></ion-col>
-          <ion-col size="1"><ion-label>{{item.saldoInicial}}</ion-label></ion-col>
-          <ion-col size="1"><ion-label>{{item.saldoFinal}}</ion-label></ion-col>
-          <ion-col size="1.5"><ion-label>{{item.estado}}</ion-label></ion-col>
+          <ion-col size="0.3">
+            <ion-label>{{i+1}}</ion-label>
+          </ion-col>
+          <ion-col size="1.5">
+            <ion-label>{{item.nombreVendedor}}</ion-label>
+          </ion-col>
+          <ion-col size="1.5">
+            <ion-label>{{item.FechaApertura}}</ion-label>
+          </ion-col>
+          <ion-col size="1.5">
+            <ion-label>{{item.FechaCierre}}</ion-label>
+          </ion-col>
+          <ion-col size="1">
+            <ion-label>{{item.saldoInicial}}</ion-label>
+          </ion-col>
+          <ion-col size="1">
+            <ion-label>{{item.saldoFinal}}</ion-label>
+          </ion-col>
+          <ion-col size="1.5">
+            <ion-label>{{item.estado}}</ion-label>
+          </ion-col>
           <ion-col size="3.7">
-            <ion-label >
-              <ion-button  *ngIf="item.estado==='Cerrado'" size="small" class="botones" color="secondary" (click)="ReportePuntoVenta(item)">
+            <ion-label>
+              <ion-button *ngIf="item.estado==='Cerrado'" size="small" class="botones" color="secondary"
+                (click)="ReportePuntoVenta(item)">
                 Reporte
               </ion-button>
-              <ion-button  *ngIf="item.estado==='Cerrado'" size="small" class="botones" color="secondary" (click)="ReporteProductos($event,item)">
+              <ion-button *ngIf="item.estado==='Cerrado'" size="small" class="botones" color="secondary"
+                (click)="ReporteProductos($event,item)">
                 <ion-icon slot="end" name="chevron-down-outline"></ion-icon>
                 R. productos
               </ion-button>
-              <ion-button  *ngIf="item.estado==='Cerrado'" size="small" class="botones" color="success  " (click)="ReporteIngresoMetPagoVendedor(item)">
+              <ion-button *ngIf="item.estado==='Cerrado'" size="small" class="botones" color="success  "
+                (click)="ReporteIngresoMetPagoVendedor(item)">
                 R. Ingreso
               </ion-button>
-              <ion-button *ngIf="item.estado==='Aperturado'" size="small" class="botones" color="danger" (click)="confirmarBorrarCaja(item.id)">
+              <ion-button *ngIf="rolDatosAdmi === 'Administrador' && item.estado==='Aperturado'" size="small"
+                class="botones" color="danger" (click)="confirmarBorrarCaja(item.id)">
                 Eliminar
               </ion-button>
-              <ion-button *ngIf="item.estado==='Aperturado'" size="small" class="botones" color="warning" (click)="confirmarCerrarCaja(item)">
+              <ion-button *ngIf="item.estado==='Aperturado'" size="small" class="botones" color="warning"
+                (click)="confirmarCerrarCaja(item)">
                 Cerrar Caja
               </ion-button>
-              <ion-button *ngIf="item.estado==='Aperturado'" size="small" class="botones" color="secondary" (click)="modalAperturaCajaChica('editar',item)">
+              <ion-button *ngIf=" rolDatosAdmi === 'Administrador' && item.estado==='Aperturado'" size="small"
+                class="botones" color="secondary" (click)="modalAperturaCajaChica('editar',item)">
                 Editar
               </ion-button>
             </ion-label>
-            <!-- <ion-row>
-              <ion-col>
-                
-                <ion-button class="botones" size="13" color="primary" (click)="confirmarCerrarCaja(item)">
-                  Cerrar Caja
-                </ion-button>
-              </ion-col>
-              <ion-col>
-                <ion-button class="botones" size="small" color="primary" >
-                  Reporte
-                <ion-button class="botones" size="13" color="danger" (click)="confirmarBorrarCaja(item.id)">
-                  Eliminar
-                </ion-button>
-              </ion-col>
-              
-            </ion-row> -->
-            
+
           </ion-col>
-            
+
         </ion-row>
       </ion-grid>
     </ion-card-content>
   </ion-card>
 </ion-content>
-
-<!-- <ion-footer>
-  <ion-toolbar>
-    <ion-button (click)="pruebaPaginacion()" expand="block" fill="clear" shape="round">
-      next
-    </ion-button>
-    <ion-button (click)="pruebaPaginacion2()" expand="block" fill="clear" shape="round">
-      Atraz
-    </ion-button>
-  </ion-toolbar>
-</ion-footer> -->

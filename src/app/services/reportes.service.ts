@@ -1,13 +1,14 @@
-import { Injectable, Component } from '@angular/core';
+import { Injectable } from '@angular/core';
 import { isNullOrUndefined } from 'util';
 import { formatDate, DatePipe } from '@angular/common';
 import { redondeoDecimal } from 'src/app/global/funciones-globales';
 import 'jspdf-autotable';
 import {UserOptions} from 'jspdf-autotable';
 import { jsPDF } from 'jspdf';
-import { DbDataService } from './db-data.service';
 import * as moment from 'moment';
 import { StorageService } from 'src/app/services/storage.service';
+import { DataBaseService } from './data-base.service';
+import { apiPeruConfig } from './api/apiPeruConfig';
 // tslint:disable-next-line:class-name
 interface jsPDFWithPlugin extends jsPDF {
 
@@ -18,22 +19,21 @@ interface jsPDFWithPlugin extends jsPDF {
 })
 
 export class ReportesService {
-  sede;
-  LogoEmpresa = '../../../assets/img/TOOBY LOGO.png';
-  RUC = '20601831032';
+  LogoEmpresa = apiPeruConfig.datosEmpresa.logo;
+  RUC = apiPeruConfig.datosEmpresa.ruc;
+  nombreEmpresa = apiPeruConfig.datosEmpresa.razon_social;
+
+  sede = this.storage.datosAdmi.sede;
+  Ingresos = 0;
+  Egresos = 0;
   datosReporteVentaGeneral = [];
 
 
-  Ingresos = 0;
-  Egresos = 0;
-
   constructor(
-              private dataApi: DbDataService,
+              private dataApi: DataBaseService,
               private datePipe: DatePipe,
               private storage: StorageService
-  ) {
-    this.sede = this.storage.datosAdmi.sede;
-  }
+  ) {}
   ReporteVentaDiaGeneralPDF(dia) {
     this.consultaVentaReporteGeneral(dia).then( (data: any) => {
       console.log('datos', data);
@@ -48,7 +48,7 @@ export class ReportesService {
       doc.setFontSize(12);
       doc.text( 'Empresa:', 40, 55);
       doc.text( 'RUC:', 40, 70);
-      doc.text( 'Veterinarias Tooby ,' + this.sede, 75, 55);
+      doc.text( this.nombreEmpresa + ' ,' + this.sede, 75, 55);
       doc.text( this.RUC, 64, 70);
       doc.setFontSize(12);
       doc.text( 'Fecha reporte:', 300, 55);
@@ -123,12 +123,10 @@ export class ReportesService {
         doc.text( 'Total Tarjeta: ' + totalETarjeta.toFixed(2) , 180, 145);
         doc.text( 'TOTAL CAJA: ' + (totalVentas + this.Ingresos - this.Egresos - totalETarjeta).toFixed(2) , 300, 145);
         doc.autoTable({
-          // tslint:disable-next-line:max-line-length
           head: [['#', 'Tip. Trans.', 'Tipo Doc.', 'Documento', 'Fecha emisión', 'Cliente' , 'N. Doc.', 'Estado', 'M pago', 'Total']],
           body: this.datosReporteVentaGeneral,
           startY: 165,
           theme: 'grid',
-          // foot:  [['ID', 'Name', 'Country']],
         });
       }
       doc.save('reporte General Ventas ' + dia + '.pdf');
@@ -136,74 +134,40 @@ export class ReportesService {
   }
   consultaVentaReporteGeneral(dia: any) {
     this.consultaIngresoEgreso(dia);
-    // tslint:disable-next-line:prefer-const
     let productosArray;
-    // const dia = formatDate(new Date(), 'dd-MM-yyyy', 'en');
-    const promesa = new Promise((resolve, reject) => {
-      this.dataApi.ObtenerReporteVentaGeneralDia (this.sede.toLowerCase(), dia).subscribe( snapshot => {
-        console.log('snapshot', snapshot);
-        if (snapshot.length === 0) {
-          this.datosReporteVentaGeneral = null;
-          productosArray = null;
-          resolve(productosArray);
-        } else {
-          productosArray = snapshot;
-          this.datosReporteVentaGeneral = [];
-          let contador = 0;
-          for (const datos of snapshot) {
-            contador++;
-            // console.log(doc.id, '=>', doc.data());
-            let formato: any;
-            formato = [
-              contador,
-             'Venta',
-             datos.tipoComprobante.toUpperCase() || null,
-             datos.serieComprobante + '-' + this.digitosFaltantes('0', (8 - datos.numeroComprobante.length)) + datos.numeroComprobante,
-             datos.fechaEmision ? this.datePipe.transform(new Date(moment.unix(datos.fechaEmision.seconds).format('D MMM YYYY H:mm')), 'short') : null,
-             datos.cliente.nombre.toUpperCase() || null,
-             datos.cliente.numDoc || null,
-             this.convertirMayuscula(datos.estadoVenta),
-             this.convertirMayuscula(datos.tipoPago),
-             redondeoDecimal( datos.totalPagarVenta, 2).toFixed(2)
-            ];
-            this.datosReporteVentaGeneral.push(formato);
-          }
-          resolve(productosArray);
+    return this.dataApi.obtenerVentasPorDia(this.sede.toLowerCase(), dia).then( snapshot => {
+      console.log('snapshot', snapshot);
+      if (snapshot.length === 0) {
+        this.datosReporteVentaGeneral = null;
+        productosArray = null;
+        return(productosArray);
+      } else {
+        productosArray = snapshot;
+        this.datosReporteVentaGeneral = [];
+        let contador = 0;
+        for (const datos of snapshot) {
+          contador++;
+          let formato: any;
+          formato = [
+            contador,
+           'Venta',
+           datos.tipoComprobante.toUpperCase() || null,
+           datos.serieComprobante + '-' + this.digitosFaltantes('0', (8 - datos.numeroComprobante.length)) + datos.numeroComprobante,
+           // tslint:disable-next-line:max-line-length
+           datos.fechaEmision ? this.datePipe.transform(new Date(moment.unix(datos.fechaEmision.seconds).format('D MMM YYYY H:mm')), 'short') : null,
+           datos.cliente.nombre.toUpperCase() || null,
+           datos.cliente.numDoc || null,
+           this.convertirMayuscula(datos.estadoVenta),
+           this.convertirMayuscula(datos.tipoPago),
+           redondeoDecimal( datos.totalPagarVenta, 2).toFixed(2)
+          ];
+          this.datosReporteVentaGeneral.push(formato);
         }
-      });
+        return(productosArray);
+      }
     });
-    return promesa;
   }
-  consultaIngresoEgreso(dia) {
-    this.Ingresos = 0;
-    this.Egresos = 0;
-    // const dia = formatDate(new Date(), 'dd-MM-yyyy', 'en');
-    const promesa = new Promise((resolve, reject) => {
-      this.dataApi.ObtenerIngresoEgresoDia(this.sede.toLowerCase(), dia).subscribe( snapshot => {
-        console.log('snapshot', snapshot);
-        if (snapshot.length === 0) {
-          this.Ingresos = 0;
-          this.Egresos = 0;
-          resolve(null);
-        } else {
-          for (const datos of snapshot) {
-            if (datos.tipo === 'ingreso'){
-              this.Ingresos += Number(datos.monto);
-              console.log(Number(datos.monto));
-            }
-            if (datos.tipo === 'egreso'){
-              this.Egresos += Number(datos.monto);
-            }
-          }
-          resolve(snapshot);
-          console.log(this.Ingresos, this.Egresos);
-        }
-      });
 
-    });
-    return promesa;
-
-  }
   ReporteTiket(dia: any) {
     this.listaVendedoresDatos(dia).then((data: any) => {
       console.log('lista de vendedores', data);
@@ -211,8 +175,6 @@ export class ReportesService {
 
       const doc = new jsPDF( 'p', 'mm', [45, 70]);
       doc.addImage(this.LogoEmpresa, 'JPEG', 11, 1, 22, 8);
-      doc.text('Reporte General de ventas POS', 22.5, 110, {align: 'center'});
-
       doc.setFontSize(6);
       doc.setFont('helvetica');
       // doc.text('CLINICA VETERINARIA TOOBY', 22.5, 12, {align: 'center'});
@@ -270,17 +232,12 @@ export class ReportesService {
         montoFactura += vendedor.montoFactura;
         montoTarjeta += vendedor.montoTarjeta;
         montoEfectivo += vendedor.montoEfectivo;
-
-
         console.log('vendedor', vendedor);
         doc.text( vendedor.nombreVendedor, 2 , index + 2, {align: 'left'});
         // tslint:disable-next-line:max-line-length
         doc.text( (vendedor.numFacturas + vendedor.numBoletas + vendedor.numNotas) + '' , 22.5 , index + 2, {align: 'center'});
         doc.text( vendedor.montoFinal.toFixed(2), 43 , index + 2, {align: 'right'});
         index = index + 2;
-        // if (contador === 10) {
-        //   break;
-        // }
       }
       doc.text( '____________________________________', 22.5, index + 1 , {align: 'center'});
       doc.text('Tipo', 2, index + 4 , {align: 'left'});
@@ -320,7 +277,6 @@ export class ReportesService {
       doc.setFontSize(6.5);
       doc.text('TOTAL CAJA: ' + ( montoFinal + this.Ingresos - this.Egresos).toFixed(2), 2, index + 34 , {align: 'left'});
 
-
       index = index + 35;
 
       }
@@ -329,11 +285,7 @@ export class ReportesService {
       doc.text( 'No se encontraron registros ', 2 , 29, {align: 'left'});
 
       }
-
-      // doc.text( 'FechaF.: ' + formatDate(new Date(), 'dd/MM/yyyy', 'en'), 2 , 26, {align: 'left'});
-      // doc.save('tiket' + '.pdf');
       doc.save('reporte tiket General Ventas ' + dia + '.pdf');
-
       doc.autoPrint();
       });
   }
@@ -341,127 +293,125 @@ export class ReportesService {
     const arrayDni  = [];
     const vendedores = [];
     const arrayVendDatos = [];
-    const promesa = new Promise((resolve, reject) => {
-      this.consultaVentaReporteGeneral(dia).then((res: any) => {
-        console.log(res);
-        if (!isNullOrUndefined(res)) {
-          console.log('datos de ventas generales', res);
-          let contador = 0;
-          for (const venta of res) {
-            contador ++;
-            const dni = venta.vendedor.dni;
-            if (typeof(vendedores[dni]) === 'undefined') {
-              vendedores[dni] = {
-                montoFinal: 0,
-                montoTarjeta: 0,
-                montoEfectivo: 0,
-                nombreVendedor: venta.vendedor.nombre,
-                numFacturas: 0,
-                numBoletas: 0,
-                numNotas: 0,
-                numAnulados: 0,
-                totalDescuentos: 0,
-                montoAnulado: 0,
-                montoBoleta: 0,
-                montoFactura: 0,
-                FacAnuladas: 0,
-                BolAnuladas: 0,
-                NotasAnuladas: 0,
-                MontoFacAnulado: 0,
-                montoBolAnulado: 0,
-                montoNotasAnulado: 0,
-                totalNotas: 0
-              };
-              arrayDni.push(dni);
-              if (venta.tipoPago === 'efectivo' && venta.estadoVenta !== 'anulado') {
-                vendedores[dni].montoEfectivo += redondeoDecimal( venta.totalPagarVenta, 2);
-              }
-              if (venta.tipoPago === 'tarjeta' && venta.estadoVenta !== 'anulado') {
-                vendedores[dni].montoTarjeta += redondeoDecimal( venta.totalPagarVenta, 2);
-              }
-              if (venta.tipoComprobante === 'factura' && venta.estadoVenta === 'anulado') {
-                vendedores[dni].FacAnuladas += 1;
-                vendedores[dni].MontoFacAnulado += redondeoDecimal( venta.totalPagarVenta, 2);
-              }
-              if (venta.tipoComprobante === 'boleta' && venta.estadoVenta === 'anulado') {
-                vendedores[dni].BolAnuladas += 1;
-                vendedores[dni].montoBolAnulado += redondeoDecimal( venta.totalPagarVenta, 2);
-              }
-              if (venta.tipoComprobante === 'n. venta' && venta.estadoVenta === 'anulado') {
-                vendedores[dni].NotasAnuladas += 1;
-                vendedores[dni].montoNotasAnulado += redondeoDecimal( venta.totalPagarVenta, 2);
-              }
-              if (venta.tipoComprobante === 'boleta') {vendedores[dni].numBoletas += 1; }
-              if (venta.tipoComprobante === 'factura') {vendedores[dni].numFacturas += 1; }
-              if (venta.tipoComprobante === 'n. venta') {
-                vendedores[dni].numNotas += 1;
-                vendedores[dni].totalNotas += redondeoDecimal( venta.totalPagarVenta, 2);
-              }
-              if (venta.descuentoVenta) {
-                vendedores[dni].totalDescuentos += redondeoDecimal(venta.descuentoVenta, 2);
-              }
-              if (venta.estadoVenta !== 'anulado') {
-                vendedores[dni].montoFinal += redondeoDecimal( venta.totalPagarVenta, 2);
-                if (venta.tipoComprobante === 'boleta') {redondeoDecimal(vendedores[dni].montoBoleta += venta.totalPagarVenta, 2); }
-                if (venta.tipoComprobante === 'factura') {redondeoDecimal(vendedores[dni].montoFactura += venta.totalPagarVenta, 2 ); }
-              }else {
-                vendedores[dni].numAnulados += 1;
-                vendedores[dni].montoAnulado += redondeoDecimal( venta.totalPagarVenta, 2);
-              }
-
+    return this.consultaVentaReporteGeneral(dia).then((res: any) => {
+      console.log(res);
+      if (!isNullOrUndefined(res)) {
+        console.log('datos de ventas generales', res);
+        let contador = 0;
+        for (const venta of res) {
+          contador ++;
+          const dni = venta.vendedor.dni;
+          if (typeof(vendedores[dni]) === 'undefined') {
+            vendedores[dni] = {
+              montoFinal: 0,
+              montoTarjeta: 0,
+              montoEfectivo: 0,
+              nombreVendedor: venta.vendedor.nombre,
+              numFacturas: 0,
+              numBoletas: 0,
+              numNotas: 0,
+              numAnulados: 0,
+              totalDescuentos: 0,
+              montoAnulado: 0,
+              montoBoleta: 0,
+              montoFactura: 0,
+              FacAnuladas: 0,
+              BolAnuladas: 0,
+              NotasAnuladas: 0,
+              MontoFacAnulado: 0,
+              montoBolAnulado: 0,
+              montoNotasAnulado: 0,
+              totalNotas: 0
+            };
+            arrayDni.push(dni);
+            if (venta.tipoPago === 'efectivo' && venta.estadoVenta !== 'anulado') {
+              vendedores[dni].montoEfectivo += redondeoDecimal( venta.totalPagarVenta, 2);
             }
-            else {
-              if (venta.tipoPago === 'efectivo' && venta.estadoVenta !== 'anulado') {
-                vendedores[dni].montoEfectivo += redondeoDecimal( venta.totalPagarVenta, 2);
-              }
-              if (venta.tipoPago === 'tarjeta' && venta.estadoVenta !== 'anulado') {
-                vendedores[dni].montoTarjeta += redondeoDecimal( venta.totalPagarVenta, 2);
-              }
-              if (venta.tipoComprobante === 'factura' && venta.estadoVenta === 'anulado') {
-                vendedores[dni].FacAnuladas += 1;
-                vendedores[dni].MontoFacAnulado += redondeoDecimal( venta.totalPagarVenta, 2);
-              }
-              if (venta.tipoComprobante === 'boleta' && venta.estadoVenta === 'anulado') {
-                vendedores[dni].BolAnuladas += 1;
-                vendedores[dni].montoBolAnulado += redondeoDecimal( venta.totalPagarVenta, 2);
-              }
-              if (venta.tipoComprobante === 'boleta') {vendedores[dni].numBoletas += 1; }
-              if (venta.tipoComprobante === 'factura') {vendedores[dni].numFacturas += 1; }
-              if (venta.tipoComprobante === 'n. venta') {
-                vendedores[dni].numNotas += 1;
-                vendedores[dni].totalNotas += redondeoDecimal( venta.totalPagarVenta, 2);
-              }
-              if (venta.descuentoVenta) {
-                vendedores[dni].totalDescuentos += redondeoDecimal(venta.descuentoVenta, 2);
-              }
-              if (venta.estadoVenta !== 'anulado') {
-                vendedores[dni].montoFinal += redondeoDecimal( venta.totalPagarVenta, 2);
-                if (venta.tipoComprobante === 'boleta') {redondeoDecimal(vendedores[dni].montoBoleta += venta.totalPagarVenta, 2); }
-                if (venta.tipoComprobante === 'factura') {redondeoDecimal(vendedores[dni].montoFactura += venta.totalPagarVenta, 2 ); }
-              }else {
-                vendedores[dni].numAnulados += 1;
-                vendedores[dni].montoAnulado += redondeoDecimal( venta.totalPagarVenta, 2);
-              }
+            if (venta.tipoPago === 'tarjeta' && venta.estadoVenta !== 'anulado') {
+              vendedores[dni].montoTarjeta += redondeoDecimal( venta.totalPagarVenta, 2);
             }
-            console.log('vendedores', vendedores);
-            console.log('array dni', arrayDni);
+            if (venta.tipoComprobante === 'factura' && venta.estadoVenta === 'anulado') {
+              vendedores[dni].FacAnuladas += 1;
+              vendedores[dni].MontoFacAnulado += redondeoDecimal( venta.totalPagarVenta, 2);
+            }
+            if (venta.tipoComprobante === 'boleta' && venta.estadoVenta === 'anulado') {
+              vendedores[dni].BolAnuladas += 1;
+              vendedores[dni].montoBolAnulado += redondeoDecimal( venta.totalPagarVenta, 2);
+            }
+            if (venta.tipoComprobante === 'n. venta' && venta.estadoVenta === 'anulado') {
+              vendedores[dni].NotasAnuladas += 1;
+              vendedores[dni].montoNotasAnulado += redondeoDecimal( venta.totalPagarVenta, 2);
+            }
+            if (venta.tipoComprobante === 'boleta') {vendedores[dni].numBoletas += 1; }
+            if (venta.tipoComprobante === 'factura') {vendedores[dni].numFacturas += 1; }
+            if (venta.tipoComprobante === 'n. venta') {
+              vendedores[dni].numNotas += 1;
+              vendedores[dni].totalNotas += redondeoDecimal( venta.totalPagarVenta, 2);
+            }
+            if (venta.descuentoVenta) {
+              vendedores[dni].totalDescuentos += redondeoDecimal(venta.descuentoVenta, 2);
+            }
+            if (venta.estadoVenta !== 'anulado') {
+              vendedores[dni].montoFinal += redondeoDecimal( venta.totalPagarVenta, 2);
+              if (venta.tipoComprobante === 'boleta') {redondeoDecimal(vendedores[dni].montoBoleta += venta.totalPagarVenta, 2); }
+              if (venta.tipoComprobante === 'factura') {redondeoDecimal(vendedores[dni].montoFactura += venta.totalPagarVenta, 2 ); }
+            }else {
+              vendedores[dni].numAnulados += 1;
+              vendedores[dni].montoAnulado += redondeoDecimal( venta.totalPagarVenta, 2);
+            }
 
           }
-          for (const dni of arrayDni) {
-            arrayVendDatos.push(vendedores[dni]);
+          else {
+            if (venta.tipoPago === 'efectivo' && venta.estadoVenta !== 'anulado') {
+              vendedores[dni].montoEfectivo += redondeoDecimal( venta.totalPagarVenta, 2);
+            }
+            if (venta.tipoPago === 'tarjeta' && venta.estadoVenta !== 'anulado') {
+              vendedores[dni].montoTarjeta += redondeoDecimal( venta.totalPagarVenta, 2);
+            }
+            if (venta.tipoComprobante === 'factura' && venta.estadoVenta === 'anulado') {
+              vendedores[dni].FacAnuladas += 1;
+              vendedores[dni].MontoFacAnulado += redondeoDecimal( venta.totalPagarVenta, 2);
+            }
+            if (venta.tipoComprobante === 'boleta' && venta.estadoVenta === 'anulado') {
+              vendedores[dni].BolAnuladas += 1;
+              vendedores[dni].montoBolAnulado += redondeoDecimal( venta.totalPagarVenta, 2);
+            }
+            if (venta.tipoComprobante === 'boleta') {vendedores[dni].numBoletas += 1; }
+            if (venta.tipoComprobante === 'factura') {vendedores[dni].numFacturas += 1; }
+            if (venta.tipoComprobante === 'n. venta') {
+              vendedores[dni].numNotas += 1;
+              vendedores[dni].totalNotas += redondeoDecimal( venta.totalPagarVenta, 2);
+            }
+            if (venta.descuentoVenta) {
+              vendedores[dni].totalDescuentos += redondeoDecimal(venta.descuentoVenta, 2);
+            }
+            if (venta.estadoVenta !== 'anulado') {
+              vendedores[dni].montoFinal += redondeoDecimal( venta.totalPagarVenta, 2);
+              if (venta.tipoComprobante === 'boleta') {redondeoDecimal(vendedores[dni].montoBoleta += venta.totalPagarVenta, 2); }
+              if (venta.tipoComprobante === 'factura') {redondeoDecimal(vendedores[dni].montoFactura += venta.totalPagarVenta, 2 ); }
+            }else {
+              vendedores[dni].numAnulados += 1;
+              vendedores[dni].montoAnulado += redondeoDecimal( venta.totalPagarVenta, 2);
+            }
           }
-          console.log('datos Vendedor', arrayVendDatos[0]);
-          if (contador === res.length) {
-            resolve(arrayVendDatos);
-          }
-        }else {
-          console.log('no hay datos que mostrar');
-          resolve(null);
+          console.log('vendedores', vendedores);
+          console.log('array dni', arrayDni);
+
         }
-      });
+        for (const dni of arrayDni) {
+          arrayVendDatos.push(vendedores[dni]);
+        }
+        console.log('datos Vendedor', arrayVendDatos[0]);
+        if (contador === res.length) {
+          return(arrayVendDatos);
+        }
+      }else {
+        console.log('no hay datos que mostrar');
+        return (null);
+      }
     });
-    return promesa;
   }
+
   ReportePDFDiaIngresoEgreso(dia: any){
     this.consultaIngresoEgreso(dia).then((data: any) => {
       console.log('datos', data);
@@ -476,7 +426,7 @@ export class ReportesService {
       doc.setFontSize(12);
       doc.text( 'Empresa:', 40, 55);
       doc.text( 'RUC:', 40, 70);
-      doc.text( 'Veterinarias Tooby ,' + this.sede, 75, 55);
+      doc.text( this.nombreEmpresa + ' ,' + this.sede, 75, 55);
       doc.text( this.RUC, 64, 70);
       doc.setFontSize(12);
       doc.text( 'Fecha reporte:', 300, 55);
@@ -498,7 +448,6 @@ export class ReportesService {
             if (item.tipo === 'egreso'){
               egreso += Number(item.monto);
             }
-            // console.log(doc.id, '=>', doc.data());
             let formato: any;
             formato = [
               contador,
@@ -512,21 +461,46 @@ export class ReportesService {
           doc.text( 'Ingresos: ' + ingreso.toFixed(2)  , 40, 85);
           doc.text( 'Egresos: ' + egreso.toFixed(2) , 180, 85);
           doc.autoTable({
-            // tslint:disable-next-line:max-line-length
             head: [['#', 'Tipo', 'Detalles', 'Monto']],
             body: datosEgresoIngreso,
             startY: 115 ,
             theme: 'grid',
-            // foot:  [['ID', 'Name', 'Country']],
           });
         }
       doc.save('reporteIngresoEgreso ' + formatDate(new Date(), 'dd-MM-yyyy', 'en') + '.pdf');
-
     });
   }
+
+  consultaIngresoEgreso(dia) {
+    this.Ingresos = 0;
+    this.Egresos = 0;
+    return this.dataApi.obtenerIngresoEgresoDia(this.sede.toLowerCase(), dia).then( snapshot => {
+      console.log('snapshot', snapshot);
+      if (snapshot.length === 0) {
+        this.Ingresos = 0;
+        this.Egresos = 0;
+        throw null;
+      } else {
+        for (const datos of snapshot) {
+          if (datos.tipo === 'ingreso'){
+            this.Ingresos += Number(datos.monto);
+            console.log(Number(datos.monto));
+          }
+          if (datos.tipo === 'egreso'){
+            this.Egresos += Number(datos.monto);
+          }
+        }
+        console.log(this.Ingresos, this.Egresos);
+        return snapshot;
+      }
+    });
+
+  }
+
   convertirMayuscula(letra: string) {
     return letra.charAt(0).toUpperCase() + letra.slice(1);
   }
+
   digitosFaltantes(caracter: string, num: number) {
     let final = '';
     for ( let i = 0; i < num; i++) {

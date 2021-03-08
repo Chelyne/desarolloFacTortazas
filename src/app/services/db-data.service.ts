@@ -768,7 +768,8 @@ export class DbDataService {
   }
   ObtenerListaCajaChica(sede: string) {
 
-    this.usuariosCollection = this.afs.collection('CajaChica', ref => ref.where('sede', '==', sede ).orderBy('FechaApertura', 'desc') );
+    this.usuariosCollection = this.afs.collection('CajaChica', ref => ref.where('sede', '==', sede )
+    .orderBy('FechaApertura', 'desc').limit(10) );
 
     return this.usuarios = this.usuariosCollection.snapshotChanges()
       .pipe(map(

@@ -4,6 +4,7 @@ export const apiPeruConfig = {
         password: 'friends2019peru'
     },
     datosEmpresa: {
+        logo: '../../../assets/img/TOOBY LOGO.png',
         ruc: '20601831032',
         razon_social: 'CLÍNICA VETERINARIA TOOBY E.I.R.L',
         nombreComercial: 'VETERINARIAS TOBBY',
