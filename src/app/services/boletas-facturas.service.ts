@@ -4,7 +4,9 @@ import { VentaInterface } from '../models/venta/venta';
 import { formatDate } from '@angular/common';
 import { MontoALetras } from 'src/app/global/monto-a-letra';
 import { ItemDeVentaInterface } from 'src/app/models/venta/item-de-venta';
-import { DbDataService } from 'src/app/services/db-data.service';
+import { apiPeruConfig } from './../services/api/apiPeruConfig';
+import { DataBaseService } from './data-base.service';
+import * as moment from 'moment';
 
 
 
@@ -12,21 +14,27 @@ import { DbDataService } from 'src/app/services/db-data.service';
   providedIn: 'root'
 })
 export class BoletasFacturasService {
-  // Datos de la empresa
-  RUC = '20601831032';
-  LogoEmpresa = '../../../assets/img/TOOBY LOGO.png';
+
+  LogoEmpresa = apiPeruConfig.datosEmpresa.logo;
+  RUC = apiPeruConfig.datosEmpresa.ruc;
+  nombreEmpresa = apiPeruConfig.datosEmpresa.razon_social;
   valueQR;
 
 
-  constructor(  private dataApi: DbDataService) { }
+  constructor(  private dataApi: DataBaseService) { }
   // getImage() {
   //   const canvas = document.querySelector('canvas') as HTMLCanvasElement;
   //   const imageData = canvas.toDataURL('image/jpeg').toString();
   //   return imageData;
   //   }
-  generarComprobante(venta: VentaInterface) {
+    generarComprobante(venta ) {
+    venta.horaEmision = new Date(moment.unix(venta.fechaEmision.seconds).format('D MMM YYYY H:mm'));
+    venta.fechaEmision = new Date(moment.unix(venta.fechaEmision.seconds).format('D MMM YYYY H:mm'));
+    venta.fechaEmision = formatDate(venta.fechaEmision, 'dd/MM/yyyy', 'en');
+    venta.horaEmision = formatDate(venta.horaEmision, 'HH:mm aa', 'en');
     // const qr = this.getImage();
     // console.log(qr);
+
     this.obtenerProductosVenta(venta.idListaProductos, venta.vendedor.sede.toLocaleLowerCase()).then((datos: ItemDeVentaInterface[]) => {
       console.log(venta);
       venta.listaItemsDeVenta =  datos;
@@ -37,7 +45,7 @@ export class BoletasFacturasService {
           doc.addImage(this.LogoEmpresa, 'JPEG', 11, 1, 22, 8);
           doc.setFontSize(6);
           doc.setFont('helvetica');
-          doc.text('CLÍNICA VETERINARIA TOOBY E.I.R.L', 22.5, 12, {align: 'center'});
+          doc.text(this.nombreEmpresa, 22.5, 12, {align: 'center'});
           if (venta.vendedor.sede === 'Andahuaylas') {
           doc.text('Av. Peru 236 Andahuaylas Apurimac ', 22.5, 14, {align: 'center'});
           doc.text('Parque Lampa de Oro ', 22.5, 16, {align: 'center'});
@@ -86,7 +94,7 @@ export class BoletasFacturasService {
             doc.text((this.convertirMayuscula(venta.cliente.nombre)), 22.5, 35, {align: 'center'});
             }
           // tslint:disable-next-line:max-line-length
-          doc.text('Fecha: ' + formatDate(new Date(), 'dd/MM/yyyy', 'en') + '  ' + 'Hora: ' + formatDate(new Date(), 'HH:mm aa', 'en'), 22.5, 39, {align: 'center'});
+          doc.text('Fecha: ' +  venta.fechaEmision + '  ' + 'Hora: ' + venta.horaEmision, 22.5, 39, {align: 'center'});
           doc.setFontSize(5);
 
           for (const c of venta.listaItemsDeVenta) {
@@ -149,7 +157,7 @@ export class BoletasFacturasService {
             doc.addImage(this.LogoEmpresa, 'JPEG', 11, 1, 22, 8);
             doc.setFontSize(6);
             doc.setFont('helvetica');
-            doc.text('CLÍNICA VETERINARIA TOOBY E.I.R.L', 22.5, 12, {align: 'center'});
+            doc.text(this.nombreEmpresa, 22.5, 12, {align: 'center'});
             if (venta.vendedor.sede === 'Andahuaylas') {
             doc.text('Av. Peru 236 Andahuaylas Apurimac ', 22.5, 14, {align: 'center'});
             doc.text('Parque Lampa de Oro ', 22.5, 16, {align: 'center'});
@@ -199,7 +207,7 @@ export class BoletasFacturasService {
               doc.text((this.convertirMayuscula(venta.cliente.nombre)), 22.5, 35, {align: 'center'});
               }
             // tslint:disable-next-line:max-line-length
-            doc.text('Fecha: ' + formatDate(new Date(), 'dd/MM/yyyy', 'en') + '  ' + 'Hora: ' + formatDate(new Date(), 'HH:mm aa', 'en'), 22.5, 39, {align: 'center'});
+            doc.text('Fecha: ' + venta.fechaEmision + '  ' + 'Hora: ' + venta.horaEmision, 22.5, 39, {align: 'center'});
             doc.setFontSize(5);
             for (const c of venta.listaItemsDeVenta) {
               doc.text( '__________________________________________', 22.5, index, {align: 'center'});
@@ -265,17 +273,13 @@ export class BoletasFacturasService {
     });
 
   }
-  obtenerProductosVenta(id: string, sede: string) {
-    console.log('obteniedo');
-    const promesa = new Promise((resolve, reject) => {
-      this.dataApi.obtenerProductosDeVenta(id, sede).subscribe(datos => {
-        console.log('obtenido', datos);
-        if (datos) {
-          resolve(datos.productos);
-        }
-      });
+  obtenerProductosVenta(idVenta: string, sede: string) {
+    return this.dataApi.obtenerProductosDeVenta(idVenta, sede).then(datos => {
+      console.log('obtenido', datos);
+      if (datos.length) {
+        return (datos);
+      }
     });
-    return promesa;
   }
   convertirMayuscula(letra: string) {
     return letra.charAt(0).toUpperCase() + letra.slice(1);

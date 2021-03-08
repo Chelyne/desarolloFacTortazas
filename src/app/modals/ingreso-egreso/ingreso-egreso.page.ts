@@ -1,8 +1,9 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
-import { ModalController, ToastController, LoadingController } from '@ionic/angular';
+import { ModalController, LoadingController } from '@ionic/angular';
 import { DbDataService } from '../../services/db-data.service';
 import { StorageService } from '../../services/storage.service';
+import { GlobalService } from '../../global/global.service';
 
 @Component({
   selector: 'app-ingreso-egreso',
@@ -14,19 +15,18 @@ export class IngresoEgresoPage implements OnInit {
   ingresoEgresoForm: FormGroup;
   public saldoInsuficiente = false;
 
-  @Input() eventoInvoker: string;
-  @Input() tagInvoker: string;
-  @Input() buttonTagInvoer: string;
-  @Input() saldoInvoker: number;
+  @Input() dataModal: {
+    evento: 'ingreso' | 'egreso',
+  };
 
 
   loading;
   constructor(
     private modalCtlr: ModalController,
-    private toastCtrl: ToastController,
     private dataApi: DbDataService,
     private storage: StorageService,
-    private loadingController: LoadingController
+    private loadingController: LoadingController,
+    private servGlobal: GlobalService
   ) {
     this.ingresoEgresoForm = this.createFormIngresoEgreso();
   }
@@ -41,7 +41,6 @@ export class IngresoEgresoPage implements OnInit {
       tipo: new FormControl('')
     });
   }
-  // ^[_a-z0-9]+(\.[_a-z0-9]+)*@[a-z0-9-]+(\.[_a-z0-9]+)*\.([a-z]{2,4})$
 
   get monto() { return this.ingresoEgresoForm.get('monto'); }
   get detalles() { return this.ingresoEgresoForm.get('detalles'); }
@@ -49,59 +48,36 @@ export class IngresoEgresoPage implements OnInit {
 
 
   execTransaction(){
-    console.log(this.eventoInvoker);
-
-    if (this.eventoInvoker === 'Ingreso') {
+    if (this.dataModal.evento === 'ingreso') {
       this.IngresarMonto();
 
-    } else if (this.eventoInvoker === 'Egreso') {
+    } else if (this.dataModal.evento === 'egreso') {
       this.EgresarMonto();
-
     } else {
       console.log('La fución no es valida');
     }
   }
 
   async IngresarMonto() {
-    await this.presentLoading('guardando datos');
+    await this.presentLoading('Guardando datos...');
     this.ingresoEgresoForm.value.tipo = 'ingreso';
     this.dataApi.guardarIngresoEgreso(this.ingresoEgresoForm.value, this.storage.datosAdmi.sede).then(() => {
       const monto: number = parseFloat(this.ingresoEgresoForm.value.monto);
-      // console.log(this.ingresoEgresoForm.value);
-      // console.log(monto, this.saldoInvoker);
-      this.modalCtlr.dismiss({
-        newMonto: this.saldoInvoker + monto
-      });
-      this.presentToast('Ingreso de monto exitoso.');
+      this.modalCtlr.dismiss();
+      this.servGlobal.presentToast('Ingreso exitoso.', {color: 'success'});
       this.loading.dismiss();
     });
   }
 
   async EgresarMonto(){
-    await this.presentLoading('guardando datos');
+    await this.presentLoading('Guardando datos...');
     this.ingresoEgresoForm.value.tipo = 'egreso';
     this.dataApi.guardarIngresoEgreso(this.ingresoEgresoForm.value, this.storage.datosAdmi.sede).then(() => {
       const monto: number = parseFloat(this.ingresoEgresoForm.value.monto);
-      // if (this.saldoInvoker >= monto) {
-      this.modalCtlr.dismiss({
-        newMonto: this.saldoInvoker - monto
-      });
-      this.presentToast('Retiro exitoso.');
+      this.modalCtlr.dismiss();
+      this.servGlobal.presentToast('Retiro exitoso.', {color: 'success'});
       this.loading.dismiss();
-      // } else {
-      //   this.saldoInsuficiente = true;
-      // }
     });
-  }
-
-
-  async presentToast(message: string){
-    const toast = await this.toastCtrl.create({
-      message,
-      duration: 2000
-    });
-
-    toast.present();
   }
 
   cerrarModal(){
@@ -114,7 +90,6 @@ export class IngresoEgresoPage implements OnInit {
     const inputChar = String.fromCharCode(event.charCode);
 
     if (!pattern.test(inputChar)) {
-      // invalid character, prevent input
       event.preventDefault();
     }
   }
@@ -123,7 +98,6 @@ export class IngresoEgresoPage implements OnInit {
     this.loading = await this.loadingController.create({
       cssClass: 'my-custom-class',
       message: mensaje,
-      // duration: 2000
     });
     await this.loading.present();
   }

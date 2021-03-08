@@ -1,12 +1,9 @@
 import { Component, OnInit } from '@angular/core';
 import { FormGroup, FormControl, Validators } from '@angular/forms';
-import { DbDataService } from '../../services/db-data.service';
-import { formatDate } from '@angular/common';
-import * as moment from 'moment';
 import { completarCeros } from '../../global/funciones-globales';
 import { BoletasFacturasService } from '../../services/boletas-facturas.service';
 import { VentaInterface } from 'src/app/models/venta/venta';
-import { NgxQrcodeElementTypes, NgxQrcodeErrorCorrectionLevels, QrcodeComponent } from '@techiediaries/ngx-qrcode';
+import { DataBaseService } from '../../services/data-base.service';
 
 
 
@@ -30,7 +27,7 @@ export class BuscarPage implements OnInit {
   buscando;
 
   constructor(
-    private dataApi: DbDataService,
+    private dataApi: DataBaseService,
     private comprobanteSrv: BoletasFacturasService
   ) {
     this.buscarForm = this.createFormGroup();
@@ -42,7 +39,7 @@ export class BuscarPage implements OnInit {
 
   createFormGroup() {
     return new FormGroup({
-      tipoComprobante: new FormControl('factura', [Validators.required]),
+      tipoComprobante: new FormControl('boleta', [Validators.required]),
       fechaEmision: new FormControl('', [Validators.required]),
       serieComprobante: new FormControl('', [Validators.required, Validators.minLength(0), Validators.maxLength(45)]),
       numeroComprobante: new FormControl('', [Validators.required]),
@@ -63,7 +60,7 @@ export class BuscarPage implements OnInit {
     return imageData;
     }
 
-  guardarProducto() {
+    buscarComprobante() {
     this.buscando = true;
     this.comprobante = null;
     const fecha = this.buscarForm.value.fechaEmision;
@@ -85,15 +82,7 @@ export class BuscarPage implements OnInit {
     this.obtenerComprobante(this.fechaventas, this.numero, this.serie);
   }
 
-  // formtearFecha(dateTime: any): string{
-
-  //   const fechaFormateada = new Date(moment.unix(dateTime.seconds).format('D MMM YYYY H:mm'));
-  //   const fechaString = formatDate(fechaFormateada, 'yyyy-dd-MMThh:mm:ss-05:00', 'en');
-  //   // console.log('aaaaaaaaaaaaa', fechaString);
-  //   return fechaString;
-  // }
-
-  obtenerComprobante(fachaventas: string, numero: string, serie: string){
+  obtenerComprobante(fechaVenta: string, numero: string, serie: string){
     if (this.buscarForm.valid){
       if (this.serie === 'F001' || this.serie === 'B001' ){
         this.sede = 'andahuaylas';
@@ -104,8 +93,7 @@ export class BuscarPage implements OnInit {
         console.log('no existe sede');
       }
       console.log('sede', this.sede);
-      this.dataApi.ObtenerConprobante(this.sede, fachaventas, numero, serie).subscribe((data: any) => {
-        console.log('datos', data);
+      this.dataApi.obtenerComprobante(this.sede, fechaVenta, numero, serie).then((data: any) => {
         this.comprobante = data;
         if (data.length > 0) {
           this.comprobante = data;
@@ -120,7 +108,7 @@ export class BuscarPage implements OnInit {
           this.buscando = false;
           this.mensaje = null;
         }
-        // this.buscarForm.reset();
+        this.buscarForm.reset();
 
 
       });

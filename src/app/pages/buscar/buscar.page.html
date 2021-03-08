@@ -13,12 +13,15 @@
                                 <ion-col size="12 " size-xs="12 " size-sm="12" size-md="12" size-lg="8">
                                     <ion-item lines="none">
                                         <ion-label color="primary" position="stacked">Tipo de Comprobante</ion-label>
-                                        <ion-select class="custom-options" interface="popover" formControlName="tipoComprobante" placeholder="Comprobantes" cancelText="Cancelar" okText="Aceptar" mode="ios">
+                                        <ion-select class="custom-options" interface="popover"
+                                            formControlName="tipoComprobante" placeholder="Comprobantes"
+                                            cancelText="Cancelar" okText="Aceptar" mode="ios">
                                             <ion-select-option value="factura">FACTURA</ion-select-option>
                                             <ion-select-option value="boleta">BOLETA </ion-select-option>
                                         </ion-select>
                                     </ion-item>
-                                    <div class="alertDanger" *ngIf="tipoComprobante.invalid && (tipoComprobante.dirty || tipoComprobante.touched)">
+                                    <div class="alertDanger"
+                                        *ngIf="tipoComprobante.invalid && (tipoComprobante.dirty || tipoComprobante.touched)">
                                         <div class="mensajeError" *ngIf="!!tipoComprobante.errors.required">
                                             Complete el tipo de Comprobante
                                         </div>
@@ -27,9 +30,11 @@
                                 <ion-col size="12 " size-xs="12 " size-sm="12" size-md="12" size-lg="4">
                                     <ion-item lines="none">
                                         <ion-label color="primary" position="stacked">Fecha de emisión:</ion-label>
-                                        <ion-input type="date" formControlName="fechaEmision" class="form-control"></ion-input>
+                                        <ion-input type="date" formControlName="fechaEmision" class="form-control">
+                                        </ion-input>
                                     </ion-item>
-                                    <div class="alertDanger" *ngIf="fechaEmision && fechaEmision.invalid && (fechaEmision.dirty || fechaEmision.touched)">
+                                    <div class="alertDanger"
+                                        *ngIf="fechaEmision && fechaEmision.invalid && (fechaEmision.dirty || fechaEmision.touched)">
                                         <div class="mensajeError" *ngIf="  !!fechaEmision.errors.required">
                                             Ingrese fecha de fecha de emision
                                         </div>
@@ -40,9 +45,11 @@
                                 <ion-col size="12 " size-xs="12 " size-sm="12" size-md="12" size-lg="6">
                                     <ion-item lines="none">
                                         <ion-label color="primary" position="floating">Serie Comprobante</ion-label>
-                                        <ion-input maxLength="35" formControlName="serieComprobante" class="serieComprobante" placeholder="Ingrese serie"></ion-input>
+                                        <ion-input maxLength="35" formControlName="serieComprobante"
+                                            class="serieComprobante" placeholder="Ingrese serie"></ion-input>
                                     </ion-item>
-                                    <div class="alertDanger" *ngIf="serieComprobante.invalid && (serieComprobante.dirty || serieComprobante.touched)">
+                                    <div class="alertDanger"
+                                        *ngIf="serieComprobante.invalid && (serieComprobante.dirty || serieComprobante.touched)">
                                         <div class="mensajeError" *ngIf="!!serieComprobante.errors.required">
                                             Complete el serie
                                         </div>
@@ -57,9 +64,11 @@
                                 <ion-col size="12 " size-xs="12 " size-sm="12" size-md="12" size-lg="6">
                                     <ion-item lines="none">
                                         <ion-label color="primary" position="floating">Numero Comprobante</ion-label>
-                                        <ion-input maxLength="35" formControlName="numeroComprobante" class="numero" placeholder="Ingrese numero"></ion-input>
+                                        <ion-input maxLength="35" formControlName="numeroComprobante" class="numero"
+                                            placeholder="Ingrese numero"></ion-input>
                                     </ion-item>
-                                    <div class="alertDanger" *ngIf="numeroComprobante.invalid && (numeroComprobante.dirty || numeroComprobante.touched)">
+                                    <div class="alertDanger"
+                                        *ngIf="numeroComprobante.invalid && (numeroComprobante.dirty || numeroComprobante.touched)">
                                         <div class="mensajeError" *ngIf="!!numeroComprobante.errors.required">
                                             Complete el numero
                                         </div>
@@ -70,7 +79,8 @@
                                 <ion-col size="12 " size-xs="12 " size-sm="12" size-md="12" size-lg="6">
                                     <ion-item lines="none">
                                         <ion-label color="primary" position="floating">DNI / RUC</ion-label>
-                                        <ion-input maxLength="35" formControlName="numDoc" class="numDoc" placeholder="Ingrese documento"></ion-input>
+                                        <ion-input maxLength="35" formControlName="numDoc" class="numDoc"
+                                            placeholder="Ingrese documento"></ion-input>
                                     </ion-item>
                                     <div class="alertDanger" *ngIf="numDoc.invalid && (numDoc.dirty || numDoc.touched)">
                                         <div class="mensajeError" *ngIf="!!numDoc.errors.required">
@@ -87,16 +97,18 @@
                                 <ion-col size="12 " size-xs="12 " size-sm="12" size-md="12" size-lg="6">
                                     <ion-item lines="none">
                                         <ion-label color="primary" position="floating">Monto total</ion-label>
-                                        <ion-input maxLength="35" formControlName="totalPagarVenta" class="totalPagarVenta" placeholder="Ingrese monto"></ion-input>
+                                        <ion-input maxLength="35" formControlName="totalPagarVenta"
+                                            class="totalPagarVenta" placeholder="Ingrese monto"></ion-input>
                                     </ion-item>
-                                    <div class="alertDanger" *ngIf="totalPagarVenta.invalid && (totalPagarVenta.dirty || totalPagarVenta.touched)">
+                                    <div class="alertDanger"
+                                        *ngIf="totalPagarVenta.invalid && (totalPagarVenta.dirty || totalPagarVenta.touched)">
                                         <div class="mensajeError" *ngIf="!!totalPagarVenta.errors.required">
                                             Complete el monto total
                                         </div>
                                     </div>
                                 </ion-col>
                                 <ion-col size="12">
-                                    <ion-button (click)="guardarProducto()" expand="block" color="primary">
+                                    <ion-button (click)="buscarComprobante()" expand="block" color="primary">
                                         Buscar Comprobante
                                     </ion-button>
                                 </ion-col>
@@ -113,25 +125,29 @@
                     <div class="Datos">
                         <ion-list>
                             <ion-item lines="none" *ngFor="let item of comprobante">
-                                <ion-label slot="start">{{item.serieComprobante}} - {{item.numeroComprobante}} </ion-label>
-                                <ion-label color="success" *ngIf="item.estadoVenta !=='anulado'">{{item.estadoVenta | titlecase}}</ion-label>
-                                <ion-label color="danger" *ngIf="item.estadoVenta ==='anulado'">{{item.estadoVenta | titlecase}}</ion-label>
-                                <ion-icon slot="end" name="archive-outline" color="primary" (click)="descargarComprobante(item)"></ion-icon>
+                                <ion-label slot="start">{{item.serieComprobante}} - {{item.numeroComprobante}}
+                                </ion-label>
+                                <ion-label color="success" *ngIf="item.estadoVenta !=='anulado'">{{item.estadoVenta |
+                                    titlecase}}</ion-label>
+                                <ion-label color="danger" *ngIf="item.estadoVenta ==='anulado'">{{item.estadoVenta |
+                                    titlecase}}</ion-label>
+                                <ion-icon slot="end" name="archive-outline" color="primary"
+                                    (click)="descargarComprobante(item)"></ion-icon>
                             </ion-item>
                         </ion-list>
                     </div>
                     <div class="alertDanger" *ngIf="mensaje">
-                        <div class="mensajeError">               {{mensaje}}
+                        <div class="mensajeError"> {{mensaje}}
                         </div>
                     </div>
                     <div class="sinDatos" *ngIf="sinDatos===true">
                         <div class="textoSindatos">
-                          <ion-icon class="icono" name="book-outline" color="medium"></ion-icon> <br><br>
-                          <ion-label color="medium">No existe comprobante registrado</ion-label> <br> <br>
-                          <!-- <ion-button [routerLink]="[ '/home']" fill="outline" shape="round">Seguir comprando
+                            <ion-icon class="icono" name="book-outline" color="medium"></ion-icon> <br><br>
+                            <ion-label color="medium">No existe comprobante registrado</ion-label> <br> <br>
+                            <!-- <ion-button [routerLink]="[ '/home']" fill="outline" shape="round">Seguir comprando
                             <ion-icon name="chevron-forward-outline"></ion-icon>
                           </ion-button> -->
-                          <!-- <ion-row [ngStyle]="{'display': 'none'}">
+                            <!-- <ion-row [ngStyle]="{'display': 'none'}">
                             <ion-label (click)="getImage()">qr</ion-label>
                             <ngx-qrcode id="qrcode" #canvas
                             [elementType]="elementType"
@@ -140,12 +156,12 @@
                             cssClass="bshadow"></ngx-qrcode>
                           </ion-row> -->
                         </div>
-                      </div>
-                      <div class="cargando" *ngIf="buscando">
+                    </div>
+                    <div class="cargando" *ngIf="buscando">
                         <div class="textoCargando">
-                          <ion-spinner name="crescent" color="primary"></ion-spinner>
+                            <ion-spinner name="crescent" color="primary"></ion-spinner>
                         </div>
-                      </div>
+                    </div>
                 </ion-col>
                 <ion-col size="12 " size-xs="12 " size-sm="12" size-md="12" size-lg="3"></ion-col>
             </ion-row>

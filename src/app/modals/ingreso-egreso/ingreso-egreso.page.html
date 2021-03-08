@@ -1,6 +1,6 @@
 <ion-header>
   <ion-toolbar>
-    <ion-title color="primary">{{eventoInvoker}}</ion-title>
+    <ion-title color="primary">{{dataModal.evento | titlecase}}</ion-title>
     <ion-buttons slot="end">
       <ion-button (click)="cerrarModal()">
           <ion-icon slot="icon-only" name="close-outline" color="primary"></ion-icon>
@@ -10,18 +10,15 @@
 </ion-header>
 
 <ion-content class="ion-padding">
-  <!-- <ion-item>
-    <ion-label>Saldo Actual: {{saldoInvoker}}</ion-label>
-  </ion-item> -->
   <ion-card>
     <ion-card-header color="primary">
-      <ion-label color="light">Registrar {{eventoInvoker}}</ion-label>
+      <ion-label color="light">Registrar {{dataModal.evento | titlecase}}</ion-label>
     </ion-card-header>
     <ion-card-content>
       <form [formGroup]="ingresoEgresoForm" autocomplete="off">
         <ion-item>
           <ion-label color="primary" position="stacked">Detalles </ion-label>
-          <ion-input type="text" formControlName="detalles" placeholder="Detalles de {{eventoInvoker}}"></ion-input>
+          <ion-input type="text" formControlName="detalles" placeholder="Detalles de {{dataModal.evento | titlecase}}"></ion-input>
         </ion-item>
         <div class="alertDanger" *ngIf="detalles.invalid && (detalles.dirty || detalles.touched)">
           <div class="mensajeError" *ngIf="detalles.errors.required">
@@ -29,7 +26,7 @@
           </div>
         </div>
         <ion-item>
-          <ion-label color="primary" position="stacked">{{tagInvoker}} </ion-label>
+          <ion-label color="primary" position="stacked">{{dataModal.evento | titlecase}}</ion-label>
           <ion-input type="text" formControlName="monto" placeholder="00.00" (keypress)="numberOnlyValidation($event)"></ion-input>
         </ion-item>
         <div class="alertDanger" *ngIf="monto.invalid && (monto.dirty || monto.touched)">
@@ -43,17 +40,12 @@
       </form>
     </ion-card-content>
   </ion-card>
-
-  <!-- <div class="error" *ngIf="eventoInvoker == 'Egreso' && saldoInsuficiente">
-    Saldo insuficiente para retirar
-  </div> -->
-
 </ion-content>
 
 <ion-footer>
   <ion-item>
     <ion-button slot="end" (click)="execTransaction()" [disabled]="ingresoEgresoForm.invalid">
-      <ion-label color="light">{{buttonTagInvoer}}</ion-label>
+      <ion-label color="light">Registrar {{dataModal.evento}}</ion-label>
     </ion-button>
   </ion-item>
 </ion-footer>

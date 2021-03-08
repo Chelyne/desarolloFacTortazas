@@ -1,8 +1,8 @@
 <ion-header>
   <ion-toolbar>
     <ion-buttons slot="start">
-        <ion-menu-button color="primary" menu="primerMenu">
-        </ion-menu-button>
+      <ion-menu-button color="primary" menu="primerMenu">
+      </ion-menu-button>
     </ion-buttons>
     <ion-title color="primary">Reporte de Ventas</ion-title>
     <ion-item lines="none" slot="end">
@@ -14,28 +14,29 @@
         <ion-icon name="trending-up-outline"></ion-icon> &nbsp;
         <ion-label>Ventas del Mes</ion-label>
       </ion-button>
-      <ion-button  (click)="ReporteVentaMes($event)" size="small" fill="outline">
+      <ion-button (click)="ReporteVentaMes($event)" size="small" fill="outline">
         <ion-icon slot="start" name="albums-outline"></ion-icon>
         <ion-label>Reporte Mes</ion-label>
         <ion-icon slot="end" name="chevron-down-outline"></ion-icon>
       </ion-button>
     </ion-item>
-</ion-toolbar>
+  </ion-toolbar>
 </ion-header>
 
 <ion-content>
   <form [formGroup]="ventasDiaForm">
     <ion-item>
-        <ion-label>Fecha de Reporte</ion-label>
-        <ion-input slot="end" type="date" formControlName="fechadeventa" formatDate="dd-mm-yyyy" value="1994-12-1"></ion-input>
-        <ion-button  slot="end" (click)="ObtenerVentasDia($event)" >
-            <ion-label color="light">Consultar</ion-label>
-        </ion-button>
+      <ion-label>Fecha de Reporte</ion-label>
+      <ion-input slot="end" type="date" formControlName="fechadeventa" formatDate="dd-mm-yyyy" value="1994-12-1">
+      </ion-input>
+      <ion-button slot="end" (click)="ObtenerVentasDia($event)">
+        <ion-label color="light">Consultar</ion-label>
+      </ion-button>
     </ion-item>
   </form>
-<!-- <ion-button expand="block" (click)="obtenerLista()">LISTA</ion-button>
+  <!-- <ion-button expand="block" (click)="obtenerLista()">LISTA</ion-button>
 <ion-button expand="block" (click)="saveZip()">zip</ion-button> -->
-  <ion-button expand="block" (click)="obtenerZipXml(1, 2021)">ZIP XML MES</ion-button>
+  <!-- <ion-button expand="block" (click)="obtenerZipXml(1, 2021)">ZIP XML MES</ion-button> -->
 
-  
+
 </ion-content>

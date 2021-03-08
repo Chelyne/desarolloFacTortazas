@@ -9,7 +9,8 @@ import * as moment from 'moment';
 import jsPDF from 'jspdf';
 import { NgxQrcodeElementTypes, NgxQrcodeErrorCorrectionLevels, QrcodeComponent } from '@techiediaries/ngx-qrcode';
 import { ItemDeVentaInterface } from '../../models/venta/item-de-venta';
-
+import { apiPeruConfig } from '../../services/api/apiPeruConfig';
+import { DataBaseService } from '../../services/data-base.service';
 
 @Component({
   selector: 'app-modal-ventas',
@@ -20,22 +21,23 @@ import { ItemDeVentaInterface } from '../../models/venta/item-de-venta';
   ]
 })
 export class ModalVentasPage implements OnInit {
-  RUC = '20601831032';
-  LogoEmpresa = '../../../assets/img/TOOBY LOGO.png';
+  RUC = apiPeruConfig.datosEmpresa.ruc;
+  LogoEmpresa = apiPeruConfig.datosEmpresa.logo;
+  nombreEmpresa = apiPeruConfig.datosEmpresa.razon_social;
+
   listaVentas: VentaInterface[];
-
-  sede = this.storage.datosAdmi.sede;
-
+  sede = this.storage.datosAdmi.sede.toLowerCase();
 
   elementType = NgxQrcodeElementTypes.CANVAS;
   correctionLevel = NgxQrcodeErrorCorrectionLevels.HIGH;
-  valueQR;
   @ViewChild('qr') qr: QrcodeComponent;
-  constructor(private modalCtrl: ModalController,
-              private dataApi: DbDataService,
-              private storage: StorageService,
-              private datePipe: DatePipe,
-              ) { }
+  valueQR;
+
+  constructor(
+    private modalCtrl: ModalController,
+    private dataApi: DataBaseService,
+    private storage: StorageService,
+  ) {}
 
   ngOnInit() {
     this.consultaVentas();
@@ -52,7 +54,6 @@ export class ModalVentasPage implements OnInit {
   cerrarModal() {
     this.modalCtrl.dismiss();
   }
-
 
   consultaVentas() {
     const fecha  = formatDate(new Date(), 'dd-MM-yyyy', 'en');
@@ -111,15 +112,12 @@ export class ModalVentasPage implements OnInit {
 
   obtenerProductosVenta(id: string) {
     console.log('obteniedo');
-    const promesa = new Promise((resolve, reject) => {
-      this.dataApi.obtenerProductosDeVenta(id, this.storage.datosAdmi.sede).subscribe(datos => {
-        console.log('obtenido', datos);
-        if (datos) {
-          resolve(datos.productos);
-        }
-      });
+    return this.dataApi.obtenerProductosDeVenta(id, this.storage.datosAdmi.sede).then((productos: any) => {
+      console.log('obtenido', productos);
+      if (productos) {
+        return productos;
+      }
     });
-    return promesa;
   }
 
   anularVenta(ventaSelect: VentaInterface){
@@ -136,8 +134,6 @@ export class ModalVentasPage implements OnInit {
     } else {
       this.dataApi.toggleAnularVenta(ventaSelect.idVenta, 'registrado', this.sede, fechaEmisionFormateada);
     }
-
-
   }
 
   anularItemsDeVenta(listaItemsDeVenta: ItemDeVentaInterface[]){
@@ -160,20 +156,12 @@ export class ModalVentasPage implements OnInit {
   }
 
   generarComprobante(venta: VentaInterface, typoAccion: string) {
+    this.generarQR(this.RUC +  '|'  + '03' +  '|' + venta.serieComprobante +  '|' + venta.numeroComprobante +  '|' +
+        venta.totalPagarVenta +  '|' + venta.fechaEmision +  '|' + venta.cliente.numDoc);
     console.log(venta);
-
     if (typoAccion === 'anular' ) {
       this.anularVenta(venta);
     }
-
-    const qr = this.getImage();
-    console.log(qr);
-    // console.log(this.qr.qrcElement.nativeElement);
-    // const imageQR = this.qr.qrcElement.nativeElement.children[0].currentSrc;
-    // const qrcode = document.getElementById('qrcode');
-    // console.log(qrcode);
-    // const imageData = this.getBase64Image(qrcode.firstChild.firstChild);
-    // console.log(imageData);
     this.obtenerProductosVenta(venta.idListaProductos).then((datos: ItemDeVentaInterface[]) => {
       console.log(datos);
       venta.listaItemsDeVenta =  datos;
@@ -183,26 +171,19 @@ export class ModalVentasPage implements OnInit {
       const tipoComprobante = this.obtenerTipoComprobante(venta.serieComprobante);
       console.log(tipoComprobante);
       console.log(venta);
+      const qr = this.getImage();
+      console.log(qr);
       switch (tipoComprobante) {
-        case 'boleta':
+        case 'boleta': {
           let index = 39;
           const doc = new jsPDF( 'p', 'mm', [45, index  + (venta.listaItemsDeVenta.length * 7) + 7 + 30 + 14]);
           doc.addImage(this.LogoEmpresa, 'JPEG', 11, 1, 22, 8);
           doc.setFontSize(6);
           doc.setFont('helvetica');
-          doc.text('CLÍNICA VETERINARIA TOOBY E.I.R.L', 22.5, 12, {align: 'center'});
-          if (this.storage.datosAdmi.sede === 'Andahuaylas') {
-          doc.text('Av. Peru 236 Andahuaylas Apurimac ', 22.5, 14, {align: 'center'});
-          doc.text('Parque Lampa de Oro ', 22.5, 16, {align: 'center'});
-
-          doc.text('Telefono: 983905066', 22.5, 19, {align: 'center'});
-          }
-          if (this.storage.datosAdmi.sede === 'Abancay') {
-            doc.text('Av. Seoane 100 Abancay Apurimac', 22.5, 14, {align: 'center'});
-            doc.text('Parque el Olivo', 22.5, 16, {align: 'center'});
-
-            doc.text('Telefono: 988907777', 22.5, 19, {align: 'center'});
-            }
+          doc.text(this.nombreEmpresa, 22.5, 12, {align: 'center'});
+          doc.text(apiPeruConfig.sedes[this.sede].direccion.direccionCorta, 22.5, 14, {align: 'center'});
+          doc.text(apiPeruConfig.sedes[this.sede].direccion.referencia, 22.5, 16, {align: 'center'});
+          doc.text('Telefono: ' + apiPeruConfig.sedes[this.sede].direccion.telefono, 22.5, 19, {align: 'center'});
           doc.text('Ruc: ' + this.RUC, 22.5, 21, {align: 'center'});
           doc.text('Boleta de Venta electrónica', 22.5, 25, {align: 'center'});
           // tslint:disable-next-line:max-line-length
@@ -264,11 +245,30 @@ export class ModalVentasPage implements OnInit {
           doc.text('GRACIAS POR SU COMPRA', 22.5, index + 10, {align: 'center'});
           // doc.save('tiket' + '.pdf');
           doc.autoPrint();
-          window.open(doc.output('bloburl').toString(), '_blank');
-
+          // window.open(doc.output('bloburl').toString(), '_blank');
           // doc.output('dataurlnewwindow');
-          const canvas = document.getElementById('pdf');
+          // const canvas = document.getElementById('pdf');
+          // IMPRIME EN LA MISMA PAGINA
+          const hiddFrame = document.createElement('iframe');
+          hiddFrame.style.position = 'fixed';
+          hiddFrame.style.width = '1px';
+          hiddFrame.style.height = '1px';
+          hiddFrame.style.opacity = '0.01';
+          const isSafari = /^((?!chrome|android).)*safari/i.test(window.navigator.userAgent);
+          if (isSafari) {
+            // fallback in safari
+            hiddFrame.onload = () => {
+              try {
+                hiddFrame.contentWindow.document.execCommand('print', false, null);
+              } catch (e) {
+                hiddFrame.contentWindow.print();
+              }
+            };
+          }
+          hiddFrame.src = doc.output('bloburl').toString();
+          document.body.appendChild(hiddFrame);
           break;
+        }
         case'factura': {
           console.log('es una facura');
           // tslint:disable-next-line:no-shadowed-variable
@@ -278,17 +278,10 @@ export class ModalVentasPage implements OnInit {
           doc.addImage(this.LogoEmpresa, 'JPEG', 11, 1, 22, 8);
           doc.setFontSize(6);
           doc.setFont('helvetica');
-          doc.text('CLÍNICA VETERINARIA TOOBY E.I.R.L', 22.5, 12, {align: 'center'});
-          if (this.storage.datosAdmi.sede === 'Andahuaylas') {
-          doc.text('Av. Peru 236 Andahuaylas Apurimac ', 22.5, 14, {align: 'center'});
-          doc.text('Parque Lampa de Oro ', 22.5, 16, {align: 'center'});
-          doc.text('Telefono: 983905066', 22.5, 19, {align: 'center'});
-          }
-          if (this.storage.datosAdmi.sede === 'Abancay') {
-            doc.text('Av. Seoane 100 Abancay Apurimac', 22.5, 14, {align: 'center'});
-            doc.text('Parque el Olivo', 22.5, 16, {align: 'center'});
-            doc.text('Telefono: 988907777', 22.5, 19, {align: 'center'});
-            }
+          doc.text(this.nombreEmpresa, 22.5, 12, {align: 'center'});
+          doc.text(apiPeruConfig.sedes[this.sede].direccion.direccionCorta, 22.5, 14, {align: 'center'});
+          doc.text(apiPeruConfig.sedes[this.sede].direccion.referencia, 22.5, 16, {align: 'center'});
+          doc.text('Telefono: ' + apiPeruConfig.sedes[this.sede].direccion.telefono, 22.5, 19, {align: 'center'});
           doc.text('Ruc: ' + this.RUC, 22.5, 21, {align: 'center'});
           doc.text('Factura de Venta electrónica', 22.5, 25, {align: 'center'});
           // tslint:disable-next-line:max-line-length
@@ -355,8 +348,27 @@ export class ModalVentasPage implements OnInit {
           doc.text('GRACIAS POR SU COMPRA', 22.5, index + 10, {align: 'center'});
           // doc.save('tiket' + '.pdf');
           doc.autoPrint();
-          window.open(doc.output('bloburl').toString(), '_blank');
+          // window.open(doc.output('bloburl').toString(), '_blank');
           // doc.output('dataurlnewwindow');
+          // IMPRIME EN LA MISMA PAGINA
+          const hiddFrame = document.createElement('iframe');
+          hiddFrame.style.position = 'fixed';
+          hiddFrame.style.width = '1px';
+          hiddFrame.style.height = '1px';
+          hiddFrame.style.opacity = '0.01';
+          const isSafari = /^((?!chrome|android).)*safari/i.test(window.navigator.userAgent);
+          if (isSafari) {
+            // fallback in safari
+            hiddFrame.onload = () => {
+              try {
+                hiddFrame.contentWindow.document.execCommand('print', false, null);
+              } catch (e) {
+                hiddFrame.contentWindow.print();
+              }
+            };
+          }
+          hiddFrame.src = doc.output('bloburl').toString();
+          document.body.appendChild(hiddFrame);
           break;
         }
         case 'n. venta': {
@@ -367,19 +379,10 @@ export class ModalVentasPage implements OnInit {
           doc.addImage(this.LogoEmpresa, 'JPEG', 11, 1, 22, 8);
           doc.setFontSize(6);
           doc.setFont('helvetica');
-          doc.text('CLÍNICA VETERINARIA TOOBY E.I.R.L', 22.5, 12, {align: 'center'});
-          if (this.storage.datosAdmi.sede === 'Andahuaylas') {
-          doc.text('Av. Peru 236 Andahuaylas Apurimac ', 22.5, 14, {align: 'center'});
-          doc.text('Parque Lampa de Oro ', 22.5, 16, {align: 'center'});
-
-          doc.text('Telefono: 983905066', 22.5, 19, {align: 'center'});
-          }
-          if (this.storage.datosAdmi.sede === 'Abancay') {
-            doc.text('Av. Seoane 100 Abancay Apurimac', 22.5, 14, {align: 'center'});
-            doc.text('Parque el Olivo', 22.5, 16, {align: 'center'});
-
-            doc.text('Telefono: 988907777', 22.5, 19, {align: 'center'});
-            }
+          doc.text(this.nombreEmpresa, 22.5, 12, {align: 'center'});
+          doc.text(apiPeruConfig.sedes[this.sede].direccion.direccionCorta, 22.5, 14, {align: 'center'});
+          doc.text(apiPeruConfig.sedes[this.sede].direccion.referencia, 22.5, 16, {align: 'center'});
+          doc.text('Telefono: ' + apiPeruConfig.sedes[this.sede].direccion.telefono, 22.5, 19, {align: 'center'});
           doc.text('Ruc: ' + this.RUC, 22.5, 21, {align: 'center'});
           doc.text('Nota de Venta electrónica', 22.5, 25, {align: 'center'});
           // tslint:disable-next-line:max-line-length
@@ -458,7 +461,26 @@ export class ModalVentasPage implements OnInit {
 
           doc.autoPrint();
           // doc.output('datauristring');
-          window.open(doc.output('bloburl').toString(), '_blank');
+          // window.open(doc.output('bloburl').toString(), '_blank');
+          // IMPRIME EN LA MISMA PAGINA
+          const hiddFrame = document.createElement('iframe');
+          hiddFrame.style.position = 'fixed';
+          hiddFrame.style.width = '1px';
+          hiddFrame.style.height = '1px';
+          hiddFrame.style.opacity = '0.01';
+          const isSafari = /^((?!chrome|android).)*safari/i.test(window.navigator.userAgent);
+          if (isSafari) {
+            // fallback in safari
+            hiddFrame.onload = () => {
+              try {
+                hiddFrame.contentWindow.document.execCommand('print', false, null);
+              } catch (e) {
+                hiddFrame.contentWindow.print();
+              }
+            };
+          }
+          hiddFrame.src = doc.output('bloburl').toString();
+          document.body.appendChild(hiddFrame);
           break;
         }
       }
