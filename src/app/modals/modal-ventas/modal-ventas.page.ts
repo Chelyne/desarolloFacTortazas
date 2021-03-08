@@ -112,15 +112,12 @@ export class ModalVentasPage implements OnInit {
 
   obtenerProductosVenta(id: string) {
     console.log('obteniedo');
-    const promesa = new Promise((resolve, reject) => {
-      this.dataApi.obtenerProductosDeVenta(id, this.storage.datosAdmi.sede).subscribe((datos: any) => {
-        console.log('obtenido', datos);
-        if (datos) {
-          resolve(datos.productos);
-        }
-      });
+    return this.dataApi.obtenerProductosDeVenta(id, this.storage.datosAdmi.sede).then((productos: any) => {
+      console.log('obtenido', productos);
+      if (productos) {
+        return productos;
+      }
     });
-    return promesa;
   }
 
   anularVenta(ventaSelect: VentaInterface){

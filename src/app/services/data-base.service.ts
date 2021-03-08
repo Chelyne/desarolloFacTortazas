@@ -278,19 +278,21 @@ export class DataBaseService {
   }
 
   // OBTENER PRODUCTOS DE VENTAS
-  obtenerProductosDeVenta(idProductoVenta: string, sede: string){
+  async obtenerProductosDeVenta(idProductoVenta: string, sede: string){
+    // console.log('Id de un producto de venta en productVEnta', idProductoVenta);
     return this.afs.collection('sedes').doc(sede.toLocaleLowerCase())
-    .collection('productosVenta').doc(idProductoVenta).snapshotChanges()
-      .pipe(map(
-        action => {
-          if (action.payload.exists === false) {
-            return null;
-          } else {
-            const data = action.payload.data();
-            return data;
-          }
-        }
-      ));
+    .collection('productosVenta').doc(idProductoVenta).ref.get()
+    .then((doc: any) => {
+      if (doc.exists) {
+        return doc.data().productos;
+      } else {
+        // console.log('No such document!');
+        return [];
+      }
+    }).catch(err => {
+      console.log('Error al obtener items de Venta: ', err);
+      throw String('fail');
+    });
   }
 
   // INGRESO Y EGRESO
