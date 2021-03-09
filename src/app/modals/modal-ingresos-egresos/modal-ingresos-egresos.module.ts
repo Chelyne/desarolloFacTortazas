@@ -4,9 +4,9 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 
 import { IonicModule } from '@ionic/angular';
 
-import { ModalAgregarVerTipsPageRoutingModule } from './modal-agregar-ver-tips-routing.module';
+import { ModalIngresosEgresosPageRoutingModule } from './modal-ingresos-egresos-routing.module';
 
-import { ModalAgregarVerTipsPage } from './modal-agregar-ver-tips.page';
+import { ModalIngresosEgresosPage } from './modal-ingresos-egresos.page';
 
 @NgModule({
   imports: [
@@ -14,8 +14,8 @@ import { ModalAgregarVerTipsPage } from './modal-agregar-ver-tips.page';
     FormsModule,
     ReactiveFormsModule,
     IonicModule,
-    ModalAgregarVerTipsPageRoutingModule
+    ModalIngresosEgresosPageRoutingModule
   ],
-  declarations: []
+  declarations: [ModalIngresosEgresosPage]
 })
-export class ModalAgregarVerTipsPageModule {}
+export class ModalIngresosEgresosPageModule {}

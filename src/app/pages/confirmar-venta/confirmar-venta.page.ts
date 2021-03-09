@@ -2,11 +2,10 @@ import { Component, OnInit, ViewChild } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { VentaInterface } from 'src/app/models/venta/venta';
 import { ConfirmarVentaService } from 'src/app/services/confirmar-venta.service';
-import { MenuController, LoadingController, ModalController } from '@ionic/angular';
+import { MenuController, LoadingController } from '@ionic/angular';
 import { isNullOrUndefined } from 'util';
 import { Router } from '@angular/router';
 import { StorageService } from '../../services/storage.service';
-import { ComprobantePage } from '../../modals/comprobante/comprobante.page';
 import jsPDF from 'jspdf';
 import { formatDate } from '@angular/common';
 import { NgxQrcodeElementTypes, NgxQrcodeErrorCorrectionLevels, QrcodeComponent } from '@techiediaries/ngx-qrcode';
@@ -69,7 +68,6 @@ export class ConfirmarVentaPage implements OnInit {
     private dataApi: DataBaseService,
     private storage: StorageService,
     private loadingController: LoadingController,
-    private modalController: ModalController,
     private servGlobal: GlobalService
   ) {
     this.formPago = this.createFormPago();
@@ -312,17 +310,6 @@ export class ConfirmarVentaPage implements OnInit {
     if (this.tipoPago === 'tarjeta') {
       this.ponerMontoExactoYCalularVuelto();
     }
-  }
-
-  async presentModalComprobante() {
-    const modal = await this.modalController.create({
-      component: ComprobantePage,
-      cssClass: 'modalComprobante',
-      componentProps: {
-        data: this.venta
-      }
-    });
-    return await modal.present();
   }
 
   getImage() {

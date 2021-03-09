@@ -5,6 +5,7 @@ import { Platform } from '@ionic/angular';
 // import { NativeStorage } from '@ionic-native/native-storage/ngx';
 import { AdmiInterface } from '../models/AdmiInterface';
 import { VentaInterface } from '../models/venta/venta';
+import { DataBaseService } from './data-base.service';
 
 @Injectable({
   providedIn: 'root'
@@ -14,7 +15,7 @@ export class StorageService {
   listaVenta: VentaInterface[];
   constructor(
     private authService: AuthServiceService,
-    private dataApi: DbDataService,
+    private dataApi: DataBaseService,
     private platform: Platform,
     // private nativeStorage: NativeStorage
   ) { }
@@ -31,7 +32,7 @@ export class StorageService {
     this.authService.isAuth().subscribe(user => {
       if (user) {
         console.log(user);
-        this.dataApi.ObtenerUnAdministrador(user.email).subscribe( data => {
+        this.dataApi.obtenerUnAdministrador(user.email).subscribe( data => {
           if (data) {
             if (this.platform.is('cordova')) {
               // celular

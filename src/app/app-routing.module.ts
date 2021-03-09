@@ -21,16 +21,6 @@ const routes: Routes = [
     canActivate: [NoLoginGuard]
   },
   {
-    path: 'categorias-page',
-    loadChildren: () => import('./pages/categorias-page/categorias-page.module').then( m => m.CategoriasPagePageModule),
-    canActivate: [AuthGuard]
-  },
-  // {
-  //   path: 'agregar-producto',
-  //   loadChildren: () => import('./modals/agregar-producto/agregar-producto.module').then( m => m.AgregarProductoPageModule),
-  //   canActivate: [AuthGuard]
-  // },
-  {
     path: 'detalles-producto/:id/:categoria/:sede',
     loadChildren: () => import('./pages/detalles-producto/detalles-producto.module').then( m => m.DetallesProductoPageModule),
     canActivate: [AuthGuard]
@@ -62,66 +52,15 @@ const routes: Routes = [
     canActivate: [AuthGuard]
   },
   {
-    path: 'buscador',
-    loadChildren: () => import('./pages/buscador/buscador.module').then( m => m.BuscadorPageModule),
-    canActivate: [AuthGuard]
-  },
-  {
-    path: 'ofertas',
-    loadChildren: () => import('./pages/ofertas/ofertas.module').then( m => m.OfertasPageModule),
-    canActivate: [AuthGuard]
-  },
-  {
-    path: 'modal-subir-oferta',
-    loadChildren: () => import('./modals/modal-subir-oferta/modal-subir-oferta.module').then( m => m.ModalSubirOfertaPageModule),
-    canActivate: [AuthGuard]
-  },
-  {
-    path: 'pedidos',
-    loadChildren: () => import('./pages/pedidos/pedidos.module').then( m => m.PedidosPageModule),
-    canActivate: [AuthGuard]
-  },
-  {
-    path: 'detalles-pedido/:id',
-    loadChildren: () => import('./pages/detalles-pedido/detalles-pedido.module').then( m => m.DetallesPedidoPageModule),
-    canActivate: [AuthGuard]
-  },
-  {
     path: 'modal-detalles-servicios',
     // tslint:disable-next-line:max-line-length
     loadChildren: () => import('./modals/modal-detalles-servicios/modal-detalles-servicios.module').then( m => m.ModalDetallesServiciosPageModule),
     canActivate: [AuthGuard]
   },
   {
-    path: 'tips',
-    loadChildren: () => import('./pages/tips/tips.module').then( m => m.TipsPageModule),
-    canActivate: [AuthGuard]
-  },
-  {
-    path: 'modal-agregar-ver-tips',
-    loadChildren: () => import('./modals/modal-agregar-ver-tips/modal-agregar-ver-tips.module').then( m => m.ModalAgregarVerTipsPageModule),
-    canActivate: [AuthGuard]
-  },
-  {
-    path: 'descuentos',
-    loadChildren: () => import('./pages/descuentos/descuentos.module').then( m => m.DescuentosPageModule),
-    canActivate: [AuthGuard]
-  },
-  {
-    path: 'modal-agregar-descuento',
-    // tslint:disable-next-line:max-line-length
-    loadChildren: () => import('./modals/modal-agregar-descuento/modal-agregar-descuento.module').then( m => m.ModalAgregarDescuentoPageModule),
-    canActivate: [AuthGuard]
-  },
-  {
     path: 'punto-venta',
     loadChildren: () => import('./pages/punto-venta/punto-venta.module').then( m => m.PuntoVentaPageModule),
     canActivate: [AuthGuard]
-  },
-  {
-    path: 'lista-de-usarios',
-    loadChildren: () => import('./pages/lista-de-usarios/lista-de-usarios.module').then( m => m.ListaDeUsariosPageModule),
-    canActivate: [AuthGuard, NoVendedorGuard]
   },
   {
     path: 'lista-de-clientes',
@@ -133,22 +72,6 @@ const routes: Routes = [
     loadChildren: () => import('./pages/lista-de-proveedores/lista-de-proveedores.module').then( m => m.ListaDeProveedoresPageModule),
     canActivate: [AuthGuard, NoVendedorGuard]
   },
-
-  {
-    path: 'ingreso-egreso-gestor',
-    loadChildren: () => import('./pages/ingreso-egreso-gestor/ingreso-egreso-gestor.module').then( m => m.IngresoEgresoGestorPageModule),
-    canActivate: [AuthGuard]
-  },
-
-  // {
-  //   path: 'compras',
-  //   loadChildren: () => import('./pages/compras/compras.module').then( m => m.ComprasPageModule)
-  // },
-  // {
-  //   path: 'lista-de-productos',
-  //   loadChildren: () => import('./pages/lista-de-productos/lista-de-productos.module').then( m => m.ListaDeProductosPageModule)
-  // },
-
   {
     path: 'caja-chica',
     loadChildren: () => import('./pages/caja-chica/caja-chica.module').then( m => m.CajaChicaPageModule),
@@ -190,16 +113,6 @@ const routes: Routes = [
     canActivate: [AuthGuard]
   },
   {
-    path: 'modal-producto-compra',
-    loadChildren: () => import('./modals/modal-producto-compra/modal-producto-compra.module').then( m => m.ModalProductoCompraPageModule),
-    canActivate: [AuthGuard]
-  },
-  {
-    path: 'modal-buscador',
-    loadChildren: () => import('./modals/modal-buscador/modal-buscador.module').then( m => m.ModalBuscadorPageModule),
-    canActivate: [AuthGuard]
-  },
-  {
     path: 'detalles-de-compra',
     loadChildren: () => import('./modals/detalles-de-compra/detalles-de-compra.module').then( m => m.DetallesDeCompraPageModule),
     canActivate: [AuthGuard]
@@ -210,24 +123,8 @@ const routes: Routes = [
     canActivate: [AuthGuard]
   },
   {
-    path: 'productos-compuestos',
-    loadChildren: () => import('./pages/productos-compuestos/productos-compuestos.module').then( m => m.ProductosCompuestosPageModule),
-    canActivate: [AuthGuard]
-  },
-  {
-    path: 'agregar-editar-prod-compuestos',
-    // tslint:disable-next-line:max-line-length
-    loadChildren: () => import('./modals/agregar-editar-prod-compuestos/agregar-editar-prod-compuestos.module').then( m => m.AgregarEditarProdCompuestosPageModule),
-    canActivate: [AuthGuard]
-  },
-  {
     path: 'test-page',
     loadChildren: () => import('./pages/test-page/test-page.module').then( m => m.TestPagePageModule),
-    canActivate: [AuthGuard]
-  },
-  {
-    path: 'comprobante',
-    loadChildren: () => import('./modals/comprobante/comprobante.module').then( m => m.ComprobantePageModule),
     canActivate: [AuthGuard]
   },
   {
@@ -268,6 +165,10 @@ const routes: Routes = [
     path: 'modal-editar-item-compra',
     loadChildren: () => import('./modals/modal-editar-item-compra/modal-editar-item-compra.module').
     then( m => m.ModalEditarItemCompraPageModule)
+  },
+  {
+    path: 'modal-ingresos-egresos',
+    loadChildren: () => import('./modals/modal-ingresos-egresos/modal-ingresos-egresos.module').then( m => m.ModalIngresosEgresosPageModule)
   }
 
 

@@ -15,11 +15,11 @@ import { ClienteInterface } from '../../models/cliente-interface';
 import { AgregarEditarClientePage } from '../../modals/agregar-editar-cliente/agregar-editar-cliente.page';
 import { ModalAgregarProductoPage } from '../../modals/modal-agregar-producto/modal-agregar-producto.page';
 import { ModalVentasPage } from '../../modals/modal-ventas/modal-ventas.page';
-import { IngresoEgresoPage } from '../../modals/ingreso-egreso/ingreso-egreso.page';
 import { BuscadorService } from 'src/app/services/buscador.service';
 import { GlobalService } from '../../global/global.service';
 import { DataBaseService } from '../../services/data-base.service';
 import { GENERAL_CONFIG } from '../../../config/apiPeruConfig';
+import { ModalIngresosEgresosPage } from '../../modals/modal-ingresos-egresos/modal-ingresos-egresos.page';
 
 @Component({
   selector: 'app-punto-venta',
@@ -74,7 +74,6 @@ export class PuntoVentaPage implements OnInit {
               public storage: StorageService,
               private popoverController: PopoverController,
               private confirmarVentaServ: ConfirmarVentaService,
-              private modalController: ModalController,
               private router: Router,
               private modalCtlr: ModalController,
               private buscadorService: BuscadorService,
@@ -413,7 +412,7 @@ export class PuntoVentaPage implements OnInit {
   }
 
   async modalCongelados() {
-    const modal = await this.modalController.create({
+    const modal = await this.modalCtlr.create({
       component: VentasCongeladasPage,
       cssClass: 'my-custom-class'
     });
@@ -468,7 +467,7 @@ export class PuntoVentaPage implements OnInit {
   }
 
   async modalVentas() {
-    const modal = await this.modalController.create({
+    const modal = await this.modalCtlr.create({
       component: ModalVentasPage,
       cssClass: 'modal-fullscreen'
     });
@@ -490,12 +489,12 @@ export class PuntoVentaPage implements OnInit {
 
   async abrirModalIngresosEgresos(){
     const modal =  await this.modalCtlr.create({
-      component: IngresoEgresoPage,
+      component: ModalIngresosEgresosPage,
       componentProps: {
         dataModal: this.dataModal
       }
     });
-    await modal.present();
+    return await modal.present();
   }
 }
 

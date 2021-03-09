@@ -15,8 +15,6 @@ import { AngularFirestoreModule } from '@angular/fire/firestore';
 // import { Camera } from '@ionic-native/camera/ngx';
 // import { NativeStorage } from '@ionic-native/native-storage/ngx';
 
-import { MenuComponent } from './components/menu/menu.component';
-
 import { HttpClientModule} from '@angular/common/http';
 import { ReactiveFormsModule, FormsModule } from '@angular/forms';
 // notificacion.push
@@ -37,7 +35,7 @@ import { PoppoverEditarComponent } from './components/poppover-editar/poppover-e
 registerLocaleData(localeEs);
 
 @NgModule({
-  declarations: [AppComponent, MenuComponent, PoppoverEditarComponent, ModalDetallesServiciosPage],
+  declarations: [AppComponent, PoppoverEditarComponent, ModalDetallesServiciosPage],
   entryComponents: [ModalDetallesServiciosPage, PoppoverEditarComponent],
   imports: [BrowserModule,
     IonicModule.forRoot(),

@@ -4,6 +4,7 @@ import { DbDataService } from '../../services/db-data.service';
 import { isNullOrUndefined } from 'util';
 import { StorageService } from '../../services/storage.service';
 // import { CallNumber } from '@ionic-native/call-number/ngx';
+import { DataBaseService } from '../../services/data-base.service';
 
 @Component({
   selector: 'app-clientes',
@@ -15,7 +16,7 @@ export class ClientesPage implements OnInit {
   clientes = [];
   sinDatos;
   constructor(private  menuCtrl: MenuController,
-              private dataApi: DbDataService,
+              private dataApi: DataBaseService,
               // private callNumber: CallNumber,
               private alertController: AlertController,
               private storage: StorageService) {
@@ -27,7 +28,7 @@ export class ClientesPage implements OnInit {
   }
 
   listaClientes() {
-    this.dataApi.ObtenerListaClientes(this.storage.datosAdmi.sede).subscribe(data => {
+    this.dataApi.obtenerListaDeClientes().subscribe(data => {
       console.log(data);
       if (data.length > 0) {
         this.clientes = data;

@@ -6,6 +6,7 @@ import { StorageService } from '../../services/storage.service';
 import { PoppoverEditarComponent } from '../../components/poppover-editar/poppover-editar.component';
 import { EditarProductoPage } from '../../modals/editar-producto/editar-producto.page';
 import { DbDataService } from '../../services/db-data.service';
+import { DataBaseService } from '../../services/data-base.service';
 
 @Component({
   selector: 'app-detalles-producto',
@@ -21,7 +22,7 @@ export class DetallesProductoPage implements OnInit {
 
   sinDatos;
   constructor(private route: ActivatedRoute,
-              private dataApi: DbDataService,
+              private dataApi: DataBaseService,
               private toastController: ToastController,
               public storage: StorageService,
               private popoverController: PopoverController,
@@ -41,8 +42,8 @@ export class DetallesProductoPage implements OnInit {
 
   getDataProducto() {
     this.dataProducto = {};
-    this.dataApi.ObtenerUnProducto(this.sede, this.id).subscribe( data => {
-      if (data) {
+    this.dataApi.obtenerProductoPorId(this.sede, this.id).then( data => {
+      if (data.id) {
         this.dataProducto = data;
         this.sinDatos = false;
         console.log(this.dataProducto);
@@ -92,7 +93,7 @@ export class DetallesProductoPage implements OnInit {
     const { data } =  await modal.onWillDismiss();
     if (data) {
       console.log('datos', data);
-      this.dataApi.ActualizarDataProducto(data.data);
+      this.dataApi.actualizarProducto(data.data);
     }
   }
 
@@ -111,7 +112,7 @@ export class DetallesProductoPage implements OnInit {
         }, {
           text: 'Aceptar',
           handler: () => {
-            this.dataApi.EliminarProducto(this.id, this.sede);
+            this.dataApi.eliminarProducto(this.id, this.sede);
             console.log('data:',  this.categoria, this.sede);
             this.router.navigate(['/categorias-page'], {queryParams: {
               categoria: this.categoria,

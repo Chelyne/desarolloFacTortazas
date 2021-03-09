@@ -1,9 +1,11 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
-import { ModalController, ToastController } from '@ionic/angular';
+import { ModalController } from '@ionic/angular';
 import { DbDataService } from 'src/app/services/db-data.service';
 import { AdmiInterface } from '../../models/AdmiInterface';
 import { StorageService } from '../../services/storage.service';
+import { DataBaseService } from '../../services/data-base.service';
+import { GlobalService } from '../../global/global.service';
 
 @Component({
   selector: 'app-agregar-editar-usuario',
@@ -24,10 +26,10 @@ export class AgregarEditarUsuarioPage implements OnInit {
   emailPattern: any = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
 
   constructor(
-    private dataApi: DbDataService,
+    private dataApi: DataBaseService,
     private modalCtlr: ModalController,
-    private toastCtrl: ToastController,
-    private storage: StorageService
+    private storage: StorageService,
+    private servGlobal: GlobalService
   ) {
 
     this.usuarioModalForm = this.createFormGroupUsuario();
@@ -94,7 +96,7 @@ export class AgregarEditarUsuarioPage implements OnInit {
 
     this.dataApi.guardarUsuario(this.usuarioModalForm.value).then(() => {
       console.log('Se ingreso Correctamente');
-      this.presentToast('Se ingreso correctamente');
+      this.servGlobal.presentToast('Se ingreso correctamente');
       this.usuarioModalForm.reset();
       this.salirDeModal();
     }
@@ -104,27 +106,16 @@ export class AgregarEditarUsuarioPage implements OnInit {
 
 
   actualizarUsuario(){
-
     this.usuarioModalForm.value.nombre = this.nombre.value.toLowerCase();
     this.usuarioModalForm.value.apellidos = this.apellidos.value.toLowerCase();
-
     this.dataApi.actualizarUsuario(this.dataModal.usuario.correo, this.usuarioModalForm.value).then(
       () => {
         console.log('Se ingreso Correctamente');
-        this.presentToast('Datos actualizados correctamente');
+        this.servGlobal.presentToast('Datos actualizados correctamente');
         this.modalCtlr.dismiss();
       }
     );
 
-  }
-
-  async presentToast(message: string){
-    const toast = await this.toastCtrl.create({
-      message,
-      duration: 2000
-    });
-
-    toast.present();
   }
 
 

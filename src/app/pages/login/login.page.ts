@@ -8,6 +8,7 @@ import { StorageService } from '../../services/storage.service';
 import { DbDataService } from '../../services/db-data.service';
 import { isNullOrUndefined } from 'util';
 import { GENERAL_CONFIG } from '../../../config/apiPeruConfig';
+import { DataBaseService } from '../../services/data-base.service';
 
 @Component({
   selector: 'app-login',
@@ -23,7 +24,7 @@ export class LoginPage implements OnInit {
   loading;
   token: string;
   constructor(private authService: AuthServiceService,
-              private dataSrv: DbDataService,
+              private dataApi: DataBaseService,
               private router: Router,
               public storage: StorageService,
               private menuCtrl: MenuController,
@@ -67,7 +68,7 @@ export class LoginPage implements OnInit {
         console.log(res);
         this.storage.cargarDatosLogin().then(() => {
           // actualizar token
-          this.dataSrv.actualizarToken(this.token, this.LoginForm.value.email);
+          // this.dataApi.actualizarToken(this.token, this.LoginForm.value.email);
           this.router.navigate(['/home']);
           this.onResetForm();
           this.menuCtrl.enable(true);
@@ -77,7 +78,7 @@ export class LoginPage implements OnInit {
         console.log(error);
         if (error.code === 'auth/user-not-found') {
           console.log('Usuario no encontrado');
-          this.dataSrv.ObtenerUnAdministrador(this.LoginForm.value.email).subscribe(user => {
+          this.dataApi.obtenerUnAdministrador(this.LoginForm.value.email).subscribe(user => {
             if (isNullOrUndefined(user)) {
               this.presentToast('Usuario no encontrado');
               this.loading.dismiss();
@@ -88,7 +89,7 @@ export class LoginPage implements OnInit {
                 console.log('crear usuario');
                 this.authService.crearUsuario(user.correo, user.password).then(() => {
                   this.presentToast('Usuario creado correctamente');
-                  this.dataSrv.actualizarToken(this.token, this.LoginForm.value.email);
+                  // this.dataApi.actualizarToken(this.token, this.LoginForm.value.email);
                   this.router.navigate(['/home']);
                   this.onResetForm();
                   this.menuCtrl.enable(true);

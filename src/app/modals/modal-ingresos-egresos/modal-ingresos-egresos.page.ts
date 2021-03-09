@@ -1,16 +1,16 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { ModalController, LoadingController } from '@ionic/angular';
-import { DbDataService } from '../../services/db-data.service';
 import { StorageService } from '../../services/storage.service';
 import { GlobalService } from '../../global/global.service';
+import { DataBaseService } from '../../services/data-base.service';
 
 @Component({
-  selector: 'app-ingreso-egreso',
-  templateUrl: './ingreso-egreso.page.html',
-  styleUrls: ['./ingreso-egreso.page.scss'],
+  selector: 'app-modal-ingresos-egresos',
+  templateUrl: './modal-ingresos-egresos.page.html',
+  styleUrls: ['./modal-ingresos-egresos.page.scss'],
 })
-export class IngresoEgresoPage implements OnInit {
+export class ModalIngresosEgresosPage implements OnInit {
 
   ingresoEgresoForm: FormGroup;
   public saldoInsuficiente = false;
@@ -23,7 +23,7 @@ export class IngresoEgresoPage implements OnInit {
   loading;
   constructor(
     private modalCtlr: ModalController,
-    private dataApi: DbDataService,
+    private dataApi: DataBaseService,
     private storage: StorageService,
     private loadingController: LoadingController,
     private servGlobal: GlobalService
@@ -111,7 +111,4 @@ export class IngresoEgresoPage implements OnInit {
     });
     await this.loading.present();
   }
-
-
-
 }

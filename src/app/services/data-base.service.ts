@@ -9,6 +9,7 @@ import { VentaInterface } from '../models/venta/venta';
 import { formatDate } from '@angular/common';
 import { ProveedorInterface } from '../models/proveedor';
 import { AdmiInterface } from '../models/AdmiInterface';
+import { formatearDateTime } from '../global/funciones-globales';
 
 @Injectable({
   providedIn: 'root'
@@ -131,11 +132,13 @@ export class DataBaseService {
       throw String('fail');
     });
   }
-  // ------------------------------LIBIO----------------------------- */
 
-    // TODO: HACIENDO ESTO
-    guardarCompra(newCompra: CompraInterface, sede: string) {
-      return this.afs.collection('sedes').doc(sede.toLocaleLowerCase()).collection('compras').ref.add(newCompra)
+  // INGRESO Y EGRESO
+  guardarIngresoEgreso(ingresoEgreso: any, sede: string) {
+      // const fecha = formatDate(new Date(), 'dd-MM-yyyy', 'es');
+      const fecha = formatearDateTime('DD-MM-YYYY');
+      return this.afs.collection('sedes').doc(sede.toLocaleLowerCase())
+      .collection('ingresosEgresos').doc(fecha).collection('ingresosEgresosDia').ref.add(ingresoEgreso)
       .then(data => {
         if (data.id) {
           return data.id;
@@ -145,7 +148,42 @@ export class DataBaseService {
       }).catch(err => {
         throw String('fail');
       });
-    }
+  }
+  // ------------------------------LIBIO----------------------------- */
+
+  // TODO: HACIENDO ESTO
+  guardarCompra(newCompra: CompraInterface, sede: string) {
+    return this.afs.collection('sedes').doc(sede.toLocaleLowerCase()).collection('compras').ref.add(newCompra)
+    .then(data => {
+      if (data.id) {
+        return data.id;
+      } else {
+        return '';
+      }
+    }).catch(err => {
+      throw String('fail');
+    });
+  }
+
+  // Guardar Nuevo Proveedor
+  guardarProveedor(newProveedor: ProveedorInterface) {
+    return this.afs.collection('proveedores').ref.add(newProveedor).then(data => {
+      if (data.id) {
+        return data.id;
+      } else {
+        return '';
+      }
+    }).catch(err => {
+      throw String('fail');
+    });
+  }
+
+  // Guardar Nuevo USURARIO / VENDEDOR
+  guardarUsuario(newUser: AdmiInterface) {
+    return this.afs.collection('Roles').doc(newUser.correo).ref.set(newUser).then(() => 'exito').catch(err => {
+      throw String('fail');
+    });
+  }
   // ----------------------------------------------------------- */
   // ----------------------------------------------------------- */
 
@@ -203,6 +241,23 @@ export class DataBaseService {
   obtenerListaProductos(sede: string) {
     const sede1 = sede.toLocaleLowerCase();
     return this.afs.collection('sedes').doc(sede1).collection('productos', ref => ref.orderBy('fechaRegistro', 'desc').limit(20))
+    .snapshotChanges().pipe(map(changes => {
+      const datos: ProductoInterface[] = [];
+
+      changes.map(action => {
+        datos.push({
+          id: action.payload.doc.id,
+          ...action.payload.doc.data()
+        });
+      });
+
+      return datos;
+    }));
+  }
+
+  obtenerListaProductosTodos(sede: string) {
+    const sede1 = sede.toLocaleLowerCase();
+    return this.afs.collection('sedes').doc(sede1).collection('productos', ref => ref.orderBy('fechaRegistro', 'desc'))
     .snapshotChanges().pipe(map(changes => {
       const datos: ProductoInterface[] = [];
 
@@ -277,18 +332,7 @@ export class DataBaseService {
     });
   }
 
-  // OBTENER LISTA DE VENTAS
-  ObtenerListaDeVentas(sede: string, fachaventas: string) {
-    return this.afs.collection('sedes').doc(sede.toLocaleLowerCase()).collection('ventas').doc(fachaventas)
-    .collection('ventasDia', ref => ref.orderBy('fechaEmision', 'desc'))
-    .snapshotChanges().pipe(map(changes => {
-      return changes.map(action => {
-        const data = action.payload.doc.data() as VentaInterface;
-        data.idVenta = action.payload.doc.id;
-        return data;
-      });
-    }));
-  }
+
 
   // OBTENER PRODUCTOS DE VENTAS
   async obtenerProductosDeVenta(idProductoVenta: string, sede: string){
@@ -376,20 +420,39 @@ export class DataBaseService {
     }
 
     // REPORTES
-    obtenerVentasPorDia(sede: string, fecha: string) {
-      return this.afs.collection('sedes').doc(sede.toLocaleLowerCase()).collection('ventas').doc(fecha).collection('ventasDia').ref.get()
-      .then((querySnapshot) => {
-        const datos: any [] = [];
-        querySnapshot.forEach((doc) => {
-          // console.log(doc.id, ' => ', doc.data());
-          datos.push( {...doc.data(), id: doc.id});
-        });
-        return datos;
-      }).catch(err => {
-        console.log('no se pudo obtener las ventas', err);
-        throw String ('fail');
+  obtenerVentasPorDia(sede: string, fecha: string) {
+    return this.afs.collection('sedes').doc(sede.toLocaleLowerCase()).collection('ventas').doc(fecha)
+    .collection('ventasDia').ref.get()
+    .then((querySnapshot) => {
+      const datos: any [] = [];
+      querySnapshot.forEach((doc) => {
+        // console.log(doc.id, ' => ', doc.data());
+        datos.push({...doc.data(), id: doc.id});
       });
-    }
+      return datos;
+    }).catch(err => {
+      console.log('no se pudo obtener las ventas', err);
+      throw String ('fail');
+    });
+  }
+
+  // OBTENER LISTA DE VENTAS
+  obtenerVentasPorDiaObs(sede: string, fachaventas: string) {
+    return this.afs.collection('sedes').doc(sede.toLocaleLowerCase()).collection('ventas').doc(fachaventas)
+    .collection('ventasDia', ref => ref.orderBy('fechaEmision', 'desc'))
+    .snapshotChanges().pipe(map(changes => {
+      const datos: VentaInterface[] = [];
+
+      changes.map((action: any) => {
+        datos.push({
+          idVenta: action.payload.doc.id,
+          ...action.payload.doc.data() as VentaInterface
+        });
+      });
+
+      return datos;
+    }));
+  }
 
     obtenerVentaPorDiaVendedor(sede: string, dia: string, dniVendedor: string) {
       return this.afs.collection('sedes').doc(sede.toLocaleLowerCase()).collection('ventas').doc(dia).collection('ventasDia')
@@ -452,6 +515,36 @@ export class DataBaseService {
         });
       });
 
+      return datos;
+    }));
+  }
+
+  obtenerUnAdministrador(correo: string) {
+    return this.afs.doc(`Roles/${correo}`)
+    .snapshotChanges().pipe(map(action => {
+      let datos: any = {};
+      if (action.payload.exists === false) {
+        return null;
+      } else {
+        datos = {
+          ...action.payload.data() as AdmiInterface,
+          id: action.payload.id
+        };
+        return datos;
+      }
+    }));
+  }
+
+  obtenerUsuarios() {
+    return this.afs.collection('Roles')
+    .snapshotChanges().pipe(map(changes => {
+      const datos: AdmiInterface[] = [];
+      changes.map(action => {
+        datos.push({
+          id: action.payload.doc.id,
+          ...action.payload.doc.data() as AdmiInterface
+        });
+      });
       return datos;
     }));
   }
@@ -633,6 +726,40 @@ export class DataBaseService {
       throw String('fail');
     });
   }
+
+  actualizarProveedor(idProveedor: string, newProveedor: ProveedorInterface) {
+    return this.afs.collection('proveedores').doc(idProveedor).ref.update(newProveedor)
+    .then(() => 'exito').catch(err => {
+      console.log(err);
+      throw String('fail');
+    });
+  }
+
+  actualizarUsuario(idUser: string, newUser: AdmiInterface) {
+    return this.afs.collection('Roles').doc(idUser).ref.update(newUser)
+    .then(() => 'exito').catch(err => {
+      console.log(err);
+      throw String('fail');
+    });
+  }
+
+  // FUNCIONES QUE SE USAN PARA SUBIR PRODUCTOS
+  // actualizarArrayNOmnre del producto
+  actualizarArrayNombre(sede: string, id: string, arraynombre: any) {
+    return this.afs.collection('sedes').doc(sede)
+    .collection('productos').doc(id).update({arrayNombre: arraynombre}).then(() => 'exito')
+    .catch(err => {
+      throw String('fail');
+    });
+  }
+
+  actualizarUrlFoto(sede: string, id: string, url: string) {
+    return this.afs.collection('sedes').doc(sede).collection('productos').doc(id).update({img: url}).then(() => 'exito')
+    .catch(err => {
+      throw String('fail');
+    });
+  }
+  // FIN FUNCIONES QUE NO SE USAN MUCHO
   // ----------------------------------------------------------- */
   // ----------------------------------------------------------- */
 
@@ -666,6 +793,14 @@ export class DataBaseService {
       throw String('fail');
     });
 
+  }
+
+  eliminarUsuario(idUsuario: string) {
+    return this.afs.doc<ProductoInterface>(`Roles/${idUsuario}`).ref.delete()
+    .then(() => 'exito').catch(err => {
+      console.log('error', err);
+      throw String('fail');
+    });
   }
   // -----------------------------LIBIO------------------------------ */
   eliminarProveedor(idProveedor: string) {

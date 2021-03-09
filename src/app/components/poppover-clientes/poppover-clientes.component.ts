@@ -3,6 +3,7 @@ import { DbDataService } from '../../services/db-data.service';
 import { PopoverController } from '@ionic/angular';
 import { timer } from 'rxjs';
 import { StorageService } from '../../services/storage.service';
+import { DataBaseService } from '../../services/data-base.service';
 
 @Component({
   selector: 'app-poppover-clientes',
@@ -17,13 +18,13 @@ export class PoppoverClientesComponent implements OnInit, AfterViewInit {
   // listaClientes = [];
 
   textoBuscar = '';
-  constructor(private dataApi: DbDataService,
+  constructor(private dataApi: DataBaseService,
               private popoverController: PopoverController,
               private storage: StorageService) { }
 
   ngOnInit() {
     console.log(this.seleccionado);
-    this.dataApi.ObtenerListaDeClientes().subscribe(datos =>  {
+    this.dataApi.obtenerListaDeClientes().subscribe(datos =>  {
       console.log(datos);
       if (datos.length > 0) {
         this.listaClientes = datos;

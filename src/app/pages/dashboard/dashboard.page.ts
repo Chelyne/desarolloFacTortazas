@@ -80,7 +80,7 @@ export class DashboardPage implements OnInit {
 
   consultaVentas() {
     const hoy  = formatDate(new Date(), 'dd-MM-yyyy', 'es');
-    this.dataApi.ObtenerListaDeVentas(this.sede, hoy).subscribe(ventas => {
+    this.dataApi.obtenerVentasPorDiaObs(this.sede, hoy).subscribe(ventas => {
       console.log('VENTAS: ', ventas);
       const datos = [];
       const intervalo = [];

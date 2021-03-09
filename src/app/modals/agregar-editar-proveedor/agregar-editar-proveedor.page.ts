@@ -6,6 +6,7 @@ import { DbDataService } from 'src/app/services/db-data.service';
 import { StorageService } from '../../services/storage.service';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { isNullOrUndefined } from 'util';
+import { DataBaseService } from '../../services/data-base.service';
 
 @Component({
   selector: 'app-agregar-editar-proveedor',
@@ -30,7 +31,7 @@ export class AgregarEditarProveedorPage implements OnInit {
   consultando: boolean;
   encontrado: boolean;
   constructor(
-    private dataApi: DbDataService,
+    private dataApi: DataBaseService,
     private modalCtlr: ModalController,
     private toastCtrl: ToastController,
     private storage: StorageService,

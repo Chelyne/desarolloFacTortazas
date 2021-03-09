@@ -1,11 +1,9 @@
 import { Component, OnInit } from '@angular/core';
-import { ModalController, MenuController, ToastController } from '@ionic/angular';
+import { ModalController, MenuController } from '@ionic/angular';
 import { AgregarEditarUsuarioPage } from 'src/app/modals/agregar-editar-usuario/agregar-editar-usuario.page';
-// import { AgregarEditarUsuarioPage } from 'src/app/modals/agregar-editar-usuario/agregar-editar-usuario.page';
-import { DbDataService } from 'src/app/services/db-data.service';
-// import { UserRegistroService } from 'src/app/services/user-registro.service';
-import { AuthServiceService } from '../../services/auth-service.service';
 import { AdmiInterface } from '../../models/AdmiInterface';
+import { DataBaseService } from '../../services/data-base.service';
+import { GlobalService } from '../../global/global.service';
 
 @Component({
   selector: 'app-usuarios',
@@ -29,11 +27,11 @@ export class UsuariosPage implements OnInit {
   modalDataUsuario: AdmiInterface;
 
   sinDatos;
-  constructor(private dataApi: DbDataService,
+  constructor(private dataApi: DataBaseService,
               private modalCtlr: ModalController,
               private menuCtrl: MenuController,
-              private toastController: ToastController,
-              private authSrv: AuthServiceService) {
+              private servGlobal: GlobalService
+              ) {
   }
 
   ngOnInit() {
@@ -42,7 +40,7 @@ export class UsuariosPage implements OnInit {
   }
 
   ObtenerUsuarios(){
-    this.dataApi.ObtenerListaDeUsuarios().subscribe(data => {
+    this.dataApi.obtenerUsuarios().subscribe(data => {
       if (data.length > 0) {
         this.sinDatos = false;
         this.listaDeUsuarios = data;
@@ -57,7 +55,6 @@ export class UsuariosPage implements OnInit {
     this.dataModal.evento = 'agregar';
     this.abrirModal();
   }
-
 
   ActualizarDataUsuario(usuario: AdmiInterface){
     this.dataModal.evento = 'actualizar';
@@ -78,19 +75,9 @@ export class UsuariosPage implements OnInit {
     await modal.present();
   }
 
-
-
   eliminarUsuario(id) {
-    this.dataApi.EliminarUsuario(id).then(() => {
-      this.presentToast('Usuario eliminado');
+    this.dataApi.eliminarUsuario(id).then(() => {
+      this.servGlobal.presentToast('Usuario eliminado');
     });
-  }
-
-  async presentToast(mensaje: string) {
-    const toast = await this.toastController.create({
-      message: mensaje,
-      duration: 1000
-    });
-    toast.present();
   }
 }

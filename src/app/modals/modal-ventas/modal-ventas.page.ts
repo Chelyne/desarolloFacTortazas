@@ -11,6 +11,7 @@ import { NgxQrcodeElementTypes, NgxQrcodeErrorCorrectionLevels, QrcodeComponent 
 import { ItemDeVentaInterface } from '../../models/venta/item-de-venta';
 import { GENERAL_CONFIG } from '../../../config/apiPeruConfig';
 import { DataBaseService } from '../../services/data-base.service';
+import { formatearDateTime } from '../../global/funciones-globales';
 
 @Component({
   selector: 'app-modal-ventas',
@@ -58,7 +59,7 @@ export class ModalVentasPage implements OnInit {
   consultaVentas() {
     const fecha  = formatDate(new Date(), 'dd-MM-yyyy', 'en');
     console.log(fecha);
-    this.dataApi.ObtenerListaDeVentas(this.storage.datosAdmi.sede, fecha).subscribe(datos => {
+    this.dataApi.obtenerVentasPorDiaObs(this.storage.datosAdmi.sede, fecha).subscribe(datos => {
       console.log(datos);
       if (datos.length > 0) {
         this.listaVentas = datos;
@@ -192,7 +193,7 @@ export class ModalVentasPage implements OnInit {
           doc.text( 'Cliente:', 22.5, 33, {align: 'center'});
           doc.text( this.convertirMayuscula(venta.cliente.nombre), 22.5, 35, {align: 'center'});
           // tslint:disable-next-line:max-line-length
-          doc.text('Fecha: ' + formatDate(new Date(), 'dd/MM/yyyy', 'en') + '  ' + 'Hora: ' + formatDate(new Date(), 'HH:mm aa', 'en'), 22.5, 37, {align: 'center'});
+          doc.text('Fecha: ' + formatearDateTime('DD/MM/YYYY', venta.fechaEmision) + '  ' + 'Hora: ' + formatearDateTime('HH:mm a', venta.fechaEmision), 22.5, 37, {align: 'center'});
           doc.setFontSize(5);
 
           for (const c of venta.listaItemsDeVenta) {
@@ -290,7 +291,7 @@ export class ModalVentasPage implements OnInit {
           doc.text( 'Cliente:', 22.5, 33, {align: 'center'});
           doc.text( this.convertirMayuscula(venta.cliente.nombre), 22.5, 35, {align: 'center'});
           // tslint:disable-next-line:max-line-length
-          doc.text('Fecha: ' + formatDate(new Date(), 'dd/MM/yyyy', 'en') + '  ' + 'Hora: ' + formatDate(new Date(), 'HH:mm aa', 'en'), 22.5, 37, {align: 'center'});
+          doc.text('Fecha: ' + formatearDateTime('DD/MM/YYYY', venta.fechaEmision) + '  ' + 'Hora: ' + formatearDateTime('HH:mm a', venta.fechaEmision), 22.5, 37, {align: 'center'});
           doc.setFontSize(5);
 
           for (const c of venta.listaItemsDeVenta) {
@@ -391,7 +392,7 @@ export class ModalVentasPage implements OnInit {
           doc.text( 'Cliente:', 22.5, 33, {align: 'center'});
           doc.text( this.convertirMayuscula(venta.cliente.nombre), 22.5, 35, {align: 'center'});
           // tslint:disable-next-line:max-line-length
-          doc.text('Fecha: ' + formatDate(new Date(), 'dd/MM/yyyy', 'en') + '  ' + 'Hora: ' + formatDate(new Date(), 'HH:mm aa', 'en'), 22.5, 37, {align: 'center'});
+          doc.text('Fecha: ' + formatearDateTime('DD/MM/YYYY', venta.fechaEmision) + '  ' + 'Hora: ' + formatearDateTime('HH:mm a', venta.fechaEmision), 22.5, 37, {align: 'center'});
           doc.setFontSize(5);
 
           for (const c of venta.listaItemsDeVenta) {

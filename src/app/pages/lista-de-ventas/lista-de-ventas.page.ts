@@ -1,13 +1,10 @@
 import { Component, OnInit, ɵConsole } from '@angular/core';
-import { DbDataService } from '../../services/db-data.service';
 import { VentaInterface } from '../../models/venta/venta';
 import { FormGroup, FormControl } from '@angular/forms';
-import { splitAtColon } from '@angular/compiler/src/util';
 import { StorageService } from '../../services/storage.service';
 import { ApiPeruService } from 'src/app/services/api/api-peru.service';
 import { LoadingController, MenuController, ToastController } from '@ionic/angular';
-import { formatDate } from '@angular/common';
-import { ContadorDeSerieInterface } from '../../models/serie';
+import { DataBaseService } from '../../services/data-base.service';
 
 @Component({
   selector: 'app-lista-de-ventas',
@@ -31,7 +28,7 @@ export class ListaDeVentasPage implements OnInit {
   loading;
 
   constructor(
-    private dataApi: DbDataService,
+    private dataApi: DataBaseService,
     private storage: StorageService,
     private apiPeru: ApiPeruService,
     private menuCtrl: MenuController,
@@ -74,7 +71,7 @@ export class ListaDeVentasPage implements OnInit {
     // console.log(this.ventasForm.value.fechadeventa);
     this.fechaventaDDMMYYYY = this.ventasForm.value.fechadeventa;
     console.log(this.fechaventaDDMMYYYY, this.fechaventaYYYYMMDD);
-    this.dataApi.ObtenerListaDeVentas(this.sedes, this.ventasForm.value.fechadeventa).subscribe(data => {
+    this.dataApi.obtenerVentasPorDiaObs(this.sedes, this.ventasForm.value.fechadeventa).subscribe(data => {
       if (data.length > 0) {
         this.listaDeVentas = data;
         console.log(this.listaDeVentas);
