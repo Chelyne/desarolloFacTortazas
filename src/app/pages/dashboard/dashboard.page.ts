@@ -68,10 +68,10 @@ export class DashboardPage implements OnInit {
       if (data.length) {
         for (const iterator of data) {
           if (iterator.tipo === 'ingreso') {
-            this.totalIngreso += parseInt(iterator.monto, 10);
+            this.totalIngreso += parseFloat(iterator.monto);
           }
           if (iterator.tipo === 'egreso') {
-            this.totalEgreso += parseInt(iterator.monto, 10);
+            this.totalEgreso += parseFloat(iterator.monto);
           }
         }
       }

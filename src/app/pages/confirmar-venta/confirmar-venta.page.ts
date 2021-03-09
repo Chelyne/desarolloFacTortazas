@@ -14,7 +14,7 @@ import { ContadorDeSerieInterface } from '../../models/serie';
 import { redondeoDecimal } from '../../global/funciones-globales';
 import { ItemDeVentaInterface } from '../../models/venta/item-de-venta';
 import { MontoALetras } from 'src/app/global/monto-a-letra';
-import { apiPeruConfig } from '../../services/api/apiPeruConfig';
+import { GENERAL_CONFIG } from '../../../config/apiPeruConfig';
 import { GlobalService } from '../../global/global.service';
 import { DataBaseService } from '../../services/data-base.service';
 
@@ -28,9 +28,9 @@ export class ConfirmarVentaPage implements OnInit {
   formPago: FormGroup;
 
   // Datos de la empresa
-  RUC = apiPeruConfig.datosEmpresa.ruc;
-  LogoEmpresa = apiPeruConfig.datosEmpresa.logo;
-  nombreEmpresa = apiPeruConfig.datosEmpresa.razon_social;
+  RUC = GENERAL_CONFIG.datosEmpresa.ruc;
+  LogoEmpresa = GENERAL_CONFIG.datosEmpresa.logo;
+  nombreEmpresa = GENERAL_CONFIG.datosEmpresa.razon_social;
 
   tipoComprobante = 'boleta';
   serieComprobante: string;
@@ -102,13 +102,13 @@ export class ConfirmarVentaPage implements OnInit {
   comprobarSerieComprobante() {
     if (this.storage.datosAdmi) {
       if (this.tipoComprobante === 'boleta') {
-        this.serieComprobante = apiPeruConfig.sedes[this.sede].caja1.boleta; // FALTA QUE LA CAJA SEA DINAMICA
+        this.serieComprobante = GENERAL_CONFIG.sedes[this.sede].caja1.boleta; // FALTA QUE LA CAJA SEA DINAMICA
         console.log('SERIE: ', this.serieComprobante);
       } else if (this.tipoComprobante === 'factura') {
-        this.serieComprobante = apiPeruConfig.sedes[this.sede].caja1.factura; // FALTA QUE LA CAJA SEA DINAMICA
+        this.serieComprobante = GENERAL_CONFIG.sedes[this.sede].caja1.factura; // FALTA QUE LA CAJA SEA DINAMICA
         console.log('SERIE: ', this.serieComprobante);
       } else if (this.tipoComprobante === 'n. venta') {
-        this.serieComprobante = apiPeruConfig.sedes[this.sede].caja1.notaVenta; // FALTA QUE LA CAJA SEA DINAMICA
+        this.serieComprobante = GENERAL_CONFIG.sedes[this.sede].caja1.notaVenta; // FALTA QUE LA CAJA SEA DINAMICA
         console.log('SERIE: ', this.serieComprobante);
       }
     } else {
@@ -352,9 +352,9 @@ export class ConfirmarVentaPage implements OnInit {
         doc.setFont('helvetica');
         doc.text(this.nombreEmpresa, 22.5, 12, {align: 'center'});
 
-        doc.text(apiPeruConfig.sedes[this.sede].direccion.direccionCorta, 22.5, 14, {align: 'center'});
-        doc.text(apiPeruConfig.sedes[this.sede].direccion.referencia, 22.5, 16, {align: 'center'});
-        doc.text('Telefono: ' + apiPeruConfig.sedes[this.sede].direccion.telefono, 22.5, 19, {align: 'center'});
+        doc.text(GENERAL_CONFIG.sedes[this.sede].direccion.direccionCorta, 22.5, 14, {align: 'center'});
+        doc.text(GENERAL_CONFIG.sedes[this.sede].direccion.referencia, 22.5, 16, {align: 'center'});
+        doc.text('Telefono: ' + GENERAL_CONFIG.sedes[this.sede].direccion.telefono, 22.5, 19, {align: 'center'});
 
         doc.text('Ruc: ' + this.RUC, 22.5, 21, {align: 'center'});
         doc.text('Boleta de Venta electrónica', 22.5, 25, {align: 'center'});
@@ -466,9 +466,9 @@ export class ConfirmarVentaPage implements OnInit {
         doc.setFont('helvetica');
         doc.text(this.nombreEmpresa, 22.5, 12, {align: 'center'});
         // COMPROBAR DATOS DE LA EMPRESA POR SEDE
-        doc.text(apiPeruConfig.sedes[this.sede].direccion.direccionCorta, 22.5, 14, {align: 'center'});
-        doc.text(apiPeruConfig.sedes[this.sede].direccion.referencia, 22.5, 16, {align: 'center'});
-        doc.text('Telefono: ' + apiPeruConfig.sedes[this.sede].direccion.telefono, 22.5, 19, {align: 'center'});
+        doc.text(GENERAL_CONFIG.sedes[this.sede].direccion.direccionCorta, 22.5, 14, {align: 'center'});
+        doc.text(GENERAL_CONFIG.sedes[this.sede].direccion.referencia, 22.5, 16, {align: 'center'});
+        doc.text('Telefono: ' + GENERAL_CONFIG.sedes[this.sede].direccion.telefono, 22.5, 19, {align: 'center'});
         doc.text('Ruc: ' + this.RUC, 22.5, 21, {align: 'center'});
         doc.text('Factura de Venta electrónica', 22.5, 25, {align: 'center'});
         // tslint:disable-next-line:max-line-length
@@ -593,9 +593,9 @@ export class ConfirmarVentaPage implements OnInit {
         doc.setFontSize(6);
         doc.setFont('helvetica');
         doc.text(this.nombreEmpresa, 22.5, 12, {align: 'center'});
-        doc.text(apiPeruConfig.sedes[this.sede].direccion.direccionCorta, 22.5, 14, {align: 'center'});
-        doc.text(apiPeruConfig.sedes[this.sede].direccion.referencia, 22.5, 16, {align: 'center'});
-        doc.text('Telefono: ' + apiPeruConfig.sedes[this.sede].direccion.telefono, 22.5, 19, {align: 'center'});
+        doc.text(GENERAL_CONFIG.sedes[this.sede].direccion.direccionCorta, 22.5, 14, {align: 'center'});
+        doc.text(GENERAL_CONFIG.sedes[this.sede].direccion.referencia, 22.5, 16, {align: 'center'});
+        doc.text('Telefono: ' + GENERAL_CONFIG.sedes[this.sede].direccion.telefono, 22.5, 19, {align: 'center'});
         doc.text('Ruc: ' + this.RUC, 22.5, 21, {align: 'center'});
         doc.text('Nota de Venta electrónica', 22.5, 25, {align: 'center'});
         // tslint:disable-next-line:max-line-length

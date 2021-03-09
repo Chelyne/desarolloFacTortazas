@@ -16,7 +16,7 @@ import { redondeoDecimal } from 'src/app/global/funciones-globales';
 import { ReportesService } from '../../services/reportes.service';
 import { DataBaseService } from '../../services/data-base.service';
 import { GlobalService } from 'src/app/global/global.service';
-import { apiPeruConfig } from '../../services/api/apiPeruConfig';
+import { GENERAL_CONFIG } from '../../../config/apiPeruConfig';
 import { VentaInterface } from 'src/app/models/venta/venta';
 // tslint:disable-next-line:class-name
 interface jsPDFWithPlugin extends jsPDF {
@@ -34,9 +34,9 @@ interface jsPDFWithPlugin extends jsPDF {
 export class CajaChicaPage implements OnInit {
   sede =  this.storage.datosAdmi.sede;
   rolDatosAdmi = this.storage.datosAdmi.rol;
-  LogoEmpresa = apiPeruConfig.datosEmpresa.logo;
-  RUC = apiPeruConfig.datosEmpresa.ruc;
-  nombreEmpresa = apiPeruConfig.datosEmpresa.razon_social;
+  LogoEmpresa = GENERAL_CONFIG.datosEmpresa.logo;
+  RUC = GENERAL_CONFIG.datosEmpresa.ruc;
+  nombreEmpresa = GENERAL_CONFIG.datosEmpresa.razon_social;
 
   listaCajaChica;
 

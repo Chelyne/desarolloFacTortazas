@@ -192,7 +192,7 @@ export class ModalAgregarProductoPage implements OnInit {
   }
 
   removePic() {
-    this.uploadImage   = '../../../assets/fondoImg.jpg';
+    this.uploadImage   = '../../../assets/img/load_image.jpg';
   }
   // ------------------------- FIN SUBIR IMAGEN
 

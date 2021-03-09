@@ -30,7 +30,7 @@
                   <img (click)="presentActionSheet(fileLoader)" *ngIf="dataProducto.img && !image"
                     src="{{dataProducto.img}}" alt="">
                   <img (click)="presentActionSheet(fileLoader)" *ngIf="!dataProducto.img && !image"
-                    src="../../../assets/img/pet chop.png" alt="">
+                    src="../../../assets/img/producto_default.png" alt="">
                   <img (click)="presentActionSheet(fileLoader)" *ngIf="image" src="{{image}}" alt="">
                 </div>
                 <span *ngIf="uploadImage != null">

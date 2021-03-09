@@ -9,7 +9,7 @@ import { DbDataService } from '../services/db-data.service';
 import { AngularFireStorage } from '@angular/fire/storage';
 import { map } from 'rxjs/operators';
 import { ExportarPDFService } from '../services/exportar-pdf.service';
-import { apiPeruConfig } from '../services/api/apiPeruConfig';
+import { GENERAL_CONFIG } from '../../config/apiPeruConfig';
 
 @Component({
   selector: 'app-home',
@@ -17,7 +17,7 @@ import { apiPeruConfig } from '../services/api/apiPeruConfig';
   styleUrls: ['home.page.scss'],
 })
 export class HomePage {
-  logo = apiPeruConfig.datosEmpresa.logo;
+  logo = GENERAL_CONFIG.datosEmpresa.logo;
   Datos = [
     {titulo: 'Dashboard', icono: 'https://i.pinimg.com/originals/0b/92/c1/0b92c1ba5ae239c314ba2ec1dab936ec.png', categoria: 'dashboard'},
     {titulo: 'POS ', icono: 'https://upload.wikimedia.org/wikipedia/commons/thumb/c/ca/Card_Terminal_POS_Flat_Icon_Vector.svg/1024px-Card_Terminal_POS_Flat_Icon_Vector.svg.png', categoria: 'punto-venta'},

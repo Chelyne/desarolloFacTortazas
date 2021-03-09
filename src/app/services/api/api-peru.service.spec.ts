@@ -10,7 +10,7 @@ import { AngularFireModule } from '@angular/fire';
 import { AngularFirestoreModule } from '@angular/fire/firestore';
 import { environment } from 'src/environments/environment';
 import { apiPeruConfig as apiPeruMock} from './apiPeruConfig.test';
-import { apiPeruConfig as apiPeruFuncinal} from './apiPeruConfig';
+import { GENERAL_CONFIG as apiPeruFuncinal} from '../../../config/apiPeruConfig';
 import { VentaInterface } from 'src/app/models/venta/venta';
 import { CDRInterface } from 'src/app/models/api-peru/cdr-interface';
 

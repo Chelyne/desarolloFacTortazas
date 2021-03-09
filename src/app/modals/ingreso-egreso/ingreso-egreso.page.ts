@@ -61,7 +61,12 @@ export class IngresoEgresoPage implements OnInit {
   async IngresarMonto() {
     await this.presentLoading('Guardando datos...');
     this.ingresoEgresoForm.value.tipo = 'ingreso';
-    this.dataApi.guardarIngresoEgreso(this.ingresoEgresoForm.value, this.storage.datosAdmi.sede).then(() => {
+    const ingresoEgreso = {
+      monto: parseFloat(this.ingresoEgresoForm.value.monto),
+      detalles: this.ingresoEgresoForm.value.detalles,
+      tipo: this.ingresoEgresoForm.value.tipo,
+    };
+    this.dataApi.guardarIngresoEgreso(ingresoEgreso, this.storage.datosAdmi.sede).then(() => {
       const monto: number = parseFloat(this.ingresoEgresoForm.value.monto);
       this.modalCtlr.dismiss();
       this.servGlobal.presentToast('Ingreso exitoso.', {color: 'success'});
@@ -72,7 +77,12 @@ export class IngresoEgresoPage implements OnInit {
   async EgresarMonto(){
     await this.presentLoading('Guardando datos...');
     this.ingresoEgresoForm.value.tipo = 'egreso';
-    this.dataApi.guardarIngresoEgreso(this.ingresoEgresoForm.value, this.storage.datosAdmi.sede).then(() => {
+    const ingresoEgreso = {
+      monto: parseFloat(this.ingresoEgresoForm.value.monto),
+      detalles: this.ingresoEgresoForm.value.detalles,
+      tipo: this.ingresoEgresoForm.value.tipo,
+    };
+    this.dataApi.guardarIngresoEgreso(ingresoEgreso, this.storage.datosAdmi.sede).then(() => {
       const monto: number = parseFloat(this.ingresoEgresoForm.value.monto);
       this.modalCtlr.dismiss();
       this.servGlobal.presentToast('Retiro exitoso.', {color: 'success'});

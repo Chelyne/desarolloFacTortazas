@@ -9,7 +9,7 @@ import * as moment from 'moment';
 import jsPDF from 'jspdf';
 import { NgxQrcodeElementTypes, NgxQrcodeErrorCorrectionLevels, QrcodeComponent } from '@techiediaries/ngx-qrcode';
 import { ItemDeVentaInterface } from '../../models/venta/item-de-venta';
-import { apiPeruConfig } from '../../services/api/apiPeruConfig';
+import { GENERAL_CONFIG } from '../../../config/apiPeruConfig';
 import { DataBaseService } from '../../services/data-base.service';
 
 @Component({
@@ -21,9 +21,9 @@ import { DataBaseService } from '../../services/data-base.service';
   ]
 })
 export class ModalVentasPage implements OnInit {
-  RUC = apiPeruConfig.datosEmpresa.ruc;
-  LogoEmpresa = apiPeruConfig.datosEmpresa.logo;
-  nombreEmpresa = apiPeruConfig.datosEmpresa.razon_social;
+  RUC = GENERAL_CONFIG.datosEmpresa.ruc;
+  LogoEmpresa = GENERAL_CONFIG.datosEmpresa.logo;
+  nombreEmpresa = GENERAL_CONFIG.datosEmpresa.razon_social;
 
   listaVentas: VentaInterface[];
   sede = this.storage.datosAdmi.sede.toLowerCase();
@@ -181,9 +181,9 @@ export class ModalVentasPage implements OnInit {
           doc.setFontSize(6);
           doc.setFont('helvetica');
           doc.text(this.nombreEmpresa, 22.5, 12, {align: 'center'});
-          doc.text(apiPeruConfig.sedes[this.sede].direccion.direccionCorta, 22.5, 14, {align: 'center'});
-          doc.text(apiPeruConfig.sedes[this.sede].direccion.referencia, 22.5, 16, {align: 'center'});
-          doc.text('Telefono: ' + apiPeruConfig.sedes[this.sede].direccion.telefono, 22.5, 19, {align: 'center'});
+          doc.text(GENERAL_CONFIG.sedes[this.sede].direccion.direccionCorta, 22.5, 14, {align: 'center'});
+          doc.text(GENERAL_CONFIG.sedes[this.sede].direccion.referencia, 22.5, 16, {align: 'center'});
+          doc.text('Telefono: ' + GENERAL_CONFIG.sedes[this.sede].direccion.telefono, 22.5, 19, {align: 'center'});
           doc.text('Ruc: ' + this.RUC, 22.5, 21, {align: 'center'});
           doc.text('Boleta de Venta electrónica', 22.5, 25, {align: 'center'});
           // tslint:disable-next-line:max-line-length
@@ -279,9 +279,9 @@ export class ModalVentasPage implements OnInit {
           doc.setFontSize(6);
           doc.setFont('helvetica');
           doc.text(this.nombreEmpresa, 22.5, 12, {align: 'center'});
-          doc.text(apiPeruConfig.sedes[this.sede].direccion.direccionCorta, 22.5, 14, {align: 'center'});
-          doc.text(apiPeruConfig.sedes[this.sede].direccion.referencia, 22.5, 16, {align: 'center'});
-          doc.text('Telefono: ' + apiPeruConfig.sedes[this.sede].direccion.telefono, 22.5, 19, {align: 'center'});
+          doc.text(GENERAL_CONFIG.sedes[this.sede].direccion.direccionCorta, 22.5, 14, {align: 'center'});
+          doc.text(GENERAL_CONFIG.sedes[this.sede].direccion.referencia, 22.5, 16, {align: 'center'});
+          doc.text('Telefono: ' + GENERAL_CONFIG.sedes[this.sede].direccion.telefono, 22.5, 19, {align: 'center'});
           doc.text('Ruc: ' + this.RUC, 22.5, 21, {align: 'center'});
           doc.text('Factura de Venta electrónica', 22.5, 25, {align: 'center'});
           // tslint:disable-next-line:max-line-length
@@ -380,9 +380,9 @@ export class ModalVentasPage implements OnInit {
           doc.setFontSize(6);
           doc.setFont('helvetica');
           doc.text(this.nombreEmpresa, 22.5, 12, {align: 'center'});
-          doc.text(apiPeruConfig.sedes[this.sede].direccion.direccionCorta, 22.5, 14, {align: 'center'});
-          doc.text(apiPeruConfig.sedes[this.sede].direccion.referencia, 22.5, 16, {align: 'center'});
-          doc.text('Telefono: ' + apiPeruConfig.sedes[this.sede].direccion.telefono, 22.5, 19, {align: 'center'});
+          doc.text(GENERAL_CONFIG.sedes[this.sede].direccion.direccionCorta, 22.5, 14, {align: 'center'});
+          doc.text(GENERAL_CONFIG.sedes[this.sede].direccion.referencia, 22.5, 16, {align: 'center'});
+          doc.text('Telefono: ' + GENERAL_CONFIG.sedes[this.sede].direccion.telefono, 22.5, 19, {align: 'center'});
           doc.text('Ruc: ' + this.RUC, 22.5, 21, {align: 'center'});
           doc.text('Nota de Venta electrónica', 22.5, 25, {align: 'center'});
           // tslint:disable-next-line:max-line-length

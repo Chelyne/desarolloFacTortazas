@@ -4,7 +4,7 @@ import { VentaInterface } from '../models/venta/venta';
 import { formatDate } from '@angular/common';
 import { MontoALetras } from 'src/app/global/monto-a-letra';
 import { ItemDeVentaInterface } from 'src/app/models/venta/item-de-venta';
-import { apiPeruConfig } from './../services/api/apiPeruConfig';
+import { GENERAL_CONFIG } from '../../config/apiPeruConfig';
 import { DataBaseService } from './data-base.service';
 import * as moment from 'moment';
 
@@ -15,9 +15,9 @@ import * as moment from 'moment';
 })
 export class BoletasFacturasService {
 
-  LogoEmpresa = apiPeruConfig.datosEmpresa.logo;
-  RUC = apiPeruConfig.datosEmpresa.ruc;
-  nombreEmpresa = apiPeruConfig.datosEmpresa.razon_social;
+  LogoEmpresa = GENERAL_CONFIG.datosEmpresa.logo;
+  RUC = GENERAL_CONFIG.datosEmpresa.ruc;
+  nombreEmpresa = GENERAL_CONFIG.datosEmpresa.razon_social;
   valueQR;
 
 

@@ -1,10 +1,10 @@
-export const apiPeruConfig = {
+export const GENERAL_CONFIG = {
     datosApiPeru: {
         usuario: 'friendscode',
         password: 'friends2019peru'
     },
     datosEmpresa: {
-        logo: '../../../assets/img/TOOBY LOGO.png',
+        logo: '../../../assets/img/logo_app.png',
         ruc: '20601831032',
         razon_social: 'CLÍNICA VETERINARIA TOOBY E.I.R.L',
         nombreComercial: 'VETERINARIAS TOBBY',

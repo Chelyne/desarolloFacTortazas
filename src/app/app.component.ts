@@ -83,7 +83,7 @@ export class AppComponent {
       cssClass: 'paway-alert',
       // header: 'PAWAY TECHNOLOGY',
       // subHeader: 'Aplicación realizada por Paway Perú',
-      message: '<img src="../../../../../assets/paway logo.png"><br>www.pawayperu.com<br>+51 910426974',
+      message: '<img src="../../../assets/paway_logo.png"><br>www.pawayperu.com<br>+51 910426974',
       mode: 'ios',
       buttons: ['Aceptar']
     });

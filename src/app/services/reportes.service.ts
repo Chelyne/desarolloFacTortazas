@@ -8,7 +8,7 @@ import { jsPDF } from 'jspdf';
 import * as moment from 'moment';
 import { StorageService } from 'src/app/services/storage.service';
 import { DataBaseService } from './data-base.service';
-import { apiPeruConfig } from './api/apiPeruConfig';
+import { GENERAL_CONFIG } from '../../config/apiPeruConfig';
 // tslint:disable-next-line:class-name
 interface jsPDFWithPlugin extends jsPDF {
 
@@ -19,9 +19,9 @@ interface jsPDFWithPlugin extends jsPDF {
 })
 
 export class ReportesService {
-  LogoEmpresa = apiPeruConfig.datosEmpresa.logo;
-  RUC = apiPeruConfig.datosEmpresa.ruc;
-  nombreEmpresa = apiPeruConfig.datosEmpresa.razon_social;
+  LogoEmpresa = GENERAL_CONFIG.datosEmpresa.logo;
+  RUC = GENERAL_CONFIG.datosEmpresa.ruc;
+  nombreEmpresa = GENERAL_CONFIG.datosEmpresa.razon_social;
 
   sede = this.storage.datosAdmi.sede;
   Ingresos = 0;
@@ -483,11 +483,11 @@ export class ReportesService {
       } else {
         for (const datos of snapshot) {
           if (datos.tipo === 'ingreso'){
-            this.Ingresos += Number(datos.monto);
-            console.log(Number(datos.monto));
+            this.Ingresos += parseFloat(datos.monto);
+            console.log(parseFloat(datos.monto));
           }
           if (datos.tipo === 'egreso'){
-            this.Egresos += Number(datos.monto);
+            this.Egresos += parseFloat(datos.monto);
           }
         }
         console.log(this.Ingresos, this.Egresos);

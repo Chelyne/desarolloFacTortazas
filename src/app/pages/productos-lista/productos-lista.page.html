@@ -28,7 +28,7 @@
         <!-- (click)="presentModalDetalles('frutas', fruta.id)" -->
         <ion-card (click)="verDetallesProducto(producto.id)"> 
           <img *ngIf="producto.img" src="{{producto.img}}" alt="">
-          <img *ngIf="!producto.img" src="../../../assets/img/pet chop.png" alt="">
+          <img *ngIf="!producto.img" src="../../../assets/img/producto_default.png" alt="">
           <ion-card-title>{{producto.nombre | titlecase}}
           </ion-card-title>
           <ion-card-subtitle>{{producto.cantidad}} {{producto.medida}}</ion-card-subtitle>

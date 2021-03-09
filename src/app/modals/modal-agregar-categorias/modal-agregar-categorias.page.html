@@ -28,7 +28,7 @@
                     </ion-item>
                   </ion-toolbar>
                   <div class="fotoProducto">
-                    <img (click)="subirFoto(fileLoader)" *ngIf="!image" src="../../../assets/fondoImg.jpg" alt="">
+                    <img (click)="subirFoto(fileLoader)" *ngIf="!image" src="../../../assets/img/load_image.jpg" alt="">
                     <img (click)="subirFoto(fileLoader)" *ngIf="image" [src]="uploadImage" alt="foto">
                   </div>
                   <span *ngIf="uploadImage != null">

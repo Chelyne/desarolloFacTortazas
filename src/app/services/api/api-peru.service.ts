@@ -13,7 +13,7 @@ import { StorageService } from '../storage.service';
 
 import { redondeoDecimal, formatearDateTime } from 'src/app/global/funciones-globales';
 import { MontoALetras } from 'src/app/global/monto-a-letra';
-import { apiPeruConfig } from './apiPeruConfig';
+import { GENERAL_CONFIG } from '../../../config/apiPeruConfig';
 import { ApiPeruConfigInterface, DatosApiPeruInterface, DatosEmpresaInterface } from './apiPeruInterfaces';
 import { CDRInterface } from 'src/app/models/api-peru/cdr-interface';
 
@@ -47,7 +47,7 @@ export class ApiPeruService {
     // TODO : DESCOMENTAR LINEA ABAJO
     // this.obtenerDatosDeLaEmpresa();
     this.sede = storage.datosAdmi.sede.toLocaleLowerCase();
-    this.setApiPeruConfig(apiPeruConfig);
+    this.setApiPeruConfig(GENERAL_CONFIG);
   }
 
   // verificarVenta(venta: VentaInterface){

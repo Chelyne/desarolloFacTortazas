@@ -19,7 +19,7 @@ import { IngresoEgresoPage } from '../../modals/ingreso-egreso/ingreso-egreso.pa
 import { BuscadorService } from 'src/app/services/buscador.service';
 import { GlobalService } from '../../global/global.service';
 import { DataBaseService } from '../../services/data-base.service';
-import { apiPeruConfig } from '../../services/api/apiPeruConfig';
+import { GENERAL_CONFIG } from '../../../config/apiPeruConfig';
 
 @Component({
   selector: 'app-punto-venta',
@@ -27,7 +27,7 @@ import { apiPeruConfig } from '../../services/api/apiPeruConfig';
   styleUrls: ['./punto-venta.page.scss'],
 })
 export class PuntoVentaPage implements OnInit {
-  logo = apiPeruConfig.datosEmpresa.logo;
+  logo = GENERAL_CONFIG.datosEmpresa.logo;
   sede = this.storage.datosAdmi.sede;
 
   @ViewChild('search', {static: false}) search: any;
