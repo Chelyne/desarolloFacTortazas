@@ -1,6 +1,7 @@
 .fondo{
     position: absolute;
-    background-image: url('../../../assets/fondoLogin.png');
+    // background-image: url('../../../assets/fondoLogin.png');
+    background-color: var(--ion-color-primary);
     background-repeat: no-repeat;
     background-size: 100% 100%;
     object-fit: contain;

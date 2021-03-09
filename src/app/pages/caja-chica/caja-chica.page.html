@@ -6,16 +6,16 @@
     </ion-buttons>
     <ion-title color="primary">Caja Chica</ion-title>
     <ion-item lines="none" slot="end">
-      <ion-button *ngIf="rolDatosAdmi === 'Administrador'" (click)="ReportePDFDiaIngresoEgreso()" color="secondary">
+      <ion-button *ngIf="rolDatosAdmi === 'Administrador'" (click)="ReportePDFDiaIngresoEgreso()" color="primary">
         <ion-icon slot="start" name="albums-outline"></ion-icon>
         R. Ingreso/Egreso
       </ion-button>
-      <ion-button *ngIf="rolDatosAdmi === 'Administrador'" (click)="ReporteVentaGeneralDia($event)" color="secondary">
+      <ion-button *ngIf="rolDatosAdmi === 'Administrador'" (click)="ReporteVentaGeneralDia($event)" color="primary">
         <ion-icon slot="start" name="albums-outline"></ion-icon>
         Reporte General
         <ion-icon slot="end" name="chevron-down-outline"></ion-icon>
       </ion-button>
-      <ion-button (click)="modalAperturaCajaChica('abrir',null)" color="secondary">
+      <ion-button (click)="modalAperturaCajaChica('abrir',null)" color="primary">
         <ion-icon slot="start" name="cart"></ion-icon>
         Apertura Caja Chica
       </ion-button>
@@ -25,7 +25,7 @@
 
 <ion-content class="ion-padding">
   <ion-card>
-    <ion-card-header color="secondary">
+    <ion-card-header color="primary">
       <ion-card-title>Listado de caja</ion-card-title>
     </ion-card-header>
     <ion-card-content>
@@ -91,11 +91,11 @@
           </ion-col>
           <ion-col size="3.7">
             <ion-label>
-              <ion-button *ngIf="item.estado==='Cerrado'" size="small" class="botones" color="secondary"
+              <ion-button *ngIf="item.estado==='Cerrado'" size="small" class="botones" color="primary"
                 (click)="ReportePuntoVenta(item)">
                 Reporte
               </ion-button>
-              <ion-button *ngIf="item.estado==='Cerrado'" size="small" class="botones" color="secondary"
+              <ion-button *ngIf="item.estado==='Cerrado'" size="small" class="botones" color="primary"
                 (click)="ReporteProductos($event,item)">
                 <ion-icon slot="end" name="chevron-down-outline"></ion-icon>
                 R. productos
@@ -113,7 +113,7 @@
                 Cerrar Caja
               </ion-button>
               <ion-button *ngIf=" rolDatosAdmi === 'Administrador' && item.estado==='Aperturado'" size="small"
-                class="botones" color="secondary" (click)="modalAperturaCajaChica('editar',item)">
+                class="botones" color="primary" (click)="modalAperturaCajaChica('editar',item)">
                 Editar
               </ion-button>
             </ion-label>

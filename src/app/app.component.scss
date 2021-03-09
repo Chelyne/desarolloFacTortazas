@@ -18,7 +18,7 @@
  
  ion-header {
     // height: 25%;
-    background: linear-gradient(to bottom right, #00E2EE, #00AFEF); 
+    background: linear-gradient(to bottom right, var(--ion-color-primary), var(--ion-color-primary)); 
      // url('https://image.freepik.com/vector-gratis/ilustracion-vegetales-frutas-patrones-fisuras_123207-212.jpg')!important;
      object-fit: cover;
  }

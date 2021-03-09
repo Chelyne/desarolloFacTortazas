@@ -9,6 +9,7 @@ import { DbDataService } from '../services/db-data.service';
 import { AngularFireStorage } from '@angular/fire/storage';
 import { map } from 'rxjs/operators';
 import { ExportarPDFService } from '../services/exportar-pdf.service';
+import { apiPeruConfig } from '../services/api/apiPeruConfig';
 
 @Component({
   selector: 'app-home',
@@ -16,13 +17,14 @@ import { ExportarPDFService } from '../services/exportar-pdf.service';
   styleUrls: ['home.page.scss'],
 })
 export class HomePage {
+  logo = apiPeruConfig.datosEmpresa.logo;
   Datos = [
-    {titulo: 'Pet Shop', icono: '../../assets/img/pet chop.png', categoria: 'petshop'},
-    {titulo: 'Estética ', icono: '../../assets/img/estetica.png', categoria: 'estetica'},
-    {titulo: 'Clínica', icono: '../../assets/img/clinica.png', categoria: 'clinica'},
-    {titulo: 'Farmacia', icono: '../../assets/img/farmacia.png', categoria: 'farmacia'},
-    {titulo: 'Pedidos', icono: '../../assets/img/pedidos.png', categoria: 'pedidos'},
-    {titulo: 'Notificar', icono: '../../assets/img/notificacion.png', categoria: null},
+    {titulo: 'Dashboard', icono: 'https://i.pinimg.com/originals/0b/92/c1/0b92c1ba5ae239c314ba2ec1dab936ec.png', categoria: 'dashboard'},
+    {titulo: 'POS ', icono: 'https://upload.wikimedia.org/wikipedia/commons/thumb/c/ca/Card_Terminal_POS_Flat_Icon_Vector.svg/1024px-Card_Terminal_POS_Flat_Icon_Vector.svg.png', categoria: 'punto-venta'},
+    {titulo: 'Usuarios', icono: 'https://img.icons8.com/color/452/group.png', categoria: 'usuarios'},
+    {titulo: 'Reportes', icono: 'https://www.freeiconspng.com/thumbs/report-icon/call-report-icon-3.png', categoria: 'reporte-ventas'},
+    // {titulo: 'Pedidos', icono: '../../assets/img/pedidos.png', categoria: 'pedidos'},
+    // {titulo: 'Notificar', icono: '../../assets/img/notificacion.png', categoria: null},
   ];
 
   todosProductos = [];
@@ -43,24 +45,14 @@ export class HomePage {
   categoriaPage(categoria1: string) {
     if (categoria1) {
       switch (categoria1) {
-        case 'petshop':
-          this.router.navigate(['/categorias-page'], {queryParams: {
-            categoria: categoria1,
-            sede: this.storage.datosAdmi.sede
-          }, skipLocationChange: true});
-          break;
-        case 'estetica':
-          this.router.navigate(['/servicios', 'estetica']); break;
-        case 'clinica':
-          this.router.navigate(['/servicios', 'clinica']); break;
-        case 'farmacia':
-          this.router.navigate(['/categorias-page'], {queryParams: {
-            categoria: categoria1,
-            sede: this.storage.datosAdmi.sede
-          }, skipLocationChange: true});
-          break;
-        case 'pedidos':
-          this.router.navigate(['/pedidos']); break;
+        case 'dashboard':
+          this.router.navigate(['/dashboard']); break;
+        case 'punto-venta':
+          this.router.navigate(['/punto-venta']); break;
+        case 'usuarios':
+          this.router.navigate(['/usuarios']); break;
+        case 'resporte-ventas':
+          this.router.navigate(['/resporte-ventas']); break;
       }
     } else {
       // this.router.navigate(['/categorias-page']);
@@ -255,16 +247,21 @@ export class HomePage {
   //       console.log(obj);
   //       obj.forEach( (res: any[]) => {
   //         let contador = 0;
-  //         let contadorFallos = 0;
+  //         // let contadorFallos = 0;
   //         this.listaFallos = [];
   //         res.forEach(element => {
   //           element.nombre = element.nombre.toLocaleLowerCase();
-  //           if (element.codigo) {
-  //           element.codigo = element.codigo.toString();
-  //           }
-  //           if (element.codigoBarra) {
-  //             element.codigoBarra = element.codigoBarra.toString();
-  //             }
+  //           element.subCategoria = element.subCategoria.toLocaleLowerCase();
+  //           element.codigo = element.codigo.toLocaleLowerCase();
+  //           element.precio = parseFloat(element.precio);
+  //           element.cantStock = parseInt(element.cantStock, 10);
+  //           element.cantidad = parseInt(element.cantidad, 10);
+  //           // if (element.codigo) {
+  //           // element.codigo = element.codigo.toString();
+  //           // }
+  //           // if (element.codigoBarra) {
+  //           //   element.codigoBarra = element.codigoBarra.toString();
+  //           //   }
   //           console.log(element);
   //             // tslint:disable-next-line:no-shadowed-variable
   //           // const sus = this.consultar(element.nombre).subscribe((data: any) => {
@@ -285,7 +282,7 @@ export class HomePage {
   //           //   }
   //           // });
   //           // nuevos
-  //           this.afs.collection('sedes').doc('abancay').collection('productos').add(element).then( resp => {
+  //           this.afs.collection('sedes').doc('albrook').collection('productos').add(element).then( resp => {
   //             console.log(contador, 'Ingresado', resp);
   //             contador++;
   //             }).catch(error => {console.error('No se  pudo ingresar los datos', error); });
@@ -306,5 +303,5 @@ export class HomePage {
   //         console.log(res);
   //       });
   //     } );
-    // }
+  //   }
 }

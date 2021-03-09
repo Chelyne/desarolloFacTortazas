@@ -7,6 +7,7 @@ import { Router } from '@angular/router';
 import { DataBaseService } from '../../services/data-base.service';
 import { GlobalService } from '../../global/global.service';
 import { ModalAgregarCategoriasPage } from '../../modals/modal-agregar-categorias/modal-agregar-categorias.page';
+import { apiPeruConfig } from '../../services/api/apiPeruConfig';
 
 @Component({
   selector: 'app-categorias',
@@ -14,6 +15,7 @@ import { ModalAgregarCategoriasPage } from '../../modals/modal-agregar-categoria
   styleUrls: ['./categorias.page.scss'],
 })
 export class CategoriasPage implements OnInit {
+  logo = apiPeruConfig.datosEmpresa.logo;
   sede = this.storage.datosAdmi.sede;
   listaDeCategorias: CategoriaInterface[] = [];
   sinDatos: boolean;

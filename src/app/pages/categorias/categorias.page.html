@@ -41,7 +41,7 @@
         *ngFor="let cat of listaDeCategorias | buscarCategoria:textoBuscar">
         <ion-card class="categoria">
           <img (click)="irListaProductos(cat.categoria)" *ngIf="cat.img" src="{{cat.img}}" alt="">
-          <img (click)="irListaProductos(cat.categoria)" *ngIf="!cat.img" src="../../../assets/img/clinica.png"
+          <img (click)="irListaProductos(cat.categoria)" *ngIf="!cat.img" src="{{logo}}"
             alt="">
           <ion-item>
             <ion-label>{{cat.categoria | titlecase}}</ion-label>

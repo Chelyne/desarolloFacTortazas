@@ -98,16 +98,18 @@ export class DashboardPage implements OnInit {
         // COMPROBAR CON LIBIO
         const date = formatearDateTime('H', venta.fechaEmision);
         // const date = this.datePipe.transform(new Date(moment.unix(venta.fechaEmision.seconds).format('D MMM YYYY H:mm')), 'H');
-        datos[date] += 1;
         console.log('DAAAAAAATE: ', date);
-        if (venta.tipoComprobante === 'boleta') {
+        if (venta.tipoComprobante === 'boleta' && venta.estadoVenta !== 'anulado') {
           this.totalBoleta += venta.totalPagarVenta;
+          datos[date] += 1;
         }
-        if (venta.tipoComprobante === 'factura') {
+        if (venta.tipoComprobante === 'factura' && venta.estadoVenta !== 'anulado') {
           this.totalFactura += venta.totalPagarVenta;
+          datos[date] += 1;
         }
-        if (venta.tipoComprobante === 'n. venta') {
+        if (venta.tipoComprobante === 'n. venta' && venta.estadoVenta !== 'anulado') {
           this.totalNotaVenta += venta.totalPagarVenta;
+          datos[date] += 1;
         }
       }
       this.generarChartsNotasVenta();

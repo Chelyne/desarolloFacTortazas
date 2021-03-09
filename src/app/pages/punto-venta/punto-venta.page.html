@@ -72,7 +72,7 @@
               <ion-row class="ion-justify-content-center ion-align-items-center">
                 <ion-col size-xs="3" class="colImg">
                   <img *ngIf="prod.img" [src]='prod.img' alt="">
-                  <img *ngIf="!prod.img" src='../../../../../assets/img/pet chop.png' alt="">
+                  <img *ngIf="!prod.img" src='{{logo}}' alt="">
                 </ion-col>
                 <ion-col size-xs="5" class="colDatos">
                   <ion-label style="font-size: 17px; font-weight: bold;">{{prod.nombre | titlecase}}</ion-label><br>
@@ -110,7 +110,7 @@
               <ion-col size-lg="3" size-md="3" size-sm="6" size-xs="6" *ngFor="let categoria of categorias">
                 <ion-card (click)="listaProductosCategoria(categoria.categoria)">
                   <img *ngIf="categoria.img" [src]="categoria.img" alt="">
-                  <img *ngIf="!categoria.img" src="../../../assets/img/clinica.png" alt="">
+                  <img *ngIf="!categoria.img" src="{{logo}}" alt="">
                   <ion-label [style.color]="categoria.color">{{categoria.categoria | uppercase}}</ion-label>
                 </ion-card>
               </ion-col>
@@ -140,11 +140,11 @@
               <ion-col size-lg="3" size-md="3" size-sm="4" size-xs="4" *ngFor="let producto of listaProductos">
                 <ion-card mode="ios" (click)="AgregarItemDeVenta(producto)">
                   <img *ngIf="producto.img" src="{{producto.img}}" alt="">
-                  <img *ngIf="!producto.img" src="../../../assets/img/pet chop.png" alt="">
+                  <img *ngIf="!producto.img" src="https://images.squarespace-cdn.com/content/v1/5940f2ed20099e4f1c8afcc8/1501629108866-YF2F6Z9CZ5V3MJ0EBF3Y/ke17ZwdGBToddI8pDm48kPWm0rAlW9TKAL1D5ahVyMVZw-zPPgdn4jUwVcJE1ZvWQUxwkmyExglNqGp0IvTJZamWLI2zvYWH8K3-s_4yszcp2ryTI0HqTOaaUohrI8PIkeVP_TcEY70XNV9OTAsoHz5kXZ4Hlt-J7Lew6PaDXUk/MASTER_recidar+iconos-01.png" alt="">
                   <ion-card-title>{{producto.nombre | titlecase}}
                   </ion-card-title>
                   <ion-card-subtitle>{{producto.cantidad}} {{producto.medida}}</ion-card-subtitle>
-                  <ion-card-subtitle *ngIf="producto.precio" class="precio">S/. {{producto.precio | number: '1.2'}}
+                  <ion-card-subtitle class="precio">S/. {{producto.precio | number: '1.2'}}
                   </ion-card-subtitle>
                 </ion-card>
               </ion-col>

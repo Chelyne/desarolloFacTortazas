@@ -3,6 +3,7 @@ ion-header {
     .logoApp {
       height: 25px;
       vertical-align: middle;
+      object-fit: contain;
     }
   }
 }
@@ -11,6 +12,7 @@ ion-grid {
   ion-row {
     ion-col {
       ion-card {
+        cursor: pointer;
         border-radius: 15px;
         margin-left: 10%;
         margin-right: 10%;

@@ -7,6 +7,7 @@ import { StorageService } from '../../services/storage.service';
 // import { FCM } from '@ionic-native/fcm/ngx';
 import { DbDataService } from '../../services/db-data.service';
 import { isNullOrUndefined } from 'util';
+import { apiPeruConfig } from '../../services/api/apiPeruConfig';
 
 @Component({
   selector: 'app-login',
@@ -15,6 +16,7 @@ import { isNullOrUndefined } from 'util';
 })
 export class LoginPage implements OnInit {
   LoginForm: FormGroup;
+  logo = apiPeruConfig.datosEmpresa.logo;
 
   // tslint:disable-next-line:max-line-length
   emailPattern: any = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;

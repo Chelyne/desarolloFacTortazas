@@ -59,7 +59,11 @@ export class ModalAgregarProductoPage implements OnInit {
   // obtener lista de categorias
    ObtenerCategorias(){
     this.dataApi.obtenerListaCategorias(this.sede).subscribe(data => {
-      this.listaDeCategorias = data;
+      if (data.length) {
+        this.listaDeCategorias = data;
+      } else {
+        this.globalservice.presentToast('Por favor agregue un categoria para agregar productos');
+      }
     });
   }
 

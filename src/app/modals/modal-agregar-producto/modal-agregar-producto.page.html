@@ -19,7 +19,7 @@
               <div style="height:220px;">
                 <input type="file" id="fileLoader" #fileLoader name="files" title="Load File" hidden
                   accept=".jpg, .jpeg, .png" />
-                <ion-toolbar color="secondary">
+                <ion-toolbar color="primary">
                   <ion-item color="transulcent" style="text-align: center;" lines="none">
                     <ion-icon slot="end" name="camera-outline" (click)="presentActionSheet(fileLoader)"></ion-icon>
                     <ion-icon slot="end" name="trash-outline" (click)="removePic()"></ion-icon>
@@ -82,7 +82,7 @@
               <ion-col>
                 <ion-item lines="none">
                   <ion-label color="primary" position="stacked">Categoria (*)</ion-label>
-                  <ion-select class="custom-options" [value]="listaDeCategorias[0].categoria" interface="popover"
+                  <ion-select class="custom-options" [value]="listaDeCategorias.length ? listaDeCategorias[0].categoria : 'no hay categorias'" interface="popover"
                     formControlName="subCategoria" placeholder="categorias" cancelText="Cancelar" okText="Aceptar"
                     mode="ios">
                     <ion-select-option *ngFor="let item of listaDeCategorias" [value]="item.categoria">
