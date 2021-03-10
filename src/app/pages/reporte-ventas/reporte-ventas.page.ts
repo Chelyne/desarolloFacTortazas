@@ -137,24 +137,24 @@ export class ReporteVentasPage implements OnInit {
           let contador = 0;
 
           for (const venta of this.arrayMes) {
-            await this.dataApi.obtenerProductosDeVenta(venta.idListaProductos, this.sede ).then( productoVenta => {
-              let  nombres = '';
-              console.log('producto venta', productoVenta);
-              for (const item2 of productoVenta) {
-                // if (item2.subCategoria === 'cortes' || item2.subCategoria === 'servicio') {
-                  nombres = nombres + item2.producto.nombre.toUpperCase() + ', ';
-                  venta.productos = nombres;
-                  console.log('item:' ,  item2.producto.nombre);
-
-                // }
-              }
-              contador++;
-              if (contador === this.arrayMes.length) {
-              console.log(this.arrayMes);
-              this.exelVentas(this.arrayMes, mes, anio);
-
-              }
-            });
+            contador++;
+            if (venta.tipoComprobante !== 'n. venta') {
+              await this.dataApi.obtenerProductosDeVenta(venta.idListaProductos, this.sede ).then( productoVenta => {
+                let  nombres = '';
+                console.log('producto venta', productoVenta);
+                for (const item2 of productoVenta) {
+                  // if (item2.subCategoria === 'cortes' || item2.subCategoria === 'servicio') {
+                    nombres = nombres + item2.producto.nombre.toUpperCase() + ', ';
+                    venta.productos = nombres;
+                    console.log('item:' ,  item2.producto.nombre);
+                  // }
+                }
+                if (contador === this.arrayMes.length) {
+                console.log(this.arrayMes);
+                this.exelVentas(this.arrayMes, mes, anio);
+                }
+              });
+            }
           }
         }
         }
@@ -198,28 +198,29 @@ export class ReporteVentasPage implements OnInit {
       console.log('datos', data);
       for (const datos of data) {
         contador++;
-        // tslint:disable-next-line:prefer-const
-        let FechaConsulta = new Date(moment.unix(datos.fechaEmision.seconds).format('D MMM YYYY H:mm'));
-        const formato: any = {
-          'Nombre/Razon social': datos.cliente.nombre.toUpperCase(),
-          'Tipo Doc': datos.cliente.tipoDoc.toUpperCase(),
-          'DNI/RUC': datos.cliente.numDoc,
-          'Tipo Comprobante': datos.tipoComprobante.toUpperCase(),
-          // tslint:disable-next-line:max-line-length
-          'Serie Comprobante': datos.serieComprobante,
-          // tslint:disable-next-line:max-line-length
-          'Num. Comprobante': datos.numeroComprobante,
-          // tslint:disable-next-line:max-line-length
-          'Serie con Numero': datos.serieComprobante + '-' + this.digitosFaltantes('0', (8 - datos.numeroComprobante.length)) + datos.numeroComprobante,
-          'Monto Pagado': datos.totalPagarVenta,
-          'Metodo Pago': datos.tipoPago.toUpperCase(),
-          'Fecha Emision': formatDate(FechaConsulta, 'dd-MM-yyyy', 'en'),
-          'Cant. bolsa': datos.cantidadBolsa,
-          'Sede: ': datos.vendedor.sede,
-          'Estado Comprobante': datos.estadoVenta,
-          'Servicio ': datos.productos,
-        };
-        dataExcel.push(formato);
+        if (datos.tipoComprobante !== 'n. venta') {
+          const FechaConsulta = new Date(moment.unix(datos.fechaEmision.seconds).format('D MMM YYYY H:mm'));
+          const formato: any = {
+            'Nombre/Razon social': datos.cliente.nombre.toUpperCase(),
+            'Tipo Doc': datos.cliente.tipoDoc.toUpperCase(),
+            'DNI/RUC': datos.cliente.numDoc,
+            'Tipo Comprobante': datos.tipoComprobante.toUpperCase(),
+            // tslint:disable-next-line:max-line-length
+            'Serie Comprobante': datos.serieComprobante,
+            // tslint:disable-next-line:max-line-length
+            'Num. Comprobante': datos.numeroComprobante,
+            // tslint:disable-next-line:max-line-length
+            'Serie con Numero': datos.serieComprobante + '-' + this.digitosFaltantes('0', (8 - datos.numeroComprobante.length)) + datos.numeroComprobante,
+            'Monto Pagado': datos.totalPagarVenta,
+            'Metodo Pago': datos.tipoPago.toUpperCase(),
+            'Fecha Emision': formatDate(FechaConsulta, 'dd-MM-yyyy', 'en'),
+            'Cant. bolsa': datos.cantidadBolsa,
+            'Sede: ': datos.vendedor.sede,
+            'Estado Comprobante': datos.estadoVenta,
+            'Producto/Servicio': datos.productos,
+          };
+          dataExcel.push(formato);
+        }
         if (contador === data.length){
           this.excelService.exportAsExcelFile(dataExcel, 'ReporteVentas ' + mes + '-' + anio);
         }

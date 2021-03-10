@@ -16,7 +16,6 @@ export const environment = {
 };
 
 // PRODUCCION
-
 // export const environment = {
 //   production: false,
 //   firebaseConfig: {

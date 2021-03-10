@@ -16,7 +16,7 @@ import { DataBaseService } from '../services/data-base.service';
 })
 export class HomePage {
   logo = GENERAL_CONFIG.datosEmpresa.logo;
-  sede = this.storage.datosAdmi.sede;
+  sede = this.storage.datosAdmi ? this.storage.datosAdmi.sede : '';
   Datos = [
     {titulo: 'Dashboard', icono: 'https://i.pinimg.com/originals/0b/92/c1/0b92c1ba5ae239c314ba2ec1dab936ec.png', categoria: 'dashboard'},
     {titulo: 'POS ', icono: 'https://upload.wikimedia.org/wikipedia/commons/thumb/c/ca/Card_Terminal_POS_Flat_Icon_Vector.svg/1024px-Card_Terminal_POS_Flat_Icon_Vector.svg.png', categoria: 'punto-venta'},
