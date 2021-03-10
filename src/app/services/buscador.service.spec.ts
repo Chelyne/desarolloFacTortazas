@@ -121,7 +121,7 @@ describe('BuscadorService', () => {
     service.Buscar('69').then((searchResult) => console.log('searchR', '69', searchResult));
     service.Buscar('3').then((searchResult) => console.log('searchR', '3', searchResult));
     service.Buscar('6914131911347').then((searchResult) => console.log('searchR', '6914131911347', searchResult));
-    service.Buscar("dsp'120").then((searchResult) => console.log('searchR', "dsp'120", searchResult));
+    service.Buscar('dsp\'120').then((searchResult) => console.log('searchR', 'dsp\'120', searchResult));
     service.Buscar('').then((searchResult) => console.log('searchR', 'vacio', searchResult));
   });
 });
