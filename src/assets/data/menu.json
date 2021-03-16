@@ -46,30 +46,11 @@
     {
         "icon": "cash-outline",
         "name": "Ventas",
-        "sub": [{
-                "icon": "receipt-outline",
-                "name": "Nuevo Comprobante",
-                "redirecTo": "#"
-            },
-            {
-                "icon": "receipt-outline",
-                "name": "Lista de Comprobantes",
-                "redirecTo": "#"
-            },
+        "sub": [
             {
                 "icon": "document-text-outline",
                 "name": "Lista de ventas",
                 "redirecTo": "/lista-de-ventas"
-            },
-            {
-                "icon": "receipt-outline",
-                "name": "Comprobantes no enviados",
-                "redirecTo": "#"
-            },
-            {
-                "icon": "receipt-outline",
-                "name": "Resumenes y anulaciones",
-                "redirecTo": "#"
             }
         ]
     },

@@ -5,6 +5,8 @@ import { StorageService } from '../../services/storage.service';
 import { ApiPeruService } from 'src/app/services/api/api-peru.service';
 import { LoadingController, MenuController, ToastController } from '@ionic/angular';
 import { DataBaseService } from '../../services/data-base.service';
+import { GlobalService } from '../../global/global.service';
+import { ProductoInterface } from '../../models/ProductoInterface';
 
 @Component({
   selector: 'app-lista-de-ventas',
@@ -13,7 +15,8 @@ import { DataBaseService } from '../../services/data-base.service';
 })
 export class ListaDeVentasPage implements OnInit {
   listaDeVentas: VentaInterface[] = [];
-  sedes = this.storage.datosAdmi.sede;
+  listaDeProductos = [];
+  sede = this.storage.datosAdmi.sede;
   fechaventas = '02-01-2021';
   fechaventasReverso = '2021-01-02';
 
@@ -33,8 +36,8 @@ export class ListaDeVentasPage implements OnInit {
     private apiPeru: ApiPeruService,
     private menuCtrl: MenuController,
     private toastController: ToastController,
-    private loadingController: LoadingController
-
+    private loadingController: LoadingController,
+    private servGlobal: GlobalService
   ) {
     this.ventasForm = this.createFormGroup();
    }
@@ -71,7 +74,7 @@ export class ListaDeVentasPage implements OnInit {
     // console.log(this.ventasForm.value.fechadeventa);
     this.fechaventaDDMMYYYY = this.ventasForm.value.fechadeventa;
     console.log(this.fechaventaDDMMYYYY, this.fechaventaYYYYMMDD);
-    this.dataApi.obtenerVentasPorDiaObs(this.sedes, this.ventasForm.value.fechadeventa).subscribe(data => {
+    this.dataApi.obtenerVentasPorDiaObs(this.sede, this.ventasForm.value.fechadeventa).subscribe(data => {
       if (data.length > 0) {
         this.listaDeVentas = data;
         console.log(this.listaDeVentas);
@@ -114,6 +117,34 @@ export class ListaDeVentasPage implements OnInit {
       // duration: 10000
     });
     await this.loading.present();
+  }
+
+  async actualizarStockDelDia() {
+    const lista = [...this.listaDeVentas];
+    if (lista.length) {
+      for (const venta of lista) {
+        console.log('ENVIAMOS: ', venta);
+        if (venta.estadoVenta !== 'anulado') {
+          await this.dataApi.obtenerProductosDeVenta(venta.idListaProductos, this.sede).then(ventas => {
+            console.log('PRODUCTOS: ', ventas);
+            this.listaDeProductos = this.listaDeProductos.concat(ventas);
+          });
+        }
+      }
+      this.actualizarStockProductos(this.listaDeProductos);
+      console.log('LISTA: ', this.listaDeProductos);
+    } else {
+      this.servGlobal.presentToast('No hay list de ventas', {color: 'danger'});
+    }
+  }
+
+  async actualizarStockProductos(lista: any[]) {
+    for (const item of lista) {
+      await this.dataApi.decrementarStockProducto(item.idProducto, this.sede, item.cantidad).then(() => {
+        // console.log('Actualizado: ', producto.nombre, ' de ', producto.cantStock, ' a ', cantidad);
+      });
+    }
+    console.log('TERMINAMOS DE HOY');
   }
 
   async enviarComprobantesDelDia() {

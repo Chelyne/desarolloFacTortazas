@@ -2,6 +2,7 @@ export interface ProductoInterface {
     id?: string;
     img?: string;
     nombre?: string;
+    arrayNombre?: string[];
     cantidad?: number; // ?NOTE , numero de unidades en una venta
     precio?: number;
     sede?: string;

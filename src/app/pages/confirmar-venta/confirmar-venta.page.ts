@@ -77,6 +77,7 @@ export class ConfirmarVentaPage implements OnInit {
     this.comprobarSerieComprobante();
     this.generandoPago = false;
     this.venta = this.confirmarVentaServ.getVentaService();
+    console.log(this.venta);
     if (isNullOrUndefined(this.venta)) {
       this.router.navigate(['/punto-venta']);
     } else {
@@ -238,48 +239,52 @@ export class ConfirmarVentaPage implements OnInit {
   }
 
   async generarPago(){
-    this.generandoPago = true;
-    await this.presentLoading('Generando Venta');
-    this.venta.tipoComprobante = this.tipoComprobante;
-    this.venta.serieComprobante = this.serieComprobante;
-    this.venta.vendedor = this.storage.datosAdmi;
-    this.venta.bolsa = this.bolsa;
-    this.venta.cantidadBolsa = this.cantidadBolsa;
-    this.venta.tipoPago = this.tipoPago;
-    this.venta.montoNeto = this.importeNeto;
-    this.venta.descuentoVenta = this.importeDescuento;
-    this.venta.totalPagarVenta = this.importeTotal;
-    this.venta.igv = this.igvImporteBase;
-    this.venta.montoBase = this.importeBase;
-    this.venta.estadoVenta = 'registrado';
-    this.venta.cantidadBolsa = this.cantidadBolsa;
-    this.venta.listaItemsDeVenta = this.cambiarPrecioUnitarioSiLoRequiere(this.venta.listaItemsDeVenta);
-    this.venta.montoPagado = this.montoEntrante;
-    console.log('Se generó el pago');
-    this.obtenerCorrelacionComprobante().then((numero: ContadorDeSerieInterface[]) => {
-        this.venta.numeroComprobante = (numero[0].correlacion + 1).toString();
-        const fecha = formatDate(new Date(), 'dd-MM-yyyy', 'en');
-        this.generarQR(this.RUC +  '|'  + '03' +  '|' + this.serieComprobante +  '|' + this.venta.numeroComprobante +  '|' +
-        this.venta.totalPagarVenta +  '|' + fecha +  '|' + this.venta.cliente.numDoc);
-        this.dataApi.confirmarVenta(this.venta, this.storage.datosAdmi.sede).then(data => {
-          for (const itemVenta of this.venta.listaItemsDeVenta) {
-            this.dataApi.decrementarStockProducto(itemVenta.producto.id, this.storage.datosAdmi.sede, itemVenta.cantidad);
-          }
-          this.dataApi.actualizarCorrelacion(numero[0].id, this.storage.datosAdmi.sede, numero[0].correlacion + 1);
-          this.resetFormPago();
-          this.cantidadBolsa = 0;
-          this.bolsa = false;
-          this.tipoPago = 'efectivo';
-          this.confirmarVentaServ.resetService();
-          this.router.navigate(['/punto-venta']);
-          this.generarComprobante();
-          console.log('guardado', data);
-          this.loading.dismiss();
-          this.servGlobal.presentToast('Venta exitosa', {color: 'success'});
-        });
-    }).catch(error => {
-      this.servGlobal.presentToast('Ocurrió un error al obetener la correlacion: ' + error, {color: 'danger'});
-    });
+    if (this.importeTotal > 0) {
+      this.generandoPago = true;
+      await this.presentLoading('Generando Venta');
+      this.venta.tipoComprobante = this.tipoComprobante;
+      this.venta.serieComprobante = this.serieComprobante;
+      this.venta.vendedor = this.storage.datosAdmi;
+      this.venta.bolsa = this.bolsa;
+      this.venta.cantidadBolsa = this.cantidadBolsa;
+      this.venta.tipoPago = this.tipoPago;
+      this.venta.montoNeto = this.importeNeto;
+      this.venta.descuentoVenta = this.importeDescuento;
+      this.venta.totalPagarVenta = this.importeTotal;
+      this.venta.igv = this.igvImporteBase;
+      this.venta.montoBase = this.importeBase;
+      this.venta.estadoVenta = 'registrado';
+      this.venta.cantidadBolsa = this.cantidadBolsa;
+      this.venta.listaItemsDeVenta = this.cambiarPrecioUnitarioSiLoRequiere(this.venta.listaItemsDeVenta);
+      this.venta.montoPagado = this.montoEntrante;
+      console.log('Se generó el pago');
+      this.obtenerCorrelacionComprobante().then((numero: ContadorDeSerieInterface[]) => {
+          this.venta.numeroComprobante = (numero[0].correlacion + 1).toString();
+          const fecha = formatDate(new Date(), 'dd-MM-yyyy', 'en');
+          this.generarQR(this.RUC +  '|'  + '03' +  '|' + this.serieComprobante +  '|' + this.venta.numeroComprobante +  '|' +
+          this.venta.totalPagarVenta +  '|' + fecha +  '|' + this.venta.cliente.numDoc);
+          this.dataApi.confirmarVenta(this.venta, this.storage.datosAdmi.sede).then(data => {
+            for (const itemVenta of this.venta.listaItemsDeVenta) {
+              this.dataApi.decrementarStockProducto(itemVenta.producto.id, this.storage.datosAdmi.sede, itemVenta.cantidad);
+            }
+            this.dataApi.actualizarCorrelacion(numero[0].id, this.storage.datosAdmi.sede, numero[0].correlacion + 1);
+            this.resetFormPago();
+            this.cantidadBolsa = 0;
+            this.bolsa = false;
+            this.tipoPago = 'efectivo';
+            this.confirmarVentaServ.resetService();
+            this.router.navigate(['/punto-venta']);
+            this.generarComprobante();
+            console.log('guardado', data);
+            this.loading.dismiss();
+            this.servGlobal.presentToast('Venta exitosa', {color: 'success'});
+          });
+      }).catch(error => {
+        this.servGlobal.presentToast('Ocurrió un error al obetener la correlacion: ' + error, {color: 'danger'});
+      });
+    } else {
+      this.servGlobal.presentToast('El TOTAL tiene que ser mayor a s/. 0.00', {color: 'danger'});
+    }
   }
 
   async presentLoading(mensaje: string) {

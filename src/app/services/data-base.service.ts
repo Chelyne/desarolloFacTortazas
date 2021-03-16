@@ -49,6 +49,9 @@ export class DataBaseService {
 
   async guardarProductoIncrementaCodigo(newProducto: ProductoInterface, sede: string, correlacionActual: number) {
     const correlacion = parseInt(newProducto.codigo, 10);
+    const arrayNombre = newProducto.nombre.toLowerCase().split(' ');
+    newProducto.arrayNombre = arrayNombre;
+    console.log('GYARDAR: ', newProducto);
     this.guardarProducto(newProducto, sede).then(async (idProducto) => {
       if (idProducto) {
         if (correlacionActual === correlacion ){
@@ -640,6 +643,7 @@ export class DataBaseService {
     const producto = {
       img: productoObtenido.img ? productoObtenido.img : null,
       nombre: productoObtenido.nombre,
+      arrayNombre: productoObtenido.nombre.toLowerCase().split(' '),
       cantidad: productoObtenido.cantidad,
       medida: productoObtenido.medida,
       marca: productoObtenido.marca,
@@ -650,6 +654,7 @@ export class DataBaseService {
       fechaDeVencimiento: productoObtenido.fechaDeVencimiento,
       descripcionProducto: productoObtenido.descripcionProducto
     };
+    console.log(producto);
     return this.afs.collection('sedes').doc(productoObtenido.sede.toLocaleLowerCase()).collection('productos')
     .doc(productoObtenido.id).ref.update(producto)
     .then(() => 'exito').catch(err => {

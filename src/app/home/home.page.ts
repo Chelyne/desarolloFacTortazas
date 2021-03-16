@@ -8,6 +8,7 @@ import { map } from 'rxjs/operators';
 import { ExportarPDFService } from '../services/exportar-pdf.service';
 import { GENERAL_CONFIG } from '../../config/apiPeruConfig';
 import { DataBaseService } from '../services/data-base.service';
+import { CategoriasService } from '../services/categorias.service';
 
 @Component({
   selector: 'app-home',
@@ -32,7 +33,8 @@ export class HomePage {
               private dataApi: DataBaseService,
               private afs: AngularFirestore,
               private firebaseStorage: AngularFireStorage,
-              private exportar: ExportarPDFService) {
+              private exportar: ExportarPDFService,
+              private categorias: CategoriasService) {
     this.menuCtrl.enable(true);
   }
 
@@ -51,91 +53,91 @@ export class HomePage {
 
   // FUNCIONES PARA USAR RARAS VECES
 
-  getAll() {
-    this.dataApi.obtenerListaProductosTodos('Abancay').subscribe(todos => {
-      console.log(todos);
-      this.todosProductos = todos;
-    });
-  }
+  // getAll() {
+  //   this.dataApi.obtenerListaProductosTodos('abancay').subscribe(todos => {
+  //     console.log(todos);
+  //     this.todosProductos = todos;
+  //   });
+  // }
 
-  SUBIRARRAY() {
-    let contador = 0;
-    this.todosProductos.forEach(element => {
-      const arrayLetras = element.nombre.toLowerCase().split(' ');
-      element.arrayLetras = arrayLetras;
-      // console.log('datos array' + contador + arrayLetras);
-      this.dataApi.actualizarArrayNombre('abancay', element.id, element.arrayLetras).then(() => {
-        console.log(contador, 'Actualizado array de ', element.nombre);
-        console.log(element.arrayLetras);
-        contador++;
-      });
-    });
-  }
+  // SUBIRARRAY() {
+  //   let contador = 0;
+  //   this.todosProductos.forEach(element => {
+  //     const arrayNombre = element.nombre.toLowerCase().split(' ');
+  //     element.arrayNombre = arrayNombre;
+  //     // console.log('datos array' + contador + arrayLetras);
+  //     this.dataApi.actualizarArrayNombre('abancay', element.id, element.arrayNombre).then(() => {
+  //       console.log(contador, 'Actualizado array de ', element.nombre);
+  //       console.log(element.arrayNombre);
+  //       contador++;
+  //     });
+  //   });
+  // }
 
-  ActualizarUrlProductos() {
-    let contador = 0;
-    this.todosProductos.forEach(element => {
-      console.log(element);
-      // tslint:disable-next-line:prefer-const
-      let storageRef = this.firebaseStorage.storage.ref();
-      // tslint:disable-next-line:prefer-const
-      let imageRef = storageRef.child('productos/' + element.id + '.jpg');
-      console.log('REF: ', imageRef);
-      imageRef.getDownloadURL().then((url) => {
-        console.log(url);
-        this.dataApi.actualizarUrlFoto('abancay', element.id, url).then(() => {
-          console.log(contador, 'Actualizado foto de ', element.nombre);
-          contador++;
-        });
-      }).catch(err => {
-        console.log('error: ', err);
-      });
-    });
-  }
+  // ActualizarUrlProductos() {
+  //   let contador = 0;
+  //   this.todosProductos.forEach(element => {
+  //     console.log(element);
+  //     // tslint:disable-next-line:prefer-const
+  //     let storageRef = this.firebaseStorage.storage.ref();
+  //     // tslint:disable-next-line:prefer-const
+  //     let imageRef = storageRef.child('productos/' + element.id + '.jpg');
+  //     console.log('REF: ', imageRef);
+  //     imageRef.getDownloadURL().then((url) => {
+  //       console.log(url);
+  //       this.dataApi.actualizarUrlFoto('abancay', element.id, url).then(() => {
+  //         console.log(contador, 'Actualizado foto de ', element.nombre);
+  //         contador++;
+  //       });
+  //     }).catch(err => {
+  //       console.log('error: ', err);
+  //     });
+  //   });
+  // }
 
-  consultar(nombre) {
-    const consulta = this.afs.collection('sedes').doc('abancay').collection('productos', ref => ref.where('nombre', '==', nombre)
-    .limit(1));
-    return consulta.snapshotChanges()
-            .pipe(map(changes => {
-              return changes.map(action => {
-              // tslint:disable-next-line:no-shadowed-variable
-              const data = action.payload.doc.data();
-              data.id = action.payload.doc.id;
-              console.log(data);
-              return data;
-            });
-          }));
-  }
+  // consultar(nombre) {
+  //   const consulta = this.afs.collection('sedes').doc('abancay').collection('productos', ref => ref.where('nombre', '==', nombre)
+  //   .limit(1));
+  //   return consulta.snapshotChanges()
+  //           .pipe(map(changes => {
+  //             return changes.map(action => {
+  //             // tslint:disable-next-line:no-shadowed-variable
+  //             const data = action.payload.doc.data();
+  //             data.id = action.payload.doc.id;
+  //             console.log(data);
+  //             return data;
+  //           });
+  //         }));
+  // }
 
-  getProductos() {
-    const sus = this.dataApi.obtenerListaProductosTodos(this.sede).subscribe(datos => {
-      sus.unsubscribe();
-      console.log(datos);
-      this.todosProductos = datos;
-    });
-  }
+  // getProductos() {
+  //   const sus = this.dataApi.obtenerListaProductosTodos(this.sede).subscribe(datos => {
+  //     sus.unsubscribe();
+  //     console.log(datos);
+  //     this.todosProductos = datos;
+  //   });
+  // }
 
-  pasarBarraCodigo() {
-    let contador = 0;
-    this.todosProductos.forEach(element => {
-      if (element.codigoBarra) {
-        this.afs.collection('sedes').doc('abancay').collection('productos')
-        .doc(element.id).update({codigoBarra: null, codigo: element.codigoBarra.toString()}).then(() => {
-          contador++;
-          console.log('Actualizado ' + contador + ' ' + element.codigoBarra.toString());
-        });
-      }
-    });
-  }
+  // pasarBarraCodigo() {
+  //   let contador = 0;
+  //   this.todosProductos.forEach(element => {
+  //     if (element.codigoBarra) {
+  //       this.afs.collection('sedes').doc('abancay').collection('productos')
+  //       .doc(element.id).update({codigoBarra: null, codigo: element.codigoBarra.toString()}).then(() => {
+  //         contador++;
+  //         console.log('Actualizado ' + contador + ' ' + element.codigoBarra.toString());
+  //       });
+  //     }
+  //   });
+  // }
 
-  consultFallos() {
-    this.exportar.exportAsExcelFile(this.listaFallos, 'faltantes');
-  }
+  // consultFallos() {
+  //   this.exportar.exportAsExcelFile(this.listaFallos, 'faltantes');
+  // }
 
-  exelDatosGenerales() {
-    this.exportar.exportAsExcelFile(this.todosProductos, 'datosAbancay');
-  }
+  // exelDatosGenerales() {
+  //   this.exportar.exportAsExcelFile(this.todosProductos, 'datosAbancay');
+  // }
 
   // subirDatos() {
   //     // tslint:disable-next-line:prefer-const
@@ -145,15 +147,15 @@ export class HomePage {
   //       console.log(obj);
   //       obj.forEach( (res: any[]) => {
   //         let contador = 0;
-  //         // let contadorFallos = 0;
+  //         let contadorFallos = 0;
   //         this.listaFallos = [];
   //         res.forEach(element => {
-  //           element.nombre = element.nombre.toLocaleLowerCase();
-  //           element.subCategoria = element.subCategoria.toLocaleLowerCase();
-  //           element.codigo = element.codigo.toLocaleLowerCase();
-  //           element.precio = parseFloat(element.precio);
+  //           element.producto = element.producto.toLocaleLowerCase();
+  //           // element.subCategoria = element.subCategoria.toLocaleLowerCase();
+  //           // element.codigo = element.codigo.toLocaleLowerCase();
+  //           // element.precio = parseFloat(element.precio);
   //           element.cantStock = parseInt(element.cantStock, 10);
-  //           element.cantidad = parseInt(element.cantidad, 10);
+  //           // element.cantidad = parseInt(element.cantidad, 10);
   //           // if (element.codigo) {
   //           // element.codigo = element.codigo.toString();
   //           // }
@@ -162,28 +164,29 @@ export class HomePage {
   //           //   }
   //           console.log(element);
   //             // tslint:disable-next-line:no-shadowed-variable
-  //           // const sus = this.consultar(element.nombre).subscribe((data: any) => {
-  //           //   sus.unsubscribe();
-  //           //   if (data.length > 0) {
-  //           //     contador++;
-  //           //     console.log(contador, data[0].id, element.Producto);
-  //           //     this.afs.collection('sedes').doc('abancay').collection('productos')
-  //           //     .doc(data[0].id).update({codigo: element.codigo.toString()}).then(() => {
-  //           //       contador++;
-  //           //       console.log('Actualizado ' + contador + ' ' + element.codigo.toString());
-  //           //     });
-  //           //   } else {
-  //           //     contadorFallos++;
-  //           //     console.log('FALLOOOOOOOOOOOOOOOOOOOOOOO', contadorFallos, element);
-  //           //     // this.presentToast('FALLOS' + element.nombre + 'Cant:' + contadorFallos);
-  //           //     this.listaFallos.push(element);
-  //           //   }
-  //           // });
+  //           const sus = this.consultar(element.producto).subscribe(async (data: any) => {
+  //             sus.unsubscribe();
+  //             if (data.length > 0) {
+  //               contador++;
+  //               console.log(contador, data[0].id, element.Producto);
+  //               await this.afs.collection('sedes').doc('abancay').collection('productos')
+  //               .doc(data[0].id).update({cantStock: element.cantStock}).then(() => {
+  //                 contador++;
+  //                 console.log(contador, ' Actualizado ' + element.producto + ' - ' + element.cantStock);
+  //               });
+  //             } else {
+  //               contadorFallos++;
+  //               console.log('FALLOOOOOOOOOOOOOOOOOOOOOOO', contadorFallos, element);
+  //               // this.presentToast('FALLOS' + element.nombre + 'Cant:' + contadorFallos);
+  //               this.listaFallos.push(element);
+  //               console.log('LISTA FALLOS', this.listaFallos);
+  //             }
+  //           });
   //           // nuevos
-  //           this.afs.collection('sedes').doc('albrook').collection('productos').add(element).then( resp => {
-  //             console.log(contador, 'Ingresado', resp);
-  //             contador++;
-  //             }).catch(error => {console.error('No se  pudo ingresar los datos', error); });
+  //           // this.afs.collection('sedes').doc('albrook').collection('productos').add(element).then( resp => {
+  //           //   console.log(contador, 'Ingresado', resp);
+  //           //   contador++;
+  //           //   }).catch(error => {console.error('No se  pudo ingresar los datos', error); });
   //         });
   //         // contador++;
   //         // console.log(contador, ' ', res.dni);
@@ -197,7 +200,7 @@ export class HomePage {
   //         //   facultad : res.facultad.toString(),
   //         //   tipo : res.tipo.toString()
   //         // };
-  //         // console.log('LISTA FALLOS', this.listaFallos);
+  //         console.log('LISTA FALLOS', this.listaFallos);
   //         console.log(res);
   //       });
   //     } );

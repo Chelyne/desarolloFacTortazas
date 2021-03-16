@@ -13,7 +13,7 @@ import { Observable } from 'rxjs';
   templateUrl: 'app.component.html',
   styleUrls: ['app.component.scss']
 })
-export class AppComponent {
+export class AppComponent implements OnInit{
   menuSeleccionado = 'Dashboard';
   datosAdmi;
   componentes: Observable<any[]>;
@@ -35,6 +35,12 @@ export class AppComponent {
     //   });
     // });
   }
+
+  ngOnInit() {
+    this.componentes = this.menu.getMenu();
+    console.log('menu', this.componentes);
+  }
+
   initializeApp() {
     this.platform.ready().then(() => {
       this.menuCtrl.enable(false);
@@ -43,8 +49,6 @@ export class AppComponent {
         this.statusBar.styleDefault();
         this.statusBar.backgroundColorByHexString('#ffffff');
         this.splashScreen.hide();
-        this.componentes = this.menu.getMenu();
-        console.log('menu', this.componentes);
         // this.fcmSrv.escuchaNotificaciones().pipe(
         //   tap(msg => {
         //     // this.presentToast(msg.body);

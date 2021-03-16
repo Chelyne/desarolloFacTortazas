@@ -20,6 +20,9 @@
         </ion-item>
 
         <ion-item *ngIf="listaDeVentas.length > 0">
+            <ion-button color="success" slot="start" (click)="actualizarStockDelDia()">
+                <ion-label color="light">Actualizar stock del dia</ion-label>
+            </ion-button>
             <ion-button slot="end" (click)="enviarComprobantesDelDia()">
                 <ion-label color="light">Enviar todos los comprobantes</ion-label>
             </ion-button>
