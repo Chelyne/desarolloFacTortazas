@@ -123,11 +123,6 @@ const routes: Routes = [
     canActivate: [AuthGuard]
   },
   {
-    path: 'test-page',
-    loadChildren: () => import('./pages/test-page/test-page.module').then( m => m.TestPagePageModule),
-    canActivate: [AuthGuard]
-  },
-  {
     path: 'lista-de-ventas',
     loadChildren: () => import('./pages/lista-de-ventas/lista-de-ventas.module').then( m => m.ListaDeVentasPageModule),
     canActivate: [AuthGuard, NoVendedorGuard]

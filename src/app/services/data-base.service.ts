@@ -374,7 +374,7 @@ export class DataBaseService {
 
   obtenerListaProductosSinLIMITE(sede: string) {
     const sede1 = sede.toLocaleLowerCase();
-    return this.afs.collection('sedes').doc(sede1).collection('productos', ref => ref.orderBy('fechaRegistro', 'desc').limit(5))
+    return this.afs.collection('sedes').doc(sede1).collection('productos', ref => ref.orderBy('fechaRegistro', 'desc'))
     .snapshotChanges().pipe(map(changes => {
       const datos: ProductoInterface[] = [];
 

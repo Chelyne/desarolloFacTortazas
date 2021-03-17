@@ -99,6 +99,7 @@ export class ReporteVentasPage implements OnInit {
             'Codigo Barra': datos.codigoBarra ? datos.codigoBarra : null,
             Stock: datos.cantStock ? datos.cantStock  : null,
             Categoria: datos.subCategoria ? datos.subCategoria : null,
+            'precio de Compra': datos.precioCompra ? datos.precioCompra : null,
             Estado: null
           };
           dataExcel.push(formato);

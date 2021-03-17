@@ -150,11 +150,11 @@ export class HomePage {
   //         let contadorFallos = 0;
   //         this.listaFallos = [];
   //         res.forEach(element => {
-  //           element.producto = element.producto.toLocaleLowerCase();
+  //           // element.producto = element.producto.toLocaleLowerCase();
   //           // element.subCategoria = element.subCategoria.toLocaleLowerCase();
   //           // element.codigo = element.codigo.toLocaleLowerCase();
-  //           // element.precio = parseFloat(element.precio);
-  //           element.cantStock = parseInt(element.cantStock, 10);
+  //           // element.precioCompra = parseFloat(element.precioCompra);
+  //           // element.cantStock = parseInt(element.cantStock, 10);
   //           // element.cantidad = parseInt(element.cantidad, 10);
   //           // if (element.codigo) {
   //           // element.codigo = element.codigo.toString();
@@ -164,24 +164,25 @@ export class HomePage {
   //           //   }
   //           console.log(element);
   //             // tslint:disable-next-line:no-shadowed-variable
-  //           const sus = this.consultar(element.producto).subscribe(async (data: any) => {
-  //             sus.unsubscribe();
-  //             if (data.length > 0) {
-  //               contador++;
-  //               console.log(contador, data[0].id, element.Producto);
-  //               await this.afs.collection('sedes').doc('abancay').collection('productos')
-  //               .doc(data[0].id).update({cantStock: element.cantStock}).then(() => {
-  //                 contador++;
-  //                 console.log(contador, ' Actualizado ' + element.producto + ' - ' + element.cantStock);
-  //               });
-  //             } else {
-  //               contadorFallos++;
-  //               console.log('FALLOOOOOOOOOOOOOOOOOOOOOOO', contadorFallos, element);
-  //               // this.presentToast('FALLOS' + element.nombre + 'Cant:' + contadorFallos);
-  //               this.listaFallos.push(element);
-  //               console.log('LISTA FALLOS', this.listaFallos);
-  //             }
+  //           // const sus = this.consultar(element.producto).subscribe(async (data: any) => {
+  //           // sus.unsubscribe();
+  //           if (element.precioCompra) {
+  //           element.precioCompra = parseFloat(element.precioCompra);
+  //           contador++;
+  //           console.log(contador, element.uid, element.precioCompra);
+  //           this.afs.collection('sedes').doc('abancay').collection('productos')
+  //           .doc(element.uid).update({precioCompra: element.precioCompra}).then(() => {
+  //             contador++;
+  //             console.log(contador, ' Actualizado ' + element.uid + ' : ' + element.precioCompra);
   //           });
+  //           } else {
+  //           contadorFallos++;
+  //           console.log('FALLOOOOOOOOOOOOOOOOOOOOOOO', contadorFallos, element);
+  //           // this.presentToast('FALLOS' + element.nombre + 'Cant:' + contadorFallos);
+  //           this.listaFallos.push(element);
+  //           console.log('LISTA FALLOS', this.listaFallos);
+  //           }
+  //           // });
   //           // nuevos
   //           // this.afs.collection('sedes').doc('albrook').collection('productos').add(element).then( resp => {
   //           //   console.log(contador, 'Ingresado', resp);
