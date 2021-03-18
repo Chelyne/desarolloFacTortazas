@@ -170,7 +170,7 @@ export class HomePage {
   //           element.precioCompra = parseFloat(element.precioCompra);
   //           contador++;
   //           console.log(contador, element.uid, element.precioCompra);
-  //           this.afs.collection('sedes').doc('abancay').collection('productos')
+  //           this.afs.collection('sedes').doc('andahuaylas').collection('productos')
   //           .doc(element.uid).update({precioCompra: element.precioCompra}).then(() => {
   //             contador++;
   //             console.log(contador, ' Actualizado ' + element.uid + ' : ' + element.precioCompra);

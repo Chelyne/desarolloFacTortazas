@@ -64,10 +64,7 @@ export class DataBaseService {
           }
         }
         throw String('fail');
-
       }
-
-
     });
   }
 

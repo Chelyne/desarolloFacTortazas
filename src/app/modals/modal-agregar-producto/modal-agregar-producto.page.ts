@@ -73,7 +73,7 @@ export class ModalAgregarProductoPage implements OnInit {
       if (datoo.id) {
         this.correlacionActual = datoo.correlacionProducto;
         this.productoForm.setControl('codigo',
-        new FormControl( datoo.correlacionProducto, [Validators.minLength(1), Validators.maxLength(20)]) );
+        new FormControl( datoo.correlacionProducto.toString(), [Validators.minLength(1), Validators.maxLength(20)]) );
       }
     });
   }
