@@ -164,10 +164,11 @@ const routes: Routes = [
   {
     path: 'modal-ingresos-egresos',
     loadChildren: () => import('./modals/modal-ingresos-egresos/modal-ingresos-egresos.module').then( m => m.ModalIngresosEgresosPageModule)
+  },
+  {
+    path: 'print/:sede/:fecha/:id',
+    loadChildren: () => import('./pages/print/print.module').then( m => m.PrintPageModule)
   }
-
-
-
 ];
 
 @NgModule({

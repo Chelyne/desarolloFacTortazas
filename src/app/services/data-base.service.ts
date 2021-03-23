@@ -548,6 +548,23 @@ export class DataBaseService {
       return datos;
     }));
   }
+
+  // obtener una venta por id
+  obtenerUnaVentaPorId(sede: string, fecha: string, id: string) {
+    return this.afs.doc(`sedes/${sede.toLocaleLowerCase()}/ventas/${fecha}/ventasDia/${id}`)
+    .snapshotChanges().pipe(map(action => {
+      let datos: any = {};
+      if (action.payload.exists === false) {
+        return null;
+      } else {
+        datos = {
+          ...action.payload.data() as VentaInterface,
+          id: action.payload.id
+        };
+        return datos;
+      }
+    }));
+  }
   // ----------------------------------------------------------- */
   // ----------------------------------------------------------- */
 

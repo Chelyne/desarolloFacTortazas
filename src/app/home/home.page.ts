@@ -166,12 +166,12 @@ export class HomePage {
   //             // tslint:disable-next-line:no-shadowed-variable
   //           // const sus = this.consultar(element.producto).subscribe(async (data: any) => {
   //           // sus.unsubscribe();
-  //           if (element.precioCompra) {
-  //           element.precioCompra = parseFloat(element.precioCompra);
+  //           if (element.cantStock) {
+  //           element.cantStock = parseInt(element.cantStock, 10);
   //           contador++;
-  //           console.log(contador, element.uid, element.precioCompra);
+  //           console.log(contador, element.uid, element.cantStock);
   //           this.afs.collection('sedes').doc('andahuaylas').collection('productos')
-  //           .doc(element.uid).update({precioCompra: element.precioCompra}).then(() => {
+  //           .doc(element.uid).update({cantStock: element.cantStock}).then(() => {
   //             contador++;
   //             console.log(contador, ' Actualizado ' + element.uid + ' : ' + element.precioCompra);
   //           });
