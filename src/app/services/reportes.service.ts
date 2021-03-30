@@ -129,7 +129,8 @@ export class ReportesService {
           theme: 'grid',
         });
       }
-      doc.save('reporte General Ventas ' + dia + '.pdf');
+      window.open(doc.output('bloburl').toString(), '_blank');
+      // doc.save('reporte General Ventas ' + dia + '.pdf');
     });
   }
   consultaVentaReporteGeneral(dia: any) {
@@ -285,8 +286,9 @@ export class ReportesService {
       doc.text( 'No se encontraron registros ', 2 , 29, {align: 'left'});
 
       }
-      doc.save('reporte tiket General Ventas ' + dia + '.pdf');
-      doc.autoPrint();
+      window.open(doc.output('bloburl').toString(), '_blank');
+      // doc.save('reporte tiket General Ventas ' + dia + '.pdf');
+      // doc.autoPrint();
       });
   }
   listaVendedoresDatos(dia: any) {

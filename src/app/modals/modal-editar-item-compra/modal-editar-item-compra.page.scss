@@ -1,0 +1,21 @@
+* {
+    ion-label, ion-input{
+        font-family: Nunito;
+    }
+    ion-item {
+        ion-input {
+            margin-top: 10px;
+            border: solid 1px var(--ion-color-primary);
+            border-radius: 5px;
+            --padding-start: 12px;
+        }
+    }
+}
+
+.alertDanger {
+    color: var(--ion-color-danger);
+}
+.mensajeError {
+    margin-left: 10px;
+    font-size: 13px;
+}

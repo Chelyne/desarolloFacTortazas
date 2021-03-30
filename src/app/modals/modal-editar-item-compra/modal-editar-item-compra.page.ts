@@ -38,7 +38,7 @@ export class ModalEditarItemCompraPage implements OnInit {
       nombre: new FormControl('', [Validators.required]),
       descripcion: new FormControl('', []),
       cantidad: new FormControl('', [Validators.required, Validators.pattern('^[0-9]*$')]),
-      pu_compra: new FormControl('', [Validators.required, Validators.pattern('^[0-9]*\.?[0-9]*$')]),
+      pu_compra: new FormControl('', [Validators.required, Validators.min(0), Validators.pattern('^[0-9]*\.?[0-9]*$')]),
       descuento: new FormControl('', [Validators.pattern('^[0-9]*\.?[0-9]*$')])
     });
   }
@@ -48,7 +48,7 @@ export class ModalEditarItemCompraPage implements OnInit {
       nombre: new FormControl(this.dataModal.itemCompra.producto.nombre, [Validators.required]),
       descripcion: new FormControl('', []),
       cantidad: new FormControl(this.dataModal.itemCompra.cantidad, [Validators.required, Validators.pattern('^[0-9]*$')]),
-      pu_compra: new FormControl(this.dataModal.itemCompra.pu_compra, [Validators.required, Validators.pattern('^[0-9]*\.?[0-9]*$')]),
+      pu_compra: new FormControl(this.dataModal.itemCompra.pu_compra, [Validators.required, Validators.min(0), Validators.pattern('^[0-9]*\.?[0-9]*$')]),
       descuento: new FormControl('', [Validators.pattern('^[0-9]*\.?[0-9]*$')])
     });
   }

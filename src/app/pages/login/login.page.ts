@@ -32,7 +32,7 @@ export class LoginPage implements OnInit {
               // private fcm: FCM,
               private Pltform: Platform,
               private toastController: ToastController) {
-    this.obtenerfcm();
+    // this.obtenerfcm();
     this.LoginForm = this.createFormGroup();
    }
 
@@ -52,27 +52,32 @@ export class LoginPage implements OnInit {
 
   get email() { return this.LoginForm.get('email'); }
   get password() { return this.LoginForm.get('password'); }
-  obtenerfcm(){
-    console.log('entra a funcion de obtener fcm');
-    if (this.Pltform.is('cordova')) {
-      //  this.fcm.getToken().then( tok => {this.token = tok; })
-      //  .catch(err => {});
-    } else { this.token = 'token laptop'; console.log('token', this.token); }
+  // obtenerfcm(){
+  //   console.log('entra a funcion de obtener fcm');
+  //   if (this.Pltform.is('cordova')) {
+  //     //  this.fcm.getToken().then( tok => {this.token = tok; })
+  //     //  .catch(err => {});
+  //   } else { this.token = 'token laptop'; console.log('token', this.token); }
 
-  }
-  logIn() {
+  // }
+  async logIn() {
     if (this.LoginForm.valid) {
-      this.presentLoading('Iniciando Sesión');
+      await this.presentLoading('Iniciando Sesión');
       this.authService.loginEmail(this.LoginForm.value.email, this.LoginForm.value.password)
       .then((res) => {
         console.log(res);
-        this.storage.cargarDatosLogin().then(() => {
-          // actualizar token
-          // this.dataApi.actualizarToken(this.token, this.LoginForm.value.email);
-          this.router.navigate(['/home']);
-          this.onResetForm();
-          this.menuCtrl.enable(true);
-          this.loading.dismiss();
+        this.storage.cargarDatosLogin().then(user => {
+          console.log(user);
+          if (user === 'null') {
+            this.presentToast('No se encontró los datos del usuario, consulte con el administrador');
+            this.loading.dismiss();
+            this.authService.logOut();
+          } else {
+            this.router.navigate(['/home']);
+            this.onResetForm();
+            this.menuCtrl.enable(true);
+            this.loading.dismiss();
+          }
         });
       }).catch((error) => {
         console.log(error);
@@ -90,10 +95,12 @@ export class LoginPage implements OnInit {
                 this.authService.crearUsuario(user.correo, user.password).then(() => {
                   this.presentToast('Usuario creado correctamente');
                   // this.dataApi.actualizarToken(this.token, this.LoginForm.value.email);
-                  this.router.navigate(['/home']);
-                  this.onResetForm();
-                  this.menuCtrl.enable(true);
-                  this.loading.dismiss();
+                  this.storage.cargarDatosLogin().then(() => {
+                    this.router.navigate(['/home']);
+                    this.onResetForm();
+                    this.menuCtrl.enable(true);
+                    this.loading.dismiss();
+                  });
                 });
               } else {
                 this.presentToast('Contraseña incorrecta');
@@ -102,7 +109,7 @@ export class LoginPage implements OnInit {
             }
           });
         } else {
-          this.presentToast('Error al iniciar sesión');
+          this.presentToast('Error al iniciar sesión, usuario no encontrado');
           this.loading.dismiss();
         }
       });

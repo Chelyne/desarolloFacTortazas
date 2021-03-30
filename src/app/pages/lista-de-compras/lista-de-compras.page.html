@@ -21,7 +21,7 @@
     </ion-row>
     <ion-row *ngFor="let compra of listaDeCompras; let i = index" [ngClass]="{'red': compra.anulado, 'contentListaCompra': !compra.anulado}" class="ion-justify-content-center ion-align-items-center">
       <ion-col size="0.5"><ion-label>{{i+1}}</ion-label></ion-col>
-      <ion-col size="2"><ion-label>{{compra.proveedor.nombre | titlecase}}</ion-label></ion-col>
+      <ion-col size="2"><ion-label>{{compra.proveedor ? compra.proveedor.nombre: 'Sin proveedor' | titlecase}}</ion-label></ion-col>
       <ion-col size="2"><ion-label>{{compra.typoComprobante}}</ion-label></ion-col>
       <ion-col size="1.5"><ion-label>{{compra.serieComprobante}}</ion-label></ion-col>
       <ion-col size="1.5"><ion-label>{{compra.fechaDeEmision | date:'dd-MM-yyyy'}}</ion-label></ion-col>

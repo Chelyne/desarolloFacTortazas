@@ -37,12 +37,14 @@ export class DetallesProductoPage implements OnInit {
     this.id = this.route.snapshot.params.id;
     this.categoria = this.route.snapshot.params.categoria;
     this.sede = this.route.snapshot.params.sede;
+    console.log(this.id, this.categoria, this.sede);
     this.getDataProducto();
   }
 
   getDataProducto() {
     this.dataProducto = {};
-    this.dataApi.obtenerProductoPorId(this.sede, this.id).then( data => {
+    this.dataApi.obtenerProductoPorId(this.id, this.sede).then( data => {
+      console.log(data);
       if (data.id) {
         this.dataProducto = data;
         this.sinDatos = false;
@@ -86,14 +88,15 @@ export class DetallesProductoPage implements OnInit {
       component: EditarProductoPage,
       componentProps: {
         dataProducto: this.dataProducto
-      }
+      },
+      cssClass: 'modal-fullscreen'
     });
     await modal.present();
 
     const { data } =  await modal.onWillDismiss();
     if (data) {
-      console.log('datos', data);
-      this.dataApi.actualizarProducto(data.data);
+      console.log('datos', data.producto);
+      this.dataApi.actualizarProducto(data.producto);
     }
   }
 

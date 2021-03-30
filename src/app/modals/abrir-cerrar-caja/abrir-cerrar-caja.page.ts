@@ -47,7 +47,9 @@ export class AbrirCerrarCajaPage implements OnInit {
     }else if (this.modo === 'editar') {
       this.cajaChicaEditForm = this.createFormGroupCajaChicaEdit();
       this.ObtenerUsuarios(this.sede);
-
+    } else if (this.modo === 'cerrar') {
+      this.CerrarCajaChicaForm.setControl('montoFinal', new FormControl(this.datosCaja.saldoFinal, [Validators.required]));
+      // this.CerrarCajaChicaForm.value.saldoFinal = this.datosCaja.saldoFinal;
     }
   }
   ObtenerUsuarios(sede: string){

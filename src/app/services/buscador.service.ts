@@ -76,13 +76,32 @@ export class BuscadorService {
       else{
         // flagFullStrOrNum === 'both'
         // pude ser un codigo de barra o un nombre
-        let a: any[] = [];
-        let b: any[] = [];
-        await (
-          this.busquedaPorCodigoBarraP(target).then( data => a = data),
-          this.busquedaPorNombreP(target).then(data => b = data)
-        );
-        listaResultante = a.concat(b);
+
+
+        if (target.length <= 5){
+          await this.busquedaPorCodigoProductoExactoP(target).then( data => listaResultante = data);
+        }
+
+        if (!listaResultante.length){
+          let a: any[] = [];
+          let b: any[] = [];
+          let c: any[] = [];
+          await (
+            this.busquedaPorCodigoBarraP(target).then( data => a = data),
+            this.busquedaPorNombreP(target).then(data => b = data),
+            this.busquedaPorCodigoProductoP(target).then(data => c = data)
+          );
+          listaResultante = a.concat(b).concat(c);
+        }
+
+        // let a: any[] = [];
+        // let b: any[] = [];
+        // await (
+        //   this.busquedaPorCodigoBarraP(target).then( data => a = data),
+        //   this.busquedaPorNombreP(target).then(data => b = data)
+        // );
+        // listaResultante = a.concat(b);
+
 
       }
     }

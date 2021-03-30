@@ -165,7 +165,7 @@ export class EditarProductoPage implements OnInit {
       codigo: new FormControl(this.dataProducto.codigo, [Validators.minLength(1), Validators.maxLength(20)]),
       codigoBarra: new FormControl(this.dataProducto.codigoBarra, [Validators.minLength(1), Validators.maxLength(15)]),
       precio: new FormControl(this.dataProducto.precio, [Validators.required]),
-      cantStock: new FormControl(this.dataProducto.cantStock, [ Validators.min(1)]),
+      cantStock: new FormControl(this.dataProducto.cantStock, [ Validators.min(0)]),
       fechaDeVencimiento: new FormControl(this.dataProducto.fechaDeVencimiento),
       img: new FormControl(this.dataProducto.img),
       sede: new FormControl(this.dataProducto.sede),

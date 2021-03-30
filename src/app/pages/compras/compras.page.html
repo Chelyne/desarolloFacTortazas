@@ -5,11 +5,11 @@
       </ion-menu-button>
     </ion-buttons>
     <ion-title color="primary">Compras</ion-title>
-    <ion-buttons slot="end">
-      <ion-button color="primary" [routerLink]="[ '/lista-de-compras' ]">
+    <!-- <ion-buttons slot="end"> FALLA PARA EDITAR LA COMPRA
+      <ion-button color="primary" (click)="irPagina()">
         <ion-label>Lista de Compras</ion-label>
       </ion-button>
-    </ion-buttons>
+    </ion-buttons> -->
   </ion-toolbar>
 </ion-header>
 
@@ -65,26 +65,36 @@
           </ion-row>
         </ion-grid>
       </form>
-      <ion-item-divider><ion-label>Proveedor</ion-label></ion-item-divider>
       <!-- INICO PROVEEDOR -->
-      <ion-item>
-        <ion-button (click)="modalAgregarNuevoProveedor()" >
-          Nuevo Proveedor
-        </ion-button>
-      </ion-item>
-      <ion-item lines="none">
-        <ion-label color="primary" position="floating">Proveedor</ion-label>
-        <ion-input (click)="modalProveedor()" placeholder="Seleccionar proveedor"
-        [value]="provedorObtenido?provedorObtenido.numeroDocumento + ' - ' + provedorObtenido.nombre:''" type="text">
-        </ion-input>
-      </ion-item>
+      <ion-grid>
+        <ion-row>
+          <ion-col>
+            <ion-item>
+              <ion-label>Proveedor</ion-label>
+              <ion-button slot="end" color="secondary" fill="outline" (click)="modalAgregarNuevoProveedor()" >
+                <ion-label>Nuevo Proveedor</ion-label>
+              </ion-button>
+            </ion-item>
+          </ion-col>
+        </ion-row>
+        <ion-row>
+          <ion-col>
+            <ion-item lines="none">
+              <!-- <ion-label color="primary" position="floating">Proveedor</ion-label> -->
+              <ion-input (click)="modalProveedor()" placeholder="Seleccionar proveedor"
+              [value]="provedorObtenido?provedorObtenido.numeroDocumento + ' - ' + provedorObtenido.nombre:''" type="text">
+              </ion-input>
+            </ion-item>
+          </ion-col>
+        </ion-row>
+      </ion-grid>
       <!-- FIN PROVEEDOR -->
       <ion-item-divider><ion-label>Productos</ion-label></ion-item-divider>
       <ion-grid>
         <ion-row class="headerItems">
           <ion-col size="0.5"><ion-label color="light">#</ion-label></ion-col>
           <ion-col><ion-label color="light">Nombre</ion-label></ion-col>
-          <ion-col><ion-label color="light">medida</ion-label></ion-col>
+          <ion-col><ion-label color="light">Medida</ion-label></ion-col>
           <ion-col><ion-label color="light">Cantidad</ion-label></ion-col>
           <ion-col><ion-label color="light">PU compra</ion-label></ion-col>
           <ion-col><ion-label color="light">Total</ion-label></ion-col>
@@ -110,62 +120,62 @@
         <ion-row>
           <ion-col>
             <ion-item *ngIf="!ACTUALIZAR_COMPRA">
-              <ion-label>IGV</ion-label>
-              <ion-label>Total: {{totalxCompra}}</ion-label>
-              <ion-button (click)="limpiarListaDeCompras()"  [disabled]="!listaItemsDeCompra.length">
+              <!-- <ion-label>IGV</ion-label> -->
+              <ion-label>Total: {{totalxCompra.toFixed(2)}}</ion-label>
+              <ion-button color="danger" (click)="limpiarListaDeCompras()"  [disabled]="!listaItemsDeCompra.length">
                 Cancelar
               </ion-button>
-              <ion-button (click)="generarCompra()" [disabled]="formComprobante.invalid">
-                Comprar/Generar
+              <ion-button color="success" (click)="generarCompra()" [disabled]="formComprobante.invalid || comprando">
+                Generar Compra
               </ion-button>
             </ion-item>
             <ion-item  *ngIf="ACTUALIZAR_COMPRA">
-              <ion-label>IGV</ion-label>
-              <ion-label>Total: {{totalxCompra}}</ion-label>
-              <ion-button [disabled]="!listaItemsDeCompra.length" routerLink="/lista-de-compras" (click)="cancelarActulizarCompra()">
+              <!-- <ion-label>IGV</ion-label> -->
+              <ion-label>Total: {{totalxCompra.toFixed(2)}}</ion-label>
+              <ion-button color="danger" [disabled]="!listaItemsDeCompra.length" routerLink="/lista-de-compras" (click)="cancelarActulizarCompra()">
                 Cancelar
               </ion-button>
-              <ion-button (click)="actualizarCompra()" [disabled]="formComprobante.invalid" routerLink="/lista-de-compras">
-                Actualiazar
+              <ion-button color="success" (click)="actualizarCompra()" [disabled]="formComprobante.invalid || comprando">
+                Actualizar Compra
               </ion-button>
             </ion-item>
           </ion-col>
         </ion-row>
       </ion-grid>
-      <ion-item-divider></ion-item-divider>
     </ion-card-content>
   </ion-card>
 
-  <ion-item-divider>BUSCAR PRODUCTOS PARA AGREGAR</ion-item-divider>
+  <ion-item-divider>
+    <ion-label>BUSCAR PRODUCTOS PARA AGREGAR</ion-label>
+    <ion-button fill="outline" color="secondary" slot="end" (click)="modalNuevoProducto()">
+      Agregar Producto
+    </ion-button>
+  </ion-item-divider>
 
   <ion-grid>
     <ion-row>
-      <ion-col size="6">
-        <ion-item>
-          <ion-button slot="end" (click)="modalNuevoProducto()">
-            Agregar Producto
-          </ion-button>
-        </ion-item>
+      <ion-col size-lg="12">
         <ion-item lines='none'>
           <ion-searchbar style="width: 100%;" slot="end" (ionClear)="limpiarBuscador()" (ionChange)="buscador($event)"
           #search placeholder="Buscar" inputmode="text" debounce="500" mode="ios"></ion-searchbar>
         </ion-item>
         <ion-row class="headerPROD">
-          <ion-col size="1"><ion-label>#</ion-label></ion-col>
-          <ion-col><ion-label>Nombre</ion-label></ion-col>
-          <ion-col><ion-label>Cant. Stock</ion-label></ion-col>
-          <ion-col><ion-label>PU Venta</ion-label></ion-col>
-          <ion-col><ion-label>medida</ion-label></ion-col>
+          <ion-col size="1"><ion-label color="light">#</ion-label></ion-col>
+          <ion-col size="3"><ion-label color="light">Nombre</ion-label></ion-col>
+          <ion-col size="2"><ion-label color="light">Cant. Stock</ion-label></ion-col>
+          <ion-col size="2"><ion-label color="light">PU Venta</ion-label></ion-col>
+          <ion-col size="2"><ion-label color="light">Medida</ion-label></ion-col>
+          <ion-col size="2"><ion-label color="light">Accion</ion-label></ion-col>
         </ion-row>
-        <ion-row   *ngFor="let prod of listaDeProductos; let i = index">
-          <ion-col size="10" class="contentPROD" (click)="seleccionarProducto(prod)">
-            <ion-col size="1"><ion-label>{{i+1}}</ion-label></ion-col>
-            <ion-col><ion-label>{{prod.nombre | titlecase}}</ion-label></ion-col>
-            <ion-col><ion-label>{{prod.cantStock}}</ion-label></ion-col>
-            <ion-col><ion-label>{{prod.precio | number:'1.2'}}</ion-label></ion-col>
-            <ion-col><ion-label>{{prod.medida | titlecase}}</ion-label></ion-col>
-          </ion-col>
-          <ion-col size="1">
+        <ion-row class="contentPROD"   *ngFor="let prod of listaDeProductos; let i = index">
+          <!-- <ion-col size="10" class="contentPROD" (click)="modalAgregarItemDeCompra(prod)">
+          </ion-col> -->
+          <ion-col (click)="modalAgregarItemDeCompra(prod)" size="1"><ion-label>{{i+1}}</ion-label></ion-col>
+          <ion-col (click)="modalAgregarItemDeCompra(prod)" size="3"><ion-label>{{prod.nombre | titlecase}}</ion-label></ion-col>
+          <ion-col (click)="modalAgregarItemDeCompra(prod)" size="2"><ion-label>{{prod.cantStock}}</ion-label></ion-col>
+          <ion-col (click)="modalAgregarItemDeCompra(prod)" size="2"><ion-label>{{prod.precio | number:'1.2'}}</ion-label></ion-col>
+          <ion-col (click)="modalAgregarItemDeCompra(prod)" size="2"><ion-label>{{prod.medida | titlecase}}</ion-label></ion-col>
+          <ion-col size="2">
             <ion-button size="small" color="success" (click)="modalEditarProducto(prod)">
               <ion-icon color="light" name="create-outline" ></ion-icon>
             </ion-button>
@@ -173,14 +183,13 @@
         </ion-row>
       </ion-col>
 
-      <ion-col size="6">
+      <!-- <ion-col size="6">
         <ion-item>
           <ion-label>Editar Producto de compra</ion-label>
         </ion-item>
 
         <form [formGroup]="formItemDeCompras" readonly *ngIf="productSelect">
           <ion-item lines="none">
-            <!-- EL NOMBRE DEBE SER UN LABEL Y SER MÁS VISIBLE -->
             <ion-label position="floating" color="primary">Nombre del producto<ion-text color="danger">*</ion-text></ion-label>
             <ion-input  type="text" formControlName="nombre" placeholder="Nombre" required  readonly></ion-input>
           </ion-item>
@@ -216,7 +225,7 @@
             <ion-label color="light">Agregar a lista</ion-label>
           </ion-button>
         </form>
-      </ion-col>
+      </ion-col> -->
     </ion-row>
   </ion-grid>
 </ion-content>

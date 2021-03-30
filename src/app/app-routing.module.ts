@@ -145,7 +145,8 @@ const routes: Routes = [
   },
   {
     path: 'buscar',
-    loadChildren: () => import('./pages/buscar/buscar.module').then( m => m.BuscarPageModule)
+    loadChildren: () => import('./pages/buscar/buscar.module').then( m => m.BuscarPageModule),
+    canActivate: [AuthGuard]
   },
   {
     path: 'reporte-ventas',
@@ -154,16 +155,35 @@ const routes: Routes = [
   },
   {
     path: 'usuarios',
-    loadChildren: () => import('./pages/usuarios/usuarios.module').then( m => m.UsuariosPageModule)
+    loadChildren: () => import('./pages/usuarios/usuarios.module').then( m => m.UsuariosPageModule),
+    canActivate: [AuthGuard, NoVendedorGuard]
   },
   {
     path: 'modal-editar-item-compra',
     loadChildren: () => import('./modals/modal-editar-item-compra/modal-editar-item-compra.module').
-    then( m => m.ModalEditarItemCompraPageModule)
+    then( m => m.ModalEditarItemCompraPageModule),
+    canActivate: [AuthGuard]
   },
   {
     path: 'modal-ingresos-egresos',
-    loadChildren: () => import('./modals/modal-ingresos-egresos/modal-ingresos-egresos.module').then( m => m.ModalIngresosEgresosPageModule)
+    // tslint:disable-next-line:max-line-length
+    loadChildren: () => import('./modals/modal-ingresos-egresos/modal-ingresos-egresos.module').then( m => m.ModalIngresosEgresosPageModule),
+    canActivate: [AuthGuard]
+  },
+  {
+    path: 'modal-reserva-fiado',
+    loadChildren: () => import('./modals/modal-reserva-fiado/modal-reserva-fiado.module').then( m => m.ModalReservaFiadoPageModule),
+    canActivate: [AuthGuard]
+  },
+  {
+    path: 'reservados',
+    loadChildren: () => import('./pages/reservados/reservados.module').then( m => m.ReservadosPageModule),
+    canActivate: [AuthGuard]
+  },
+  {
+    path: 'fiados',
+    loadChildren: () => import('./pages/fiados/fiados.module').then( m => m.FiadosPageModule),
+    canActivate: [AuthGuard]
   },
   {
     path: 'print/:sede/:fecha/:id',

@@ -71,7 +71,6 @@ export class AppComponent implements OnInit{
   //       icon: '../assets/img/TOOBY LOGO.png'
   //     });
   //   }
-
   menuSelected(page) {
     this.menuSeleccionado = page.name;
   }

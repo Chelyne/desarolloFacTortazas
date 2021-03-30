@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
-import { ModalController, MenuController} from '@ionic/angular';
+import { ModalController, MenuController, LoadingController } from '@ionic/angular';
 import { CompraInterface, ItemDeCompraInterface } from 'src/app/models/Compra';
 import { ProductoInterface } from 'src/app/models/ProductoInterface';
 import { ProveedorInterface } from 'src/app/models/proveedor';
@@ -15,6 +15,8 @@ import { ModalAgregarProductoPage } from 'src/app/modals/modal-agregar-producto/
 import { ModalEditarItemCompraPage } from 'src/app/modals/modal-editar-item-compra/modal-editar-item-compra.page';
 import { EditarProductoPage } from 'src/app/modals/editar-producto/editar-producto.page';
 import { AgregarEditarProveedorPage } from 'src/app/modals/agregar-editar-proveedor/agregar-editar-proveedor.page';
+import { isNullOrUndefined } from 'util';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-compras',
@@ -46,7 +48,9 @@ export class ComprasPage implements OnInit {
   compra: CompraInterface = {};
   listaItemsDeCompra: ItemDeCompraInterface[] = [];
   totalxCompra = 0;
+  loading;
 
+  comprando = false;
   constructor(
     private dataApi: DataBaseService,
     private storage: StorageService,
@@ -55,6 +59,8 @@ export class ComprasPage implements OnInit {
     private editCompra: EditarCompraService,
     private globalService: GlobalService,
     private buscadorService: BuscadorService,
+    private loadingController: LoadingController,
+    private router: Router
   ) {
     this.obtenerProductos();
     this.formItemDeCompras = this.createFormCompras();
@@ -169,7 +175,7 @@ export class ComprasPage implements OnInit {
 
   createFormComprobante(){
     return new FormGroup({
-      tipoComp: new FormControl('facElectronica', [Validators.required]),
+      tipoComp: new FormControl('factura', [Validators.required]),
       serieComp: new FormControl('', [Validators.required]),
       numeroComp: new FormControl('', [Validators.required]),
       fechaEmisionComp: new FormControl('', [])
@@ -287,7 +293,36 @@ export class ComprasPage implements OnInit {
   /* -------------------------------------------------------------------------- */
   /* -------------------------------------------------------------------------- */
   /* -------------------------------------------------------------------------- */
+  // AGREGAR NUEVO ITEM A COMPRA
 
+  async modalAgregarItemDeCompra(item: ProductoInterface){
+    const itemDeCompra: ItemDeCompraInterface = {
+      producto: item,
+      descuento: 0,
+      // cantidad: 0,
+      id: item.id,
+      // pu_compra: 0,
+      totalCompraxProducto: 0
+    };
+    console.log('ADD ITEM', itemDeCompra);
+    const modal =  await this.modalCtlr.create({
+      component: ModalEditarItemCompraPage,
+      // cssClass: 'modal-fullscreen',
+      componentProps: {
+        dataModal: {itemCompra: itemDeCompra}
+      }
+    });
+    await modal.present();
+
+    const {data} = await modal.onDidDismiss();
+    if (data){
+      console.log(data);
+      this.listaItemsDeCompra.push(data.itemCompraModicado);
+      this.calcularTotalaPagar();
+      this.globalService.presentToast('Producto agregado', {duracion: 500});
+      // this.actualizarItemEnListaItemCompra(data.itemCompraModicado);
+    }
+  }
 
   /* -------------------------------------------------------------------------- */
   /*                         modal editar itemDeCompra                          */
@@ -297,7 +332,7 @@ export class ComprasPage implements OnInit {
     console.log('ITEM DE COMPRA EN COMPRAS', itemDeCompra);
     const modal =  await this.modalCtlr.create({
       component: ModalEditarItemCompraPage,
-      cssClass: 'modal-fullscreen',
+      // cssClass: 'modal-fullscreen',
       componentProps: {
         dataModal: {itemCompra: itemDeCompra}
       }
@@ -319,75 +354,111 @@ export class ComprasPage implements OnInit {
       }
       index++;
     }
-
     this.calcularTotalaPagar();
   }
 
   /* -------------------------------------------------------------------------- */
   /* -------------------------------------------------------------------------- */
   /* -------------------------------------------------------------------------- */
-
+  async presentLoading(mensaje: string) {
+    this.loading = await this.loadingController.create({
+      cssClass: 'my-custom-class',
+      message: mensaje,
+      duration: 10000
+    });
+    await this.loading.present();
+  }
 
   /* -------------------------------------------------------------------------- */
   /*                               GUARDAR Y ACTUALIZAR COMPRA                  */
   /* -------------------------------------------------------------------------- */
 
   async generarCompra(){
-    const compra = {
-      proveedor: this.provedorObtenido,
-      listaItemsDeCompra: this.listaItemsDeCompra,
-      IGV_compra: 0,
-      totalxCompra: this.totalxCompra,
-      typoComprobante: this.formComprobante.value.tipoComp,
-      serieComprobante: this.formComprobante.value.serieComp,
-      numeroComprobante: this.formComprobante.value.numeroComp,
-      fechaDeEmision: this.formComprobante.value.fechaEmisionComp,
-      fechaRegistro: new Date()
-
-    };
-
-    /** actualizar Stock de productos */
-    for (const itemCompra of compra.listaItemsDeCompra) {
-      await this.dataApi.incrementarStockProducto(itemCompra.producto.id, this.sede, itemCompra.cantidad);
+    if (isNullOrUndefined(this.provedorObtenido)) {
+      this.globalService.presentToast('Seleccione un proveedor', {color: 'danger'});
+      return;
     }
+    if (this.listaItemsDeCompra.length > 0) {
+      this.comprando = true;
+      await this.presentLoading('Generando compra...');
+      const compra = {
+        proveedor: this.provedorObtenido,
+        listaItemsDeCompra: this.listaItemsDeCompra,
+        IGV_compra: 0,
+        totalxCompra: this.totalxCompra,
+        typoComprobante: this.formComprobante.value.tipoComp,
+        serieComprobante: this.formComprobante.value.serieComp,
+        numeroComprobante: this.formComprobante.value.numeroComp,
+        fechaDeEmision: this.formComprobante.value.fechaEmisionComp,
+        fechaRegistro: new Date()
 
-    this.dataApi.guardarCompra(compra, this.sede).then((ventaId) => {
-      if (ventaId){
-        this.limpiarListaDeCompras();
-        /** Resetear formulario de comprobante */
-        this.formComprobante = this.createFormComprobante();
-        this.globalService.presentToast('Guardó la compra con exito.', {color: 'success', position: 'top'});
-      } else {
-        this.globalService.presentToast('La compra no se guardo.', {color: 'danger', position: 'top'});
+      };
+
+      /** actualizar Stock de productos */
+      for (const itemCompra of compra.listaItemsDeCompra) {
+        await this.dataApi.incrementarStockProducto(itemCompra.producto.id, this.sede, itemCompra.cantidad);
+        await this.dataApi.actualizarPrecioCompraProducto(itemCompra.producto.id, this.sede, itemCompra.pu_compra);
       }
-    }).catch( err => {
-      console.log(err);
-      this.globalService.presentToast('La compra no se guardo.', {color: 'danger',  position: 'top'});
-    });
+
+      this.dataApi.guardarCompra(compra, this.sede).then((ventaId) => {
+        if (ventaId){
+          this.limpiarListaDeCompras();
+          this.provedorObtenido = null;
+          /** Resetear formulario de comprobante */
+          this.formComprobante = this.createFormComprobante();
+          this.globalService.presentToast('Se guardó la compra con éxito.', {color: 'success', position: 'top'});
+          this.loading.dismiss();
+          this.comprando = false;
+        } else {
+          this.globalService.presentToast('La compra no se guardó.', {color: 'danger', position: 'top'});
+          this.loading.dismiss();
+          this.comprando = false;
+        }
+      }).catch( err => {
+        console.log(err);
+        this.globalService.presentToast('La compra no se guardó.', {color: 'danger',  position: 'top'});
+        this.loading.dismiss();
+        this.comprando = false;
+      });
+    } else {
+      this.globalService.presentToast('No tienes productos agregados', {color: 'danger'});
+    }
   }
 
-  actualizarCompra(){
-    const compra = {
-      proveedor: this.provedorObtenido,
-      listaItemsDeCompra: this.listaItemsDeCompra,
-      IGV_compra: 0,
-      totalxCompra: this.totalxCompra,
-      typoComprobante: this.formComprobante.value.tipoComp,
-      serieComprobante: this.formComprobante.value.serieComp,
-      numeroComprobante: this.formComprobante.value.numeroComp,
-      fechaDeEmision: this.formComprobante.value.fechaEmisionComp,
-      // fechaRegistro: new Date()
-    };
-
-    this.actualizarStockProductos2(compra);
-
-
-    this.dataApi.actualizarCompra(this.compra.id, compra, this.sede).then(() => {
-      this.globalService.presentToast('Actualizó la compra con exito.', {color: 'success', duracion: 2000, position: 'top'});
-    }).catch( () => {
-      this.globalService.presentToast('No se pudo actualizó la compra con exito.', {color: 'success', duracion: 2000, position: 'top'});
-    });
-
+  async actualizarCompra() {
+    if (isNullOrUndefined(this.provedorObtenido)) {
+      this.globalService.presentToast('Seleccione un proveedor', {color: 'danger'});
+      return;
+    }
+    if (this.listaItemsDeCompra.length > 0) {
+      this.comprando = true;
+      await this.presentLoading('Generando compra...');
+      console.log('Actualizando', this.listaItemsDeCompra);
+      const compra = {
+        proveedor: this.provedorObtenido,
+        listaItemsDeCompra: this.listaItemsDeCompra,
+        IGV_compra: 0,
+        totalxCompra: this.totalxCompra,
+        typoComprobante: this.formComprobante.value.tipoComp,
+        serieComprobante: this.formComprobante.value.serieComp,
+        numeroComprobante: this.formComprobante.value.numeroComp,
+        fechaDeEmision: this.formComprobante.value.fechaEmisionComp,
+        // fechaRegistro: new Date()
+      };
+      this.actualizarStockProductos2(compra);
+      this.dataApi.actualizarCompra(this.compra.id, compra, this.sede).then(() => {
+        this.globalService.presentToast('Actualizó la compra con exito.', {color: 'success', duracion: 2000, position: 'top'});
+        this.comprando = false;
+        this.loading.dismiss();
+        this.router.navigate(['/lista-de-compras']);
+      }).catch( () => {
+        this.globalService.presentToast('No se pudo actualizar la compra.', {color: 'danger', duracion: 2000, position: 'top'});
+        this.comprando = false;
+        this.loading.dismiss();
+      });
+    } else {
+      this.globalService.presentToast('No tienes productos agregados', {color: 'danger'});
+    }
   }
 
   actualizarStockItemsCompra(compraActual: CompraInterface){
@@ -430,21 +501,26 @@ export class ComprasPage implements OnInit {
   }
 
   actualizarStockProductos2(compraActual: CompraInterface){
-    const interseccion: {id: string, cantidad: number}[] = [];
-    const soloActual: {id: string, cantidad: number}[] = [];
-    const soloAnterior: {id: string, cantidad: number}[] = [];
+    const interseccion: {id: string, cantidad: number, pu_compra?: number}[] = [];
+    const soloActual: {id: string, cantidad: number, pu_compra?: number}[] = [];
+    const soloAnterior: {id: string, cantidad: number, pu_compra?: number}[] = [];
 
     for (const itemCompra of compraActual.listaItemsDeCompra) {
       let itemCompraEstaEnAmbos = false;
       for (const itemAnterior of this.compraAserActualizada.listaItemsDeCompra) {
         if (itemCompra.producto.id === itemAnterior.producto.id){
-          interseccion.push({id: itemCompra.producto.id, cantidad: itemCompra.cantidad - itemAnterior.cantidad});
+
+          const format: any = {id: itemCompra.producto.id, cantidad: itemCompra.cantidad - itemAnterior.cantidad};
+          if (itemCompra.producto.precioCompra !== itemAnterior.pu_compra){
+            format.pu_compra = itemCompra.pu_compra;
+          }
+          interseccion.push(format);
           itemCompraEstaEnAmbos = true;
           break;
         }
       }
       if (!itemCompraEstaEnAmbos){
-        soloActual.push({id: itemCompra.producto.id, cantidad: itemCompra.cantidad});
+        soloActual.push({id: itemCompra.producto.id, cantidad: itemCompra.cantidad, pu_compra: itemCompra.pu_compra});
       }
     }
 
@@ -458,20 +534,25 @@ export class ComprasPage implements OnInit {
       }
 
       if (!itemCompraEstaEnAmbos){
-        soloAnterior.push({id: itemAnterior.producto.id, cantidad: -itemAnterior.cantidad});
+        soloAnterior.push({id: itemAnterior.producto.id, cantidad: -itemAnterior.cantidad, pu_compra: itemAnterior.pu_compra});
       }
     }
 
 
     console.log('LISTA FILTRADA', interseccion, soloAnterior, soloActual);
 
-    const actulizarStock = (listaProductos: {id: string, cantidad: number}[]) => {
+    const actulizarStock = async (listaProductos: {id: string, cantidad: number, pu_compra?: number}[]) => {
       for (const producto of listaProductos) {
         if (producto.cantidad > 0){
-          this.dataApi.incrementarStockProducto(producto.id, this.sede, producto.cantidad);
+          await this.dataApi.incrementarStockProducto(producto.id, this.sede, producto.cantidad);
         } else if (producto.cantidad < 0) {
-          this.dataApi.decrementarStockProducto(producto.id, this.sede, -producto.cantidad);
+          await this.dataApi.decrementarStockProducto(producto.id, this.sede, -producto.cantidad);
         }
+
+        if (producto.pu_compra){
+          await this.dataApi.actualizarPrecioCompraProducto(producto.id, this.sede, producto.pu_compra);
+        }
+
       }
     };
 
@@ -509,7 +590,7 @@ export class ComprasPage implements OnInit {
   async modalAgregarNuevoProveedor(){
     const modal = await this.modalCtlr.create({
       component: AgregarEditarProveedorPage,
-      cssClass: 'modal-fullscreen',
+      // cssClass: 'modal-fullscreen',
       componentProps: {
         dataModal: {
           evento: 'agregar'
@@ -581,8 +662,6 @@ export class ComprasPage implements OnInit {
     this.productSelect = null;
     this.formItemDeCompras = this.createFormCompras();
   }
-
-
   /* -------------------------------------------------------------------------- */
   /* -------------------------------------------------------------------------- */
   /* -------------------------------------------------------------------------- */

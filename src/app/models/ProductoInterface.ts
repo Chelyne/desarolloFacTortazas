@@ -5,6 +5,7 @@ export interface ProductoInterface {
     arrayNombre?: string[];
     cantidad?: number; // ?NOTE , numero de unidades en una venta
     precio?: number;
+    precioCompra?: number;
     sede?: string;
     medida?: string;    // Unidad litros gramos kilos
     cantStock?: number;

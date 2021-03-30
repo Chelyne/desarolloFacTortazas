@@ -36,10 +36,16 @@
             <ion-card-title>{{(((usuario.nombre + ' ' + usuario.apellidos).length > 20) ? ((usuario.nombre + ' ' + usuario.apellidos).slice(0, 20) + '...') : (usuario.nombre + ' ' + usuario.apellidos)) | titlecase}}</ion-card-title>
             <ion-card-subtitle>{{usuario.sede}}</ion-card-subtitle>
           </ion-card-content>
-          <ion-button size="small" color="success" (click)="ActualizarDataUsuario(usuario)">
-            <ion-icon name="create-outline" color="light"></ion-icon> &nbsp;
-            <ion-label color="light">Editar</ion-label>
-          </ion-button>
+          <ion-item lines="none">
+            <ion-button size="small" color="success" expand="block" (click)="ActualizarDataUsuario(usuario)">
+              <ion-icon name="create-outline" color="light"></ion-icon> &nbsp;
+              <ion-label color="light">Editar</ion-label>
+            </ion-button>
+            <ion-button size="small" color="danger" (click)="alertEliminarUsuario(usuario)">
+              <ion-icon name="trash-outline" color="light"></ion-icon> &nbsp;
+              <!-- <ion-label color="light">Eliminar</ion-label> -->
+            </ion-button>
+          </ion-item>
         </ion-card>
       </ion-col>
     </ion-row>
