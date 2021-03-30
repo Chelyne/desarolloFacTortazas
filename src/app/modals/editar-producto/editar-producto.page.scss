@@ -39,7 +39,7 @@ form {
             // border-top: solid 2px var(--ion-color-light);
             ion-item {
                 ion-label {
-                    font-family: Sniglet;
+                    font-family: Nunito;
                 }
             }
             .cantidad {
@@ -87,29 +87,31 @@ form {
     text-align: center;
 }
 
-ion-label {
-    font-family: Nunito;
-}
-
-ion-input {
-    font-family: Nunito;
-    border: solid 1px var(--ion-color-primary);
-    border-radius: 5px;
-    margin-top: 5px;
-    --padding-start: 12px;
-}
-
-ion-textarea {
-    font-family: Nunito;
-    border: solid 1px var(--ion-color-primary);
-    border-radius: 5px;
-    margin-top: 5px;
-    --padding-start: 12px;
-}
-
-ion-input[type=date] {
-    margin-top: 5px;
-    border: solid 1px var(--ion-color-primary);
+* {
+    ion-label {
+        font-family: Nunito;
+    }
+    
+    ion-input {
+        font-family: Nunito;
+        border: solid 1px var(--ion-color-primary);
+        border-radius: 5px;
+        margin-top: 5px;
+        --padding-start: 12px;
+    }
+    
+    ion-textarea {
+        font-family: Nunito;
+        border: solid 1px var(--ion-color-primary);
+        border-radius: 5px;
+        margin-top: 5px;
+        --padding-start: 12px;
+    }
+    
+    ion-input[type=date] {
+        margin-top: 5px;
+        border: solid 1px var(--ion-color-primary);
+    }
 }
 
 .custom-options {

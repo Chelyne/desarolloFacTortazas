@@ -69,6 +69,8 @@ export class DataBaseService {
   }
 
   guardarProducto(newProducto: ProductoInterface, sede: string) {
+    const arrayNombre = newProducto.nombre.toLocaleLowerCase().split(' ');
+    newProducto.arrayNombre = arrayNombre;
     return this.afs.collection('sedes').doc(sede.toLocaleLowerCase()).collection('productos').ref.add(newProducto).then(data => {
       if (data.id) {
         return data.id;
@@ -565,6 +567,23 @@ export class DataBaseService {
       }
     }));
   }
+
+  obtenerListaProductosStock(sede: string) {
+    const sede1 = sede.toLocaleLowerCase();
+    return this.afs.collection('sedes').doc(sede1).collection('productos', ref => ref.orderBy('cantStock', 'asc').limit(100))
+    .snapshotChanges().pipe(map(changes => {
+      const datos: ProductoInterface[] = [];
+
+      changes.map(action => {
+        datos.push({
+          id: action.payload.doc.id,
+          ...action.payload.doc.data()
+        });
+      });
+
+      return datos;
+    }));
+  }
   // ----------------------------------------------------------- */
   // ----------------------------------------------------------- */
 
@@ -782,7 +801,15 @@ export class DataBaseService {
   // ----------------------------------------------------------- */
   // ----------------------------------------------------------- */
 
-
+  // ACTUALIZAR PRECIO DE COMPRA
+  actualizarPrecioCompraProducto(idProducto: string, sede: string, precioDeCompra: number) {
+    return this.afs.collection('sedes').doc(sede.toLocaleLowerCase()).collection('productos')
+    .doc(idProducto).ref.update({precioCompra: precioDeCompra})
+    .then(() => 'exito').catch(err => {
+      console.log('error', err);
+      throw String('fail');
+    });
+  }
 
 
   // ----------------------------------------------------------- */

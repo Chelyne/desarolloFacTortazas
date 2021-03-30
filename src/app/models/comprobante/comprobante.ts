@@ -43,7 +43,7 @@ export interface ComprobanteInterface {
     cargos?: ChangeInterface[];
     mtoCargos?: number;
     valorVenta?: number;
-
+    subTotal?: number;
 }
 
 export interface NotaDeCreditoInterface {
@@ -79,6 +79,7 @@ export interface NotaDeCreditoInterface {
     numDocfectado?: string;
     mtoOperGratuitas?: number;
     perception?: SalePerceptionInterface;
+    subTotal?: number;
 }
 
 export interface ClientInterface {

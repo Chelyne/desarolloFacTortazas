@@ -171,21 +171,6 @@ const routes: Routes = [
     canActivate: [AuthGuard]
   },
   {
-    path: 'modal-reserva-fiado',
-    loadChildren: () => import('./modals/modal-reserva-fiado/modal-reserva-fiado.module').then( m => m.ModalReservaFiadoPageModule),
-    canActivate: [AuthGuard]
-  },
-  {
-    path: 'reservados',
-    loadChildren: () => import('./pages/reservados/reservados.module').then( m => m.ReservadosPageModule),
-    canActivate: [AuthGuard]
-  },
-  {
-    path: 'fiados',
-    loadChildren: () => import('./pages/fiados/fiados.module').then( m => m.FiadosPageModule),
-    canActivate: [AuthGuard]
-  },
-  {
     path: 'print/:sede/:fecha/:id',
     loadChildren: () => import('./pages/print/print.module').then( m => m.PrintPageModule)
   }

@@ -29,7 +29,6 @@ export class ModalAgregarProductoPage implements OnInit {
 
 // ----------------
   image: any;
-  sinFoto: string;
   progress = 0;
 
   productoForm: FormGroup;
@@ -230,15 +229,12 @@ export class ModalAgregarProductoPage implements OnInit {
 
   onResetForm() {
     this.productoForm.reset();
-    this.sinFoto = null;
     this.image = null;
     this.progress = 0;
   }
 
   guardarProducto() {
-    this.sinFoto = null;
     this.mensaje = null;
-
     if (this.productoForm.valid ) {
       this.productoForm.value.nombre = this.productoForm.value.nombre.toLowerCase();
       this.productoForm.value.categoria = 'petshop'; // SOLO TOOBY

@@ -7,6 +7,7 @@ import { LoadingController, MenuController, ToastController } from '@ionic/angul
 import { DataBaseService } from '../../services/data-base.service';
 import { GlobalService } from '../../global/global.service';
 import { ProductoInterface } from '../../models/ProductoInterface';
+import * as FileSaver from 'file-saver';
 
 @Component({
   selector: 'app-lista-de-ventas',
@@ -250,5 +251,35 @@ export class ListaDeVentasPage implements OnInit {
   enviarResumenDiario(){
     console.log(this.fechaventas);
     this.apiPeru.formatearResumenDiario(this.listaDeVentas, this.fechaventaYYYYMMDD);
+  }
+
+  async descargarZIP(venta: VentaInterface) {
+    await this.presentLoading('Descargando...');
+    const binaryString = window.atob(venta.cdr.sunatResponse.cdrZip);
+    const binaryLen = binaryString.length;
+    const ab = new ArrayBuffer(binaryLen);
+    const ia = new Uint8Array(ab);
+    for (let i = 0; i < binaryLen; i++) {
+      ia[i] = binaryString.charCodeAt(i);
+    }
+    // tslint:disable-next-line:prefer-const
+    let bb: any = new Blob([ab]);
+    bb.lastModifiedDate = new Date();
+    bb.name = 'archive.zip';
+    // bb.type = 'zip';
+    // return bb;
+    this.loading.dismiss();
+    FileSaver.saveAs(bb, venta.serieComprobante + '-' + venta.numeroComprobante + '.zip');
+  }
+
+  async descargarXML(venta: VentaInterface) {
+    await this.presentLoading('Descargando...');
+    const fileToExport = new Blob([venta.cdr.xml], {type: 'text/xml'});
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(fileToExport);
+    a.target = '_blank';
+    a.download = venta.serieComprobante + '-' + venta.numeroComprobante + '.xml';
+    this.loading.dismiss();
+    a.click();
   }
 }

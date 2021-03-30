@@ -306,7 +306,7 @@ export class ApiPeruService {
     const myHeaders = new Headers();
     myHeaders.append('Authorization', 'Bearer '.concat(this.datosEmpresa.token));
     myHeaders.append('Content-Type', 'application/json');
-
+    console.log('TOKEN: ', this.datosEmpresa.token);
     let raw: string;
 
     raw = JSON.stringify(ventaFormateada);
@@ -325,7 +325,9 @@ export class ApiPeruService {
     return fetch('https://facturacion.apisperu.com/api/v1/invoice/send', requestOptions)
       .then(response => response.json())
       .then(cdr => cdr)
-      .catch(error => error);
+      .catch(error => {
+        throw error;
+      });
   }
 
   formatearVenta(venta: VentaInterface): ComprobanteInterface{
@@ -363,12 +365,13 @@ export class ApiPeruService {
       totalImpuestos: redondeoDecimal(igv + icbr, 2),
       valorVenta: redondeoDecimal(montoOperGravadas, 2),
       mtoImpVenta: redondeoDecimal(venta.totalPagarVenta, 2),
+      subTotal: redondeoDecimal(venta.totalPagarVenta, 2),
       ublVersion: '2.1',
       details: productFormat,
       legends: [
         {
           code: '1000',
-          value: MontoALetras(totalaPagar)
+          value: MontoALetras(venta.totalPagarVenta)
         }
       ],
       // descuentos: venta.descuentoVenta > 0 ? [descuento] : []
@@ -485,11 +488,13 @@ export class ApiPeruService {
   }
 
   formatearEmpresa(empresa: DatosEmpresaInterface): CompanyInterface{
-    // TODO - QUE PASA SI ALGUNO NO TIENE DATOS
+    if (!empresa.ruc){
+      throw String('NO EXISTE RUC DE LA EMPRESA');
+    }
     return {
       ruc: empresa.ruc,
-      nombreComercial: empresa.nombreComercial,
-      razonSocial: empresa.razon_social,
+      nombreComercial: empresa.nombreComercial ?? '',
+      razonSocial: empresa.razon_social ?? '',
       address: this.sedeDireccion
     };
   }
@@ -681,13 +686,14 @@ export class ApiPeruService {
       totalImpuestos: redondeoDecimal(igv, 2),
       icbper: redondeoDecimal(icbr, 2),
       // valorVenta: redondeoDecimal(montoOperGravadas, 2),
-      mtoImpVenta: redondeoDecimal(totalaPagar, 2),
+      mtoImpVenta: redondeoDecimal(venta.totalPagarVenta, 2),
+      subTotal: redondeoDecimal(venta.totalPagarVenta, 2),
       ublVersion: '2.1',
       details: productFormat,
       legends: [
         {
           code: '1000',
-          value: MontoALetras(totalaPagar)
+          value: MontoALetras(venta.totalPagarVenta)
         }
       ]
     };
