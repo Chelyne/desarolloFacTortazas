@@ -9,7 +9,7 @@ import * as moment from 'moment';
 import jsPDF from 'jspdf';
 import { NgxQrcodeElementTypes, NgxQrcodeErrorCorrectionLevels, QrcodeComponent } from '@techiediaries/ngx-qrcode';
 import { ItemDeVentaInterface } from '../../models/venta/item-de-venta';
-import { GENERAL_CONFIG } from '../../../config/apiPeruConfig';
+import { GENERAL_CONFIG } from '../../../config/generalConfig';
 import { DataBaseService } from '../../services/data-base.service';
 import { formatearDateTime } from '../../global/funciones-globales';
 
@@ -184,7 +184,7 @@ export class ModalVentasPage implements OnInit {
           doc.text(this.nombreEmpresa, 22.5, 12, {align: 'center'});
           doc.text(GENERAL_CONFIG.sedes[this.sede].direccion.direccionCorta, 22.5, 14, {align: 'center'});
           doc.text(GENERAL_CONFIG.sedes[this.sede].direccion.referencia, 22.5, 16, {align: 'center'});
-          doc.text('Telefono: ' + GENERAL_CONFIG.sedes[this.sede].direccion.telefono, 22.5, 19, {align: 'center'});
+          doc.text('Telefono: ' + GENERAL_CONFIG.sedes[this.sede].telefono, 22.5, 19, {align: 'center'});
           doc.text('Ruc: ' + this.RUC, 22.5, 21, {align: 'center'});
           doc.text('Boleta de Venta electrónica', 22.5, 25, {align: 'center'});
           // tslint:disable-next-line:max-line-length
@@ -282,7 +282,7 @@ export class ModalVentasPage implements OnInit {
           doc.text(this.nombreEmpresa, 22.5, 12, {align: 'center'});
           doc.text(GENERAL_CONFIG.sedes[this.sede].direccion.direccionCorta, 22.5, 14, {align: 'center'});
           doc.text(GENERAL_CONFIG.sedes[this.sede].direccion.referencia, 22.5, 16, {align: 'center'});
-          doc.text('Telefono: ' + GENERAL_CONFIG.sedes[this.sede].direccion.telefono, 22.5, 19, {align: 'center'});
+          doc.text('Telefono: ' + GENERAL_CONFIG.sedes[this.sede].telefono, 22.5, 19, {align: 'center'});
           doc.text('Ruc: ' + this.RUC, 22.5, 21, {align: 'center'});
           doc.text('Factura de Venta electrónica', 22.5, 25, {align: 'center'});
           // tslint:disable-next-line:max-line-length
@@ -383,7 +383,7 @@ export class ModalVentasPage implements OnInit {
           doc.text(this.nombreEmpresa, 22.5, 12, {align: 'center'});
           doc.text(GENERAL_CONFIG.sedes[this.sede].direccion.direccionCorta, 22.5, 14, {align: 'center'});
           doc.text(GENERAL_CONFIG.sedes[this.sede].direccion.referencia, 22.5, 16, {align: 'center'});
-          doc.text('Telefono: ' + GENERAL_CONFIG.sedes[this.sede].direccion.telefono, 22.5, 19, {align: 'center'});
+          doc.text('Telefono: ' + GENERAL_CONFIG.sedes[this.sede].telefono, 22.5, 19, {align: 'center'});
           doc.text('Ruc: ' + this.RUC, 22.5, 21, {align: 'center'});
           doc.text('Nota de Venta electrónica', 22.5, 25, {align: 'center'});
           // tslint:disable-next-line:max-line-length

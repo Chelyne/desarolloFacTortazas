@@ -15,7 +15,10 @@ export interface DatosEmpresaInterface {
     ruc: string;
     razon_social: string;
     nombreComercial: string;
-    token: string;
+    token?: string;
+    apisPeruId?: number;
+    email?: string;
+    telefono?: string;
 }
 
 export interface DatosSede {

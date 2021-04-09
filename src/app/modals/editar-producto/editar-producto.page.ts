@@ -5,7 +5,7 @@ import { AngularFireStorage } from '@angular/fire/storage';
 import { DatePipe } from '@angular/common';
 import { isNullOrUndefined } from 'util';
 
-import { MEDIDAS } from 'src/app/configs/medidasConfig';
+import { MEDIDAS } from 'src/config/medidasConfig';
 
 
 @Component({

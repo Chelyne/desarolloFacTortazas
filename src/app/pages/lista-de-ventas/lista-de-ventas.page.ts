@@ -75,6 +75,7 @@ export class ListaDeVentasPage implements OnInit {
       if (data.length > 0) {
         this.listaDeVentas = data;
         console.log(this.listaDeVentas);
+        // this.obtenerListaProductosDeVenta(this.listaDeVentas).then( data => console.log(data))
 
         this.sinDatos = false;
         this.buscando = false;
@@ -88,6 +89,22 @@ export class ListaDeVentasPage implements OnInit {
     // console.log('ventas', this.fechaventas);
     // console.log('listaventas', this.listaDeVentas);
   }
+
+  /** funcion auxiliar para obtener listaDeproductos Dado una listaDeventas */
+  async obtenerListaProductosDeVenta(listaVentas: VentaInterface[]){
+    const listaDeProductosDeVentas: any [] = [];
+    for (const venta of listaVentas) {
+      if (venta.idListaProductos){
+        const resul = await this.dataApi.obtenerProductosDeVenta(venta.idListaProductos, 'andahuaylas').catch(() => 'fail');
+        if (resul !== 'fail'){
+          const obj = {id: venta.idListaProductos, productos: resul};
+          listaDeProductosDeVentas.push(obj);
+        }
+      }
+    }
+    return listaDeProductosDeVentas;
+  }
+
 /* -------------------------------------------------------------------------- */
 /*                           obtener lista de ventas                          */
 /* -------------------------------------------------------------------------- */

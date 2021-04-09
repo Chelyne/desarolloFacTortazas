@@ -8,7 +8,7 @@ import { StorageService } from '../../services/storage.service';
 import { DataBaseService } from '../../services/data-base.service';
 import { GlobalService } from 'src/app/global/global.service';
 
-import { MEDIDAS } from 'src/app/configs/medidasConfig';
+import { MEDIDAS } from 'src/config/medidasConfig';
 
 
 
