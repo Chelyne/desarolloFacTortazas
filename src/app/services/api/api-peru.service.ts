@@ -58,22 +58,14 @@ export class ApiPeruService {
   }
 
   setApiPeruConfig(config: ApiPeruConfigInterface){
-    // console.log('CONFIGGGGGGGGGGGGGGGGG', config);
 
     this.datosApiPeru = config.datosApiPeru;
-    // this.userApiPeru = config.datosApiPeru.usuario;
-    // this.passwardApiPeru = config.datosApiPeru.password;
 
     this.datosEmpresa = config.datosEmpresa;
     this.datosEmpresa.telefono = config.sedes[this.sede].telefono ?? '';
     this.datosEmpresa.email = config.sedes[this.sede].email ?? '';
-    // this.rucEmpresa = this.datosEmpresa.ruc;
-    // this.tokenEmpresa = this.datosEmpresa.token;
 
-    // this.datosSede = config.sedes[this.sede];
-    // console.log(config.sedes[this.sede]);
     this.sedeDireccion = this.formatearDireccion(config.sedes[this.sede].direccion);
-    // console.log('sedeDireccion', this.sedeDireccion);
   }
 
   formatearDireccion(objDireccion: any): AddressInterface{
@@ -274,6 +266,7 @@ export class ApiPeruService {
   }
 
   async toggleEnviromentEmpresa(){
+    console.log('ambiar enviromenttttttttttttttttttttt');
     /**
      * @objetivo : Intercambia entre beta y produccion
      */
@@ -381,6 +374,15 @@ export class ApiPeruService {
         cdrStatusForResponse.typoObs = 'notes';
       }
 
+      if (
+        !cdrStatusForResponse.success ||
+        Object.entries(cdrStatusForResponse.observaciones).length ||
+        cdrStatusForResponse.observaciones.length
+      ){
+        console.log('%cOBSERVACIONES:', 'color:white; background-color:red;padding:20px');
+        console.log(cdrStatusForResponse.observaciones);
+      }
+
       // un for de tres intentos para guardar cdr
       let seGuardoCdr = '';
       for (let i = 0; i < 3; i++) {
@@ -402,7 +404,7 @@ export class ApiPeruService {
       }
 
       return cdrStatusForResponse;
-      return 'exito';
+      // return 'exito';
     }
   }
 
@@ -477,8 +479,10 @@ export class ApiPeruService {
     const productFormat = this.formatearDetalles(venta.listaItemsDeVenta);
 
     let icb: number;
+    let cantidaBolsas = 0;
     if (venta.cantidadBolsa && venta.cantidadBolsa > 0){
       icb = venta.cantidadBolsa * this.FACTOR_ICBPER;
+      cantidaBolsas = venta.cantidadBolsa;
     } else {
       icb = 0;
     }
@@ -489,7 +493,7 @@ export class ApiPeruService {
     const igv = totalaPagar - MontoBase;
     const montoOperGravadas = MontoBase;
 
-    let ventaFormateada: ComprobanteInterface ;
+    let ventaFormateada: ComprobanteInterface;
 
     ventaFormateada =  {
       ublVersion: '2.1',
@@ -519,13 +523,14 @@ export class ApiPeruService {
     };
 
     if ( icb > 0 ){
-      // ! si la candidad de bolsa fuera menor a 0 que pasaría?
-      const detailBolsa = this.obtenerDetalleBolsaGratuita(venta.cantidadBolsa);
-      ventaFormateada.icbper = redondeoDecimal(icb, 2);
+      const detailBolsa = this.obtenerDetalleBolsaGratuita(cantidaBolsas);
+      // ventaFormateada.details.push(detailBolsa);
+      const newDetail = [...productFormat, detailBolsa];
+      ventaFormateada.details = newDetail;
 
+      ventaFormateada.icbper = redondeoDecimal(icb, 2);
       ventaFormateada.mtoOperGratuitas = detailBolsa.mtoBaseIgv;
       ventaFormateada.mtoIGVGratuitas = detailBolsa.igv;
-      ventaFormateada.details.push(detailBolsa);
       ventaFormateada.totalImpuestos = redondeoDecimal(igv + icb, 2);
 
     } else {
@@ -572,8 +577,7 @@ export class ApiPeruService {
   }
 
   formatearDetalleVenta(itemDeVenta: ItemDeVentaInterface): SaleDetailInterface{
-    // if (!itemDeVenta.cantidad || !itemDeVenta.producto?.cantidad || !itemDeVenta.producto.precio){
-    if (!itemDeVenta.cantidad || !itemDeVenta.producto.precio){
+    if (!itemDeVenta.cantidad || !itemDeVenta.producto?.precio){
       throw String('ITEM DE VENTA INCONSISTENTE, CANTIDA O PU_VENTA NO DEFINIDO');
     }
     const cantidadItems = itemDeVenta.cantidad;
@@ -619,7 +623,7 @@ export class ApiPeruService {
       throw String('NO EXISTE EL NUMERO DE DOCUMENTO DEL CLIENTE');
     }
     return {
-      tipoDoc: this.ObtenerCodigoTipoDoc(cliente.tipoDoc ?? ''), // el catalogo N6, DNI = 1, Tambien obtener el ruc
+      tipoDoc: this.ObtenerCodigoTipoDoc(cliente.tipoDoc ?? ''),
       numDoc: cliente.numDoc,
       rznSocial: cliente.nombre ?? '',
       address: {
@@ -720,9 +724,9 @@ export class ApiPeruService {
 
       // const notaCreditoFormateado = this.formatearNotaDeCredito(venta, DatosSerie);
       const notaCreditoFormateado = this.intentarFormatearNotaDeCredito(venta, DatosSerie);
+      // notaCreditoFormateado.formaPago = this.formatearFormaDePago();
 
       console.log('%cENVIAR NOTA DE CREDITO FORMATEADO A SUNAT:', 'color:white; background-color:purple;padding:20px');
-
       console.log('NOTA DE CREDITO FORMATEADO', notaCreditoFormateado);
       const fechaEmisionNotaCredito = notaCreditoFormateado.fechaEmision ?? '';
 
@@ -746,6 +750,15 @@ export class ApiPeruService {
       } else {
         cdrStatusForResponse.observaciones = cdrRespuesta.sunatResponse.cdrResponse.notes ?? [];
         cdrStatusForResponse.typoObs = 'notes';
+      }
+
+      if (
+        !cdrStatusForResponse.success ||
+        Object.entries(cdrStatusForResponse.observaciones).length ||
+        cdrStatusForResponse.observaciones.length
+      ){
+        console.log('%cOBSERVACIONES:', 'color:white; background-color:red;padding:20px');
+        console.log(cdrStatusForResponse.observaciones);
       }
 
       let respIncremtarCorrelacion = true;
@@ -823,9 +836,14 @@ export class ApiPeruService {
     .then(serie => serie).catch(() => 'fail');
     console.log(valor);
 
-    if (Object.entries(valor).length === 0 || valor === 'fail') {
+    if (valor === 'fail') {
       throw String('fail');
     }
+
+    if (Object.entries(valor).length === 0) {
+      throw String('NO SE ENCONTRO SERIE EN BASEDATOS');
+    }
+
     return valor;
   }
 
@@ -881,9 +899,11 @@ export class ApiPeruService {
 
 
     let icb: number;
+    let cantidadBolsas = 0;
     if (venta.cantidadBolsa && venta.cantidadBolsa > 0){
       icb = venta.cantidadBolsa * this.FACTOR_ICBPER;
-    }else{
+      cantidadBolsas = venta.cantidadBolsa;
+    } else {
       icb = 0;
     }
 
@@ -892,7 +912,7 @@ export class ApiPeruService {
     const igv = totalaPagar - MontoBase;
     const montoOperGravadas = MontoBase;
 
-    let notaCreditoFormateada: NotaDeCreditoInterface ;
+    let notaCreditoFormateada: NotaDeCreditoInterface;
     notaCreditoFormateada = {
       ublVersion: '2.1',
       tipoDoc: '07', /** 07 nota de crédito, nota de debito 08 */
@@ -924,13 +944,13 @@ export class ApiPeruService {
     };
 
     if ( icb > 0 ){
-      // ! si la candidad de bolsa fuera menor a 0 que pasaría?
-      const detailBolsa = this.obtenerDetalleBolsaGratuita(venta.cantidadBolsa);
-      notaCreditoFormateada.icbper = redondeoDecimal(icb, 2);
+      const detailBolsa = this.obtenerDetalleBolsaGratuita(cantidadBolsas);
+      // notaCreditoFormateada.details.push(detailBolsa);
+      const newDetail = [...productFormat, detailBolsa];
+      notaCreditoFormateada.details = newDetail;
 
+      notaCreditoFormateada.icbper = redondeoDecimal(icb, 2);
       notaCreditoFormateada.mtoOperGratuitas = detailBolsa.mtoBaseIgv;
-      // notaCreditoFormateada.mtoIGVGratuitas = detailBolsa.igv;
-      notaCreditoFormateada.details.push(detailBolsa);
       notaCreditoFormateada.totalImpuestos = redondeoDecimal(igv + icb, 2);
 
     } else {

@@ -203,3 +203,21 @@ export function DatetimeStringIsValid(dateTime: string): boolean{
 
 
 
+export function CalcularPorcentaje(num: number, max: number){
+    const porcentaje = (num / max) * 100;
+    const maxStart = 40;
+    const numStart = (porcentaje / 100) * maxStart;
+    const  diference = maxStart - numStart;
+
+    // console.log(numStart);
+    // console.log(diference);
+    console.log(`%c${'*'.repeat(numStart)}%c${'_'.repeat(diference)}`,
+        'color:white;background-color:green',
+        'color:white;background-color:gray',
+        ` ${porcentaje}% `,
+        ` ${num}/${max} `,
+    );
+}
+
+
+

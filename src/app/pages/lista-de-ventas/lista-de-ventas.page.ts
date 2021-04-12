@@ -5,6 +5,7 @@ import { StorageService } from '../../services/storage.service';
 import { ApiPeruService } from 'src/app/services/api/api-peru.service';
 import { LoadingController, MenuController, ToastController } from '@ionic/angular';
 import { DataBaseService } from '../../services/data-base.service';
+import {CalcularPorcentaje} from 'src/app/global/funciones-globales';
 
 @Component({
   selector: 'app-lista-de-ventas',
@@ -27,6 +28,8 @@ export class ListaDeVentasPage implements OnInit {
 
   loading;
 
+  enviroment = '';
+
   constructor(
     private dataApi: DataBaseService,
     private storage: StorageService,
@@ -37,6 +40,7 @@ export class ListaDeVentasPage implements OnInit {
 
   ) {
     this.ventasForm = this.createFormGroup();
+    this.setEnviroment();
    }
 
   ngOnInit() {
@@ -134,22 +138,28 @@ export class ListaDeVentasPage implements OnInit {
   }
 
   async enviarComprobantesDelDia() {
+    let maximo = 0;
+    let index = 0;
+
     /**
      * @PASO1 :Enviar boletas y factura a SUNAT
      */
     const lista = [...this.listaDeVentas];
+    maximo = lista.length;
 
     if (lista.length) {
 
       await this.presentLoading('Enviando comprobantes, Por favor espere...');
 
-      for (const venta of lista) {
 
+      for (const venta of lista) {
+        index += 1;
         console.log('VENTA_A_SER_ENVIADA', venta);
 
         let response: any;
 
         if ((venta.tipoComprobante === 'boleta' || venta.tipoComprobante === 'factura') && !venta.cdr) {
+          CalcularPorcentaje(index, maximo);
 
           response = await this.apiPeru.enviarASunatAdaptador(venta).catch( err => err);
 
@@ -169,11 +179,16 @@ export class ListaDeVentasPage implements OnInit {
        * @PASO2 :Enviar notas de credito
        */
       const lista2 = [...this.listaDeVentas];
+      maximo = lista.length;
+      index = 0;
 
       for (const venta of lista2) {
+        index += 1;
+
         let response: any;
         if (venta.estadoVenta === 'anulado' && venta.cdr && venta.cdr.sunatResponse.success) {
           if (!venta.cdrAnulado){
+            CalcularPorcentaje(index, maximo);
             response = await this.apiPeru.enviarNotaDeCreditoAdaptador(venta);
           }
         } else {
@@ -201,6 +216,14 @@ export class ListaDeVentasPage implements OnInit {
       this.presentToast('No hay ventas para enviar.');
     }
 
+  }
+
+  async setEnviroment(){
+    this.enviroment = await this.apiPeru.obtenerEnviroment().then((env) => env).catch(() => ('INVALID_ENVIROMENT'));
+  }
+
+  async cambiarBetaProduccion(){
+    this.enviroment = await this.apiPeru.toggleEnviromentEmpresa().then((env) => env).catch(() => ('INVALID_ENVIROMENT'));
   }
 
   // async obtenerListaVentas() {

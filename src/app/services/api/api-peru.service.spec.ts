@@ -18,6 +18,7 @@ import { validarElementos, isObjsEqual, isObjsEqual2 } from 'src/app/global/cust
 import { DataBaseService } from '../data-base.service';
 import { ItemDeVentaInterface } from 'src/app/models/venta/item-de-venta';
 import { formatearDateTime } from 'src/app/global/funciones-globales';
+import { ContadorDeSerieInterface } from 'src/app/models/serie';
 
 
 class MockStorageService {
@@ -349,6 +350,7 @@ describe('description', () => {
     /** NOTE - DRY */
     let ventaMock: VentaInterface;
     let ventaMockConBolsa: VentaInterface;
+    let serieInicial: any|ContadorDeSerieInterface;
 
     beforeAll( () => {
       ventaMock = JSON.parse(JSON.stringify(source.ventaPorDefecto));
@@ -368,7 +370,7 @@ describe('description', () => {
       expect((await service.obtenerProductosDeVenta('YR1evM6WAiIgNs6EzgUa')).length).toEqual(6);
     });
 
-    it('ENVIAR COMPROBANTE: BOLETA O FACTURA', async () => {
+    xit('ENVIAR COMPROBANTE: BOLETA O FACTURA', async () => {
 
       let targetVenta: VentaInterface;
 
@@ -395,7 +397,7 @@ describe('description', () => {
 
     });
 
-    it('ENVIAR NOTA DE CREDITO', async () => {
+    xit('ENVIAR NOTA DE CREDITO', async () => {
 
       let targetVenta: VentaInterface;
       const cdrMock: CDRInterface = {sunatResponse: {success: true}};
@@ -440,7 +442,69 @@ describe('description', () => {
       await expectAsync(service.enviarNotaDeCreditoAdaptador(targetVenta)).toBeResolvedTo({success: true, observaciones: [], typoObs: 'notes'});
 
     });
+
+    it('TEST REAL > ENVIAR COMPROBANTE Y NOTA DE CREDITO', async () => {
+      const sede = 'andahuaylas';
+      const fecha = '27-01-2021';
+      let ventaTarget: VentaInterface;
+
+      /** ANTES DE ENVIAR LAS NOTAS DE CREDITO SE GUARDA LA SERIE INICIAL */
+      serieInicial = await service.obtenerSerie('n.credito.boleta').catch(() => 'fail');
+      console.log('%cSerieInicial', 'color:white;background-color:red', serieInicial);
+
+      /** VENTA MODELO CON BOLSA */
+      let idVenta = ventaMock.idVenta;
+      ventaTarget = await dataApi.obtenerVentasPorId(sede, fecha, idVenta);
+      delete ventaTarget.cdr;
+      delete ventaTarget.cdrAnulado;
+      await dataApi.guardarVentaPorId(sede, fecha, ventaTarget);
+      // ? ENVIAR LA VENTA A SUANAT
+      ventaTarget = await dataApi.obtenerVentasPorId(sede, fecha, idVenta);
+      await expectAsync(service.enviarASunatAdaptador(ventaTarget)).toBeResolvedTo({success: true, observaciones: [], typoObs: 'notes'});
+      // ? ENVIAR NOTA DE CREDITO A SUNAT
+      ventaTarget = await dataApi.obtenerVentasPorId(sede, fecha, idVenta);
+      await expectAsync(service.enviarNotaDeCreditoAdaptador(ventaTarget)).toBeResolvedTo({success: true, observaciones: [], typoObs: 'notes'});
+
+
+      /** VENTA MODELO sin BOLSA */
+      idVenta = ventaMockConBolsa.idVenta;
+      ventaTarget = await dataApi.obtenerVentasPorId(sede, fecha, idVenta);
+      delete ventaTarget.cdr;
+      delete ventaTarget.cdrAnulado;
+      await dataApi.guardarVentaPorId(sede, fecha, ventaTarget);
+      // ? ENVIAR LA VENTA A SUANAT
+      ventaTarget = await dataApi.obtenerVentasPorId(sede, fecha, idVenta);
+      await expectAsync(service.enviarASunatAdaptador(ventaTarget)).toBeResolvedTo({success: true, observaciones: [], typoObs: 'notes'});
+      // ? ENVIAR NOTA DE CREDITO A SUNAT
+      ventaTarget = await dataApi.obtenerVentasPorId(sede, fecha, idVenta);
+      await expectAsync(service.enviarNotaDeCreditoAdaptador(ventaTarget)).toBeResolvedTo({success: true, observaciones: [], typoObs: 'notes'});
+    });
+    it('TEST obtenerserie', async () => {
+      await expectAsync(service.obtenerSerie('n.crediiito.boleta')).toBeRejectedWith(`NO SE ENCONTRO SERIE EN BASEDATOS`);
+    });
+    it('RESETEAR EL ESTADO DE LA SERIE AL ESTADO INICIAL: ', async () => {
+      const serieFinal: any| ContadorDeSerieInterface = await service.obtenerSerie('n.credito.boleta').catch(() => 'fail');
+      console.log('%cSerieInicial', 'color:white;background-color:red', serieInicial);
+      console.log('%cSerieInicial', 'color:white;background-color:red', serieFinal);
+
+
+
+      await dataApi.actualizarCorrelacion(serieInicial.id, 'andahuaylas', serieFinal.correlacion - 2);
+      // const serieInicialFinal = await service.obtenerSerie('n.credito.boleta').catch(() => 'fail');
+      console.log('%cSerieActual', 'color:white;background-color:red',  await service.obtenerSerie('n.credito.boleta').catch(() => 'fail'));
+
+
+      await expectAsync(service.obtenerSerie('n.credito.boleta')).toBeResolvedTo(serieInicial);
+
+
+      // console.log('SERIE, ', serieActual);
+      // serieActual =
+
+
+      /** obtener serieActual */
+    });
   });
+
 
   // it('Test Guardar Correlacion', () => {
 
