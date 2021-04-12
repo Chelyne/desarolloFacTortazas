@@ -15,214 +15,272 @@
     <ion-grid>
       <ion-row>
         <ion-col size="12 " size-xs="12" size-sm="12" size-md="6" size-lg="3">
-          <div style="display: flex; justify-content: center; align-items: center;">
-            <ion-card class="imagenes">
-              <div style="height:220px;">
-                <input type="file" id="fileLoader" #fileLoader name="files" title="Load File" hidden
-                  accept=".jpg, .jpeg, .png" />
-                <ion-toolbar color="primary">
-                  <ion-item color="transulcent" style="text-align: center;" lines="none">
-                    <ion-icon slot="end" name="camera-outline" (click)="presentActionSheet(fileLoader)"></ion-icon>
-                    <ion-icon slot="end" name="trash-outline" (click)="removePic()"></ion-icon>
-                  </ion-item>
-                </ion-toolbar>
-                <div class="fotoProducto">
-                  <img (click)="presentActionSheet(fileLoader)" *ngIf="dataProducto.img && !image"
-                    src="{{dataProducto.img}}" alt="">
-                  <img (click)="presentActionSheet(fileLoader)" *ngIf="!dataProducto.img && !image"
-                    src="../../../assets/img/producto_default.png" alt="">
-                  <img (click)="presentActionSheet(fileLoader)" *ngIf="image" src="{{image}}" alt="">
-                </div>
-                <span *ngIf="uploadImage != null">
-                  <img id="checkinImage" (load)="imageLoaded()" />
-                </span>
-              </div>
-              <div class="alertDanger" *ngIf="sinFoto">
-                <div class="mensajeError">
-                  {{sinFoto}}
-                </div>
-              </div>
-            </ion-card>
-          </div>
+          <ion-card class="imagenes">
+            <div class="fotoProducto">
+              <input type="file" id="fileLoader" #fileLoader name="files" title="Load File" hidden
+                accept=".jpg, .jpeg, .png" />
+              <!-- <ion-toolbar color="primary">
+                <ion-item color="transulcent" style="text-align: center;" lines="none">
+                  <ion-icon slot="end" name="camera-outline" (click)="presentActionSheet(fileLoader)"></ion-icon>
+                  <ion-icon slot="end" name="trash-outline" (click)="removePic()"></ion-icon>
+                </ion-item>
+              </ion-toolbar> -->
+              <img (click)="presentActionSheet(fileLoader)" *ngIf="dataProducto.img && !image"
+                src="{{dataProducto.img}}" alt="">
+              <img (click)="presentActionSheet(fileLoader)" *ngIf="!dataProducto.img && !image"
+                src="../../../assets/img/producto_default.png" alt="">
+              <img (click)="presentActionSheet(fileLoader)" *ngIf="image" src="{{image}}" alt="">
+              <!-- <span *ngIf="uploadImage != null">
+                <img id="checkinImage" (load)="imageLoaded()" />
+              </span> -->
+              <ion-item lines="none">
+                <ion-button fill="outline" size="small" color="success" (click)="presentActionSheet(fileLoader)">
+                  <ion-icon name="image-outline"></ion-icon>&nbsp; Cambiar
+                </ion-button>
+                <ion-button fill="outline" size="small" color="danger" (click)="removePic()">
+                  <ion-icon name="trash-outline"></ion-icon>&nbsp; Eliminar
+                </ion-button>
+              </ion-item>
+            </div>
+          </ion-card>
         </ion-col>
         <ion-col size="12 " size-xs="12" size-sm="12" size-md="6" size-lg="9">
-          <ion-grid>
-            <ion-row>
-              <ion-col>
-                <ion-item lines="none">
-                  <ion-label color="primary" position="floating">Nombre del producto o servicio (*)</ion-label>
-                  <ion-input maxLength="60" class="nombre" formControlName="nombre" type="text"
-                    value="{{dataProducto.nombre}}"></ion-input>
-                </ion-item>
-                <div class="alertDanger" *ngIf="nombre.invalid && (nombre.dirty || nombre.touched)">
-                  <div class="mensajeError" *ngIf="!!nombre.errors.required">
-                    Complete el nombre
-                  </div>
-                  <div class="mensajeError" *ngIf="!!nombre.errors.minlength">
-                    El nombre debe tener al menos 3 caracteres.
-                  </div>
-                  <div class="mensajeError" *ngIf="!!nombre.errors.maxlength">
-                    El nombre debe tener máximo {{nombre.errors.minlength}} caracteres.
-                  </div>
+          <ion-row>
+            <ion-col>
+              <ion-item lines="none">
+                <ion-label color="primary" position="floating">Nombre del producto o servicio (*)</ion-label>
+                <ion-input maxLength="60" class="nombre" formControlName="nombre" type="text" value="{{dataProducto.nombre}}"></ion-input>
+              </ion-item>
+              <div class="alertDanger" *ngIf="nombre.invalid && (nombre.dirty || nombre.touched)">
+                <div class="mensajeError" *ngIf="!!nombre.errors.required">
+                  Complete el nombre
                 </div>
-              </ion-col>
-              <ion-col>
-                <ion-item lines="none">
-                  <ion-label color="primary" position="floating">Precio (*)</ion-label>
-                  <ion-input formControlName="precio" type="number" placeholder="00"
-                    value="{{dataProducto.precio | number: '1.2'}}">S/. </ion-input>
-                </ion-item>
-                <div class="alertDanger" *ngIf="precio && precio.invalid && (precio.dirty || precio.touched)">
-                  <div class="mensajeError" *ngIf="!!precio.errors.required">
-                    Complete el precio
-                  </div>
+                <div class="mensajeError" *ngIf="!!nombre.errors.minlength">
+                  El nombre debe tener al menos 3 caracteres.
                 </div>
-              </ion-col>
-            </ion-row>
-            <ion-row>
-              <ion-col>
-                <ion-item lines="none">
-                  <ion-label color="primary" position="floating">Categoria (*)</ion-label>
-                  <ion-input value="{{dataProducto.subCategoria}}"></ion-input>
-                </ion-item>
-
-              </ion-col>
-              <ion-col>
-                <ion-item lines="none">
-                  <ion-label color="primary" position="stacked">Medida (*)</ion-label>
-                  <ion-select class="custom-options" interface="popover" formControlName="medida" placeholder="medida"  
-                    value="{{dataProducto.medida}}"  cancelText="Cancelar" okText="Aceptar" mode="ios">
-                    <ion-select-option *ngFor="let med of medidas" [value]="med.nombre">{{med.tag | titlecase}}</ion-select-option>
-                  </ion-select>
-                </ion-item>
-                <div class="alertDanger" *ngIf="medida.invalid && (medida.dirty || medida.touched)">
-                  <div class="mensajeError" *ngIf="!!medida.errors.required">
-                    Complete la medida
-                  </div>
+                <div class="mensajeError" *ngIf="!!nombre.errors.maxlength">
+                  El nombre debe tener máximo {{nombre.errors.minlength}} caracteres.
                 </div>
-              </ion-col>
-            </ion-row>
-            <ion-row>
-              <ion-col>
-                <ion-item lines="none">
-                  <ion-label color="primary" position="floating">Cantidad (*)</ion-label>
-                  <ion-input formControlName="cantidad" type="number" placeholder="cantidad"
-                    value="{{dataProducto.cantidad}}"></ion-input>
-                </ion-item>
-                <div class="alertDanger" *ngIf="cantidad.invalid && (cantidad.dirty || cantidad.touched)">
-                  <div class="mensajeError" *ngIf="!!cantidad.errors.required">
-                    Complete la cantidad
-                  </div>
-                  <div class="mensajeError" *ngIf="!!cantidad.errors.min">
-                    La cantidad minima es 1
-                  </div>
+              </div>
+            </ion-col>
+          </ion-row>
+          <ion-row>
+            <ion-col>
+              <ion-item lines="none">
+                <ion-label color="primary" position="floating">Cantidad (*)</ion-label>
+                <ion-input formControlName="cantidad" type="number" placeholder="cantidad"
+                  value="{{dataProducto.cantidad}}"></ion-input>
+              </ion-item>
+              <div class="alertDanger" *ngIf="cantidad.invalid && (cantidad.dirty || cantidad.touched)">
+                <div class="mensajeError" *ngIf="!!cantidad.errors.required">
+                  Complete la cantidad
                 </div>
-              </ion-col>
-              <ion-col>
-                <ion-item lines="none">
-                  <ion-label color="primary" position="floating">Stock de producto:</ion-label>
-                  <ion-input type="number" formControlName="cantStock" placeholder="Ingrese stock del producto"
-                    value="{{dataProducto.cantStock}}"></ion-input>
-                </ion-item>
-                <div class="alertDanger" *ngIf="cantStock.invalid && (cantStock.dirty || cantStock.touched)">
-                  <div class="mensajeError" *ngIf="!!cantStock.errors.required">
-                    Ingrese la cantidad de stock
-                  </div>
-                  <div class="mensajeError" *ngIf="!!cantStock.errors.min">
-                    La cantidad minima en stock es 0
-                  </div>
+                <div class="mensajeError" *ngIf="!!cantidad.errors.min">
+                  La cantidad minima es 1
                 </div>
-                <div class="alertDanger" *ngIf="cantStock.value===0">
-                  <div class="mensajeError">
-                    El producto se mostrará como agotado
-                  </div>
+              </div>
+            </ion-col>
+            <ion-col>
+              <ion-item lines="none">
+                <ion-label color="primary" position="stacked">Medida (*)</ion-label>
+                <ion-select class="custom-options" interface="popover" formControlName="medida" placeholder="medida"  
+                  value="{{dataProducto.medida}}"  cancelText="Cancelar" okText="Aceptar" mode="ios">
+                  <ion-select-option *ngFor="let med of medidas" [value]="med.nombre">{{med.tag | titlecase}}</ion-select-option>
+                </ion-select>
+              </ion-item>
+              <div class="alertDanger" *ngIf="medida.invalid && (medida.dirty || medida.touched)">
+                <div class="mensajeError" *ngIf="!!medida.errors.required">
+                  Complete la medida
                 </div>
-              </ion-col>
-            </ion-row>
-          </ion-grid>
+              </div>
+            </ion-col>
+            <ion-col>
+              <ion-item lines="none">
+                <ion-label color="primary" position="floating">Categoria (*)</ion-label>
+                <ion-input value="{{dataProducto.subCategoria}}"></ion-input>
+              </ion-item>
+            </ion-col>
+          </ion-row>
+          <ion-row>
+            <ion-col>
+              <ion-item lines="none">
+                <ion-label color="primary" position="floating">Precio (*)</ion-label>
+                <ion-input formControlName="precio" type="number" placeholder="00"
+                  value="{{dataProducto.precio | number: '1.2'}}">S/. </ion-input>
+              </ion-item>
+              <div class="alertDanger" *ngIf="precio && precio.invalid && (precio.dirty || precio.touched)">
+                <div class="mensajeError" *ngIf="!!precio.errors.required">
+                  Complete el precio
+                </div>
+              </div>
+            </ion-col>
+            <ion-col>
+              <ion-item lines="none">
+                <ion-label color="primary" position="floating">Stock de producto:</ion-label>
+                <ion-input type="number" formControlName="cantStock" placeholder="Ingrese stock del producto"
+                  value="{{dataProducto.cantStock}}"></ion-input>
+              </ion-item>
+              <div class="alertDanger" *ngIf="cantStock.invalid && (cantStock.dirty || cantStock.touched)">
+                <div class="mensajeError" *ngIf="!!cantStock.errors.required">
+                  Ingrese la cantidad de stock
+                </div>
+                <div class="mensajeError" *ngIf="!!cantStock.errors.min">
+                  La cantidad minima en stock es 0
+                </div>
+              </div>
+              <div class="alertDanger" *ngIf="cantStock.value===0">
+                <div class="mensajeError">
+                  El producto se mostrará como agotado
+                </div>
+              </div>
+            </ion-col>
+          </ion-row>
+          <ion-row>
+            <ion-col>
+              <ion-item lines="none">
+                <ion-label color="primary" position="floating">Ingrese el codigo</ion-label>
+                <ion-input maxLength="35" formControlName="codigo" class="codigo" placeholder="Ingrese codigo del producto"
+                  value="{{dataProducto.codigo}}"></ion-input>
+              </ion-item>
+              <div class="alertDanger" *ngIf="codigo.invalid && (codigo.dirty || codigo.touched)">
+                <div class="mensajeError" *ngIf="!!codigo.errors.required">
+                  Complete el codigo
+                </div>
+                <div class="mensajeError" *ngIf="!!codigo.errors.minlength">
+                  El codigo debe tener al menos 3 caracteres.
+                </div>
+                <div class="mensajeError" *ngIf="!!codigo.errors.maxlength">
+                  El codigo debe tener máximo 35 caracteres.
+                </div>
+              </div>
+            </ion-col>
+            <ion-col>
+              <ion-item lines="none">
+                <ion-label color="primary" position="floating">Ingrese la codigo de barras</ion-label>
+                <ion-input maxLength="35" formControlName="codigoBarra" placeholder="Ingrese codigo de barras del producto"
+                  value="{{dataProducto.codigoBarra}}"></ion-input>
+              </ion-item>
+              <div class="alertDanger" *ngIf="codigoBarra.invalid && (codigoBarra.dirty || codigoBarra.touched)">
+                <div class="mensajeError" *ngIf="!!codigoBarra.errors.required">
+                  Complete el codigo de barras
+                </div>
+                <div class="mensajeError" *ngIf="!!codigoBarra.errors.minlength">
+                  El codigo de barras debe tener al menos 3 caracteres.
+                </div>
+                <div class="mensajeError" *ngIf="!!codigoBarra.errors.maxlength">
+                  El codigo de barras debe tener máximo 35 caracteres.
+                </div>
+              </div>
+            </ion-col>
+          </ion-row>
         </ion-col>
       </ion-row>
+
       <ion-row>
-        <ion-col size="12 " size-xs="12" size-sm="12" size-md="6" size-lg="4">
-          <ion-item lines="none">
-            <ion-label color="primary" position="floating">Ingrese el codigo</ion-label>
-            <ion-input maxLength="35" formControlName="codigo" class="codigo" placeholder="Ingrese codigo del producto"
-              value="{{dataProducto.codigo}}"></ion-input>
-          </ion-item>
-          <div class="alertDanger" *ngIf="codigo.invalid && (codigo.dirty || codigo.touched)">
-            <div class="mensajeError" *ngIf="!!codigo.errors.required">
-              Complete el codigo
+        <ion-col size-lg="6" sz-md="6" size-sm="12" size-xs="12">
+          <ion-item-divider>Datos extra
+            <ion-buttons slot="end">
+              <ion-button>
+                <ion-icon slot="icon-only" color="medium" name="chevron-down-outline"></ion-icon>
+              </ion-button>
+            </ion-buttons>
+          </ion-item-divider>
+          <ion-col size="12 " size-xs="12" size-sm="12" size-md="12" size-lg="12">
+            <ion-item lines="none">
+              <ion-label color="primary" position="stacked">Fecha de vencimiento:</ion-label>
+              <ion-input type="date" formControlName="fechaDeVencimiento" class="form-control"
+                value="{{dataProducto.fechaDeVencimiento}}"></ion-input>
+            </ion-item>
+            <div class="alertDanger"
+              *ngIf="fechaDeVencimiento && fechaDeVencimiento.invalid && (fechaDeVencimiento.dirty || fechaDeVencimiento.touched)">
+              <div class="mensajeError" *ngIf="  !!fechaDeVencimiento.errors.required">
+                Ingrese fecha de vencimiento
+              </div>
             </div>
-            <div class="mensajeError" *ngIf="!!codigo.errors.minlength">
-              El codigo debe tener al menos 3 caracteres.
+          </ion-col>
+          <ion-col>
+            <ion-item lines="none" size="12 " size-xs="12" size-sm="12" size-md="12" size-lg="12">
+              <ion-label color="primary" position="floating">Ingrese la marca</ion-label>
+              <ion-input maxLength="35" formControlName="marca" class="marca" placeholder="Ingrese marca del producto"
+                value="{{dataProducto.marca}}"></ion-input>
+            </ion-item>
+            <div class="alertDanger" *ngIf="marca.invalid && (marca.dirty || marca.touched)">
+              <div class="mensajeError" *ngIf="!!marca.errors.required">
+                Complete el marca
+              </div>
+              <div class="mensajeError" *ngIf="!!marca.errors.minlength">
+                El marca debe tener al menos 3 caracteres.
+              </div>
+              <div class="mensajeError" *ngIf="!!marca.errors.maxlength">
+                El marca debe tener máximo 35 caracteres.
+              </div>
             </div>
-            <div class="mensajeError" *ngIf="!!codigo.errors.maxlength">
-              El codigo debe tener máximo 35 caracteres.
-            </div>
-          </div>
-
+          </ion-col>
+          <ion-col size="12 " size-xs="12" size-sm="12" size-md="12" size-lg="12">
+            <ion-item lines="none">
+              <ion-label color="primary" position="floating">Descripción</ion-label>
+              <ion-textarea formControlName="descripcionProducto" placeholder="Ingrese una descripción del producto...">
+              </ion-textarea>
+            </ion-item>
+          </ion-col>
         </ion-col>
-        <ion-col size="12 " size-xs="12" size-sm="12" size-md="6" size-lg="4">
-          <ion-item lines="none">
-            <ion-label color="primary" position="floating">Ingrese la codigo de barras</ion-label>
-            <ion-input maxLength="35" formControlName="codigoBarra" placeholder="Ingrese codigo de barras del producto"
-              value="{{dataProducto.codigoBarra}}"></ion-input>
-          </ion-item>
-          <div class="alertDanger" *ngIf="codigoBarra.invalid && (codigoBarra.dirty || codigoBarra.touched)">
-            <div class="mensajeError" *ngIf="!!codigoBarra.errors.required">
-              Complete el codigo de barras
-            </div>
-            <div class="mensajeError" *ngIf="!!codigoBarra.errors.minlength">
-              El codigo de barras debe tener al menos 3 caracteres.
-            </div>
-            <div class="mensajeError" *ngIf="!!codigoBarra.errors.maxlength">
-              El codigo de barras debe tener máximo 35 caracteres.
-            </div>
-          </div>
-
-        </ion-col>
-        <ion-col size="12 " size-xs="12" size-sm="12" size-md="6" size-lg="4">
-          <ion-item lines="none">
-            <ion-label color="primary" position="stacked">Fecha de vencimiento:</ion-label>
-            <ion-input type="date" formControlName="fechaDeVencimiento" class="form-control"
-              value="{{dataProducto.fechaDeVencimiento}}"></ion-input>
-          </ion-item>
-          <div class="alertDanger"
-            *ngIf="fechaDeVencimiento && fechaDeVencimiento.invalid && (fechaDeVencimiento.dirty || fechaDeVencimiento.touched)">
-            <div class="mensajeError" *ngIf="  !!fechaDeVencimiento.errors.required">
-              Ingrese fecha de vencimiento
-            </div>
-          </div>
-        </ion-col>
-      </ion-row>
-      <ion-row>
-        <ion-col>
-          <ion-item lines="none" size="12 " size-xs="12" size-sm="12" size-md="6" size-lg="4">
-            <ion-label color="primary" position="floating">Ingrese la marca</ion-label>
-            <ion-input maxLength="35" formControlName="marca" class="marca" placeholder="Ingrese marca del producto"
-              value="{{dataProducto.marca}}"></ion-input>
-          </ion-item>
-          <div class="alertDanger" *ngIf="marca.invalid && (marca.dirty || marca.touched)">
-            <div class="mensajeError" *ngIf="!!marca.errors.required">
-              Complete el marca
-            </div>
-            <div class="mensajeError" *ngIf="!!marca.errors.minlength">
-              El marca debe tener al menos 3 caracteres.
-            </div>
-            <div class="mensajeError" *ngIf="!!marca.errors.maxlength">
-              El marca debe tener máximo 35 caracteres.
-            </div>
-          </div>
-        </ion-col>
-        <ion-col size="12 " size-xs="12" size-sm="12" size-md="6" size-lg="4">
-          <ion-item lines="none">
-            <ion-label color="primary" position="floating">Descripción</ion-label>
-            <ion-textarea formControlName="descripcionProducto" placeholder="Ingrese una descripción del producto...">
-            </ion-textarea>
-          </ion-item>
-        </ion-col>
-        <ion-col size="12 " size-xs="12" size-sm="12" size-md="6" size-lg="4">
-
+        <ion-col size-lg="6" sz-md="6" size-sm="12" size-xs="12">
+          <ion-item-divider>Variantes del producto
+            <ion-buttons slot="end">
+              <ion-button>
+                <ion-icon slot="icon-only" color="medium" name="chevron-down-outline"></ion-icon>
+              </ion-button>
+            </ion-buttons>
+          </ion-item-divider>
+          <ion-col>
+            <ion-row>
+              <ion-col size="3.5">
+                <ion-item lines="none">
+                  <ion-label color="primary" position="floating">Medida</ion-label>
+                  <ion-input #medida maxLength="20" placeholder="Medida"></ion-input>
+                </ion-item>
+              </ion-col>
+              <ion-col size="3.5">
+                <ion-item lines="none">
+                  <ion-label color="primary" position="floating">Factor</ion-label>
+                  <ion-input #factor type="number" placeholder="Factor"></ion-input>
+                </ion-item>
+              </ion-col>
+              <ion-col size="3.5">
+                <ion-item lines="none">
+                  <ion-label color="primary" position="floating">Precio</ion-label>
+                  <ion-input #precio type="number" placeholder="Precio"></ion-input>
+                </ion-item>
+              </ion-col>
+              <ion-col size="1.5">
+                <ion-button style="height: 100%;" (click)="agregarVariante(medida, factor, precio)" color="success">
+                  <ion-icon name="add-outline"></ion-icon>
+                </ion-button>
+              </ion-col>
+            </ion-row>
+            <ion-row *ngIf="dataProducto.variantes && dataProducto.variantes.length">
+              <ion-col>
+                <ion-row class="ion-justify-content-center ion-align-items-center cabecera">
+                  <ion-col class="ion-text-center" size="4">Medida</ion-col>
+                  <ion-col class="ion-text-center" size="4">Factor</ion-col>
+                  <ion-col class="ion-text-center" size="3">Precio</ion-col>
+                  <ion-col class="ion-text-center" size="1"></ion-col>
+                </ion-row>
+                <ion-row class="ion-justify-content-center ion-align-items-center cuerpo" *ngFor="let item of listaDeVariantes">
+                  <ion-col class="ion-text-center" size="4">{{item.medida | titlecase}}</ion-col>
+                  <ion-col class="ion-text-center" size="4">{{item.factor}}</ion-col>
+                  <ion-col class="ion-text-center" size="3">{{item.precio}}</ion-col>
+                  <ion-col class="ion-text-center" size="1">
+                    <ion-buttons>
+                      <ion-button (click)="quitarVariante(item)">
+                        <ion-icon color="danger" name="trash-outline"></ion-icon>
+                      </ion-button>
+                    </ion-buttons>
+                  </ion-col>
+                </ion-row>
+              </ion-col>
+            </ion-row>
+          </ion-col>
         </ion-col>
       </ion-row>
     </ion-grid>

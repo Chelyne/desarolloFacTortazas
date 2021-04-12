@@ -27,7 +27,67 @@
       <ion-button slot="end" (click)="enviarComprobantesDelDia()">
         <ion-label color="light">Enviar todos los comprobantes</ion-label>
       </ion-button>
+      <ion-button slot="start" (click)="formatearNotaCredito()">
+        <ion-label color="light">Formatear comprobantes</ion-label>
+      </ion-button>
     </ion-item>
+    <ion-card *ngIf="listaDeVentas.length > 0">
+      <ion-grid>
+        <ion-row>
+          <ion-col>
+            <ion-item lines="none" color="light">
+              <ion-icon color="secondary" name="checkmark-circle-sharp"></ion-icon> &nbsp;&nbsp;
+              <ion-label>Total Boletas</ion-label>
+              <ion-badge color="secondary">{{totalBoletas}}</ion-badge>
+            </ion-item>
+          </ion-col>
+          <ion-col>
+            <ion-item lines="none" color="light">
+              <ion-icon color="secondary" name="checkmark-circle-sharp"></ion-icon> &nbsp;&nbsp;
+              <ion-label>Total Facturas</ion-label>
+              <ion-badge color="secondary">{{totalFacturas}}</ion-badge>
+            </ion-item>
+          </ion-col>
+          <ion-col>
+            <ion-item lines="none" color="light">
+              <ion-icon color="danger" name="checkmark-circle-sharp"></ion-icon> &nbsp;&nbsp;
+              <ion-label>Total Anulados</ion-label>
+              <ion-badge color="danger">{{totalAnulados}}</ion-badge>
+            </ion-item>
+          </ion-col>
+        </ion-row>
+        <ion-row>
+          <ion-col>
+            <ion-item>
+              <ion-icon color="success" name="checkmark-circle-sharp"></ion-icon> &nbsp;&nbsp;
+              <ion-label>Aceptados</ion-label>
+              <ion-badge color="success">{{totalAceptados}}</ion-badge>
+            </ion-item>
+          </ion-col>
+          <ion-col>
+            <ion-item>
+              <ion-icon color="danger" name="close-circle-sharp"></ion-icon> &nbsp;&nbsp;
+              <ion-label>Rechazados</ion-label>
+              <ion-badge color="danger">{{totalRechazados}}</ion-badge>
+            </ion-item>
+          </ion-col>
+          <ion-col>
+            <ion-item>
+              <ion-icon color="warning" name="alert-circle-sharp"></ion-icon> &nbsp;&nbsp;
+              <ion-label>Notas CDR</ion-label>
+              <ion-badge color="warning">{{notasCDR.length}}</ion-badge>
+            </ion-item>
+          </ion-col>
+          <ion-col>
+            <ion-item>
+              <ion-icon color="danger" name="alert-circle-outline"></ion-icon> &nbsp;&nbsp;
+              <ion-label color="danger">Notas CDR ANULADO</ion-label>
+              <ion-badge color="warning">{{notasCDRAnulado.length}}</ion-badge>
+            </ion-item>
+          </ion-col>
+        </ion-row>
+      </ion-grid>
+    </ion-card>
     <!-- <ion-grid>
             <ion-row>
                 <ion-col size="12 " size-xs="12" size-sm="12" size-md="6" size-lg="3">
@@ -154,14 +214,18 @@
                 <ion-input *ngIf="!venta.cdr" readonly>{{venta.estadoVenta | titlecase}}</ion-input>
                 <ion-input *ngIf="venta.cdr" [color]="venta.cdr.sunatResponse.success ? 'success' : 'danger'" readonly>
                   {{(venta.cdr.sunatResponse.success) ? 'Aceptado' : 'Rechazado' | titlecase}}</ion-input>
+                <ion-badge slot="end" color="danger" *ngIf="venta.estadoVenta==='anulado'">{{venta.estadoVenta | titlecase}}</ion-badge>
               </ion-item>
-              <ion-item>
+              <ion-item *ngIf="venta.tipoComprobante !== 'n. venta'">
                 <ion-icon slot="start" name="extension-puzzle-outline" color="primary"></ion-icon>
                 <!-- <ion-label color="primary" position="stacked">Acciones</ion-label> -->
-                <ion-button color="danger">
+                <ion-button *ngIf="!venta.cdr && venta.estadoVenta !== 'anulado'" color="danger">
                   <ion-label>Anular</ion-label>
                 </ion-button>
-                <ion-button *ngIf="venta.cdr && !venta.cdr.sunatResponse.success" color="warning">
+                <ion-button (click)="enviarNotaCredito(venta)" *ngIf="venta.cdr && venta.estadoVenta==='anulado' && !venta.cdrAnulado" color="danger">
+                  <ion-label>Enviar N.Credito</ion-label>
+                </ion-button>
+                <ion-button *ngIf="venta.cdr && !venta.cdr.sunatResponse.success" (click)="enviarUnComprobante(venta)" color="warning">
                   <ion-label>Reenviar</ion-label>
                 </ion-button>
                 <ion-button *ngIf="!venta.cdr" color="success" (click)="enviarUnComprobante(venta)">

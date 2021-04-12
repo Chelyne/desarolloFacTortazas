@@ -139,12 +139,12 @@ export class CatalogoPage implements OnInit {
     await modal.present();
 
     const { data } =  await modal.onWillDismiss();
+    console.log('ACTUALIZA: ', data);
     if (data) {
       this.dataApi2.actualizarProducto(data.producto).then(() => {
         this.srvGlobal.presentToast('Producto se actualizó correctamente', {color: 'success'});
       }).catch(() => {
         this.srvGlobal.presentToast('Producto no se actualizó', {color: 'danger'});
-
       });
     }
   }

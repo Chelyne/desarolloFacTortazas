@@ -14,6 +14,7 @@ import * as FileSaver from 'file-saver';
 import { timer } from 'rxjs';
 import { DataBaseService } from '../../services/data-base.service';
 import { GlobalService } from 'src/app/global/global.service';
+import { GenerarComprobanteService } from '../../services/generar-comprobante.service';
 
 @Component({
   selector: 'app-reporte-ventas',
@@ -34,7 +35,8 @@ export class ReporteVentasPage implements OnInit {
                private menuCtrl: MenuController,
                private popoverCtrl: PopoverController,
                private storage: StorageService,
-               private reportesservice: ReportesService
+               private reportesservice: ReportesService,
+               private comprobanteSrv: GenerarComprobanteService,
               ) {
                 this.ventasDiaForm = this.createFormGroup();
               }
@@ -156,6 +158,47 @@ export class ReporteVentasPage implements OnInit {
                 }
               });
             }
+          }
+        }
+        }
+      });
+    }
+  }
+
+  async ObtenerVentasMesAnioDescargarComprobantes(mes: number, anio: number) {
+    console.log(mes, anio);
+    this.arrayMes = [];
+    let formato: string;
+    for (let contador = 1 ; contador <= 31; contador++) {
+      formato = ((contador <= 9 ) ? '0' + contador : contador) + '-' + ((mes <= 9 ) ? '0' + mes : mes)  + '-' + anio;
+      await this.dataApi.obtenerVentasPorDia(this.sede.toLocaleLowerCase(), formato).then(async (res: any) => {
+        if (res.length === 0) {
+          console.log('no hay datos de dia', contador );
+        }else {
+          console.log('datos de dia', contador );
+          this.arrayMes = [...this.arrayMes, ...res];
+        }
+        if (contador === 31) {
+        if (!this.arrayMes.length) {
+          this.globalSrv.presentToast('No hay productos de sede: ' + this.sede, {color: 'danger', position: 'top'});
+
+        } else {
+          // tslint:disable-next-line:no-shadowed-variable
+          let contadorarray = 0;
+          let ContadorBoletas = 0;
+
+          for (const venta of this.arrayMes) {
+            contadorarray++;
+            if (venta.tipoComprobante === 'boleta' || venta.tipoComprobante === 'factura') {
+              ContadorBoletas++ ;
+              await this.comprobanteSrv.generarComprobante(venta);
+            }
+            if (contadorarray === this.arrayMes.length) {
+              console.log(this.arrayMes);
+              console.log('BOLEEETAS: ', ContadorBoletas);
+              this.globalSrv.presentToast('se descarganron todos los comprobantes' + ContadorBoletas);
+
+              }
           }
         }
         }

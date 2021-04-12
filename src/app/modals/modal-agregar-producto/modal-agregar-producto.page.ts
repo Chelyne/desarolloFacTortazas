@@ -9,6 +9,8 @@ import { DataBaseService } from '../../services/data-base.service';
 import { GlobalService } from 'src/app/global/global.service';
 
 import { MEDIDAS } from 'src/app/configs/medidasConfig';
+import { VariantesInterface } from '../../models/variantes';
+import { isNullOrUndefined } from 'util';
 
 
 
@@ -22,6 +24,7 @@ export class ModalAgregarProductoPage implements OnInit {
   sede = this.storage.datosAdmi.sede;
 
   listaDeCategorias: CategoriaInterface[] = [{categoria: 'accesorios'}];
+  listaDeVariantes: VariantesInterface[] = [];
 
 // ----------------
   processing: boolean;
@@ -241,6 +244,9 @@ export class ModalAgregarProductoPage implements OnInit {
       this.productoForm.value.subCategoria = this.productoForm.value.subCategoria.toLowerCase();
       this.productoForm.value.sede = this.sede;
       this.productoForm.value.fechaRegistro = new Date();
+      if (this.listaDeVariantes.length > 0) {
+        this.productoForm.addControl('variantes', new FormControl(this.listaDeVariantes));
+      }
       if (this.image){
         this.presentLoading('Agregando producto');
         this.uploadImages(this.image).then( url => {
@@ -309,6 +315,32 @@ export class ModalAgregarProductoPage implements OnInit {
         reject(err);
       });
     });
+  }
+
+  agregarVariante(medida, factor, precio) {
+    console.log(medida);
+    if (!medida.value || !factor.value || !precio.value) {
+      this.globalservice.presentToast('Completa todos los campos', {position: 'middle'});
+    } else {
+      const item = {
+        medida: medida.value,
+        factor: factor.value,
+        precio: precio.value
+      };
+      medida.value = '';
+      factor.value = '';
+      precio.value = '';
+      medida.setFocus();
+      console.log(item);
+      this.listaDeVariantes.push(item);
+    }
+  }
+
+  quitarVariante(item) {
+    const i = this.listaDeVariantes.indexOf( item );
+    if ( i !== -1 ) {
+      this.listaDeVariantes.splice( i, 1 );
+    }
   }
 
   async presentLoading(mensaje: string) {

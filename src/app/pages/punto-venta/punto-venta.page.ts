@@ -20,6 +20,7 @@ import { GlobalService } from '../../global/global.service';
 import { DataBaseService } from '../../services/data-base.service';
 import { GENERAL_CONFIG } from '../../../config/apiPeruConfig';
 import { ModalIngresosEgresosPage } from '../../modals/modal-ingresos-egresos/modal-ingresos-egresos.page';
+import { PopoverVariantesComponent } from '../../components/popover-variantes/popover-variantes.component';
 
 @Component({
   selector: 'app-punto-venta',
@@ -159,26 +160,48 @@ export class PuntoVentaPage implements OnInit {
 
   AgregarItemDeVenta(prodItem: ProductoInterface){
 
-    let producExist = false;
-    const idProdItem: string = prodItem.id;
+    if (prodItem.variantes) {
+      this.presentPopoverVariantes(prodItem);
+    } else {
+      let producExist = false;
+      const idProdItem: string = prodItem.id;
 
-    if (this.listaItemsDeVenta.length > 0) {
-      for (const item of this.listaItemsDeVenta) {
-        if (idProdItem === item.idProducto){
-            producExist = true;
-            item.cantidad += 1;
-            item.totalxprod = item.cantidad * item.producto.precio;
-            break;
+      if (this.listaItemsDeVenta.length > 0) {
+        for (const item of this.listaItemsDeVenta) {
+          if (idProdItem === item.idProducto){
+              producExist = true;
+              item.cantidad += 1;
+              item.totalxprod = item.cantidad * item.producto.precio;
+              break;
+          }
         }
       }
-    }
 
-    if (!producExist){
-      this.listaItemsDeVenta.unshift( this.CrearItemDeVenta(prodItem));
-    }
+      if (!producExist){
+        this.listaItemsDeVenta.unshift( this.CrearItemDeVenta(prodItem));
+      }
 
-    this.calcularTotalaPagar();
-    this.servGlobal.presentToast('Agregado a lista de venta', {icon: 'cart-outline', duracion: 500, position: 'top'});
+      this.calcularTotalaPagar();
+      this.servGlobal.presentToast('Agregado a lista de venta', {icon: 'cart-outline', duracion: 500, position: 'top'});
+    }
+  }
+
+  async presentPopoverVariantes(prodItem: ProductoInterface) {
+    const popover = await this.popoverController.create({
+      component: PopoverVariantesComponent,
+      cssClass: 'my-custom-class',
+      componentProps: {
+        producto: prodItem
+      },
+      // event: ev,
+      translucent: true
+    });
+    await popover.present();
+
+    const { data } = await popover.onWillDismiss();
+    if (data) {
+      console.log('VAriante seleccionado', data);
+    }
   }
 
   CrearItemDeVenta(prodItem: ProductoInterface): ItemDeVentaInterface{

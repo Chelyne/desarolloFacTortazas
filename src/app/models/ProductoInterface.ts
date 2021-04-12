@@ -1,3 +1,4 @@
+import { VariantesInterface } from './variantes';
 export interface ProductoInterface {
     id?: string;
     img?: string;
@@ -19,4 +20,5 @@ export interface ProductoInterface {
     codigoBarra?: string;
     fechaTimeRegistro?: string|{seconds?: number, nanoseconds?: number }|Date;
     fechaDeVencimiento?: string|{seconds?: number, nanoseconds?: number }|Date;
+    variantes?: VariantesInterface[];
 }

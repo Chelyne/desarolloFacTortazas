@@ -243,6 +243,8 @@ export class ApiPeruService {
       venta.listaItemsDeVenta = productos;
 
       const ventaFormateada: ComprobanteInterface = this.formatearVenta(venta);
+
+      console.log('%cENVIAR COMPROBANTE A SUNAT:', 'color:white; background-color:DodgerBlue;padding:20px');
       console.log('VENTA_FORMATEADA', ventaFormateada);
 
       if (ventaFormateada.fechaEmision === 'INVALID_DATA_TIME'){
@@ -366,6 +368,7 @@ export class ApiPeruService {
       valorVenta: redondeoDecimal(montoOperGravadas, 2),
       mtoImpVenta: redondeoDecimal(venta.totalPagarVenta, 2),
       subTotal: redondeoDecimal(venta.totalPagarVenta, 2),
+      formaPago: this.formatearFormaDePago(),
       ublVersion: '2.1',
       details: productFormat,
       legends: [
@@ -543,6 +546,9 @@ export class ApiPeruService {
 
       const notaCreditoFormateado = this.formatearNotaDeCredito(venta, DatosSerie);
 
+      console.log('%cENVIAR NOTA DE CREDITO FORMATEADO A SUNAT:', 'color:white; background-color:purple;padding:20px');
+      console.log('NOTA DE CREDITO FORMATEADO', notaCreditoFormateado);
+
       // console.log('NOTA DE CREDITO FORMATEADO', notaCreditoFormateado);
       const fechaEmisionNotaCredito = notaCreditoFormateado.fechaEmision;
 
@@ -623,6 +629,25 @@ export class ApiPeruService {
     return valor;
   }
 
+  formatearVentas(listaDeVentas: VentaInterface[]){
+    for (const venta of listaDeVentas) {
+      console.log('VENTA ORIGINAL', venta);
+      const ventaFormateada: ComprobanteInterface = this.formatearVenta(venta);
+      console.log('VENTA FORMATEADO', ventaFormateada);
+    }
+  }
+
+  async formatearNotasDeCretito(listaDeVentas: VentaInterface[]){
+    for (const venta of listaDeVentas) {
+      venta.listaItemsDeVenta = await this.obtenerProductosDeVenta(venta.idListaProductos);
+      if (venta.estadoVenta === 'anulado'){
+        console.log('VENTA ORIGINAL', venta);
+        const ventaFormateada: ComprobanteInterface = this.formatearNotaDeCredito(venta, {serie: 'ALGO', correlacion: 504431});
+        console.log('VENTA FORMATEADO', ventaFormateada);
+      }
+    }
+  }
+
 
   enviarNotaCreditoASunat(notaCreditoFormateado: NotaDeCreditoInterface){
     const myHeaders = new Headers();
@@ -688,6 +713,7 @@ export class ApiPeruService {
       // valorVenta: redondeoDecimal(montoOperGravadas, 2),
       mtoImpVenta: redondeoDecimal(venta.totalPagarVenta, 2),
       subTotal: redondeoDecimal(venta.totalPagarVenta, 2),
+      // formaPago: this.formatearFormaDePago(),
       ublVersion: '2.1',
       details: productFormat,
       legends: [
@@ -698,6 +724,13 @@ export class ApiPeruService {
       ]
     };
 
+  }
+
+  formatearFormaDePago(){
+    return {
+      moneda: 'PEN',
+      tipo: 'Contado'
+    };
   }
 
 /* ---------------------------------------------------------------------------------------------- */

@@ -456,6 +456,24 @@ export class DataBaseService {
     }));
   }
 
+  // OBTENER LISTA DE VENTAS
+  obtenerVentasPorDiaBoletaFacturaObs(sede: string, fachaventas: string) {
+    return this.afs.collection('sedes').doc(sede.toLocaleLowerCase()).collection('ventas').doc(fachaventas)
+    .collection('ventasDia', ref => ref.where('tipoComprobante', '<', 'n. venta'))
+    .snapshotChanges().pipe(map(changes => {
+      const datos: VentaInterface[] = [];
+
+      changes.map((action: any) => {
+        datos.push({
+          idVenta: action.payload.doc.id,
+          ...action.payload.doc.data() as VentaInterface
+        });
+      });
+
+      return datos;
+    }));
+  }
+
     obtenerVentaPorDiaVendedor(sede: string, dia: string, dniVendedor: string) {
       return this.afs.collection('sedes').doc(sede.toLocaleLowerCase()).collection('ventas').doc(dia).collection('ventasDia')
       .ref.where('vendedor.dni', '==', dniVendedor).get().then((querySnapshot) => {
@@ -673,7 +691,7 @@ export class DataBaseService {
   }
 
   actualizarProducto(productoObtenido: ProductoInterface) {
-    const producto = {
+    const producto: ProductoInterface = {
       img: productoObtenido.img ? productoObtenido.img : null,
       nombre: productoObtenido.nombre,
       arrayNombre: productoObtenido.nombre.toLowerCase().split(' '),
@@ -685,8 +703,12 @@ export class DataBaseService {
       precio: productoObtenido.precio,
       cantStock: productoObtenido.cantStock,
       fechaDeVencimiento: productoObtenido.fechaDeVencimiento,
-      descripcionProducto: productoObtenido.descripcionProducto
+      descripcionProducto: productoObtenido.descripcionProducto,
     };
+
+    if (productoObtenido.variantes) {
+      producto.variantes = productoObtenido.variantes;
+    }
     console.log(producto);
     return this.afs.collection('sedes').doc(productoObtenido.sede.toLocaleLowerCase()).collection('productos')
     .doc(productoObtenido.id).ref.update(producto)

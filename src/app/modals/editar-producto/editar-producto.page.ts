@@ -6,6 +6,9 @@ import { DatePipe } from '@angular/common';
 import { isNullOrUndefined } from 'util';
 
 import { MEDIDAS } from 'src/app/configs/medidasConfig';
+import { GlobalService } from '../../global/global.service';
+import { VariantesInterface } from '../../models/variantes';
+import { ProductoInterface } from '../../models/ProductoInterface';
 
 
 @Component({
@@ -18,6 +21,7 @@ export class EditarProductoPage implements OnInit {
   medidas = MEDIDAS;
 
   @Input()dataProducto;
+  listaDeVariantes: VariantesInterface[] = [];
 
   // ----------------
   processing: boolean;
@@ -35,11 +39,19 @@ export class EditarProductoPage implements OnInit {
     private modalCtrl: ModalController,
     private datePipe: DatePipe,
     private firebaseStorage: AngularFireStorage,
-    private loadingController: LoadingController
-  ) {}
+    private loadingController: LoadingController,
+    private globalservice: GlobalService
+  ) {
+  }
 
   ngOnInit() {
     this.updateForm = this.createFormGroup();
+    console.log(this.dataProducto);
+    if (this.dataProducto.variantes && this.dataProducto.variantes.length) {
+      this.listaDeVariantes = [...this.dataProducto.variantes];
+    } else {
+      this.listaDeVariantes = [];
+    }
   }
 
     // --------------------------
@@ -190,18 +202,22 @@ export class EditarProductoPage implements OnInit {
     }
     if (this.updateForm.valid) {
       this.updateForm.value.nombre = this.updateForm.value.nombre.toLowerCase();
+      const productoUpdate: ProductoInterface = this.updateForm.value;
+      if (this.listaDeVariantes.length) {
+        productoUpdate.variantes = this.listaDeVariantes;
+      }
       if (this.image) {
         this.presentLoading();
         this.uploadImages(this.image).then (url => {
-          this.updateForm.value.img = url;
+          productoUpdate.img = url;
           this.modalCtrl.dismiss({
-            producto: this.updateForm.value
+            producto: productoUpdate
           });
           this.loading.dismiss();
         });
       } else {
         this.modalCtrl.dismiss({
-          producto: this.updateForm.value
+          producto: productoUpdate
         });
       }
     } else {
@@ -228,6 +244,32 @@ export class EditarProductoPage implements OnInit {
         reject(err);
       });
     });
+  }
+
+  agregarVariante(medida, factor, precio) {
+    console.log(medida);
+    if (!medida.value || !factor.value || !precio.value) {
+      this.globalservice.presentToast('Completa todos los campos', {position: 'middle'});
+    } else {
+      const item = {
+        medida: medida.value,
+        factor: factor.value,
+        precio: precio.value
+      };
+      medida.value = '';
+      factor.value = '';
+      precio.value = '';
+      medida.setFocus();
+      console.log(item);
+      this.listaDeVariantes.push(item);
+    }
+  }
+
+  quitarVariante(item) {
+    const i = this.listaDeVariantes.indexOf( item );
+    if ( i !== -1 ) {
+      this.listaDeVariantes.splice( i, 1 );
+    }
   }
 
   cerrarModal() {

@@ -44,6 +44,7 @@ export interface ComprobanteInterface {
     mtoCargos?: number;
     valorVenta?: number;
     subTotal?: number;
+    formaPago?: PayWayInterface;
 }
 
 export interface NotaDeCreditoInterface {
@@ -80,6 +81,7 @@ export interface NotaDeCreditoInterface {
     mtoOperGratuitas?: number;
     perception?: SalePerceptionInterface;
     subTotal?: number;
+    formaPago?: PayWayInterface;
 }
 
 export interface ClientInterface {
@@ -209,3 +211,14 @@ export interface DetractionInterface {
     valueRef?: number;
 }
 
+export interface PayWayInterface {
+    moneda?: string;
+    tipo?: string;
+    cuotas?: CuotasInterface[];
+}
+
+export interface CuotasInterface {
+    moneda?: string;
+    monto?: number;
+    fechaPago?: string; /** Datetime */
+}

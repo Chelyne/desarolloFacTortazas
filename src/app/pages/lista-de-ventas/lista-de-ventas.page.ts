@@ -30,7 +30,14 @@ export class ListaDeVentasPage implements OnInit {
   buscando;
 
   loading;
+  totalBoletas = 0;
+  totalFacturas = 0;
+  totalAnulados = 0;
 
+  totalAceptados = 0;
+  totalRechazados = 0;
+  notasCDR = [];
+  notasCDRAnulado = [];
   constructor(
     private dataApi: DataBaseService,
     private storage: StorageService,
@@ -75,22 +82,73 @@ export class ListaDeVentasPage implements OnInit {
     // console.log(this.ventasForm.value.fechadeventa);
     this.fechaventaDDMMYYYY = this.ventasForm.value.fechadeventa;
     console.log(this.fechaventaDDMMYYYY, this.fechaventaYYYYMMDD);
-    this.dataApi.obtenerVentasPorDiaObs(this.sede, this.ventasForm.value.fechadeventa).subscribe(data => {
+    this.dataApi.obtenerVentasPorDiaBoletaFacturaObs(this.sede, this.ventasForm.value.fechadeventa).subscribe(data => {
       if (data.length > 0) {
         this.listaDeVentas = data;
         console.log(this.listaDeVentas);
 
         this.sinDatos = false;
         this.buscando = false;
+
+        this.generarTotales(this.listaDeVentas);
       } else {
+        this.listaDeVentas = [];
         this.sinDatos = true;
         this.buscando = false;
+
+        this.totalBoletas = 0;
+        this.totalFacturas = 0;
+        this.totalAnulados = 0;
+
+        this.totalAceptados = 0;
+        this.totalRechazados = 0;
+        this.notasCDR = [];
+        this.notasCDRAnulado = [];
       }
     });
 
     // console.log('hola', this.sedes);
     // console.log('ventas', this.fechaventas);
     // console.log('listaventas', this.listaDeVentas);
+  }
+
+  generarTotales(ventas: VentaInterface[]) {
+    this.totalBoletas = 0;
+    this.totalFacturas = 0;
+    this.totalAnulados = 0;
+
+    this.totalAceptados = 0;
+    this.totalRechazados = 0;
+    this.notasCDR = [];
+    this.notasCDRAnulado = [];
+    if (ventas && ventas.length) {
+      ventas.forEach(venta => {
+        if (venta.tipoComprobante === 'boleta') {
+          this.totalBoletas++;
+        }
+        if (venta.tipoComprobante === 'factura') {
+          this.totalFacturas++;
+        }
+        if (venta.estadoVenta === 'anulado') {
+          this.totalAnulados++;
+        }
+
+        if (venta.cdr && venta.cdr.sunatResponse.success) {
+          this.totalAceptados++;
+        } else {
+          this.totalRechazados++;
+        }
+
+        if (venta.cdr && venta.cdr.sunatResponse.cdrResponse.notes && venta.cdr.sunatResponse.cdrResponse.notes.length) {
+          this.notasCDR.push(venta.cdr.sunatResponse.cdrResponse.notes);
+        }
+
+        // tslint:disable-next-line:max-line-length
+        if (venta.cdrAnulado && venta.cdrAnulado.sunatResponse.cdrResponse.notes && venta.cdrAnulado.sunatResponse.cdrResponse.notes.length) {
+          this.notasCDRAnulado.push(venta.cdrAnulado.sunatResponse.cdrResponse.notes);
+        }
+      });
+    }
   }
 /* -------------------------------------------------------------------------- */
 /*                           obtener lista de ventas                          */
@@ -229,6 +287,18 @@ export class ListaDeVentasPage implements OnInit {
   //   });
   //   return promesa;
   // }
+
+  formatearNotaCredito() {
+    const lista = [...this.listaDeVentas];
+    this.apiPeru.formatearNotasDeCretito(lista);
+  }
+
+  enviarNotaCredito(venta: VentaInterface) {
+    this.apiPeru.enviarNotaDeCreditoAdaptador(venta).then(details => {
+      console.log(details);
+      this.servGlobal.presentToast('Nota de credito enviado, detalles: ' + details, {color: 'success'});
+    });
+  }
 
   async presentToast(mensaje: string, colors?: string, icono?: string) {
     const toast = await this.toastController.create({

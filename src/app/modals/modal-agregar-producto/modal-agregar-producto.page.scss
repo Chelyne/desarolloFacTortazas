@@ -145,3 +145,11 @@ ion-input[type=date] {
     margin-top: 5px;
     --padding-start: 12px;
 }
+
+.cabecera {
+    background-color: var(--ion-color-primary);
+    color: var(--ion-color-light);
+}
+.cuerpo {
+    background-color: var(--ion-color-light);
+}
