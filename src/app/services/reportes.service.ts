@@ -8,7 +8,7 @@ import { jsPDF } from 'jspdf';
 import * as moment from 'moment';
 import { StorageService } from 'src/app/services/storage.service';
 import { DataBaseService } from './data-base.service';
-import { GENERAL_CONFIG } from '../../config/apiPeruConfig';
+import { GENERAL_CONFIG } from '../../config/generalConfig';
 // tslint:disable-next-line:class-name
 interface jsPDFWithPlugin extends jsPDF {
 

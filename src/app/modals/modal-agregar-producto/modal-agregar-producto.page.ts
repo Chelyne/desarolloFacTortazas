@@ -7,10 +7,9 @@ import { CategoriaInterface } from '../../models/CategoriaInterface';
 import { StorageService } from '../../services/storage.service';
 import { DataBaseService } from '../../services/data-base.service';
 import { GlobalService } from 'src/app/global/global.service';
-
-import { MEDIDAS } from 'src/app/configs/medidasConfig';
 import { VariantesInterface } from '../../models/variantes';
 import { isNullOrUndefined } from 'util';
+import { MEDIDAS } from 'src/config/medidasConfig';
 
 
 
@@ -215,6 +214,7 @@ export class ModalAgregarProductoPage implements OnInit {
       categoria: new FormControl(),
       subCategoria: new FormControl(this.listaDeCategorias[0].categoria, [Validators.required]),
       descripcionProducto: new FormControl(),
+      variantes: new FormControl()
     });
   }
 
@@ -239,14 +239,16 @@ export class ModalAgregarProductoPage implements OnInit {
   guardarProducto() {
     this.mensaje = null;
     if (this.productoForm.valid ) {
+      if (this.listaDeVariantes.length > 0) {
+        this.productoForm.setControl('variantes', new FormControl(this.listaDeVariantes));
+      } else {
+        this.productoForm.removeControl('variantes');
+      }
       this.productoForm.value.nombre = this.productoForm.value.nombre.toLowerCase();
       this.productoForm.value.categoria = 'petshop'; // SOLO TOOBY
       this.productoForm.value.subCategoria = this.productoForm.value.subCategoria.toLowerCase();
       this.productoForm.value.sede = this.sede;
       this.productoForm.value.fechaRegistro = new Date();
-      if (this.listaDeVariantes.length > 0) {
-        this.productoForm.addControl('variantes', new FormControl(this.listaDeVariantes));
-      }
       if (this.image){
         this.presentLoading('Agregando producto');
         this.uploadImages(this.image).then( url => {

@@ -8,6 +8,7 @@ import { DataBaseService } from '../../services/data-base.service';
 import { GlobalService } from '../../global/global.service';
 import { ProductoInterface } from '../../models/ProductoInterface';
 import * as FileSaver from 'file-saver';
+import {CalcularPorcentaje} from 'src/app/global/funciones-globales';
 
 @Component({
   selector: 'app-lista-de-ventas',
@@ -30,6 +31,8 @@ export class ListaDeVentasPage implements OnInit {
   buscando;
 
   loading;
+  enviroment = '';
+
   totalBoletas = 0;
   totalFacturas = 0;
   totalAnulados = 0;
@@ -48,6 +51,7 @@ export class ListaDeVentasPage implements OnInit {
     private servGlobal: GlobalService
   ) {
     this.ventasForm = this.createFormGroup();
+    this.setEnviroment();
    }
 
   ngOnInit() {
@@ -86,6 +90,7 @@ export class ListaDeVentasPage implements OnInit {
       if (data.length > 0) {
         this.listaDeVentas = data;
         console.log(this.listaDeVentas);
+        // this.obtenerListaProductosDeVenta(this.listaDeVentas).then( data => console.log(data))
 
         this.sinDatos = false;
         this.buscando = false;
@@ -135,7 +140,9 @@ export class ListaDeVentasPage implements OnInit {
 
         if (venta.cdr && venta.cdr.sunatResponse.success) {
           this.totalAceptados++;
-        } else {
+        }
+
+        if (venta.cdr && !venta.cdr.sunatResponse.success) {
           this.totalRechazados++;
         }
 
@@ -144,8 +151,8 @@ export class ListaDeVentasPage implements OnInit {
         }
 
         // tslint:disable-next-line:max-line-length
-        if (venta.cdrAnulado && venta.cdrAnulado.sunatResponse.cdrResponse.notes && venta.cdrAnulado.sunatResponse.cdrResponse.notes.length) {
-          this.notasCDRAnulado.push(venta.cdrAnulado.sunatResponse.cdrResponse.notes);
+        if (venta.cdrAnulado && venta.cdrAnulado.cdr.sunatResponse.cdrResponse.notes && venta.cdrAnulado.cdr.sunatResponse.cdrResponse.notes.length) {
+          this.notasCDRAnulado.push(venta.cdrAnulado.cdr.sunatResponse.cdrResponse.notes);
         }
       });
     }
@@ -207,22 +214,28 @@ export class ListaDeVentasPage implements OnInit {
   }
 
   async enviarComprobantesDelDia() {
+    let maximo = 0;
+    let index = 0;
+
     /**
      * @PASO1 :Enviar boletas y factura a SUNAT
      */
     const lista = [...this.listaDeVentas];
+    maximo = lista.length;
 
     if (lista.length) {
 
       await this.presentLoading('Enviando comprobantes, Por favor espere...');
 
-      for (const venta of lista) {
 
+      for (const venta of lista) {
+        index += 1;
         console.log('VENTA_A_SER_ENVIADA', venta);
 
         let response: any;
 
         if ((venta.tipoComprobante === 'boleta' || venta.tipoComprobante === 'factura') && !venta.cdr) {
+          CalcularPorcentaje(index, maximo);
 
           response = await this.apiPeru.enviarASunatAdaptador(venta).catch( err => err);
 
@@ -242,11 +255,16 @@ export class ListaDeVentasPage implements OnInit {
        * @PASO2 :Enviar notas de credito
        */
       const lista2 = [...this.listaDeVentas];
+      maximo = lista.length;
+      index = 0;
 
       for (const venta of lista2) {
+        index += 1;
+
         let response: any;
         if (venta.estadoVenta === 'anulado' && venta.cdr && venta.cdr.sunatResponse.success) {
           if (!venta.cdrAnulado){
+            CalcularPorcentaje(index, maximo);
             response = await this.apiPeru.enviarNotaDeCreditoAdaptador(venta);
           }
         } else {
@@ -274,6 +292,14 @@ export class ListaDeVentasPage implements OnInit {
       this.presentToast('No hay ventas para enviar.');
     }
 
+  }
+
+  async setEnviroment(){
+    this.enviroment = await this.apiPeru.obtenerEnviroment().then((env) => env).catch(() => ('INVALID_ENVIROMENT'));
+  }
+
+  async cambiarBetaProduccion(){
+    this.enviroment = await this.apiPeru.toggleEnviromentEmpresa().then((env) => env).catch(() => ('INVALID_ENVIROMENT'));
   }
 
   // async obtenerListaVentas() {

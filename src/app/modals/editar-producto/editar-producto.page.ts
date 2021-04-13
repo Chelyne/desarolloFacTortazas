@@ -5,10 +5,10 @@ import { AngularFireStorage } from '@angular/fire/storage';
 import { DatePipe } from '@angular/common';
 import { isNullOrUndefined } from 'util';
 
-import { MEDIDAS } from 'src/app/configs/medidasConfig';
 import { GlobalService } from '../../global/global.service';
 import { VariantesInterface } from '../../models/variantes';
 import { ProductoInterface } from '../../models/ProductoInterface';
+import { MEDIDAS } from 'src/config/medidasConfig';
 
 
 @Component({

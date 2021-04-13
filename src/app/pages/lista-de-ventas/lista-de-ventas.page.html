@@ -9,6 +9,15 @@
 </ion-header>
 
 <ion-content>
+
+
+  <ion-item>
+    <ion-button slot="end">
+      <ion-label color="light" (click)="cambiarBetaProduccion()">Cambiar Enviroment</ion-label>
+    </ion-button>
+    <ion-label>{{enviroment}}</ion-label>
+  </ion-item>
+
   <form [formGroup]="ventasForm">
     <ion-item>
       <ion-label>Selecciona la fecha</ion-label>

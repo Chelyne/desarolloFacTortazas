@@ -1,7 +1,7 @@
 // This file can be replaced during build by using the `fileReplacements` array.
 // `ng build --prod` replaces `environment.ts` with `environment.prod.ts`.
 // The list of file replacements can be found in `angular.json`.
-// BD DESARROLLO
+/** BD DESARROLLO TOBBYFE */
 export const environment = {
   production: false,
   firebaseConfig : {
@@ -15,7 +15,7 @@ export const environment = {
   }
 };
 
-// PRODUCCION
+/** PRODUCCION FACTURACION TOBBY */
 // export const environment = {
 //   production: false,
 //   firebaseConfig: {
@@ -26,6 +26,20 @@ export const environment = {
 //     messagingSenderId: '881542252579',
 //     appId: '1:881542252579:web:c7e95e674367d6ff9ec996',
 //     measurementId: 'G-KQ9E3XQ5KS'
+//   }
+// };
+
+/** FACTURACION GATTTOP */
+// export const environment = {
+//   production: false,
+//   firebaseConfig: {
+//     apiKey: 'AIzaSyBTrOGcfU7sEcFFDTP9phsp0KUlfCRfMyc',
+//     authDomain: 'facturaciongattop.firebaseapp.com',
+//     projectId: 'facturaciongattop',
+//     storageBucket: 'facturaciongattop.appspot.com',
+//     messagingSenderId: '919624378286',
+//     appId: '1:919624378286:web:528f3a949862f7bd2eca3f',
+//     measurementId: 'G-WFVVZ3623N'
 //   }
 // };
 

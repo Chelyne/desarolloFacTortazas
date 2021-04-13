@@ -18,7 +18,7 @@ import { ModalVentasPage } from '../../modals/modal-ventas/modal-ventas.page';
 import { BuscadorService } from 'src/app/services/buscador.service';
 import { GlobalService } from '../../global/global.service';
 import { DataBaseService } from '../../services/data-base.service';
-import { GENERAL_CONFIG } from '../../../config/apiPeruConfig';
+import { GENERAL_CONFIG } from '../../../config/generalConfig';
 import { ModalIngresosEgresosPage } from '../../modals/modal-ingresos-egresos/modal-ingresos-egresos.page';
 import { PopoverVariantesComponent } from '../../components/popover-variantes/popover-variantes.component';
 
@@ -32,7 +32,7 @@ export class PuntoVentaPage implements OnInit {
   sede = this.storage.datosAdmi.sede;
 
   @ViewChild('search', {static: false}) search: any;
-  productos: ProductoInterface[];
+  productos: ProductoInterface[] = null;
   buscando: boolean;
 
   sinResultados: string;
@@ -369,7 +369,7 @@ export class PuntoVentaPage implements OnInit {
     }
   }
 
-  buscador(ev){
+  async buscador(ev){
     this.buscando = true;
 
     const target = ev.detail.value;
@@ -378,6 +378,15 @@ export class PuntoVentaPage implements OnInit {
       this.buscadorService.Buscar(target).then( data => {
         if (data.length){
           this.productos = data;
+
+          /** si todo es buscado por codigo de barra agregar */
+          if (this.productos){
+            if (this.productos.length === 1 && this.buscadorService.isFullStringoOrNamber(target) === 'allNumber' && target.length >= 5 ){
+              console.log('sssssssssssssssssssssssssssssssssssssssssssssssssssssss');
+              this.AgregarItemDeVenta(this.productos[0]);
+              this.focusLimpio();
+            }
+          }
         } else {
           this.productos = null;
           this.servGlobal.presentToast('No se encontro el producto', {color: 'danger'});
@@ -388,14 +397,24 @@ export class PuntoVentaPage implements OnInit {
       this.productos = null;
       this.buscando = null;
     }
+
   }
+
+  // agregarProductoAListaDeVenta(){
+  //   if (this.productos){
+  //     if (this.productos.length === 1 && this.buscadorService.isFullStringoOrNamber(target)){
+  //       console.log('sssssssssssssssssssssssssssssssssssssssssssssssssssssss');
+  //       this.AgregarItemDeVenta(this.productos[0]);
+  //     }
+  //   }
+  // }
 
   // limpia el buscador
   limpiarBuscador() {
     this.buscando = null;
   }
 
-  focusLimpio(event) {
+  focusLimpio() {
     this.limpiarBuscador();
     this.productos = null;
     this.search.value = null;

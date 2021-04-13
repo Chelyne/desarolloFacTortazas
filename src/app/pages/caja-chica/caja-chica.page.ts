@@ -16,7 +16,7 @@ import { redondeoDecimal } from 'src/app/global/funciones-globales';
 import { ReportesService } from '../../services/reportes.service';
 import { DataBaseService } from '../../services/data-base.service';
 import { GlobalService } from 'src/app/global/global.service';
-import { GENERAL_CONFIG } from '../../../config/apiPeruConfig';
+import { GENERAL_CONFIG } from '../../../config/generalConfig';
 import { VentaInterface } from 'src/app/models/venta/venta';
 // tslint:disable-next-line:class-name
 interface jsPDFWithPlugin extends jsPDF {

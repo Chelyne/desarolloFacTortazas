@@ -32,6 +32,7 @@ export interface ComprobanteInterface {
     sumDsctoGlobal?: number;
     mtoDescuentos?: number;
     mtoOperGratuitas?: number;
+    mtoIGVGratuitas?: number;
     totalAnticipos?: number;
     perception?: SalePerceptionInterface;
     guiaEmbebida?: EmbededDespatchInterface;
@@ -81,7 +82,6 @@ export interface NotaDeCreditoInterface {
     mtoOperGratuitas?: number;
     perception?: SalePerceptionInterface;
     subTotal?: number;
-    formaPago?: PayWayInterface;
 }
 
 export interface ClientInterface {
@@ -222,3 +222,25 @@ export interface CuotasInterface {
     monto?: number;
     fechaPago?: string; /** Datetime */
 }
+
+
+
+// expmple:     "formaPago": {
+//     "moneda": "PEN",
+//     "tipo": "Credito",
+//         "monto": 15.92
+//   },
+//     "cuotas": [
+//     {
+//       "moneda": "PEN",
+//       "monto": 10,
+//       "fechaPago": "2020-03-19T11:39:00-05:00"
+//     },
+//     {
+//       "moneda": "PEN",
+//       "monto": 5.92,
+//       "fechaPago": "2020-04-19T11:39:00-05:00"
+//     }
+//   ],
+// }
+

@@ -7,7 +7,7 @@ import { StorageService } from '../../services/storage.service';
 // import { FCM } from '@ionic-native/fcm/ngx';
 import { DbDataService } from '../../services/db-data.service';
 import { isNullOrUndefined } from 'util';
-import { GENERAL_CONFIG } from '../../../config/apiPeruConfig';
+import { GENERAL_CONFIG } from '../../../config/generalConfig';
 import { DataBaseService } from '../../services/data-base.service';
 
 @Component({

@@ -4,7 +4,7 @@ import { VentaInterface } from '../models/venta/venta';
 import { formatDate } from '@angular/common';
 import { MontoALetras } from 'src/app/global/monto-a-letra';
 import { ItemDeVentaInterface } from 'src/app/models/venta/item-de-venta';
-import { GENERAL_CONFIG } from '../../config/apiPeruConfig';
+import { GENERAL_CONFIG } from '../../config/generalConfig';
 import { DataBaseService } from './data-base.service';
 import * as moment from 'moment';
 

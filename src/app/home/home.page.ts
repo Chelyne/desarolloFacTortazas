@@ -6,7 +6,7 @@ import { AngularFirestore } from '@angular/fire/firestore';
 import { AngularFireStorage } from '@angular/fire/storage';
 import { map } from 'rxjs/operators';
 import { ExportarPDFService } from '../services/exportar-pdf.service';
-import { GENERAL_CONFIG } from '../../config/apiPeruConfig';
+import { GENERAL_CONFIG } from '../../config/generalConfig';
 import { DataBaseService } from '../services/data-base.service';
 import { CategoriasService } from '../services/categorias.service';
 
