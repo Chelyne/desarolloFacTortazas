@@ -316,7 +316,7 @@ export class ListaDeVentasPage implements OnInit {
 
   formatearNotaCredito() {
     const lista = [...this.listaDeVentas];
-    this.apiPeru.formatearNotasDeCretito(lista);
+    this.apiPeru.formatearVentas(lista);
   }
 
   enviarNotaCredito(venta: VentaInterface) {
