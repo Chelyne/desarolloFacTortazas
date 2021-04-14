@@ -435,6 +435,21 @@ export class DataBaseService {
       throw String ('fail');
     });
   }
+  obtenerVentasBoletasFacturasPorDia(sede: string, fecha: string) {
+    return this.afs.collection('sedes').doc(sede.toLocaleLowerCase()).collection('ventas').doc(fecha)
+    .collection('ventasDia').ref.where('tipoComprobante', '<', 'n. venta').get()
+    .then((querySnapshot) => {
+      const datos: any [] = [];
+      querySnapshot.forEach((doc) => {
+        // console.log(doc.id, ' => ', doc.data());
+        datos.push({...doc.data(), id: doc.id});
+      });
+      return datos;
+    }).catch(err => {
+      console.log('no se pudo obtener las ventas', err);
+      throw String ('fail');
+    });
+  }
 
   // OBTENER LISTA DE VENTAS
   obtenerVentasPorDiaObs(sede: string, fachaventas: string) {

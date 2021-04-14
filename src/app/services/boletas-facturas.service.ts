@@ -1,12 +1,12 @@
 import { Injectable } from '@angular/core';
 import jsPDF from 'jspdf';
-import { VentaInterface } from '../models/venta/venta';
 import { formatDate } from '@angular/common';
 import { MontoALetras } from 'src/app/global/monto-a-letra';
 import { ItemDeVentaInterface } from 'src/app/models/venta/item-de-venta';
 import { GENERAL_CONFIG } from '../../config/apiPeruConfig';
 import { DataBaseService } from './data-base.service';
 import * as moment from 'moment';
+import { StorageService } from 'src/app/services/storage.service';
 
 
 
@@ -19,15 +19,16 @@ export class BoletasFacturasService {
   RUC = GENERAL_CONFIG.datosEmpresa.ruc;
   nombreEmpresa = GENERAL_CONFIG.datosEmpresa.razon_social;
   valueQR;
+  sede = this.storage.datosAdmi.sede.toLocaleLowerCase();
 
 
-  constructor(  private dataApi: DataBaseService) { }
+  constructor(  private dataApi: DataBaseService, private storage: StorageService) { }
   // getImage() {
   //   const canvas = document.querySelector('canvas') as HTMLCanvasElement;
   //   const imageData = canvas.toDataURL('image/jpeg').toString();
   //   return imageData;
   //   }
-    generarComprobante(venta ) {
+    async generarComprobante(venta) {
     venta.horaEmision = new Date(moment.unix(venta.fechaEmision.seconds).format('D MMM YYYY H:mm'));
     venta.fechaEmision = new Date(moment.unix(venta.fechaEmision.seconds).format('D MMM YYYY H:mm'));
     venta.fechaEmision = formatDate(venta.fechaEmision, 'dd/MM/yyyy', 'en');
@@ -35,7 +36,8 @@ export class BoletasFacturasService {
     // const qr = this.getImage();
     // console.log(qr);
 
-    this.obtenerProductosVenta(venta.idListaProductos, venta.vendedor.sede.toLocaleLowerCase()).then((datos: ItemDeVentaInterface[]) => {
+    // tslint:disable-next-line:max-line-length
+    await this.obtenerProductosVenta(venta.idListaProductos, venta.vendedor.sede.toLocaleLowerCase()).then((datos: ItemDeVentaInterface[]) => {
       console.log(venta);
       venta.listaItemsDeVenta =  datos;
       switch (venta.tipoComprobante) {
@@ -46,18 +48,9 @@ export class BoletasFacturasService {
           doc.setFontSize(6);
           doc.setFont('helvetica');
           doc.text(this.nombreEmpresa, 22.5, 12, {align: 'center'});
-          if (venta.vendedor.sede === 'Andahuaylas') {
-          doc.text('Av. Peru 236 Andahuaylas Apurimac ', 22.5, 14, {align: 'center'});
-          doc.text('Parque Lampa de Oro ', 22.5, 16, {align: 'center'});
-
-          doc.text('Telefono: 983905066', 22.5, 19, {align: 'center'});
-          }
-          if (venta.vendedor.sede === 'Abancay') {
-            doc.text('Av. Seoane 100 Abancay Apurimac', 22.5, 14, {align: 'center'});
-            doc.text('Parque el Olivo', 22.5, 16, {align: 'center'});
-
-            doc.text('Telefono: 988907777', 22.5, 19, {align: 'center'});
-            }
+          doc.text(GENERAL_CONFIG.sedes[this.sede].direccion.direccionCorta, 22.5, 14, {align: 'center'});
+          doc.text(GENERAL_CONFIG.sedes[this.sede].direccion.referencia, 22.5, 16, {align: 'center'});
+          doc.text('Telefono: ' + GENERAL_CONFIG.sedes[this.sede].direccion.telefono, 22.5, 19, {align: 'center'});
           doc.text('Ruc: ' + this.RUC, 22.5, 21, {align: 'center'});
           doc.text('Boleta de Venta electrónica', 22.5, 25, {align: 'center'});
           // tslint:disable-next-line:max-line-length
@@ -137,7 +130,12 @@ export class BoletasFacturasService {
           // doc.text(this.venta.tipoPago.toUpperCase(), 43, index + 13, {align: 'right'});
 
           // doc.addImage(qr, 'JPEG', 15, index + 14, 15, 15);
+
           index = index + 30;
+          if (venta.estadoVenta === 'anulado'){
+            doc.text('===== COMPROBANTE ANULADO  =====', 22.5, index + 2, {align: 'center'});
+            index = index + 2;
+          }
           doc.setFontSize(4);
           doc.text('Representación impresa del comprobante de pago\r de Venta Electrónica, esta puede ser consultada en\r www.facturaciontooby.web.app/buscar\rNO ACEPTAMOS DEVOLUCIONES', 22.5, index + 3, {align: 'center'});
           doc.text('GRACIAS POR SU COMPRA', 22.5, index + 10, {align: 'center'});
@@ -149,7 +147,7 @@ export class BoletasFacturasService {
           // const canvas = document.getElementById('pdf');
           break;
           case'factura': {
-            console.log('es una facura');
+            console.log('es una factura');
             // tslint:disable-next-line:no-shadowed-variable
             let index = 41;
             // tslint:disable-next-line:no-shadowed-variable
@@ -158,18 +156,9 @@ export class BoletasFacturasService {
             doc.setFontSize(6);
             doc.setFont('helvetica');
             doc.text(this.nombreEmpresa, 22.5, 12, {align: 'center'});
-            if (venta.vendedor.sede === 'Andahuaylas') {
-            doc.text('Av. Peru 236 Andahuaylas Apurimac ', 22.5, 14, {align: 'center'});
-            doc.text('Parque Lampa de Oro ', 22.5, 16, {align: 'center'});
-
-            doc.text('Telefono: 983905066', 22.5, 19, {align: 'center'});
-            }
-            if (venta.vendedor.sede  === 'Abancay') {
-              doc.text('Av. Seoane 100 Abancay Apurimac', 22.5, 14, {align: 'center'});
-              doc.text('Parque el Olivo', 22.5, 16, {align: 'center'});
-
-              doc.text('Telefono: 988907777', 22.5, 19, {align: 'center'});
-              }
+            doc.text(GENERAL_CONFIG.sedes[this.sede].direccion.direccionCorta, 22.5, 14, {align: 'center'});
+            doc.text(GENERAL_CONFIG.sedes[this.sede].direccion.referencia, 22.5, 16, {align: 'center'});
+            doc.text('Telefono: ' + GENERAL_CONFIG.sedes[this.sede].direccion.telefono, 22.5, 19, {align: 'center'});
             doc.text('Ruc: ' + this.RUC, 22.5, 21, {align: 'center'});
             doc.text('Factura de Venta electrónica', 22.5, 25, {align: 'center'});
             // tslint:disable-next-line:max-line-length
@@ -258,12 +247,18 @@ export class BoletasFacturasService {
 
             // doc.addImage(qr, 'JPEG', 15, index + 10, 15, 15);
             index = index + 25;
+            if (venta.estadoVenta === 'anulado'){
+              doc.text('===== COMPROBANTE ANULADO  =====', 22.5, index + 2, {align: 'center'});
+              index = index + 2;
+            }
             doc.setFontSize(4);
             doc.text('Representación impresa del comprobante de pago\r de Factura Electrónica, esta puede ser consultada en\r www.facturaciontooby.web.app/buscar\rNO ACEPTAMOS DEVOLUCIONES', 22.5, index + 3, {align: 'center'});
             doc.text('GRACIAS POR SU COMPRA', 22.5, index + 10, {align: 'center'});
             // doc.save('tiket' + '.pdf');
-            doc.autoPrint();
-            window.open(doc.output('bloburl').toString(), '_blank');
+            doc.save(venta.serieComprobante + '-' + venta.numeroComprobante + '.pdf');
+
+            // doc.autoPrint();
+            // window.open(doc.output('bloburl').toString(), '_blank');
             // doc.output('dataurlnewwindow');
             break;
           }

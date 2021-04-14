@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { MenuController, ModalController, AlertController, PopoverController } from '@ionic/angular';
+import { MenuController, ModalController, AlertController, PopoverController, LoadingController } from '@ionic/angular';
 import { AbrirCerrarCajaPage } from '../../modals/abrir-cerrar-caja/abrir-cerrar-caja.page';
 import { StorageService } from '../../services/storage.service';
 import * as moment from 'moment';
@@ -48,6 +48,7 @@ export class CajaChicaPage implements OnInit {
 
   contadorConsultaProdcutos = 0;
   apilados = [];
+  loading;
   constructor(
     private dataApi: DataBaseService,
     private globalSrv: GlobalService,
@@ -58,6 +59,7 @@ export class CajaChicaPage implements OnInit {
     private datePipe: DatePipe,
     private popoverCtrl: PopoverController,
     private reportesservice: ReportesService,
+    private loadingController: LoadingController,
     private modalController: ModalController) {
       this.listaCajaChicaSede(this.sede);
     }
@@ -131,6 +133,14 @@ export class CajaChicaPage implements OnInit {
       this.globalSrv.presentToast('No se pudo eliminar', {color: 'danger', icon: 'alert-circle-outline', position: 'top'});
     });
   }
+  async presentLoading(mensaje: string) {
+    this.loading = await this.loadingController.create({
+      cssClass: 'my-custom-class',
+      message: mensaje,
+      // duration: 5000
+    });
+    await this.loading.present();
+  }
 
   async confirmarCerrarCaja(id) {
     const alert = await this.alertCtrl.create({
@@ -158,8 +168,9 @@ export class CajaChicaPage implements OnInit {
   }
 
   ReportePDFDiaIngresoEgreso(){
+    this.presentLoading('Consultando... Por Favor espere');
     const dia = formatDate(new Date(), 'dd-MM-yyyy', 'en');
-    this.reportesservice.ReportePDFDiaIngresoEgreso(dia);
+    this.reportesservice.ReportePDFDiaIngresoEgreso(dia).then(() => {this.loading.dismiss(); });
   }
 
   async ReporteVentaGeneralDia(ev: any){
@@ -178,9 +189,10 @@ export class CajaChicaPage implements OnInit {
     const { data } = await popover.onWillDismiss();
     console.log(data);
     if (data) {
+      this.presentLoading('consultando Datos...');
       switch (data.action) {
-        case 'a4': console.log('a4'); this.reportesservice.ReporteVentaDiaGeneralPDF(dia); break;
-        case 'ticked': console.log('ticked'); this.reportesservice.ReporteTiket(dia); break;
+        case 'a4': console.log('a4'); this.reportesservice.ReporteVentaDiaGeneralPDF(dia).then(() => this.loading.dismiss()); break;
+        case 'ticked': console.log('ticked'); this.reportesservice.ReporteTiket(dia).then(() => this.loading.dismiss()); break;
       }
     }
   }

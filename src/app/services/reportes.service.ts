@@ -35,7 +35,7 @@ export class ReportesService {
               private storage: StorageService
   ) {}
   ReporteVentaDiaGeneralPDF(dia) {
-    this.consultaVentaReporteGeneral(dia).then( (data: any) => {
+    return this.consultaVentaReporteGeneral(dia).then( (data: any) => {
       console.log('datos', data);
       const doc = new jsPDF('portrait', 'px', 'a4') as jsPDFWithPlugin;
       doc.setFontSize(16);
@@ -169,7 +169,7 @@ export class ReportesService {
   }
 
   ReporteTiket(dia: any) {
-    this.listaVendedoresDatos(dia).then((data: any) => {
+    return this.listaVendedoresDatos(dia).then((data: any) => {
       console.log('lista de vendedores', data);
       let index = 0;
 
@@ -413,7 +413,7 @@ export class ReportesService {
   }
 
   ReportePDFDiaIngresoEgreso(dia: any){
-    this.consultaIngresoEgreso(dia).then((data: any) => {
+    return this.consultaIngresoEgreso(dia).then((data: any) => {
       console.log('datos', data);
       const doc = new jsPDF('portrait', 'px', 'a4') as jsPDFWithPlugin;
       doc.setFontSize(16);
@@ -479,7 +479,7 @@ export class ReportesService {
       if (snapshot.length === 0) {
         this.Ingresos = 0;
         this.Egresos = 0;
-        throw null;
+        return null;
       } else {
         for (const datos of snapshot) {
           if (datos.tipo === 'ingreso'){
