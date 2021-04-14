@@ -54,16 +54,16 @@ describe('description', () => {
   });
 
 
-  it('should be created', () => {
+  xit('should be created', () => {
     expect(service).toBeTruthy();
   });
-  it('test saludo', () => {
+  xit('test saludo', () => {
     expect('hola').toEqual(service.saludo());
   });
-  it('test getSede', () => {
+  xit('test getSede', () => {
     expect('andahuaylas').toEqual(service.getSede());
   });
-  it('probar setApiPeruTest', () => {
+  xit('probar setApiPeruTest', () => {
     service.setApiPeruConfig(apiPeruFuncinal);
   });
   /** NOTE - Todos los test se realizan en estado beta con el usuario HZ */
@@ -133,7 +133,7 @@ describe('description', () => {
   //   then( exito => console.log(exito)).catch( err => console.log(err));
   // });
 
-  describe('TEST FORMATEAR VENTA', () => {
+  xdescribe('TEST FORMATEAR VENTA', () => {
     let ventaMock: VentaInterface;
     let ventaMockConBolsa: VentaInterface;
 
@@ -281,7 +281,7 @@ describe('description', () => {
     });
   });
 
-  describe('TEST FORMATEAR NOTA DE CREDITO', () => {
+  xdescribe('TEST FORMATEAR NOTA DE CREDITO', () => {
     /** NOTE - DRY */
     let ventaMock: VentaInterface;
     let ventaMockConBolsa: VentaInterface;
@@ -346,7 +346,7 @@ describe('description', () => {
     });
   });
 
-  describe('ENVIAR COMPROBANTE A SUNAT', () => {
+  xdescribe('ENVIAR COMPROBANTE A SUNAT', () => {
     /** NOTE - DRY */
     let ventaMock: VentaInterface;
     let ventaMockConBolsa: VentaInterface;
@@ -503,6 +503,21 @@ describe('description', () => {
 
       /** obtener serieActual */
     });
+  });
+
+  it('venta prueba a obtener', async () => {
+    const idVenta = 'p2HAkpSESAsE6JJBAyAv';
+    const idListaVenta = 'KXkoDwL0bYuyxxRhPBiZ';
+    const sede = 'andahuaylas';
+    const fecha = '10-04-2021';
+
+    /** VENTA MODELO POR DEFECTO */
+    const ventaDefaul = await dataApi.obtenerVentasPorId(sede, fecha, idVenta);
+    const listProducDefaul: ItemDeVentaInterface[] = await dataApi.obtenerProductosDeVenta(idListaVenta, sede);
+
+    console.log(ventaDefaul);
+    console.log(listProducDefaul);
+
   });
 
 

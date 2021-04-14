@@ -4,11 +4,11 @@ export interface ProductoInterface {
     img?: string;
     nombre?: string;
     arrayNombre?: string[];
-    cantidad?: number; // ?NOTE , numero de unidades en una venta
+    cantidad?: number; /** NOTE , numero de unidades en una venta */
     precio?: number;
     precioCompra?: number;
     sede?: string;
-    medida?: string;    // Unidad litros gramos kilos
+    medida?: string;    /** Unidad, litros, gramos, kilos */
     cantStock?: number;
     tallas?: any;   // !USAR LUEGO
     nombreTalla?: string;   // !USAR LUEGO

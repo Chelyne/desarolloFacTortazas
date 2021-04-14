@@ -1,12 +1,12 @@
 import { ProductoInterface } from '../ProductoInterface';
 
 export interface ItemDeVentaInterface {
-    productos?: any[];
-    producto?: ProductoInterface;
+    // productos?: any[];
     idProducto?: string;
+    producto?: ProductoInterface;
     cantidad?: number;
-    montoNeto?: number;
-    descuentoProducto?: number; // número 1.2, 3.3. 3.5
+    montoNeto?: number; /** Monto sin descuentos: cantidad*producto.precio */
+    descuentoProducto?: number;
     porcentajeDescuento?: number;
     totalxprod?: number;
     // precioVenta?: number; //

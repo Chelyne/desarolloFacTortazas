@@ -45,7 +45,7 @@ export class ApiPeruService {
   constructor(
     private dataApi: DataBaseService,
     private storage: StorageService
-  ) {
+  ){
     this.sede = storage.datosAdmi.sede.toLocaleLowerCase();
     this.setApiPeruConfig(GENERAL_CONFIG);
   }
@@ -170,7 +170,6 @@ export class ApiPeruService {
         throw error;
       });
   }
-
 
   async obtenerEmpresaByRUC(rucEnter: string){
     /**
@@ -839,7 +838,6 @@ export class ApiPeruService {
         return 'exito';
       }
     }
-
     throw String('fail');
   }
 
@@ -861,7 +859,7 @@ export class ApiPeruService {
   }
 
 
-  enviarNotaCreditoASunat(notaCreditoFormateado: NotaDeCreditoInterface){
+  async enviarNotaCreditoASunat(notaCreditoFormateado: NotaDeCreditoInterface){
     const myHeaders = new Headers();
     myHeaders.append('Authorization', 'Bearer '.concat(this.datosEmpresa.token));
     myHeaders.append('Content-Type', 'application/json');
@@ -1116,9 +1114,12 @@ export class ApiPeruService {
   /* -------------------------------------------------------------------------- */
   /*                             escript auxiliares                             */
   /* -------------------------------------------------------------------------- */
-  formatearVentas(listaDeVentas: VentaInterface[]){
+
+  async formatearVentas(listaDeVentas: VentaInterface[]){
     for (const venta of listaDeVentas) {
       console.log('VENTA ORIGINAL', venta);
+      const productos = await this.obtenerProductosDeVenta(venta.idListaProductos).catch(err => err);
+      venta.listaItemsDeVenta = productos;
       const ventaFormateada: ComprobanteInterface = this.intentarFormatearVenta(venta);
       console.log('VENTA FORMATEADO', ventaFormateada);
     }

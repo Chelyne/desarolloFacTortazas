@@ -323,13 +323,13 @@ export class ConfirmarVentaPage implements OnInit {
     return imageData;
     }
 
-    digitosFaltantes(caracter: string, num: number) {
-      let final = '';
-      for ( let i = 0; i < num; i++) {
-        final = final + caracter;
-      }
-      return final;
+  digitosFaltantes(caracter: string, num: number) {
+    let final = '';
+    for ( let i = 0; i < num; i++) {
+      final = final + caracter;
     }
+    return final;
+  }
 
   generarComprobante() {
     const qr = this.getImage();
