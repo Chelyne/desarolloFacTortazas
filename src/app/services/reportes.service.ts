@@ -451,6 +451,8 @@ export class ReportesService {
             let formato: any;
             formato = [
               contador,
+              item.nombreVendedor ? item.nombreVendedor.toUpperCase() : null,
+              item.dniVendedor ? item.dniVendedor.toUpperCase() : null,
               item.tipo.toUpperCase(),
               item.detalles.toUpperCase(),
               item.monto
@@ -461,7 +463,7 @@ export class ReportesService {
           doc.text( 'Ingresos: ' + ingreso.toFixed(2)  , 40, 85);
           doc.text( 'Egresos: ' + egreso.toFixed(2) , 180, 85);
           doc.autoTable({
-            head: [['#', 'Tipo', 'Detalles', 'Monto']],
+            head: [['#', 'Nombre', 'Dni', 'Tipo', 'Detalles', 'Monto']],
             body: datosEgresoIngreso,
             startY: 115 ,
             theme: 'grid',
