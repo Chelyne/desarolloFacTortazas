@@ -13,6 +13,7 @@ import { GENERAL_CONFIG } from '../../../config/generalConfig';
 import { ApiPeruConfigInterface, DatosApiPeruInterface, DatosEmpresaInterface } from './apiPeruInterfaces';
 import { CDRInterface } from 'src/app/models/api-peru/cdr-interface';
 import { DataBaseService } from '../data-base.service';
+import { ChangeInterface } from '../../models/comprobante/comprobante';
 
 
 
@@ -537,6 +538,18 @@ export class ApiPeruService {
       ventaFormateada.totalImpuestos = redondeoDecimal(igv, 2);
     }
 
+    /** agregar el descuento */
+    if (venta.descuentoVenta && venta.descuentoVenta > 0){
+
+      const descuentos: ChangeInterface[] = [{
+        codTipo: '02',
+        montoBase: venta.descuentoVenta,
+        factor: 1,
+        monto: venta.descuentoVenta
+      }];
+
+      ventaFormateada.descuentos = descuentos;
+    }
 
     return ventaFormateada;
   }

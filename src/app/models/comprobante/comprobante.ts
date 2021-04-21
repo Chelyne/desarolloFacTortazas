@@ -146,7 +146,7 @@ export interface SaleDetailInterface {
 
 export interface ChangeInterface {
     codTipo?: string;
-    factor?: string;
+    factor?: number;
     monto?: number;
     montoBase?: number;
 }

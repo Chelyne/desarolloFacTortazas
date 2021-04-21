@@ -5,7 +5,7 @@
       </ion-menu-button>
     </ion-buttons>
     <ion-title color="primary">Reporte de Ventas</ion-title>
-    <ion-item lines="none" slot="end">
+    <!-- <ion-item lines="none" slot="end">
       <ion-button (click)="ReporteProoductosSede()" size="small" fill="outline">
         <ion-icon name="trending-up-outline"></ion-icon> &nbsp;
         <ion-label>R. Productos</ion-label>
@@ -19,12 +19,12 @@
         <ion-label>Reporte Mes</ion-label>
         <ion-icon slot="end" name="chevron-down-outline"></ion-icon>
       </ion-button>
-    </ion-item>
+    </ion-item> -->
   </ion-toolbar>
 </ion-header>
 
 <ion-content>
-  <form [formGroup]="ventasDiaForm">
+  <!-- <form [formGroup]="ventasDiaForm">
     <ion-item>
       <ion-label>Fecha de Reporte</ion-label>
       <ion-input slot="end" type="date" formControlName="fechadeventa" formatDate="dd-mm-yyyy" value="1994-12-1">
@@ -33,11 +33,83 @@
         <ion-label color="light">Consultar</ion-label>
       </ion-button>
     </ion-item>
-  </form>
+  </form> -->
+  <ion-grid>
+    <ion-row>
+      <ion-col size-lg="6">
+        <ion-card (click)="ReporteProoductosSede()" style="cursor: pointer;" mode="ios">
+          <ion-card-content>
+            <ion-item color="transparent" lines="none">
+              <ion-icon class="icono" color="secondary" name="cloud-download-outline"></ion-icon>
+            </ion-item>
+            <ion-item color="transparent" lines="none">
+              <ion-card-title>Reporte de productos</ion-card-title>
+              <ion-buttons slot="end">
+                <ion-button>
+                </ion-button>
+              </ion-buttons>
+            </ion-item>
+          </ion-card-content>
+        </ion-card>
+      </ion-col>
+      <ion-col size-lg="6">
+        <ion-card (click)="ObtenerVentasMes()" style="cursor: pointer;" mode="ios">
+          <ion-card-content>
+            <ion-item color="transparent" lines="none">
+              <ion-icon class="icono" color="secondary" name="bar-chart-outline"></ion-icon>
+            </ion-item>
+            <ion-item color="transparent" lines="none">
+              <ion-card-title>Reporte de ventas de {{mesActual}}</ion-card-title>
+              <ion-buttons slot="end">
+                <ion-button>
+                </ion-button>
+              </ion-buttons>
+            </ion-item>
+          </ion-card-content>
+        </ion-card>
+      </ion-col>
+    </ion-row>
+
+    <ion-row>
+      <ion-col size-lg="6">
+        <ion-card mode="ios">
+          <ion-card-content>
+            <ion-item color="transparent" lines="none">
+              <ion-icon class="icono" color="secondary" name="calendar-outline"></ion-icon>
+            </ion-item>
+            <ion-item color="transparent" lines="none">
+              <ion-card-title>Reporte de ventas del mes</ion-card-title> &nbsp;&nbsp;&nbsp;
+            </ion-item>
+            <ion-button expand="block" (click)="ReporteVentaMes($event)" size="small" fill="outline">
+              <ion-icon slot="start" name="calendar-clear-outline"></ion-icon>
+              <ion-label>Seleccionar mes</ion-label>
+              <ion-icon slot="end" name="chevron-down-outline"></ion-icon>
+            </ion-button>
+          </ion-card-content>
+        </ion-card>
+      </ion-col>
+      <ion-col size-lg="6">
+        <ion-card mode="ios">
+          <ion-card-content>
+            <ion-item color="transparent" lines="none">
+              <ion-icon class="icono" color="secondary" name="stats-chart-outline"></ion-icon>
+            </ion-item>
+            <form [formGroup]="ventasDiaForm">
+              <ion-item color="transparent" lines="none">
+                <ion-card-title>Reporte de ventas de fecha</ion-card-title> &nbsp;&nbsp;&nbsp;
+                <ion-input style="border: solid 1px var(--ion-color-light); border-radius: 5px; --padding-start: 12px" type="date" formControlName="fechadeventa" formatDate="dd-mm-yyyy" max="{{fechaActual}}"></ion-input>
+              </ion-item>
+            </form>
+            <ion-button size="small" fill="outline" expand="block" (click)="ObtenerVentasDia($event)">
+              <ion-label>Consultar</ion-label>
+            </ion-button>
+          </ion-card-content>
+        </ion-card>
+      </ion-col>
+    </ion-row>
+  </ion-grid>
   <!-- <ion-button expand="block" (click)="ObtenerVentasMesAnioDescargarComprobantes(3,2021)">DESCARGAR COMPROBANTES DEL MES</ion-button> -->
   <!-- <ion-button expand="block" (click)="obtenerLista()">LISTA</ion-button> -->
   <!-- <ion-button expand="block" (click)="saveZip()">zip</ion-button> -->
   <!-- <ion-button expand="block" (click)="obtenerZipXml(1, 2021)">ZIP XML MES</ion-button> -->
-
-
 </ion-content>

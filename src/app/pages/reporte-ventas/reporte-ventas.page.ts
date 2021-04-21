@@ -15,6 +15,7 @@ import { timer } from 'rxjs';
 import { DataBaseService } from '../../services/data-base.service';
 import { GlobalService } from 'src/app/global/global.service';
 import { GenerarComprobanteService } from '../../services/generar-comprobante.service';
+import { formatearDateTime } from '../../global/funciones-globales';
 
 @Component({
   selector: 'app-reporte-ventas',
@@ -28,6 +29,9 @@ export class ReporteVentasPage implements OnInit {
 
   contador = 0;
   contadorXML = 0;
+  mesActual;
+  meses = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'];
+  fechaActual;
   constructor(
                private dataApi: DataBaseService,
                private globalSrv: GlobalService,
@@ -43,6 +47,8 @@ export class ReporteVentasPage implements OnInit {
 
   ngOnInit() {
     this.menuCtrl.enable(true);
+    this.mesActual = this.meses[moment().month()];
+    this.fechaActual = formatearDateTime('YYYY-MM-DD');
     // this.ObtenerVentas();
   }
 
@@ -54,7 +60,7 @@ export class ReporteVentasPage implements OnInit {
 
   ObtenerVentasDia(ev: any) {
     if (isNullOrUndefined(this.ventasDiaForm.value.fechadeventa)) {
-      this.globalSrv.presentToast('Ingrese Fecha', {color: 'warning', position: 'top'});
+      this.globalSrv.presentToast('Ingrese Fecha', {color: 'warning', position: 'bottom'});
 
     }else {
       this.ventasDiaForm.value.fechadeventa = this.ventasDiaForm.value.fechadeventa.split('-').reverse().join('-');
@@ -91,7 +97,7 @@ export class ReporteVentasPage implements OnInit {
       sus.unsubscribe();
       console.log(data);
       if (data.length === 0){
-        this.globalSrv.presentToast('No hay productos de sede: ' + this.sede, {color: 'danger', position: 'top'});
+        this.globalSrv.presentToast('No hay productos de sede: ' + this.sede, {color: 'danger', position: 'bottom'});
       }else{
         for (const datos of data) {
           const formato: any = {
@@ -133,7 +139,7 @@ export class ReporteVentasPage implements OnInit {
         }
         if (contador === 31) {
         if (!this.arrayMes.length) {
-          this.globalSrv.presentToast('No hay productos de sede: ' + this.sede, {color: 'danger', position: 'top'});
+          this.globalSrv.presentToast('No hay productos de sede: ' + this.sede, {color: 'danger', position: 'bottom'});
 
         } else {
           // tslint:disable-next-line:no-shadowed-variable
@@ -180,7 +186,7 @@ export class ReporteVentasPage implements OnInit {
         }
         if (contador === 31) {
         if (!this.arrayMes.length) {
-          this.globalSrv.presentToast('No hay productos de sede: ' + this.sede, {color: 'danger', position: 'top'});
+          this.globalSrv.presentToast('No hay productos de sede: ' + this.sede, {color: 'danger', position: 'bottom'});
 
         } else {
           // tslint:disable-next-line:no-shadowed-variable
@@ -236,7 +242,7 @@ export class ReporteVentasPage implements OnInit {
     let dataExcel = [];
     if (data.length === 0) {
       console.log('toast de no hay datos');
-      this.globalSrv.presentToast('No existe datos del mes ', {color: 'danger', position: 'top'});
+      this.globalSrv.presentToast('No existe datos del mes ', {color: 'danger', position: 'bottom'});
     }else {
       let contador = 0;
       console.log('datos', data);

@@ -5,18 +5,23 @@
       </ion-menu-button>
     </ion-buttons>
     <ion-title color="primary">Lista de Ventas</ion-title>
+    <ion-item slot="end" [color]="(enviroment && enviroment!=='beta') ? 'success' : 'medium'">
+      <ion-spinner color="light" *ngIf="!enviroment" name="crescent"></ion-spinner>
+      <ion-label *ngIf="enviroment">{{enviroment | titlecase}}</ion-label>
+      <ion-toggle [disabled]="!enviroment" color="light" (click)="cambiarBetaProduccion($event)" [(ngModel)]="activo"></ion-toggle>
+    </ion-item>
   </ion-toolbar>
 </ion-header>
 
 <ion-content>
 
 
-  <ion-item>
+  <!-- <ion-item>
     <ion-button slot="end">
       <ion-label color="light" (click)="cambiarBetaProduccion()">Cambiar Enviroment</ion-label>
     </ion-button>
     <ion-label>{{enviroment}}</ion-label>
-  </ion-item>
+  </ion-item> -->
 
   <form [formGroup]="ventasForm">
     <ion-item>
@@ -83,14 +88,14 @@
           <ion-col>
             <ion-item>
               <ion-icon color="warning" name="alert-circle-sharp"></ion-icon> &nbsp;&nbsp;
-              <ion-label>Notas CDR</ion-label>
+              <ion-label title="{{notasCDR | json}}">Notas CDR</ion-label>
               <ion-badge color="warning">{{notasCDR.length}}</ion-badge>
             </ion-item>
           </ion-col>
           <ion-col>
             <ion-item>
               <ion-icon color="danger" name="alert-circle-outline"></ion-icon> &nbsp;&nbsp;
-              <ion-label color="danger">Notas CDR ANULADO</ion-label>
+              <ion-label title="{{notasCDRAnulado | json}}" color="danger">Notas CDR ANULADO</ion-label>
               <ion-badge color="warning">{{notasCDRAnulado.length}}</ion-badge>
             </ion-item>
           </ion-col>

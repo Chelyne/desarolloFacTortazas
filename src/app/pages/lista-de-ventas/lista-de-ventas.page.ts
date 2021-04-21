@@ -41,6 +41,9 @@ export class ListaDeVentasPage implements OnInit {
   totalRechazados = 0;
   notasCDR = [];
   notasCDRAnulado = [];
+
+  // beta o produccion
+  activo = false;
   constructor(
     private dataApi: DataBaseService,
     private storage: StorageService,
@@ -58,8 +61,6 @@ export class ListaDeVentasPage implements OnInit {
     this.menuCtrl.enable(true);
     // this.ObtenerVentas();
   }
-
-
 
   createFormGroup() {
     return new FormGroup({
@@ -146,13 +147,22 @@ export class ListaDeVentasPage implements OnInit {
           this.totalRechazados++;
         }
 
-        if (venta.cdr && venta.cdr.sunatResponse.cdrResponse.notes && venta.cdr.sunatResponse.cdrResponse.notes.length) {
-          this.notasCDR.push(venta.cdr.sunatResponse.cdrResponse.notes);
+        // tslint:disable-next-line:max-line-length
+        if (venta.cdr && !venta.cdr.sunatResponse.error && venta.cdr.sunatResponse.cdrResponse.notes && venta.cdr.sunatResponse.cdrResponse.notes.length) {
+          const data = {
+            boleta: venta.cdr.sunatResponse.cdrResponse.id,
+            // notas: venta.cdr.sunatResponse.cdrResponse.notes
+          };
+          this.notasCDR.push(data);
         }
 
         // tslint:disable-next-line:max-line-length
-        if (venta.cdrAnulado && venta.cdrAnulado.cdr.sunatResponse.cdrResponse.notes && venta.cdrAnulado.cdr.sunatResponse.cdrResponse.notes.length) {
-          this.notasCDRAnulado.push(venta.cdrAnulado.cdr.sunatResponse.cdrResponse.notes);
+        if (venta.cdrAnulado && !venta.cdr.sunatResponse.error && venta.cdrAnulado.cdr.sunatResponse.cdrResponse.notes && venta.cdrAnulado.cdr.sunatResponse.cdrResponse.notes.length) {
+          const data = {
+            boleta: venta.cdrAnulado.cdr.sunatResponse.cdrResponse.id,
+            // notas: venta.cdrAnulado.cdr.sunatResponse.cdrResponse.notes
+          };
+          this.notasCDRAnulado.push(data);
         }
       });
     }
@@ -296,10 +306,21 @@ export class ListaDeVentasPage implements OnInit {
 
   async setEnviroment(){
     this.enviroment = await this.apiPeru.obtenerEnviroment().then((env) => env).catch(() => ('INVALID_ENVIROMENT'));
+    if (this.enviroment === 'beta') {
+      this.activo = false;
+    } else if (this.enviroment === 'produccion') {
+      this.activo = true;
+    }
   }
 
   async cambiarBetaProduccion(){
+    this.enviroment = null;
     this.enviroment = await this.apiPeru.toggleEnviromentEmpresa().then((env) => env).catch(() => ('INVALID_ENVIROMENT'));
+    if (this.enviroment === 'beta') {
+      this.activo = false;
+    } else if (this.enviroment === 'produccion') {
+      this.activo = true;
+    }
   }
 
   // async obtenerListaVentas() {
