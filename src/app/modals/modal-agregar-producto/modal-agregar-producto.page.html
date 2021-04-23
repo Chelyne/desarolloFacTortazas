@@ -236,7 +236,7 @@
             <ion-col size="3.5">
               <ion-item lines="none">
                 <ion-label color="primary" position="floating">Medida</ion-label>
-                <ion-input #medida maxLength="20" placeholder="Medida"></ion-input>
+                <ion-input #medida1 maxLength="20" placeholder="Medida"></ion-input>
               </ion-item>
             </ion-col>
             <ion-col size="3.5">
@@ -248,11 +248,11 @@
             <ion-col size="3.5">
               <ion-item lines="none">
                 <ion-label color="primary" position="floating">Precio</ion-label>
-                <ion-input #precio type="number" placeholder="Precio"></ion-input>
+                <ion-input #precio1 type="number" placeholder="Precio"></ion-input>
               </ion-item>
             </ion-col>
             <ion-col size="1.5">
-              <ion-button style="height: 100%;" (click)="agregarVariante(medida, factor, precio)" color="success">
+              <ion-button style="height: 100%;" (click)="agregarVariante(medida1, factor, precio1)" color="success">
                 <ion-icon name="add-outline"></ion-icon>
               </ion-button>
             </ion-col>
