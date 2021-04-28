@@ -1,4 +1,4 @@
-import { Component, Input } from '@angular/core';
+import { Component, Input, OnInit } from '@angular/core';
 import { MenuController} from '@ionic/angular';
 import { Router } from '@angular/router';
 import { StorageService } from '../services/storage.service';
@@ -8,15 +8,17 @@ import { map } from 'rxjs/operators';
 import { ExportarPDFService } from '../services/exportar-pdf.service';
 import { GENERAL_CONFIG } from '../../config/apiPeruConfig';
 import { DataBaseService } from '../services/data-base.service';
+import { isNullOrUndefined } from 'util';
+import { AuthServiceService } from '../services/auth-service.service';
 
 @Component({
   selector: 'app-home',
   templateUrl: 'home.page.html',
   styleUrls: ['home.page.scss'],
 })
-export class HomePage {
+export class HomePage implements OnInit {
   logo = GENERAL_CONFIG.datosEmpresa.logo;
-  sede = this.storage.datosAdmi.sede;
+  sede ;
   Datos = [
     {titulo: 'Dashboard', icono: 'https://i.pinimg.com/originals/0b/92/c1/0b92c1ba5ae239c314ba2ec1dab936ec.png', categoria: 'dashboard'},
     {titulo: 'POS ', icono: 'https://upload.wikimedia.org/wikipedia/commons/thumb/c/ca/Card_Terminal_POS_Flat_Icon_Vector.svg/1024px-Card_Terminal_POS_Flat_Icon_Vector.svg.png', categoria: 'punto-venta'},
@@ -32,10 +34,17 @@ export class HomePage {
               private dataApi: DataBaseService,
               private afs: AngularFirestore,
               private firebaseStorage: AngularFireStorage,
+              private authSrvc: AuthServiceService,
               private exportar: ExportarPDFService) {
     this.menuCtrl.enable(true);
+    this.sede = this.storage.datosAdmi.sede;
   }
+  ngOnInit(){
+    // if (isNullOrUndefined(this.storage.datosAdmi)) {
+    //   this.authSrvc.logOut();
 
+    // }
+  }
   categoriaPage(categoria: string) {
     switch (categoria) {
       case 'dashboard':
