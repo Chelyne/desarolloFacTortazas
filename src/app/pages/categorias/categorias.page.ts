@@ -7,7 +7,7 @@ import { Router } from '@angular/router';
 import { DataBaseService } from '../../services/data-base.service';
 import { GlobalService } from '../../global/global.service';
 import { ModalAgregarCategoriasPage } from '../../modals/modal-agregar-categorias/modal-agregar-categorias.page';
-import { GENERAL_CONFIG } from '../../../config/apiPeruConfig';
+import { GENERAL_CONFIG } from '../../../config/generalConfig';
 
 @Component({
   selector: 'app-categorias',

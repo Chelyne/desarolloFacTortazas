@@ -1,30 +1,108 @@
 <ion-header>
-    <ion-toolbar>
-        <ion-buttons slot="start">
-            <ion-menu-button color="primary" menu="primerMenu">
-            </ion-menu-button>
-        </ion-buttons>
-        <ion-title color="primary">Lista de Ventas</ion-title>
-    </ion-toolbar>
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-menu-button color="primary" menu="primerMenu">
+      </ion-menu-button>
+    </ion-buttons>
+    <ion-title color="primary">Lista de Ventas</ion-title>
+    <ion-item slot="end" [color]="(enviroment && enviroment!=='beta') ? 'success' : 'medium'">
+      <ion-spinner color="light" *ngIf="!enviroment" name="crescent"></ion-spinner>
+      <ion-label *ngIf="enviroment">{{enviroment | titlecase}}</ion-label>
+      <ion-toggle [disabled]="!enviroment" color="light" (click)="cambiarBetaProduccion($event)" [(ngModel)]="activo"></ion-toggle>
+    </ion-item>
+  </ion-toolbar>
 </ion-header>
 
 <ion-content>
-    <form [formGroup]="ventasForm">
-        <ion-item>
-            <ion-label>Selecciona la fecha</ion-label>
-            <!-- <ion-input (ionChange)="ObtenerVentas()" type="date" formatDate="dd-MM-yyyy" slot="end" [(ngModel)]="fechaActual"></ion-input> -->
-            <ion-input slot="end" type="date" formControlName="fechadeventa" formatDate="dd-mm-yyyy" value="1994-12-1"></ion-input>
-            <ion-button slot="end" (click)="ObtenerVentas()">
-                <ion-label color="light">Consultar</ion-label>
-            </ion-button>
-        </ion-item>
 
-        <ion-item *ngIf="listaDeVentas.length > 0">
-            <ion-button slot="end" (click)="enviarComprobantesDelDia()">
-                <ion-label color="light">Enviar todos los comprobantes</ion-label>
-            </ion-button>
-        </ion-item>
-        <!-- <ion-grid>
+
+  <!-- <ion-item>
+    <ion-button slot="end">
+      <ion-label color="light" (click)="cambiarBetaProduccion()">Cambiar Enviroment</ion-label>
+    </ion-button>
+    <ion-label>{{enviroment}}</ion-label>
+  </ion-item> -->
+
+  <form [formGroup]="ventasForm">
+    <ion-item>
+      <ion-label>Selecciona la fecha</ion-label>
+      <!-- <ion-input (ionChange)="ObtenerVentas()" type="date" formatDate="dd-MM-yyyy" slot="end" [(ngModel)]="fechaActual"></ion-input> -->
+      <ion-input slot="end" type="date" formControlName="fechadeventa" formatDate="dd-mm-yyyy" value="1994-12-1">
+      </ion-input>
+      <ion-button slot="end" (click)="ObtenerVentas()">
+        <ion-label color="light">Consultar</ion-label>
+      </ion-button>
+    </ion-item>
+
+    <ion-item *ngIf="listaDeVentas.length > 0">
+      <!-- <ion-button color="success" slot="start" (click)="actualizarStockDelDia()">
+                <ion-label color="light">Actualizar stock del dia</ion-label>
+            </ion-button> -->
+      <ion-button slot="end" (click)="enviarComprobantesDelDia()">
+        <ion-label color="light">Enviar todos los comprobantes</ion-label>
+      </ion-button>
+      <ion-button slot="start" (click)="formatearNotaCredito()">
+        <ion-label color="light">Formatear comprobantes</ion-label>
+      </ion-button>
+    </ion-item>
+    <ion-card *ngIf="listaDeVentas.length > 0">
+      <ion-grid>
+        <ion-row>
+          <ion-col>
+            <ion-item lines="none" color="light">
+              <ion-icon color="secondary" name="checkmark-circle-sharp"></ion-icon> &nbsp;&nbsp;
+              <ion-label>Total Boletas</ion-label>
+              <ion-badge color="secondary">{{totalBoletas}}</ion-badge>
+            </ion-item>
+          </ion-col>
+          <ion-col>
+            <ion-item lines="none" color="light">
+              <ion-icon color="secondary" name="checkmark-circle-sharp"></ion-icon> &nbsp;&nbsp;
+              <ion-label>Total Facturas</ion-label>
+              <ion-badge color="secondary">{{totalFacturas}}</ion-badge>
+            </ion-item>
+          </ion-col>
+          <ion-col>
+            <ion-item lines="none" color="light">
+              <ion-icon color="danger" name="checkmark-circle-sharp"></ion-icon> &nbsp;&nbsp;
+              <ion-label>Total Anulados</ion-label>
+              <ion-badge color="danger">{{totalAnulados}}</ion-badge>
+            </ion-item>
+          </ion-col>
+        </ion-row>
+        <ion-row>
+          <ion-col>
+            <ion-item>
+              <ion-icon color="success" name="checkmark-circle-sharp"></ion-icon> &nbsp;&nbsp;
+              <ion-label>Aceptados</ion-label>
+              <ion-badge color="success">{{totalAceptados}}</ion-badge>
+            </ion-item>
+          </ion-col>
+          <ion-col>
+            <ion-item>
+              <ion-icon color="danger" name="close-circle-sharp"></ion-icon> &nbsp;&nbsp;
+              <ion-label>Rechazados</ion-label>
+              <ion-badge color="danger">{{totalRechazados}}</ion-badge>
+            </ion-item>
+          </ion-col>
+          <ion-col>
+            <ion-item>
+              <ion-icon color="warning" name="alert-circle-sharp"></ion-icon> &nbsp;&nbsp;
+              <ion-label title="{{notasCDR | json}}">Notas CDR</ion-label>
+              <ion-badge color="warning">{{notasCDR.length}}</ion-badge>
+            </ion-item>
+          </ion-col>
+          <ion-col>
+            <ion-item>
+              <ion-icon color="danger" name="alert-circle-outline"></ion-icon> &nbsp;&nbsp;
+              <ion-label title="{{notasCDRAnulado | json}}" color="danger">Notas CDR ANULADO</ion-label>
+              <ion-badge color="warning">{{notasCDRAnulado.length}}</ion-badge>
+            </ion-item>
+          </ion-col>
+        </ion-row>
+      </ion-grid>
+    </ion-card>
+    <!-- <ion-grid>
             <ion-row>
                 <ion-col size="12 " size-xs="12" size-sm="12" size-md="6" size-lg="3">
 
@@ -66,8 +144,8 @@
                                 <ion-label>
                                     Lista de no enviados
                                 </ion-label> -->
-                                <!-- (click)="EnviarComprobante()" -->
-                                <!-- <ion-button slot="end" >Enviar</ion-button>
+    <!-- (click)="EnviarComprobante()" -->
+    <!-- <ion-button slot="end" >Enviar</ion-button>
 
                             </ion-item>
                             <ion-list-header>
@@ -98,79 +176,90 @@
                 </ion-col>
             </ion-row>
         </ion-grid> -->
-    </form>
-    <div class="sinDatos" *ngIf="sinDatos===true">
-        <div class="textoSindatos">
-          <ion-icon class="icono" name="book-outline" color="medium"></ion-icon> <br><br>
-          <ion-label color="medium">No existe ningun comprobante registrado</ion-label> <br> <br>
-          <!-- <ion-button [routerLink]="[ '/home']" fill="outline" shape="round">Seguir comprando
+  </form>
+  <div class="sinDatos" *ngIf="sinDatos===true">
+    <div class="textoSindatos">
+      <ion-icon class="icono" name="book-outline" color="medium"></ion-icon> <br><br>
+      <ion-label color="medium">No existe ningun comprobante registrado</ion-label> <br> <br>
+      <!-- <ion-button [routerLink]="[ '/home']" fill="outline" shape="round">Seguir comprando
             <ion-icon name="chevron-forward-outline"></ion-icon>
           </ion-button> -->
-        </div>
-      </div>
-      <div class="cargando" *ngIf="buscando">
-        <div class="textoCargando">
-          <ion-spinner name="crescent" color="primary"></ion-spinner>
-        </div>
-      </div>
-    <div class="content" *ngIf="!buscando">
-        <ion-list *ngFor="let venta of listaDeVentas">
-            <ion-card>
-                <ion-grid>
-                    <ion-row>
-                        <ion-col>
-                            <ion-item>
-                                <ion-icon slot="start" name="people-outline" color="primary"></ion-icon>
-                                <ion-label color="primary" position="stacked">Cliente</ion-label>
-                                <ion-input readonly>{{venta.cliente.nombre | titlecase}}</ion-input>
-                            </ion-item>
-                            <ion-item>
-                                <ion-icon slot="start" name="card-outline" color="primary"></ion-icon>
-                                <ion-label color="primary" position="stacked">{{venta.cliente.tipoDoc | uppercase}}</ion-label>
-                                <ion-input readonly>{{venta.cliente.numDoc}}</ion-input>
-                            </ion-item>
-                        </ion-col>
-                        <ion-col>
-                            <ion-item>
-                                <ion-icon slot="start" name="reader-outline" color="primary"></ion-icon>
-                                <ion-label color="primary" position="stacked">{{venta.tipoComprobante | uppercase}}</ion-label>
-                                <ion-input readonly>{{venta.serieComprobante}} {{venta.numeroComprobante}}</ion-input>
-                            </ion-item>
-                            <ion-item>
-                                <ion-icon slot="start" name="person-outline" color="primary"></ion-icon>
-                                <ion-label color="primary" position="stacked">Vendedor</ion-label>
-                                <ion-input readonly>{{venta.vendedor.nombre | titlecase}} {{venta.vendedor.apellidos | titlecase}}</ion-input>
-                            </ion-item>
-                        </ion-col>
-                        <ion-col>
-                            <ion-item>
-                                <ion-icon slot="start" name="flag-outline" color="primary"></ion-icon>
-                                <ion-label color="primary" position="stacked">Estado</ion-label>
-                                <ion-input *ngIf="!venta.cdr" readonly>{{venta.estadoVenta | titlecase}}</ion-input>
-                                <ion-input *ngIf="venta.cdr" [color]="venta.cdr.sunatResponse.success ? 'success' : 'danger'" readonly>{{(venta.cdr.sunatResponse.success) ? 'Aceptado' : 'Rechazado'  | titlecase}}</ion-input>
-                            </ion-item>
-                            <ion-item>
-                                <ion-icon slot="start" name="extension-puzzle-outline" color="primary"></ion-icon>
-                                <!-- <ion-label color="primary" position="stacked">Acciones</ion-label> -->
-                                <ion-button color="danger">
-                                    <ion-label>Anular</ion-label>
-                                </ion-button>
-                                <ion-button *ngIf="venta.cdr && !venta.cdr.sunatResponse.success" color="warning">
-                                    <ion-label>Reenviar</ion-label>
-                                </ion-button>
-                                <ion-button *ngIf="!venta.cdr" color="success" (click)="enviarUnComprobante(venta)">
-                                    <ion-label>Enviar</ion-label>
-                                </ion-button>
-                            </ion-item>
-                        </ion-col>
-                    </ion-row>
-                </ion-grid>
-            </ion-card>
-        </ion-list>
     </div>
+  </div>
+  <div class="cargando" *ngIf="buscando">
+    <div class="textoCargando">
+      <ion-spinner name="crescent" color="primary"></ion-spinner>
+    </div>
+  </div>
+  <div class="content" *ngIf="!buscando">
+    <ion-list *ngFor="let venta of listaDeVentas">
+      <ion-card>
+        <ion-grid>
+          <ion-row>
+            <ion-col>
+              <ion-item>
+                <ion-icon slot="start" name="people-outline" color="primary"></ion-icon>
+                <ion-label color="primary" position="stacked">Cliente</ion-label>
+                <ion-input readonly>{{venta.cliente.nombre | titlecase}}</ion-input>
+              </ion-item>
+              <ion-item>
+                <ion-icon slot="start" name="card-outline" color="primary"></ion-icon>
+                <ion-label color="primary" position="stacked">{{venta.cliente.tipoDoc | uppercase}}</ion-label>
+                <ion-input readonly>{{venta.cliente.numDoc}}</ion-input>
+              </ion-item>
+            </ion-col>
+            <ion-col>
+              <ion-item>
+                <ion-icon slot="start" name="reader-outline" color="primary"></ion-icon>
+                <ion-label color="primary" position="stacked">{{venta.tipoComprobante | uppercase}}</ion-label>
+                <ion-input readonly>{{venta.serieComprobante}} {{venta.numeroComprobante}}</ion-input>
+              </ion-item>
+              <ion-item>
+                <ion-icon slot="start" name="person-outline" color="primary"></ion-icon>
+                <ion-label color="primary" position="stacked">Vendedor</ion-label>
+                <ion-input readonly>{{venta.vendedor.nombre | titlecase}} {{venta.vendedor.apellidos | titlecase}}
+                </ion-input>
+              </ion-item>
+            </ion-col>
+            <ion-col>
+              <ion-item>
+                <ion-icon slot="start" name="flag-outline" color="primary"></ion-icon>
+                <ion-label color="primary" position="stacked">Estado</ion-label>
+                <ion-input *ngIf="!venta.cdr" readonly>{{venta.estadoVenta | titlecase}}</ion-input>
+                <ion-input *ngIf="venta.cdr" [color]="venta.cdr.sunatResponse.success ? 'success' : 'danger'" readonly>
+                  {{(venta.cdr.sunatResponse.success) ? 'Aceptado' : 'Rechazado' | titlecase}}</ion-input>
+                <ion-badge slot="end" color="danger" *ngIf="venta.estadoVenta==='anulado'">{{venta.estadoVenta | titlecase}}</ion-badge>
+              </ion-item>
+              <ion-item *ngIf="venta.tipoComprobante !== 'n. venta'">
+                <ion-icon slot="start" name="extension-puzzle-outline" color="primary"></ion-icon>
+                <!-- <ion-label color="primary" position="stacked">Acciones</ion-label> -->
+                <ion-button *ngIf="!venta.cdr && venta.estadoVenta !== 'anulado'" color="danger">
+                  <ion-label>Anular</ion-label>
+                </ion-button>
+                <ion-button (click)="enviarNotaCredito(venta)" *ngIf="venta.cdr && venta.estadoVenta==='anulado' && !venta.cdrAnulado" color="danger">
+                  <ion-label>Enviar N.Credito</ion-label>
+                </ion-button>
+                <ion-button *ngIf="venta.cdr && !venta.cdr.sunatResponse.success" (click)="enviarUnComprobante(venta)" color="warning">
+                  <ion-label>Reenviar</ion-label>
+                </ion-button>
+                <ion-button *ngIf="!venta.cdr" color="success" (click)="enviarUnComprobante(venta)">
+                  <ion-label>Enviar</ion-label>
+                </ion-button>
+                <ion-button *ngIf="venta.cdr" color="tertiary" (click)="descargarZIP(venta)">
+                  <ion-label>ZIP</ion-label>
+                </ion-button><ion-button *ngIf="venta.cdr" color="warning" (click)="descargarXML(venta)">
+                  <ion-label>XML</ion-label>
+                </ion-button>
+              </ion-item>
+            </ion-col>
+          </ion-row>
+        </ion-grid>
+      </ion-card>
+    </ion-list>
+  </div>
 
-    <!-- Boton crear resumen diario -->
-    <!-- <ion-button (click)="enviarResumenDiario()">
+  <!-- Boton crear resumen diario -->
+  <!-- <ion-button (click)="enviarResumenDiario()">
         comprobar formatear resumen diario
     </ion-button> -->
 </ion-content>

@@ -123,11 +123,6 @@ const routes: Routes = [
     canActivate: [AuthGuard]
   },
   {
-    path: 'test-page',
-    loadChildren: () => import('./pages/test-page/test-page.module').then( m => m.TestPagePageModule),
-    canActivate: [AuthGuard]
-  },
-  {
     path: 'lista-de-ventas',
     loadChildren: () => import('./pages/lista-de-ventas/lista-de-ventas.module').then( m => m.ListaDeVentasPageModule),
     canActivate: [AuthGuard, NoVendedorGuard]
@@ -150,7 +145,8 @@ const routes: Routes = [
   },
   {
     path: 'buscar',
-    loadChildren: () => import('./pages/buscar/buscar.module').then( m => m.BuscarPageModule)
+    loadChildren: () => import('./pages/buscar/buscar.module').then( m => m.BuscarPageModule),
+    canActivate: [AuthGuard]
   },
   {
     path: 'reporte-ventas',
@@ -159,20 +155,25 @@ const routes: Routes = [
   },
   {
     path: 'usuarios',
-    loadChildren: () => import('./pages/usuarios/usuarios.module').then( m => m.UsuariosPageModule)
+    loadChildren: () => import('./pages/usuarios/usuarios.module').then( m => m.UsuariosPageModule),
+    canActivate: [AuthGuard, NoVendedorGuard]
   },
   {
     path: 'modal-editar-item-compra',
     loadChildren: () => import('./modals/modal-editar-item-compra/modal-editar-item-compra.module').
-    then( m => m.ModalEditarItemCompraPageModule)
+    then( m => m.ModalEditarItemCompraPageModule),
+    canActivate: [AuthGuard]
   },
   {
     path: 'modal-ingresos-egresos',
-    loadChildren: () => import('./modals/modal-ingresos-egresos/modal-ingresos-egresos.module').then( m => m.ModalIngresosEgresosPageModule)
+    // tslint:disable-next-line:max-line-length
+    loadChildren: () => import('./modals/modal-ingresos-egresos/modal-ingresos-egresos.module').then( m => m.ModalIngresosEgresosPageModule),
+    canActivate: [AuthGuard]
+  },
+  {
+    path: 'print/:sede/:fecha/:id',
+    loadChildren: () => import('./pages/print/print.module').then( m => m.PrintPageModule)
   }
-
-
-
 ];
 
 @NgModule({

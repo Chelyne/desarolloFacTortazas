@@ -1,6 +1,11 @@
 <ion-header>
   <ion-toolbar>
-    <ion-title>modalEditarItemCompra</ion-title>
+    <ion-title>{{dataModal.itemCompra.cantidad > 0 ? 'Editar Item de Compra': 'Agregar Item de Compra'}}</ion-title>
+    <ion-buttons slot="end">
+      <ion-button (click)="cerrarModal()">
+        <ion-icon color="primary" slot="icon-only" name="close-outline"></ion-icon>
+      </ion-button>
+    </ion-buttons>
   </ion-toolbar>
 </ion-header>
 
@@ -10,37 +15,52 @@
       <ion-label position="floating" color="primary">Nombre del producto<ion-text color="danger">*</ion-text></ion-label>
       <ion-input  type="text" formControlName="nombre" placeholder="Nombre" required  readonly></ion-input>
     </ion-item>
-    <ion-item lines="none">
-      <ion-label position="floating" color="primary">Cantidades<ion-text color="danger">*</ion-text></ion-label>
-      <ion-input type="text" formControlName="cantidad" placeholder="00" required></ion-input>
-      <div class="alertDanger" *ngIf="cantidad.invalid && (cantidad.dirty || cantidad.touched)">
-        <div class="mensajeError" *ngIf="cantidad.errors.required">
-          *Ingrese cantidad
-        </div>
-        <div class="mensajeError" *ngIf="cantidad.errors.pattern">
-          *solo ingrese numeros
-        </div>
-      </div>
-    </ion-item>
-    <ion-item lines="none">
-      <ion-label position="floating" color="primary">Precio Unitario de compra(s/.)<ion-text color="danger">*</ion-text></ion-label>
-      <ion-input type="text" formControlName="pu_compra" placeholder="Precio" placeholder="00.00" required></ion-input>
-      <div class="alertDanger" *ngIf="pu_compra.invalid && (pu_compra.dirty || pu_compra.touched)">
-        <div class="mensajeError" *ngIf="pu_compra.errors.required">
-          *Ingrese precio unitario compra
-        </div>
-        <div class="mensajeError" *ngIf="pu_compra.errors.pattern">
-          *solo formato de moneda 00.00
-        </div>
-      </div>
-    </ion-item>
-    <ion-button size="small" block color="primary" slot="end" (click)="cerrarModal()">
+    <ion-grid>
+      <ion-row>
+        <ion-col size-lg="6">
+          <ion-item lines="none">
+            <ion-label position="floating" color="primary">Precio Unitario de compra(s/.)<ion-text color="danger">*</ion-text></ion-label>
+            <ion-input type="text" formControlName="pu_compra" placeholder="Precio" placeholder="00.00" required></ion-input>
+            <div class="alertDanger" *ngIf="pu_compra.invalid && (pu_compra.dirty || pu_compra.touched)">
+              <div class="mensajeError" *ngIf="pu_compra.errors.required">
+                *Ingrese precio unitario compra
+              </div>
+              <div class="mensajeError" *ngIf="pu_compra.errors.pattern">
+                *solo formato de moneda 00.00
+              </div>
+              <div class="mensajeError" *ngIf="pu_compra.errors.min">
+                *El monto debe ser numero positivo
+              </div>
+            </div>
+          </ion-item>
+        </ion-col>
+        <ion-col size-lg="6">
+          <ion-item lines="none">
+            <ion-label position="floating" color="primary">Cantidades<ion-text color="danger">*</ion-text></ion-label>
+            <ion-input type="text" formControlName="cantidad" placeholder="00" required></ion-input>
+            <div class="alertDanger" *ngIf="cantidad.invalid && (cantidad.dirty || cantidad.touched)">
+              <div class="mensajeError" *ngIf="cantidad.errors.required">
+                *Ingrese cantidad
+              </div>
+              <div class="mensajeError" *ngIf="cantidad.errors.pattern">
+                *solo ingrese numeros
+              </div>
+            </div>
+          </ion-item>
+        </ion-col>
+      </ion-row>
+    </ion-grid>
+  </form>
+</ion-content>
+
+<ion-footer>
+  <ion-item>
+    <ion-button slot="end" size="small" block color="danger" slot="end" (click)="cerrarModal()">
       <ion-label color="light">cancelar</ion-label>
     </ion-button>
-    <ion-button size="small"  block color="primary"
+    <ion-button slot="end" size="small"  block color="success"
     [disabled]="formItemDeCompras.invalid" slot="end" (click)="modificarItemDeCompra()">
-      <ion-label color="light">Modificar</ion-label>
+      <ion-label color="light">{{dataModal.itemCompra.cantidad > 0 ? 'Editar': 'Agregar'}}</ion-label>
     </ion-button>
-  </form>
-
-</ion-content>
+  </ion-item>
+</ion-footer>

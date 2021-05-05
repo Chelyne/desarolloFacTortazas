@@ -1,0 +1,6 @@
+<ion-list>
+  <ion-item *ngFor="let variante of producto.variantes" (click)="seleccionVariante(variante)">
+    <ion-icon slot="start" name="grid-outline" color="primary"></ion-icon>
+    <ion-label>{{variante.medida | titlecase}}</ion-label>
+  </ion-item>
+</ion-list>

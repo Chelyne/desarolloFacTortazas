@@ -3,10 +3,10 @@ import jsPDF from 'jspdf';
 import { formatDate } from '@angular/common';
 import { MontoALetras } from 'src/app/global/monto-a-letra';
 import { ItemDeVentaInterface } from 'src/app/models/venta/item-de-venta';
-import { GENERAL_CONFIG } from '../../config/apiPeruConfig';
 import { DataBaseService } from './data-base.service';
 import * as moment from 'moment';
 import { StorageService } from 'src/app/services/storage.service';
+import { GENERAL_CONFIG } from '../../config/generalConfig';
 
 
 

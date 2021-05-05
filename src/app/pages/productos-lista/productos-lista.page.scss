@@ -23,7 +23,7 @@ ion-grid {
             font-size: 2vh;
           }
           .precio {
-            background-color: #00AFEF;
+            background-color: var(--ion-color-primary);
             margin-bottom: 0px;
             padding: 3px;
             color: white;

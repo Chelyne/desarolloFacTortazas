@@ -1,0 +1,14 @@
+ion-card {
+    ion-item {
+        .icono {
+            font-size: 50px;
+        }
+    }
+    ion-card-title {
+        font-size: 20px;
+    }
+}
+
+ion-card:hover {
+    background-color: var(--ion-color-light);
+}

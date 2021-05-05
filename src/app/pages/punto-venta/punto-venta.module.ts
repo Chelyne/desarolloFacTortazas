@@ -11,6 +11,7 @@ import { ProductoVentaComponent } from 'src/app/components/producto-venta/produc
 import { PoppoverClientesComponent } from '../../components/poppover-clientes/poppover-clientes.component';
 import { PipesModule } from '../../pipes/pipes.module';
 import { NgxQRCodeModule } from '@techiediaries/ngx-qrcode';
+import { PopoverVariantesComponent } from '../../components/popover-variantes/popover-variantes.component';
 
 @NgModule({
   imports: [
@@ -22,6 +23,6 @@ import { NgxQRCodeModule } from '@techiediaries/ngx-qrcode';
     NgxQRCodeModule,
     ReactiveFormsModule
   ],
-  declarations: [PuntoVentaPage, ProductoVentaComponent, PoppoverClientesComponent]
+  declarations: [PuntoVentaPage, ProductoVentaComponent, PoppoverClientesComponent, PopoverVariantesComponent]
 })
 export class PuntoVentaPageModule {}

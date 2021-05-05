@@ -10,6 +10,10 @@ import { formatDate } from '@angular/common';
 import { ProveedorInterface } from '../models/proveedor';
 import { AdmiInterface } from '../models/AdmiInterface';
 import { formatearDateTime } from '../global/funciones-globales';
+import { EmpresaInterface } from 'src/app/models/api-peru/empresa';
+import { CDRInterface } from 'src/app/models/api-peru/cdr-interface';
+import { ContadorDeSerieInterface } from 'src/app/models/serie';
+import { ItemDeVentaInterface } from '../models/venta/item-de-venta';
 
 @Injectable({
   providedIn: 'root'
@@ -19,7 +23,7 @@ export class DataBaseService {
   constructor(private afs: AngularFirestore) { }
 
   // ----------------------------------------------------------- */
-  //                          GUARDAR                            */
+  //                          ANCHOR GUARDAR                            */
   // ----------------------------------------------------------- */
   guardarCategoria(newCategoria: CategoriaInterface, sede: string) {
     const sede1 =  sede.toLocaleLowerCase();
@@ -49,6 +53,9 @@ export class DataBaseService {
 
   async guardarProductoIncrementaCodigo(newProducto: ProductoInterface, sede: string, correlacionActual: number) {
     const correlacion = parseInt(newProducto.codigo, 10);
+    const arrayNombre = newProducto.nombre.toLowerCase().split(' ');
+    newProducto.arrayNombre = arrayNombre;
+    console.log('GYARDAR: ', newProducto);
     this.guardarProducto(newProducto, sede).then(async (idProducto) => {
       if (idProducto) {
         if (correlacionActual === correlacion ){
@@ -61,14 +68,13 @@ export class DataBaseService {
           }
         }
         throw String('fail');
-
       }
-
-
     });
   }
 
   guardarProducto(newProducto: ProductoInterface, sede: string) {
+    const arrayNombre = newProducto.nombre.toLocaleLowerCase().split(' ');
+    newProducto.arrayNombre = arrayNombre;
     return this.afs.collection('sedes').doc(sede.toLocaleLowerCase()).collection('productos').ref.add(newProducto).then(data => {
       if (data.id) {
         return data.id;
@@ -120,8 +126,34 @@ export class DataBaseService {
     return promesa;
   }
 
-   // CAJA CHICA
-   guardarCajaChica(newcajaChica) {
+  guardarVentaPorId(sede: string, fecha: string, venta: VentaInterface){
+    if (!venta.idVenta){
+      throw String('Venta vacia');
+    }
+
+    return this.afs.collection('sedes').doc(sede.toLocaleLowerCase()).collection('ventas')
+    .doc(fecha).collection('ventasDia')
+    .doc(venta.idVenta).set({...venta})
+    .then(() => 'exito').catch(err => {
+      throw String ('fail');
+    });
+  }
+
+  guardarProductosDeVentaPorId(sede: string, productoDeVena: {id: string, productos: ItemDeVentaInterface[]}) {
+
+    if (!productoDeVena.id) {
+      throw String('producto D eVenta No tiene id');
+    }
+
+    return this.afs.collection('sedes').doc(sede.toLocaleLowerCase()).collection('productosVenta')
+      .doc(productoDeVena.id).set({ productos: productoDeVena.productos })
+      .then(() => 'exito').catch(err => {
+          throw String('fail');
+      });
+  }
+
+  // CAJA CHICA
+  guardarCajaChica(newcajaChica) {
     return this.afs.collection('CajaChica').ref.add(newcajaChica).then(data => {
       if (data.id) {
         return data.id;
@@ -151,7 +183,6 @@ export class DataBaseService {
   }
   // ------------------------------LIBIO----------------------------- */
 
-  // TODO: HACIENDO ESTO
   guardarCompra(newCompra: CompraInterface, sede: string) {
     return this.afs.collection('sedes').doc(sede.toLocaleLowerCase()).collection('compras').ref.add(newCompra)
     .then(data => {
@@ -184,13 +215,70 @@ export class DataBaseService {
       throw String('fail');
     });
   }
+
+  async guardarDatosEmpresa(empresa: EmpresaInterface) {
+    return this.afs.collection('empresa').doc('datosEmpresa').update(empresa)
+    .then( () => 'exito' )
+    .catch(  error => {
+      console.log('Los datos no se guardaron correctamente', error);
+      throw String('fail');
+    });
+  }
+
+  guardarCDR(idVenta: string, fechaEmision: any, sede: string, cdrVenta: CDRInterface){
+
+    const fecha = formatearDateTime('DD-MM-YYYY', fechaEmision);
+
+    if (fecha === 'INVALID_DATA_TIME'){
+      throw String('La fecha de emision no es valida');
+    }
+
+    return  this.afs.collection('sedes').doc(sede.toLocaleLowerCase()).collection('ventas').doc(fecha)
+    .collection('ventasDia').doc(idVenta).ref.update({cdr: cdrVenta})
+    .then(() => 'exito').catch(err => {
+      console.log('Error al guardar CDR', err);
+      throw String('fail');
+    });
+
+  }
+
+  async guardarCDRAnulado(
+    idVenta: string,
+    fechaEmision: any,
+    sede: string,
+    cdrAnulacion: CDRInterface,
+    fechaAnulacion: string,
+    DatosSerie: {serie: string, correlacion: number}
+  ){
+
+    const fecha = formatearDateTime('DD-MM-YYYY', fechaEmision);
+
+    if (fecha === 'INVALID_DATA_TIME'){
+      throw String('La fecha de emision no es valida');
+    }
+
+    const obj = {
+      cdr: cdrAnulacion,
+      fechaDeAnulacion: fechaEmision,
+      serie: DatosSerie.serie,
+      correlacion: DatosSerie.correlacion
+    };
+
+    return this.afs.collection('sedes').doc(sede.toLocaleLowerCase()).collection('ventas').doc(fecha)
+    .collection('ventasDia').doc(idVenta).ref.update({cdrAnulado: obj})
+    .then(() => 'exito').catch(err => {
+      throw String('fail');
+    });
+  }
+
+
   // ----------------------------------------------------------- */
   // ----------------------------------------------------------- */
 
 
 
   // ----------------------------------------------------------- */
-  //                          OBTENER                            */
+  //                          ANCHOR OBTENER                            */
   // ----------------------------------------------------------- */
   obtenerListaCategorias(sede: string) {
     const sede1 = sede.toLocaleLowerCase();
@@ -371,7 +459,7 @@ export class DataBaseService {
 
   obtenerListaProductosSinLIMITE(sede: string) {
     const sede1 = sede.toLocaleLowerCase();
-    return this.afs.collection('sedes').doc(sede1).collection('productos', ref => ref.orderBy('fechaRegistro', 'desc').limit(5))
+    return this.afs.collection('sedes').doc(sede1).collection('productos', ref => ref.orderBy('fechaRegistro', 'desc'))
     .snapshotChanges().pipe(map(changes => {
       const datos: ProductoInterface[] = [];
 
@@ -419,8 +507,8 @@ export class DataBaseService {
       }));
     }
 
-    // REPORTES
-  obtenerVentasPorDia(sede: string, fecha: string) {
+   // REPORTES
+   obtenerVentasPorDia(sede: string, fecha: string) {
     return this.afs.collection('sedes').doc(sede.toLocaleLowerCase()).collection('ventas').doc(fecha)
     .collection('ventasDia').ref.get()
     .then((querySnapshot) => {
@@ -435,19 +523,20 @@ export class DataBaseService {
       throw String ('fail');
     });
   }
-  obtenerVentasBoletasFacturasPorDia(sede: string, fecha: string) {
+
+  obtenerVentasPorId(sede: string, fecha: string, idVenta: string) {
     return this.afs.collection('sedes').doc(sede.toLocaleLowerCase()).collection('ventas').doc(fecha)
-    .collection('ventasDia').ref.where('tipoComprobante', '<', 'n. venta').get()
-    .then((querySnapshot) => {
-      const datos: any [] = [];
-      querySnapshot.forEach((doc) => {
-        // console.log(doc.id, ' => ', doc.data());
-        datos.push({...doc.data(), id: doc.id});
-      });
-      return datos;
+    .collection('ventasDia').doc(idVenta).ref.get()
+    .then((doc: any) => {
+      if (doc.exists) {
+        return {idVenta: doc.id, ...doc.data()};
+      } else {
+        // console.log('No such document!');
+        return {};
+      }
     }).catch(err => {
-      console.log('no se pudo obtener las ventas', err);
-      throw String ('fail');
+      console.log('Error al obtener items de Venta: ', err);
+      throw String('fail');
     });
   }
 
@@ -455,6 +544,24 @@ export class DataBaseService {
   obtenerVentasPorDiaObs(sede: string, fachaventas: string) {
     return this.afs.collection('sedes').doc(sede.toLocaleLowerCase()).collection('ventas').doc(fachaventas)
     .collection('ventasDia', ref => ref.orderBy('fechaEmision', 'desc'))
+    .snapshotChanges().pipe(map(changes => {
+      const datos: VentaInterface[] = [];
+
+      changes.map((action: any) => {
+        datos.push({
+          idVenta: action.payload.doc.id,
+          ...action.payload.doc.data() as VentaInterface
+        });
+      });
+
+      return datos;
+    }));
+  }
+
+  // OBTENER LISTA DE VENTAS
+  obtenerVentasPorDiaBoletaFacturaObs(sede: string, fachaventas: string) {
+    return this.afs.collection('sedes').doc(sede.toLocaleLowerCase()).collection('ventas').doc(fachaventas)
+    .collection('ventasDia', ref => ref.where('tipoComprobante', '<', 'n. venta'))
     .snapshotChanges().pipe(map(changes => {
       const datos: VentaInterface[] = [];
 
@@ -485,18 +592,18 @@ export class DataBaseService {
 
     // COMPROBANTES
     obtenerComprobante(sede: string, fachaventas: string, numero: string, serie: string) {
-     return this.afs.collection('sedes').doc(sede.toLocaleLowerCase()).collection('ventas').doc(fachaventas).collection('ventasDia').
-     ref.where('numeroComprobante', '==', numero).where('serieComprobante', '==', serie)
-     .get().then((querySnapshot) => {
-      const datos: VentaInterface [] = [];
-      querySnapshot.forEach((doc) => {
-        datos.push( {...doc.data(), idVenta: doc.id});
+      return this.afs.collection('sedes').doc(sede.toLocaleLowerCase()).collection('ventas').doc(fachaventas).collection('ventasDia').
+      ref.where('numeroComprobante', '==', numero).where('serieComprobante', '==', serie)
+      .get().then((querySnapshot) => {
+        const datos: VentaInterface [] = [];
+        querySnapshot.forEach((doc) => {
+          datos.push( {...doc.data(), idVenta: doc.id});
+        });
+        return datos;
+      }).catch(err => {
+        console.log('no se pudo obtener las ventas', err);
+        throw String ('fail');
       });
-      return datos;
-    }).catch(err => {
-      console.log('no se pudo obtener las ventas', err);
-      throw String ('fail');
-    });
     }
   // ------------------------LIBIO----------------------------------- */
   obtenerProveedores() {
@@ -563,13 +670,67 @@ export class DataBaseService {
       return datos;
     }));
   }
+
+  // obtener una venta por id
+  obtenerUnaVentaPorId(sede: string, fecha: string, id: string) {
+    return this.afs.doc(`sedes/${sede.toLocaleLowerCase()}/ventas/${fecha}/ventasDia/${id}`)
+    .snapshotChanges().pipe(map(action => {
+      let datos: any = {};
+      if (action.payload.exists === false) {
+        return null;
+      } else {
+        datos = {
+          ...action.payload.data() as VentaInterface,
+          id: action.payload.id
+        };
+        return datos;
+      }
+    }));
+  }
+
+  obtenerListaProductosStock(sede: string) {
+    const sede1 = sede.toLocaleLowerCase();
+    return this.afs.collection('sedes').doc(sede1).collection('productos', ref => ref.orderBy('cantStock', 'asc').limit(100))
+    .snapshotChanges().pipe(map(changes => {
+      const datos: ProductoInterface[] = [];
+
+      changes.map(action => {
+        datos.push({
+          id: action.payload.doc.id,
+          ...action.payload.doc.data()
+        });
+      });
+
+      return datos;
+    }));
+  }
   // ----------------------------------------------------------- */
+
+  obtenerEmpresa(){
+    return this.afs.collection('empresa').doc('datosEmpresa').valueChanges();
+  }
+
+  obtenerCorrelacionPorTypoComprobante(typoDocumento: string, sede: string) {
+    return this.afs.collection('sedes').doc(sede.toLocaleLowerCase())
+    .collection('serie').ref.where('tipoComprobante', '==', typoDocumento).limit(1).get()
+    .then((querySnapshot) => {
+      let serie: ContadorDeSerieInterface = {};
+      querySnapshot.forEach((doc) => {
+        serie = {...doc.data()};
+        serie.id = doc.id;
+      });
+      return serie;
+    }).catch(err => {
+      console.log('no se pudo obtener serie', err);
+      throw String('fail');
+    });
+  }
   // ----------------------------------------------------------- */
 
 
 
   // ----------------------------------------------------------- */
-  //                          ACTUALIZAR                         */
+  //                          ANCHOR ACTUALIZAR                         */
   // ----------------------------------------------------------- */
   incrementarCorrelacion(newCorrelacion: number, sede: string){
     return this.afs.collection('sedes').doc(sede.toLocaleLowerCase()).ref.update({correlacionProducto: newCorrelacion})
@@ -589,6 +750,11 @@ export class DataBaseService {
         if (!producto.cantStock){
           return 0;
         }
+
+        if (typeof producto.cantStock === 'string'){
+          return  parseInt(producto.cantStock, 10);
+        }
+
         return producto.cantStock;
       }).catch( err => {
         console.log('llego a este error', err);
@@ -625,6 +791,11 @@ export class DataBaseService {
       if (!producto.cantStock){
         return 0;
       }
+
+      if (typeof producto.cantStock === 'string'){
+        return  parseInt(producto.cantStock, 10);
+      }
+
       return producto.cantStock;
     }).catch( err => {
       console.log(err);
@@ -652,9 +823,10 @@ export class DataBaseService {
   }
 
   actualizarProducto(productoObtenido: ProductoInterface) {
-    const producto = {
+    const producto: ProductoInterface = {
       img: productoObtenido.img ? productoObtenido.img : null,
       nombre: productoObtenido.nombre,
+      arrayNombre: productoObtenido.nombre.toLowerCase().split(' '),
       cantidad: productoObtenido.cantidad,
       medida: productoObtenido.medida,
       marca: productoObtenido.marca,
@@ -663,8 +835,13 @@ export class DataBaseService {
       precio: productoObtenido.precio,
       cantStock: productoObtenido.cantStock,
       fechaDeVencimiento: productoObtenido.fechaDeVencimiento,
-      descripcionProducto: productoObtenido.descripcionProducto
+      descripcionProducto: productoObtenido.descripcionProducto,
     };
+
+    if (productoObtenido.variantes) {
+      producto.variantes = productoObtenido.variantes;
+    }
+    console.log(producto);
     return this.afs.collection('sedes').doc(productoObtenido.sede.toLocaleLowerCase()).collection('productos')
     .doc(productoObtenido.id).ref.update(producto)
     .then(() => 'exito').catch(err => {
@@ -774,15 +951,34 @@ export class DataBaseService {
       throw String('fail');
     });
   }
+
+  incrementarCorrelacionTypoDocumento(idSerie: string, sede: string, correlacionActual: number) {
+
+    return this.afs.collection('sedes').doc(sede.toLocaleLowerCase()).collection('serie')
+    .doc(idSerie).ref.update({correlacion: correlacionActual})
+    .then(() => 'exito')
+    .catch(err => {
+      throw String('fail');
+    });
+
+  }
   // FIN FUNCIONES QUE NO SE USAN MUCHO
   // ----------------------------------------------------------- */
   // ----------------------------------------------------------- */
 
-
+  // ACTUALIZAR PRECIO DE COMPRA
+  actualizarPrecioCompraProducto(idProducto: string, sede: string, precioDeCompra: number) {
+    return this.afs.collection('sedes').doc(sede.toLocaleLowerCase()).collection('productos')
+    .doc(idProducto).ref.update({precioCompra: precioDeCompra})
+    .then(() => 'exito').catch(err => {
+      console.log('error', err);
+      throw String('fail');
+    });
+  }
 
 
   // ----------------------------------------------------------- */
-  //                          ELIMINAR                           */
+  //                         ANCHOR ELIMINAR                           */
   // ----------------------------------------------------------- */
   eliminarCategoria(idCategoria: string, sede: string) {
     const sede1 = sede.toLocaleLowerCase();

@@ -1,0 +1,11 @@
+*{
+    font-family: Nunito;
+    ion-label {
+        font-family: Nunito;
+    }
+}
+
+ion-item:hover {
+    cursor: pointer;
+    --ion-item-background: var(--ion-color-light);
+}

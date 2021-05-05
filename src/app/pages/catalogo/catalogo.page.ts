@@ -20,7 +20,7 @@ export class CatalogoPage implements OnInit {
   listaDeProductosObservada: ProductoInterface[] = [];
   listaDeProductos: ProductoInterface[] = [];
   buscando = false;
-
+  ordenarStock =  false;
   constructor(
     private dataApi2: DataBaseService,
     private buscadorService: BuscadorService,
@@ -42,10 +42,24 @@ export class CatalogoPage implements OnInit {
   // btener lista de productos
   ObtenerProductos(){
     this.dataApi2.obtenerListaProductos(this.sedes).subscribe(data => {
+      console.log(data);
       this.listaDeProductosObservada = data;
       this.listaDeProductos = data;
 
     });
+  }
+
+  verPorStock(event: any) {
+    const estado = event.detail.checked;
+    console.log(estado);
+    if (estado === true) {
+      this.dataApi2.obtenerListaProductosStock(this.sedes).subscribe(productos => {
+        console.log(productos);
+        this.listaDeProductos = productos;
+      });
+    } else {
+      this.ObtenerProductos();
+    }
   }
 
   /* -------------------------------------------------------------------------- */
@@ -125,12 +139,12 @@ export class CatalogoPage implements OnInit {
     await modal.present();
 
     const { data } =  await modal.onWillDismiss();
+    console.log('ACTUALIZA: ', data);
     if (data) {
       this.dataApi2.actualizarProducto(data.producto).then(() => {
         this.srvGlobal.presentToast('Producto se actualizó correctamente', {color: 'success'});
       }).catch(() => {
         this.srvGlobal.presentToast('Producto no se actualizó', {color: 'danger'});
-
       });
     }
   }

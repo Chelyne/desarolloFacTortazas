@@ -1,6 +1,10 @@
 <ion-header>
   <ion-toolbar>
-    <ion-title>Catálogo</ion-title>
+    <ion-buttons slot="start">
+      <ion-menu-button color="primary" menu="primerMenu">
+      </ion-menu-button>
+    </ion-buttons>
+    <ion-title color="primary">Catálogo</ion-title>
   </ion-toolbar>
 </ion-header>
 
@@ -11,12 +15,16 @@
       <ion-col size="12 " size-xs="12 " size-sm="10" size-md="8 " size-lg="8">
         <ion-card>
           <ion-toolbar>
-            <ion-button slot="end" shape="round" fill="outline" (click)="abrirModalNuevoProducto()">
+            <ion-button size="small" slot="end" shape="round" fill="outline" (click)="abrirModalNuevoProducto()">
               <ion-icon slot="start" name="add-circle-outline"></ion-icon>
-              Nuevo Producto
+              <ion-label>Nuevo Producto</ion-label>
             </ion-button>
             <ion-title>Lista de productos</ion-title>
           </ion-toolbar>
+          <ion-item lines="none" color="light">
+            <ion-toggle slot="end" (ionChange)="verPorStock($event)" color="primary"></ion-toggle>
+            <ion-label>Ordenar por Stock</ion-label>
+          </ion-item>
           <ion-card-content>
             <ion-item>
               <ion-searchbar (ionClear)="limpiarBuscador()" (ionChange)="Search($event)" #search placeholder="Buscar"
@@ -43,15 +51,15 @@
                       </ion-col>
                       <ion-col
                         style=" display: flex; justify-content: center; align-content: center; align-items: center;">
-                        <h1 *ngIf="prod.precio" class="precio">S/. {{prod.precio | number:
-                          '1.2'}}</h1>
+                        <h2 class="precio">S/. {{prod.precio | number:
+                          '1.2'}}</h2>
                       </ion-col>
                     </ion-row>
                   </ion-grid>
                 </ion-label>
                 <ion-buttons slot="end">
                   <ion-button (click)="presentModalEditar(prod)">
-                    <ion-icon slot="icon-only" color="primary" name="create-outline"></ion-icon>
+                    <ion-icon slot="icon-only" color="success" name="create-outline"></ion-icon>
                   </ion-button>
 
                   <ion-button (click)="borrarProducto(prod)">

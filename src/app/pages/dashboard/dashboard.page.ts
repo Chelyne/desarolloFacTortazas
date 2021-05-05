@@ -96,7 +96,7 @@ export class DashboardPage implements OnInit {
       }
       for (const venta of ventas) {
         // COMPROBAR CON LIBIO
-        const date = formatearDateTime('H', venta.fechaEmision);
+        const date = formatearDateTime('HH', venta.fechaEmision);
         // const date = this.datePipe.transform(new Date(moment.unix(venta.fechaEmision.seconds).format('D MMM YYYY H:mm')), 'H');
         console.log('DAAAAAAATE: ', date);
         if (venta.tipoComprobante === 'boleta' && venta.estadoVenta !== 'anulado') {

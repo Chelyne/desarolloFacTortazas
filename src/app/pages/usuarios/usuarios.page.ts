@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { ModalController, MenuController } from '@ionic/angular';
+import { ModalController, MenuController, AlertController } from '@ionic/angular';
 import { AgregarEditarUsuarioPage } from 'src/app/modals/agregar-editar-usuario/agregar-editar-usuario.page';
 import { AdmiInterface } from '../../models/AdmiInterface';
 import { DataBaseService } from '../../services/data-base.service';
@@ -30,7 +30,8 @@ export class UsuariosPage implements OnInit {
   constructor(private dataApi: DataBaseService,
               private modalCtlr: ModalController,
               private menuCtrl: MenuController,
-              private servGlobal: GlobalService
+              private servGlobal: GlobalService,
+              private alertController: AlertController
               ) {
   }
 
@@ -79,5 +80,32 @@ export class UsuariosPage implements OnInit {
     this.dataApi.eliminarUsuario(id).then(() => {
       this.servGlobal.presentToast('Usuario eliminado');
     });
+  }
+
+  async alertEliminarUsuario(usuario: AdmiInterface) {
+    const alert = await this.alertController.create({
+      cssClass: 'my-custom-class',
+      header: 'Confirme',
+      message: 'Eliminar a <strong> ' + usuario.nombre.toUpperCase() + '</strong>?',
+      mode: 'ios',
+      buttons: [
+        {
+          text: 'Cancelar',
+          role: 'cancel',
+          cssClass: 'secondary',
+          handler: (blah) => {
+            console.log('Confirm Cancel: blah');
+          }
+        }, {
+          text: 'Eliminar',
+          handler: () => {
+            console.log('Confirm Okay');
+            this.eliminarUsuario(usuario.id);
+          }
+        }
+      ]
+    });
+
+    await alert.present();
   }
 }

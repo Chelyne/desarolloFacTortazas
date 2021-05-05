@@ -1,21 +1,19 @@
-import { formatDate } from '@angular/common';
 import { Injectable } from '@angular/core';
-import * as moment from 'moment';
 import { EmpresaInterface } from 'src/app/models/api-peru/empresa';
 import { ClienteInterface } from 'src/app/models/cliente-interface';
-import { AddressInterface, ChangeInterface, ClientInterface, CompanyInterface } from 'src/app/models/comprobante/comprobante';
+import { AddressInterface, ClientInterface, CompanyInterface } from 'src/app/models/comprobante/comprobante';
 import { ComprobanteInterface, NotaDeCreditoInterface, SaleDetailInterface } from 'src/app/models/comprobante/comprobante';
 import { ItemDeVentaInterface } from 'src/app/models/venta/item-de-venta';
 import { VentaInterface } from 'src/app/models/venta/venta';
-import { isNullOrUndefined } from 'util';
-import { DbDataService } from '../db-data.service';
 import { StorageService } from '../storage.service';
 
 import { redondeoDecimal, formatearDateTime } from 'src/app/global/funciones-globales';
 import { MontoALetras } from 'src/app/global/monto-a-letra';
-import { GENERAL_CONFIG } from '../../../config/apiPeruConfig';
+import { GENERAL_CONFIG } from '../../../config/generalConfig';
 import { ApiPeruConfigInterface, DatosApiPeruInterface, DatosEmpresaInterface } from './apiPeruInterfaces';
 import { CDRInterface } from 'src/app/models/api-peru/cdr-interface';
+import { DataBaseService } from '../data-base.service';
+import { ChangeInterface } from '../../models/comprobante/comprobante';
 
 
 
@@ -39,48 +37,57 @@ export class ApiPeruService {
   // datosSede: AddressInterface;
   sedeDireccion: AddressInterface;
 
+  FACTOR_ICBPER = 0.3;
+
+  enviroment = '';
+
 
   constructor(
-    private dataApi: DbDataService,
+    private dataApi: DataBaseService,
     private storage: StorageService
   ) {
-    // TODO : DESCOMENTAR LINEA ABAJO
-    // this.obtenerDatosDeLaEmpresa();
     this.sede = storage.datosAdmi.sede.toLocaleLowerCase();
     this.setApiPeruConfig(GENERAL_CONFIG);
   }
 
-  // verificarVenta(venta: VentaInterface){
-  // }
   saludo(){
     return 'hola';
   }
+
   getSede(){
     return this.sede;
   }
 
   setApiPeruConfig(config: ApiPeruConfigInterface){
-    // console.log('CONFIGGGGGGGGGGGGGGGGG', config);
 
     this.datosApiPeru = config.datosApiPeru;
-    // this.userApiPeru = config.datosApiPeru.usuario;
-    // this.passwardApiPeru = config.datosApiPeru.password;
 
     this.datosEmpresa = config.datosEmpresa;
-    // this.rucEmpresa = this.datosEmpresa.ruc;
-    // this.tokenEmpresa = this.datosEmpresa.token;
+    this.datosEmpresa.telefono = config.sedes[this.sede].telefono ?? '';
+    this.datosEmpresa.email = config.sedes[this.sede].email ?? '';
 
-    // this.datosSede = config.sedes[this.sede];
-    // console.log(config.sedes[this.sede]);
-    this.sedeDireccion = config.sedes[this.sede].direccion;
-    // console.log('sedeDireccion', this.sedeDireccion);
+    this.sedeDireccion = this.formatearDireccion(config.sedes[this.sede].direccion);
   }
+
+  formatearDireccion(objDireccion: any): AddressInterface{
+    return {
+      ubigueo: objDireccion.ubigueo ?? '',
+      codigoPais: objDireccion.codigoPais ?? '',
+      departamento: objDireccion.departamento ?? '',
+      provincia: objDireccion.provincia ?? '',
+      distrito: objDireccion.distrito ?? '',
+      direccion: objDireccion.direccion ?? '',
+    };
+  }
+
+
 
 
 
 /* ------------------------------------------------------------------------------------------------ */
 /*                                    configuración apisperu setting                                */
 /* ------------------------------------------------------------------------------------------------ */
+  /** CLEAN - funcion desfasada */
   setApiPeruDataUser(newUser: string, newPassword: string){
     this.datosApiPeru = {
       usuario: newUser,
@@ -98,7 +105,7 @@ export class ApiPeruService {
     const myHeaders = new Headers();
     myHeaders.append('Content-Type', 'application/json');
 
-    console.log(this.datosApiPeru);
+    // console.log(this.datosApiPeru);
 
     const raw = JSON.stringify({
       username: this.datosApiPeru.usuario,
@@ -115,7 +122,9 @@ export class ApiPeruService {
     return fetch('https://facturacion.apisperu.com/api/v1/auth/login', requestOptions)
       .then(tokenResponse => tokenResponse.json())
       // .then(result => result.token)
-      .catch(error => error);
+      .catch(error => {
+        throw error;
+      });
   }
 
   async obtenerUserApiperuToken(){
@@ -157,7 +166,9 @@ export class ApiPeruService {
     return fetch('https://facturacion.apisperu.com/api/v1/companies', requestOptions)
       .then(listaEmpresas => listaEmpresas.json())
       // .then(result => console.log(result))
-      .catch(error => console.log('error', error));
+      .catch(error => {
+        throw error;
+      });
   }
 
 
@@ -214,6 +225,93 @@ export class ApiPeruService {
   getDatosEmpresa(){
     return this.datosDeEmpresaOnFirebase;
   }
+
+  async obtenerEmpresaPorId(){
+    const myHeaders = new Headers();
+    myHeaders.append('Authorization', 'Bearer '.concat(await this.obtenerUserApiperuToken()));
+
+    const requestOptions: RequestInit = {
+      method: 'GET',
+      headers: myHeaders,
+      redirect: 'follow'
+    };
+
+    return fetch(`https://facturacion.apisperu.com/api/v1/companies/${this.datosEmpresa.apisPeruId}`, requestOptions)
+      .then(response => response.json())
+      .then(apisPeruEmpresa => apisPeruEmpresa)
+      .catch(error => {
+        throw error;
+    });
+  }
+
+  async modificarEmpresa(NewEmpresaValues: EmpresaInterface){
+    const myHeaders = new Headers();
+    myHeaders.append('Authorization', 'Bearer '.concat(await this.obtenerUserApiperuToken()));
+    myHeaders.append('Content-Type', 'application/json');
+
+    const raw = JSON.stringify(NewEmpresaValues);
+
+    const requestOptions: RequestInit = {
+      method: 'PUT',
+      headers: myHeaders,
+      body: raw,
+      redirect: 'follow'
+    };
+
+    return fetch(`https://facturacion.apisperu.com/api/v1/companies/${this.datosEmpresa.apisPeruId}`, requestOptions)
+      .then(response => response.json())
+      .then(empresaModificada => empresaModificada)
+      .catch(error => {
+        throw error;
+      });
+  }
+
+  async toggleEnviromentEmpresa(){
+    console.log('ambiar enviromenttttttttttttttttttttt');
+    /**
+     * @objetivo : Intercambia entre beta y produccion
+     */
+
+    /** obtener el enviroment de la empresa */
+    const actualEnviroment = await this.obtenerEmpresaPorId().then( (Empresa: any) => Empresa.environment.nombre ?? '')
+    .catch(() => 'fail');
+
+    if (actualEnviroment === 'fail' || actualEnviroment === ''){
+      throw String('ERROR AL OBTENER ENVIROMENT DE EMPRESA');
+    }
+
+    const newEnviroment = actualEnviroment === 'beta' ? 'produccion' : 'beta';
+
+    return await this.modificarEmpresa({environment: newEnviroment}).then((Emp) => {
+      this.enviroment = Emp.environment.nombre;
+      return Emp.environment.nombre;
+    })
+    .catch(() => {
+      throw String('No se pudo modificar el Enviroment');
+    });
+  }
+
+  async obtenerEnviromentFromApisPeru(){
+    return await this.obtenerEmpresaPorId().then( (Empresa: any) => Empresa.environment.nombre ?? '')
+    .catch(err => {
+      throw err;
+    });
+  }
+
+  async obtenerEnviroment(){
+    if (!this.enviroment){
+      const result = await this.obtenerEnviromentFromApisPeru().then((env) => {
+        this.enviroment = env;
+      }).catch(() => 'fail');
+
+      if (result === 'fail'){
+        return 'NO_HAY_ENVIROMENT';
+      }
+    }
+
+    return this.enviroment;
+  }
+
 /* ------------------------------------------------------------------------------------------------ */
 /* ------------------------------------------------------------------------------------------------ */
 /* ------------------------------------------------------------------------------------------------ */
@@ -223,9 +321,13 @@ export class ApiPeruService {
 /*                                     ENVIAR COMPROBANTE A SUNAT                                   */
 /* ------------------------------------------------------------------------------------------------ */
   async enviarASunatAdaptador(venta: VentaInterface){
-    if (venta.cdr && venta.cdr.sunatResponse.success === true){
+    if (venta.cdr && venta.cdr?.sunatResponse?.success === true){
       throw String('ya fue enviado');
     } else {
+
+      if (!venta.idVenta || !venta.idListaProductos){
+        throw String('Venta sin ID o IDlistaProductos');
+      }
 
       let productos: any;
       productos = await this.obtenerProductosDeVenta(venta.idListaProductos).catch(err => err);
@@ -234,7 +336,7 @@ export class ApiPeruService {
         throw String('Error de Conexion a Intenet, no se encontro lista de productos');
       }
 
-      console.log('PRODUCTOS_DE_VENTA: ', productos);
+      // console.log('PRODUCTOS_DE_VENTA: ', productos);
 
       if (!productos.length){
         throw String(`no se encontro productos por idListaProductos: ${venta.idListaProductos}`);
@@ -242,12 +344,12 @@ export class ApiPeruService {
 
       venta.listaItemsDeVenta = productos;
 
-      const ventaFormateada: ComprobanteInterface = this.formatearVenta(venta);
-      console.log('VENTA_FORMATEADA', ventaFormateada);
 
-      if (ventaFormateada.fechaEmision === 'INVALID_DATA_TIME'){
-        throw String('Fecha de emisión invalida');
-      }
+      const ventaFormateada: ComprobanteInterface = this.intentarFormatearVenta(venta);
+      // const ventaFormateada: ComprobanteInterface = this.formatearVenta(venta);
+
+      console.log('%cENVIAR COMPROBANTE A SUNAT:', 'color:white; background-color:DodgerBlue;padding:20px');
+      console.log('VENTA_FORMATEADA', ventaFormateada);
 
       const cdrRespuesta = await this.enviarComprobanteASunat(ventaFormateada)
         .catch(error => {
@@ -261,11 +363,33 @@ export class ApiPeruService {
 
       console.log('Cdr', cdrRespuesta);
 
+      /** ANALISIS DE CDR */
+      const cdrStatusForResponse: {success?: boolean, observaciones?: any, typoObs?: string} = {};
+      cdrStatusForResponse.success = cdrRespuesta.sunatResponse.success ?? false;
+
+      if (cdrRespuesta.sunatResponse.error){
+        cdrStatusForResponse.observaciones = cdrRespuesta.sunatResponse.error;
+        cdrStatusForResponse.typoObs = 'error';
+      } else {
+        cdrStatusForResponse.observaciones = cdrRespuesta.sunatResponse.cdrResponse.notes ?? [];
+        cdrStatusForResponse.typoObs = 'notes';
+      }
+
+      if (
+        !cdrStatusForResponse.success ||
+        Object.entries(cdrStatusForResponse.observaciones).length ||
+        cdrStatusForResponse.observaciones.length
+      ){
+        console.log('%cOBSERVACIONES:', 'color:white; background-color:red;padding:20px');
+        console.log(cdrStatusForResponse.observaciones);
+      }
+
       // un for de tres intentos para guardar cdr
-      let seGuardoCdr: string;
+      let seGuardoCdr = '';
       for (let i = 0; i < 3; i++) {
 
-        seGuardoCdr =  await this.guardarCDR(venta.idVenta, venta.fechaEmision, cdrRespuesta).then(exito => exito).catch(err => {
+        seGuardoCdr =  await this.guardarCDR(venta.idVenta, venta.fechaEmision, cdrRespuesta).then(exito => exito)
+          .catch(err => {
             console.log('err');
             return 'fail';
           });
@@ -280,26 +404,27 @@ export class ApiPeruService {
         throw String('NO SE GUARDO EL CDR');
       }
 
-      return 'exito';
+      return cdrStatusForResponse;
+      // return 'exito';
     }
   }
 
   async guardarCDR(idVenta: string, fechaEmision: any, cdrRespuesta: CDRInterface){
-    return this.dataApi.guardarCDR2(idVenta, fechaEmision, this.sede, cdrRespuesta).then(exito => {
-      return exito;
-    }).then(err => err);
+    return this.dataApi.guardarCDR(idVenta, fechaEmision, this.sede, cdrRespuesta)
+    .then(exito =>  exito)
+    .catch(err => {
+      throw err;
+    });
   }
 
   async obtenerProductosDeVenta(idListaProductos: string){
     if (!idListaProductos){
       return [];
     }
-    return this.dataApi.obtenerProductosDeVenta2(idListaProductos, this.sede).catch(err => {
+    return this.dataApi.obtenerProductosDeVenta(idListaProductos, this.sede).catch(err => {
       throw err;
     });
   }
-
-
 
   // NOTE - Esta es la función más importante que se encarga de enviar una factura a sunat
   enviarComprobanteASunat(ventaFormateada: ComprobanteInterface){
@@ -311,10 +436,6 @@ export class ApiPeruService {
 
     raw = JSON.stringify(ventaFormateada);
 
-    // console.log('imprimiendo el rawwwwwwwww', data);
-    // console.log('_____________________________________________________________________________');
-    // console.log(typeof raw);
-
     const requestOptions: RequestInit = {
       method: 'POST',
       headers: myHeaders,
@@ -325,108 +446,156 @@ export class ApiPeruService {
     return fetch('https://facturacion.apisperu.com/api/v1/invoice/send', requestOptions)
       .then(response => response.json())
       .then(cdr => cdr)
-      .catch(error => error);
+      .catch(error => {
+        throw error;
+      });
+  }
+
+  intentarFormatearVenta(venta: VentaInterface): ComprobanteInterface{
+    try {
+      const ventaFormateada = this.formatearVenta(venta);
+      if (ventaFormateada.fechaEmision === 'INVALID_DATA_TIME'){
+        throw String('FECHA DE EMESION INVALIDO');
+      }
+      return ventaFormateada;
+    } catch (error) {
+      throw error;
+    }
   }
 
   formatearVenta(venta: VentaInterface): ComprobanteInterface{
-    console.log('Venta a ser Formateada', venta);
-    console.log('Fecha de emision de la venta', venta.fechaEmision);
-    const productFormat = this.formatearDetalles(venta.listaItemsDeVenta);
 
-    let icbr: number;
-    if (venta.hasOwnProperty('cantidadBolsa')){
-      icbr = venta.cantidadBolsa * 0.3;
-    }else{
-      icbr = 0;
+    if (!venta.serieComprobante || !venta.numeroComprobante){
+      throw String('VENTA INCONSISTENTE, DATOS DE SERIE INVALIDOS');
     }
 
-    const totalaPagar = venta.totalPagarVenta - icbr;
+    if (!venta.listaItemsDeVenta){
+      throw String('VENTA INCONSISTE, NO EXISTE ITEMS DE VENTA');
+    }
+
+    if (!venta.totalPagarVenta){
+      throw String('VENTA INCONSISTENTE, TOTAL PAGAR VENTA NO DEFINIDO');
+    }
+
+    const productFormat = this.formatearDetalles(venta.listaItemsDeVenta);
+
+    let icb: number;
+    let cantidaBolsas = 0;
+    if (venta.cantidadBolsa && venta.cantidadBolsa > 0){
+      icb = venta.cantidadBolsa * this.FACTOR_ICBPER;
+      cantidaBolsas = venta.cantidadBolsa;
+    } else {
+      icb = 0;
+    }
+
+    const totalaPagar = venta.totalPagarVenta - icb;
     // const totalaPagar = venta.montoNeto - icbr;
     const MontoBase = totalaPagar / 1.18;
     const igv = totalaPagar - MontoBase;
     const montoOperGravadas = MontoBase;
 
-    let ventaFormateada: ComprobanteInterface ;
+    let ventaFormateada: ComprobanteInterface;
 
     ventaFormateada =  {
-      tipoOperacion: '0101', // Venta interna
-      tipoDoc: this.obtenerCodigoComprobante(venta.tipoComprobante),  // Factura:01, Boleta:03 //
+      ublVersion: '2.1',
+      tipoOperacion: '0101', /** Venta interna */
+      tipoDoc: this.obtenerCodigoComprobante(venta.tipoComprobante ?? ''),  /** Factura:01, Boleta:03 */
       serie: venta.serieComprobante,
-      correlativo: venta.numeroComprobante, // venta.numeroComprobante,
-      fechaEmision: formatearDateTime('YYYY-MM-DDTHH:mm:ss-05:00', venta.fechaEmision), // this.formtearFecha(venta.fechaEmision)
+      correlativo: venta.numeroComprobante,
+      fechaEmision: formatearDateTime('YYYY-MM-DDTHH:mm:ss-05:00', venta.fechaEmision ?? ''),
       tipoMoneda: 'PEN',
-      client: this.formatearCliente(venta.cliente),
-      company: this.formatearEmpresa(this.datosEmpresa),
+      client: this.formatearCliente(venta.cliente ?? {}),
+      company: this.formatearEmpresa(this.datosEmpresa, this.sedeDireccion),
       mtoOperGravadas: redondeoDecimal(montoOperGravadas, 2),
       mtoIGV: redondeoDecimal(igv, 2),
-      icbper: redondeoDecimal(icbr, 2),
-      totalImpuestos: redondeoDecimal(igv + icbr, 2),
+      // icbper: redondeoDecimal(icb, 2),
+      // totalImpuestos: redondeoDecimal(igv + icb, 2),
       valorVenta: redondeoDecimal(montoOperGravadas, 2),
       mtoImpVenta: redondeoDecimal(venta.totalPagarVenta, 2),
-      ublVersion: '2.1',
+      subTotal: redondeoDecimal(venta.totalPagarVenta, 2),
+      formaPago: this.formatearFormaDePago(),
       details: productFormat,
       legends: [
         {
           code: '1000',
-          value: MontoALetras(totalaPagar)
+          value: MontoALetras(venta.totalPagarVenta)
         }
       ],
-      // descuentos: venta.descuentoVenta > 0 ? [descuento] : []
     };
 
-    const descuento: ChangeInterface = {};
-    if (venta.descuentoVenta > 0){
-      // const Descuento = venta.descuentoVenta;
+    if ( icb > 0 ){
+      const detailBolsa = this.obtenerDetalleBolsaGratuita(cantidaBolsas);
+      // ventaFormateada.details.push(detailBolsa);
+      const newDetail = [...productFormat, detailBolsa];
+      ventaFormateada.details = newDetail;
 
-      // let descuentoBase = Descuento / 1.18;
-      // const descuentoIgv = redondeoDecimal(Descuento - descuentoBase, 2);
-      // descuentoBase = redondeoDecimal(descuentoBase, 2);
+      ventaFormateada.icbper = redondeoDecimal(icb, 2);
+      ventaFormateada.mtoOperGratuitas = detailBolsa.mtoBaseIgv;
+      ventaFormateada.mtoIGVGratuitas = detailBolsa.igv;
+      ventaFormateada.totalImpuestos = redondeoDecimal(igv + icb, 2);
 
+    } else {
+      ventaFormateada.totalImpuestos = redondeoDecimal(igv, 2);
+    }
 
-      // const objetoDescuento: SaleDetailInterface = {
-      //     unidad: 'NIU',
-      //     descripcion: 'DESCUENTO',
-      //     cantidad: 1,
-      //     mtoValorUnitario: descuentoBase,
-      //     mtoValorVenta: -descuentoBase,
-      //     mtoBaseIgv: -descuentoBase,
-      //     porcentajeIgv: 18,
-      //     igv: -descuentoIgv,
-      //     tipAfeIgv: '10', // OperacionOnerosa: 10
-      //     totalImpuestos: -descuentoIgv, // suma de todos los impues que hubiesen
-      //     mtoPrecioUnitario: -Descuento
-      // };
+    /** agregar el descuento */
+    if (venta.descuentoVenta && venta.descuentoVenta > 0){
 
-      // ventaFormateada.details.push(objetoDescuento);
+      const descuentos: ChangeInterface[] = [{
+        codTipo: '02',
+        montoBase: venta.descuentoVenta,
+        factor: 1,
+        monto: venta.descuentoVenta
+      }];
 
-      // descuento = {
-      //   codTipo: '00',
-      //   // montoBase: venta.montoNeto,
-      //   // factor: `${redondeoDecimal((venta.descuentoVenta) / venta.montoNeto, 2)}`,
-      //   monto: venta.descuentoVenta
-      // };
-
-      // ventaFormateada.descuentos = [descuento];
-      ventaFormateada.sumDsctoGlobal = venta.descuentoVenta;
+      ventaFormateada.descuentos = descuentos;
     }
 
     return ventaFormateada;
   }
 
-  formatearDetalles(itemsDeVenta): SaleDetailInterface[]{
+  obtenerDetalleBolsaGratuita(cantidaBolsas: number): SaleDetailInterface{
+    const costoBolsa = 0.05;
+    const montoBase = costoBolsa * cantidaBolsas;
+    const igvTotal = montoBase * 0.18;
+
+    const detailBolsa = {
+      // codProducto: 'P002',
+      unidad: 'NIU',
+      descripcion: 'BOLSA DE PLASTICO',
+      cantidad: cantidaBolsas,
+      mtoValorUnitario: 0,
+      mtoValorGratuito: costoBolsa,
+      mtoValorVenta: redondeoDecimal(montoBase, 2),
+      mtoBaseIgv: redondeoDecimal(montoBase, 2),
+      porcentajeIgv: 18,
+      igv: redondeoDecimal(igvTotal, 2),
+      // ! tipAfeIGV number or not number
+      tipAfeIgv: '13', /** catalog: 07, Codigo afectacion gratuito */
+      factorIcbper: this.FACTOR_ICBPER, /** Factor ICBPER Anio actual, */
+      icbper: redondeoDecimal(this.FACTOR_ICBPER * cantidaBolsas, 2), /* (cantidad)(factor ICBPER), */
+      totalImpuestos: redondeoDecimal(this.FACTOR_ICBPER * cantidaBolsas + igvTotal, 2), /** icbper+igv */
+   };
+
+    return detailBolsa;
+  }
+
+  formatearDetalles(itemsDeVenta: ItemDeVentaInterface[]): SaleDetailInterface[]{
     const listaFormateda: SaleDetailInterface[] = [];
 
     for (const itemDeVenta of itemsDeVenta) {
       listaFormateda.push(this.formatearDetalleVenta(itemDeVenta));
     }
-    // console.log(listaFormateda);
     return listaFormateda;
   }
 
   formatearDetalleVenta(itemDeVenta: ItemDeVentaInterface): SaleDetailInterface{
-    // TODO - Verificar que como se hace un descuento
+    if (!itemDeVenta.cantidad || !itemDeVenta.producto?.precio){
+      throw String('ITEM DE VENTA INCONSISTENTE, CANTIDA O PU_VENTA NO DEFINIDO');
+    }
     const cantidadItems = itemDeVenta.cantidad;
-    const precioUnit = itemDeVenta.producto.precio;
+    const precioUnit = itemDeVenta.producto.precio; /** montoBase + IGV */
+
     const precioUnitarioBase = precioUnit / 1.18;
     const igvUnitario = precioUnit - precioUnitarioBase;
 
@@ -434,17 +603,18 @@ export class ApiPeruService {
     const igvTotal = cantidadItems * igvUnitario;
 
     return {
-        unidad: this.ObtenerCodigoMedida(itemDeVenta.producto.medida),
-        descripcion: itemDeVenta.producto.nombre,
-        cantidad: itemDeVenta.cantidad,
-        mtoValorUnitario: redondeoDecimal(precioUnitarioBase, 2),
-        mtoValorVenta: redondeoDecimal(montoBase, 2),
-        mtoBaseIgv: redondeoDecimal(montoBase, 2),
-        porcentajeIgv: 18,
-        igv: redondeoDecimal(igvTotal, 2),
-        tipAfeIgv: '10', // OperacionOnerosa: 10
-        totalImpuestos: redondeoDecimal(igvTotal, 2), // suma de todos los impuestos que hubiesen
-        mtoPrecioUnitario: redondeoDecimal(precioUnit, 2)
+      // codProducto : 'P001',
+      unidad: this.ObtenerCodigoMedida(itemDeVenta.producto.medida ?? ''),
+      descripcion: itemDeVenta.producto.nombre ?? '',
+      cantidad: itemDeVenta.cantidad,
+      mtoBaseIgv: redondeoDecimal(montoBase, 2),
+      porcentajeIgv: 18,
+      igv: redondeoDecimal(igvTotal, 2),
+      tipAfeIgv: '10', // OperacionOnerosa: 10
+      totalImpuestos: redondeoDecimal(igvTotal, 2), // suma de todos los impuestos que hubiesen
+      mtoValorVenta: redondeoDecimal(montoBase, 2),
+      mtoValorUnitario: redondeoDecimal(precioUnitarioBase, 2),
+      mtoPrecioUnitario: redondeoDecimal(precioUnit, 2)
     };
   }
 
@@ -456,21 +626,24 @@ export class ApiPeruService {
       return '03';
     } else {
       // console.log('Comprobante no valido');
-      return 'TYPO COMPROBANTE INVALID';
+      // return 'TYPO COMPROBANTE INVALID';
+      throw String('TYPO COMPROBANTE INVALID');
     }
   }
 
   formatearCliente(cliente: ClienteInterface): ClientInterface{
-    // TODO - Que pasa si un dato del cliente falta
+    if (!cliente.numDoc){
+      throw String('NO EXISTE EL NUMERO DE DOCUMENTO DEL CLIENTE');
+    }
     return {
-      tipoDoc: this.ObtenerCodigoTipoDoc(cliente.tipoDoc), // el catalogo N6, DNI = 1, Tambien obtener el ruc
+      tipoDoc: this.ObtenerCodigoTipoDoc(cliente.tipoDoc ?? ''),
       numDoc: cliente.numDoc,
-      rznSocial: cliente.nombre,
+      rznSocial: cliente.nombre ?? '',
       address: {
-        direccion: cliente.direccion
+        direccion: cliente.direccion ?? ''
       },
-      email: cliente.email,
-      telephone: cliente.celular
+      email: cliente.email ?? '',
+      telephone: cliente.celular ?? ''
     };
   }
 
@@ -480,17 +653,28 @@ export class ApiPeruService {
     } else if (typoDoc === 'ruc') {
       return '6';
     } else{
-      return 'TYPO DE DOCUMENTO INVALIDO';
+      throw String('TYPO DE DOCUMENTO DEL CLIENTE INVALIDO');
     }
   }
 
-  formatearEmpresa(empresa: DatosEmpresaInterface): CompanyInterface{
-    // TODO - QUE PASA SI ALGUNO NO TIENE DATOS
+  formatearEmpresa(empresa: DatosEmpresaInterface, direccion: AddressInterface): CompanyInterface{
+    if (!empresa.ruc){
+      throw String('NO EXISTE RUC DE LA EMPRESA');
+    }
     return {
       ruc: empresa.ruc,
-      nombreComercial: empresa.nombreComercial,
-      razonSocial: empresa.razon_social,
-      address: this.sedeDireccion
+      nombreComercial: empresa.nombreComercial ?? '',
+      razonSocial: empresa.razon_social ?? '',
+      address: direccion,
+      email: empresa.email ?? '',
+      telephone: empresa.telefono ?? ''
+    };
+  }
+
+  formatearFormaDePago(){
+    return {
+      moneda: 'PEN',
+      tipo: 'Contado'
     };
   }
 
@@ -500,12 +684,14 @@ export class ApiPeruService {
 /* ---------------------------------------------------------------------------------------------- */
   // REFACTOR - NOTA DE CREDITO
   async enviarNotaDeCreditoAdaptador(venta: VentaInterface){
-    console.log('______________________ENVIAR_NOTA_CREDITO______________________');
-    if (venta.cdrAnulado && venta.cdrAnulado.sunatResponse.success === true){
+    if (venta.cdrAnulado && venta.cdrAnulado?.cdr?.sunatResponse?.success === true){
       throw String(`Ya se ha emitido la Nota de Credito para el comprobante: ${venta.serieComprobante}-${venta.numeroComprobante}`);
     }
 
-    if (venta.cdr && venta.cdr.sunatResponse.success === true){
+    if (venta.cdr && venta.cdr?.sunatResponse?.success === true){
+      if ( !venta.idVenta || !venta.idListaProductos){
+        throw String('Venta sin ID o IDlistaProductos');
+      }
 
       let productos: any;
       productos = await this.obtenerProductosDeVenta(venta.idListaProductos).catch(err => err);
@@ -514,61 +700,106 @@ export class ApiPeruService {
         throw String('Error de Conexion a Intenet, no se encontro lista de productos');
       }
 
-      console.log('PRODUCTOS_DE_VENTA: ', productos);
+      // console.log('PRODUCTOS_DE_VENTA: ', productos);
 
       if (!productos.length){
         throw String(`no se encontro productos por idListaProductos: ${venta.idListaProductos}`);
       }
       venta.listaItemsDeVenta = productos;
 
-      const typoComprobante = `n.credito.${venta.tipoComprobante}`;
-      const serie = await this.obtenerSerie(typoComprobante).catch(err => err);
+      let DatosSerie: {serie: string, correlacion: number};
+      let IdSerie = '';
 
-      if ( serie === 'fail'){
-        throw String('No se pudo obtener la serie para Nota de Credito');
+      /** si mi comprobante ya tiene serie NO obtener serie */
+      if (venta.cdrAnulado?.serie && venta.cdrAnulado?.correlacion) {
+        DatosSerie = {
+          serie: venta.cdrAnulado.serie,
+          correlacion: venta.cdrAnulado.correlacion
+        };
+      } else {
+
+        const typoComprobante = `n.credito.${venta.tipoComprobante}`;
+        const serie = await this.obtenerSerie(typoComprobante).catch(err => err);
+
+        if ( serie === 'fail'){
+          throw String('No se pudo obtener la serie para Nota de Credito');
+        }
+
+        IdSerie =  serie.id;
+        DatosSerie = {
+          serie: serie.serie,
+          correlacion: serie.correlacion + 1
+        };
       }
 
-      const IdSerie =  serie.id;
-      const DatosSerie = {
-        serie: serie.serie,
-        correlacion: serie.correlacion + 1
-      };
 
       // console.log('se usará la correlacion: ', DatosSerie.correlacion);
 
-      const notaCreditoFormateado = this.formatearNotaDeCredito(venta, DatosSerie);
+      // const notaCreditoFormateado = this.formatearNotaDeCredito(venta, DatosSerie);
+      const notaCreditoFormateado = this.intentarFormatearNotaDeCredito(venta, DatosSerie);
+      // notaCreditoFormateado.formaPago = this.formatearFormaDePago();
 
-      // console.log('NOTA DE CREDITO FORMATEADO', notaCreditoFormateado);
-      const fechaEmisionNotaCredito = notaCreditoFormateado.fechaEmision;
+      console.log('%cENVIAR NOTA DE CREDITO FORMATEADO A SUNAT:', 'color:white; background-color:purple;padding:20px');
+      console.log('NOTA DE CREDITO FORMATEADO', notaCreditoFormateado);
+      const fechaEmisionNotaCredito = notaCreditoFormateado.fechaEmision ?? '';
 
       const cdrRespuesta = await this.enviarNotaCreditoASunat(notaCreditoFormateado).catch(err => 'fail');
 
-      console.log('CDR NOTA DE CREDITO', cdrRespuesta);
 
       if (cdrRespuesta === 'fail'){
         throw String('COMPROBANTE NO ENVIADO A SUNAT');
       }
 
+      console.log('CDR NOTA DE CREDITO', cdrRespuesta);
+
+
+      /** ANALISIS DE CDR */
+      const cdrStatusForResponse: {success?: boolean, observaciones?: any, typoObs?: string} = {};
+      cdrStatusForResponse.success = cdrRespuesta.sunatResponse.success ?? false;
+
+      if (cdrRespuesta.sunatResponse.error){
+        cdrStatusForResponse.observaciones = cdrRespuesta.sunatResponse.error;
+        cdrStatusForResponse.typoObs = 'error';
+      } else {
+        cdrStatusForResponse.observaciones = cdrRespuesta.sunatResponse.cdrResponse.notes ?? [];
+        cdrStatusForResponse.typoObs = 'notes';
+      }
+
+      if (
+        !cdrStatusForResponse.success ||
+        Object.entries(cdrStatusForResponse.observaciones).length ||
+        cdrStatusForResponse.observaciones.length
+      ){
+        console.log('%cOBSERVACIONES:', 'color:white; background-color:red;padding:20px');
+        console.log(cdrStatusForResponse.observaciones);
+      }
+
       let respIncremtarCorrelacion = true;
       let guardarCDRAnulado = true;
 
-      await(
-        this.incrementarCorrelacionNotaCredito(IdSerie, DatosSerie).catch(() => {
-          respIncremtarCorrelacion = false;
-        }),
-        this.guardarCDRAnulado(venta.idVenta, venta.fechaEmision, cdrRespuesta, fechaEmisionNotaCredito).catch(() => {
+      if (IdSerie){
+        await(
+          this.incrementarCorrelacionNotaCredito(IdSerie, DatosSerie).catch(() => {
+            respIncremtarCorrelacion = false;
+          }),
+          this.guardarCDRAnulado(venta.idVenta, venta.fechaEmision, cdrRespuesta, fechaEmisionNotaCredito, DatosSerie).catch(() => {
+            guardarCDRAnulado = false;
+          })
+        );
+        if (!respIncremtarCorrelacion){
+          throw String('NO INCREMENTO LA CORRELACION');
+        }
+      } else {
+        await this.guardarCDRAnulado(venta.idVenta, venta.fechaEmision, cdrRespuesta, fechaEmisionNotaCredito, DatosSerie).catch(() => {
           guardarCDRAnulado = false;
-        })
-      );
-
-      if (!respIncremtarCorrelacion){
-        throw String('NO INCREMENTO LA CORRELACION');
+        });
       }
 
       if (!guardarCDRAnulado){
         throw String('NO SE GUARDO EL CDR');
       }
 
+      return cdrStatusForResponse;
       return 'exito';
 
     } else {
@@ -590,15 +821,21 @@ export class ApiPeruService {
     throw String('fail');
   }
 
-  async guardarCDRAnulado(idVenta: string, fechaEmisionVenta: any, cdrRespuesta: CDRInterface, fechaEmisionNotaCredito: string){
+  async guardarCDRAnulado(
+    idVenta: string,
+    fechaEmisionVenta: any,
+    cdrRespuesta: CDRInterface,
+    fechaEmisionNotaCredito: string,
+    DatosSerie?: {serie: string, correlacion: number}
+  ){
     let seGuardoCdr: string;
     for (let i = 0; i < 3; i++) {
-      seGuardoCdr = await this.dataApi.guardarCDRAnulado(idVenta, fechaEmisionVenta, this.sede, cdrRespuesta, fechaEmisionNotaCredito)
-      .then(() => 'exito').catch(() => 'fail');
+      seGuardoCdr = await this.dataApi.guardarCDRAnulado(
+        idVenta, fechaEmisionVenta, this.sede, cdrRespuesta, fechaEmisionNotaCredito, DatosSerie)
+      .catch(() => 'fail');
 
       if ( seGuardoCdr === 'exito'){
-        console.log('SE GUARDO EN EL INTENTO cdrAnulado: ', i);
-
+        // console.log('SE GUARDO EN EL INTENTO cdrAnulado: ', i);
         return 'exito';
       }
     }
@@ -608,13 +845,18 @@ export class ApiPeruService {
 
 
   async obtenerSerie(typoDocumento: string){
-    const valor = await  this.dataApi.obtenerCorrelacionTypoDocumentoV2(typoDocumento, this.sede).then(serie => serie).catch(err => err);
+    const valor = await  this.dataApi.obtenerCorrelacionPorTypoComprobante(typoDocumento, this.sede)
+    .then(serie => serie).catch(() => 'fail');
     console.log(valor);
 
-    if (Object.entries(valor).length === 0) {
-      // tslint:disable-next-line: no-string-throw
-      throw 'fail';
+    if (valor === 'fail') {
+      throw String('fail');
     }
+
+    if (Object.entries(valor).length === 0) {
+      throw String('NO SE ENCONTRO SERIE EN BASEDATOS');
+    }
+
     return valor;
   }
 
@@ -637,60 +879,98 @@ export class ApiPeruService {
     return fetch('https://facturacion.apisperu.com/api/v1/note/send', requestOptions)
       .then(response => response.json())
       .then(cdr => cdr)
-      .catch(error => console.log('error', error));
+      .catch(error => {
+        throw error;
+      });
+  }
 
+  intentarFormatearNotaDeCredito(venta: VentaInterface, serieNotaCred: {serie: string, correlacion: number}): ComprobanteInterface{
+    try {
+      const ventaFormateada = this.formatearNotaDeCredito(venta, serieNotaCred);
+      if (ventaFormateada.fechaEmision === 'INVALID_DATA_TIME'){
+        throw String('FECHA DE EMESION INVALIDO');
+      }
+      return ventaFormateada;
+    } catch (error) {
+      throw error;
+    }
   }
 
   formatearNotaDeCredito(venta: VentaInterface, serieNotaCred: {serie: string, correlacion: number}): NotaDeCreditoInterface{
-    // console.log('Venta a ser Formateada', venta);
-    // console.log('Fecha de emision de la venta', venta.fechaEmision);
-    const productFormat = this.formatearDetalles(venta.listaItemsDeVenta);
 
-    let icbr: number;
-    if (venta.hasOwnProperty('cantidadBolsa')){
-      icbr = venta.cantidadBolsa * 0.3;
-    }else{
-      icbr = 0;
+    if (!venta.listaItemsDeVenta){
+      throw String('VENTA INCONSISTE, NO EXISTE ITEMS DE VENTA');
+    }
+    if (!venta.totalPagarVenta){
+      throw String('VENTA INCONSISTENTE, TOTAL PAGAR VENTA NO DEFINIDO');
+    }
+    if (!venta.serieComprobante || !venta.numeroComprobante){
+      throw String('VENTA INCONSISTENTE, DATOS DE SERIE INVALIDOS');
     }
 
-    const totalaPagar = venta.totalPagarVenta - icbr;
-    // const totalaPagar = venta.montoNeto - icbr;
+    const productFormat = this.formatearDetalles(venta.listaItemsDeVenta);
+
+
+    let icb: number;
+    let cantidadBolsas = 0;
+    if (venta.cantidadBolsa && venta.cantidadBolsa > 0){
+      icb = venta.cantidadBolsa * this.FACTOR_ICBPER;
+      cantidadBolsas = venta.cantidadBolsa;
+    } else {
+      icb = 0;
+    }
+
+    const totalaPagar = venta.totalPagarVenta - icb;
     const MontoBase = totalaPagar / 1.18;
     const igv = totalaPagar - MontoBase;
     const montoOperGravadas = MontoBase;
 
-    // const totalaPagar = venta.totalPagarVenta;
-    // const montoBase = totalaPagar / 1.18;
-    // const igv = totalaPagar - montoBase;
-    // const montoOperGravadas = montoBase;
-
-    return {
-      tipDocAfectado: this.obtenerCodigoComprobante(venta.tipoComprobante), // '01',   // Factura
-      numDocfectado: `${venta.serieComprobante}-${venta.numeroComprobante}`, // 'F001-111', // numero y serie
-      codMotivo: '06', //  Códigos de Tipo de Nota de Crédito Electrónica - 07:Devolucion por item
+    let notaCreditoFormateada: NotaDeCreditoInterface;
+    notaCreditoFormateada = {
+      ublVersion: '2.1',
+      tipoDoc: '07', /** 07 nota de crédito, nota de debito 08 */
+      serie: serieNotaCred.serie, /** la nota de credito, F si factura y B si boleta */
+      correlativo: `${serieNotaCred.correlacion}`,
+      fechaEmision: formatearDateTime('YYYY-MM-DDTHH:mm:ss-05:00'),
+      tipDocAfectado: this.obtenerCodigoComprobante(venta.tipoComprobante ?? ''),
+      numDocfectado: `${venta.serieComprobante}-${venta.numeroComprobante}`, /** numero - serie, 'F001-111' */
+      codMotivo: '06', /** 06:Devolucion total, 01: Anulacion de la operacion */
       desMotivo: 'DEVOLUCION TOTAL',
-      tipoDoc: '07', // nota de crédito, nota de debito 08
-      serie: serieNotaCred.serie, // 'FF01', // la nota de credito, F si factura y B si boleta
-      correlativo: `${serieNotaCred.correlacion}`, // '123', // correlacion  // NOTE - Tambien debe obtenerse aquí
-      fechaEmision: formatearDateTime('YYYY-MM-DDTHH:mm:ss-05:00'), // this.formtearFechaActual(), // '2019-10-27T00:00:00-05:00',
       tipoMoneda: 'PEN',
-      client: this.formatearCliente(venta.cliente),
-      company:  this.formatearEmpresa(this.datosEmpresa),
+      client: this.formatearCliente(venta.cliente ?? {}),
+      company:  this.formatearEmpresa(this.datosEmpresa, this.sedeDireccion),
       mtoOperGravadas: redondeoDecimal(montoOperGravadas, 2),
       mtoIGV: redondeoDecimal(igv, 2),
-      totalImpuestos: redondeoDecimal(igv, 2),
-      icbper: redondeoDecimal(icbr, 2),
+      // icbper: redondeoDecimal(icb, 2),
+      totalImpuestos: redondeoDecimal(igv + icb, 2),
       // valorVenta: redondeoDecimal(montoOperGravadas, 2),
-      mtoImpVenta: redondeoDecimal(totalaPagar, 2),
-      ublVersion: '2.1',
+      mtoImpVenta: redondeoDecimal(venta.totalPagarVenta, 2),
+      subTotal: redondeoDecimal(venta.totalPagarVenta, 2),
+      // formaPago: this.formatearFormaDePago(), // al parecer no es necesario
       details: productFormat,
       legends: [
         {
           code: '1000',
-          value: MontoALetras(totalaPagar)
+          value: MontoALetras(venta.totalPagarVenta)
         }
       ]
     };
+
+    if ( icb > 0 ){
+      const detailBolsa = this.obtenerDetalleBolsaGratuita(cantidadBolsas);
+      // notaCreditoFormateada.details.push(detailBolsa);
+      const newDetail = [...productFormat, detailBolsa];
+      notaCreditoFormateada.details = newDetail;
+
+      notaCreditoFormateada.icbper = redondeoDecimal(icb, 2);
+      notaCreditoFormateada.mtoOperGratuitas = detailBolsa.mtoBaseIgv;
+      notaCreditoFormateada.totalImpuestos = redondeoDecimal(igv + icb, 2);
+
+    } else {
+      notaCreditoFormateada.totalImpuestos = redondeoDecimal(igv, 2);
+    }
+
+    return notaCreditoFormateada;
 
   }
 
@@ -712,10 +992,11 @@ export class ApiPeruService {
 
     resumenDiarioFormateado = {
       fecGeneracion: `${fechaVenta}T00:00:00+00:00`, // , '2019-10-27T00:00:00+00:00', // Día Generacion de Boletas
-      fecResumen: this.formtearFechaActual(),  // Dia que se gener el resumenDiario
+      // fecResumen: this.formtearFechaActual(),  // Dia que se gener el resumenDiario
+      fecResumen: formatearDateTime('YYYY-MM-DDTHH:mm:ss-05:00'),  // Dia que se gener el resumenDiario
       correlativo: '001',
       moneda: 'PEN',
-      company: this.formatearEmpresa(this.datosEmpresa),
+      company: this.formatearEmpresa(this.datosEmpresa, this.sedeDireccion),
       details: listaVentasFormateadas
     };
     console.log('ESTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTEEEEEEEEES rESUMEN diario Formateado', resumenDiarioFormateado);
@@ -725,7 +1006,7 @@ export class ApiPeruService {
 
     let icbr: number;
     if (venta.hasOwnProperty('cantidadBolsa')){
-      icbr = venta.cantidadBolsa * 0.3;
+      icbr = venta.cantidadBolsa * this.FACTOR_ICBPER;
     }else{
       icbr = 0;
     }
@@ -759,25 +1040,11 @@ export class ApiPeruService {
 /* ---------------------------------------------------------------------------------------------- */
 
 /* ---------------------------------------------------------------------------------------------- */
-  // CLEAN -FORMATEAR FECHA Y FORMATEAR FECHA ACTUAL
-  formtearFecha(dateTime: any): string{
-
-    const fechaFormateada = new Date(moment.unix(dateTime.seconds).format('D MMM YYYY H:mm:ss'));
-    const fechaString = formatDate(fechaFormateada, 'yyyy-MM-ddThh:mm:ss-05:00', 'en');
-    // console.log('aaaaaaaaaaaaa', fechaString);
-    return fechaString;
-  }
-
-  formtearFechaActual(): string{
-    const hoy = new Date();
-    console.log(hoy);
-    const fechaFormateada = new Date(moment(hoy).format('D MMM YYYY H:mm:ss'));
-    const fechaString = formatDate(fechaFormateada, 'yyyy-MM-ddThh:mm:ss-05:00', 'en');
-    // console.log('aaaaaaaaaaaaa', fechaString);
-    return fechaString;
-  }
 
   ObtenerCodigoMedida(medida: string){
+    if (!medida){
+      return 'NIU';
+    }
     switch (medida.toLowerCase()) {
       case 'gramos': return 'GRM';
       case 'servicios': return 'ZZ';
@@ -846,7 +1113,29 @@ export class ApiPeruService {
     }
   }
 
+  /* -------------------------------------------------------------------------- */
+  /*                             escript auxiliares                             */
+  /* -------------------------------------------------------------------------- */
+  formatearVentas(listaDeVentas: VentaInterface[]){
+    for (const venta of listaDeVentas) {
+      console.log('VENTA ORIGINAL', venta);
+      const ventaFormateada: ComprobanteInterface = this.intentarFormatearVenta(venta);
+      console.log('VENTA FORMATEADO', ventaFormateada);
+    }
+  }
 
+  formatearNotasDeCretito(listaDeVentas: VentaInterface[]){
+    for (const venta of listaDeVentas) {
+      if (venta.estadoVenta === 'anulado'){
+        console.log('VENTA ORIGINAL', venta);
+        const ventaFormateada: ComprobanteInterface = this.intentarFormatearNotaDeCredito(venta, {serie: 'ALGO', correlacion: 504431});
+        console.log('VENTA FORMATEADO', ventaFormateada);
+      }
+    }
+  }
 
+  /* -------------------------------------------------------------------------- */
+  /* -------------------------------------------------------------------------- */
+  /* -------------------------------------------------------------------------- */
 
 }

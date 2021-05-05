@@ -7,8 +7,9 @@ import { CategoriaInterface } from '../../models/CategoriaInterface';
 import { StorageService } from '../../services/storage.service';
 import { DataBaseService } from '../../services/data-base.service';
 import { GlobalService } from 'src/app/global/global.service';
-
-import { MEDIDAS } from 'src/app/configs/medidasConfig';
+import { VariantesInterface } from '../../models/variantes';
+import { isNullOrUndefined } from 'util';
+import { MEDIDAS } from 'src/config/medidasConfig';
 
 
 
@@ -22,6 +23,7 @@ export class ModalAgregarProductoPage implements OnInit {
   sede = this.storage.datosAdmi.sede;
 
   listaDeCategorias: CategoriaInterface[] = [{categoria: 'accesorios'}];
+  listaDeVariantes: VariantesInterface[] = [];
 
 // ----------------
   processing: boolean;
@@ -29,7 +31,6 @@ export class ModalAgregarProductoPage implements OnInit {
 
 // ----------------
   image: any;
-  sinFoto: string;
   progress = 0;
 
   productoForm: FormGroup;
@@ -73,7 +74,7 @@ export class ModalAgregarProductoPage implements OnInit {
       if (datoo.id) {
         this.correlacionActual = datoo.correlacionProducto;
         this.productoForm.setControl('codigo',
-        new FormControl( datoo.correlacionProducto, [Validators.minLength(1), Validators.maxLength(20)]) );
+        new FormControl( datoo.correlacionProducto.toString(), [Validators.minLength(1), Validators.maxLength(20)]) );
       }
     });
   }
@@ -213,6 +214,7 @@ export class ModalAgregarProductoPage implements OnInit {
       categoria: new FormControl(),
       subCategoria: new FormControl(this.listaDeCategorias[0].categoria, [Validators.required]),
       descripcionProducto: new FormControl(),
+      variantes: new FormControl()
     });
   }
 
@@ -230,16 +232,18 @@ export class ModalAgregarProductoPage implements OnInit {
 
   onResetForm() {
     this.productoForm.reset();
-    this.sinFoto = null;
     this.image = null;
     this.progress = 0;
   }
 
   guardarProducto() {
-    this.sinFoto = null;
     this.mensaje = null;
-
     if (this.productoForm.valid ) {
+      if (this.listaDeVariantes.length > 0) {
+        this.productoForm.setControl('variantes', new FormControl(this.listaDeVariantes));
+      } else {
+        this.productoForm.removeControl('variantes');
+      }
       this.productoForm.value.nombre = this.productoForm.value.nombre.toLowerCase();
       this.productoForm.value.categoria = 'petshop'; // SOLO TOOBY
       this.productoForm.value.subCategoria = this.productoForm.value.subCategoria.toLowerCase();
@@ -313,6 +317,32 @@ export class ModalAgregarProductoPage implements OnInit {
         reject(err);
       });
     });
+  }
+
+  agregarVariante(medida, factor, precio) {
+    console.log(medida);
+    if (!medida.value || !factor.value || !precio.value) {
+      this.globalservice.presentToast('Completa todos los campos', {position: 'middle'});
+    } else {
+      const item = {
+        medida: medida.value,
+        factor: factor.value,
+        precio: precio.value
+      };
+      medida.value = '';
+      factor.value = '';
+      precio.value = '';
+      medida.setFocus();
+      console.log(item);
+      this.listaDeVariantes.push(item);
+    }
+  }
+
+  quitarVariante(item) {
+    const i = this.listaDeVariantes.indexOf( item );
+    if ( i !== -1 ) {
+      this.listaDeVariantes.splice( i, 1 );
+    }
   }
 
   async presentLoading(mensaje: string) {

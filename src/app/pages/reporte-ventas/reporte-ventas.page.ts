@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { DbDataService } from 'src/app/services/db-data.service';
-import { MenuController, PopoverController, LoadingController } from '@ionic/angular';
+import { MenuController, PopoverController } from '@ionic/angular';
 import { ExportarPDFService } from '../../services/exportar-pdf.service';
 import { formatDate } from '@angular/common';
 import * as moment from 'moment';
@@ -14,7 +14,8 @@ import * as FileSaver from 'file-saver';
 import { timer } from 'rxjs';
 import { DataBaseService } from '../../services/data-base.service';
 import { GlobalService } from 'src/app/global/global.service';
-import { BoletasFacturasService } from '../../services/boletas-facturas.service';
+import { GenerarComprobanteService } from '../../services/generar-comprobante.service';
+import { formatearDateTime } from '../../global/funciones-globales';
 
 @Component({
   selector: 'app-reporte-ventas',
@@ -28,7 +29,9 @@ export class ReporteVentasPage implements OnInit {
 
   contador = 0;
   contadorXML = 0;
-  loading;
+  mesActual;
+  meses = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'];
+  fechaActual;
   constructor(
                private dataApi: DataBaseService,
                private globalSrv: GlobalService,
@@ -37,14 +40,15 @@ export class ReporteVentasPage implements OnInit {
                private popoverCtrl: PopoverController,
                private storage: StorageService,
                private reportesservice: ReportesService,
-               private comprobanteSrv: BoletasFacturasService,
-               private loadingController: LoadingController
+               private comprobanteSrv: GenerarComprobanteService,
               ) {
                 this.ventasDiaForm = this.createFormGroup();
               }
 
   ngOnInit() {
     this.menuCtrl.enable(true);
+    this.mesActual = this.meses[moment().month()];
+    this.fechaActual = formatearDateTime('YYYY-MM-DD');
     // this.ObtenerVentas();
   }
 
@@ -56,13 +60,12 @@ export class ReporteVentasPage implements OnInit {
 
   ObtenerVentasDia(ev: any) {
     if (isNullOrUndefined(this.ventasDiaForm.value.fechadeventa)) {
-      this.globalSrv.presentToast('Ingrese Fecha', {color: 'warning', position: 'top'});
+      this.globalSrv.presentToast('Ingrese Fecha', {color: 'warning', position: 'bottom'});
 
     }else {
       this.ventasDiaForm.value.fechadeventa = this.ventasDiaForm.value.fechadeventa.split('-').reverse().join('-');
       console.log(this.ventasDiaForm.value.fechadeventa);
       this.ReporteVentaGeneralDia(ev, this.ventasDiaForm.value.fechadeventa);
-
     }
   }
 
@@ -81,61 +84,45 @@ export class ReporteVentasPage implements OnInit {
     const { data } = await popover.onWillDismiss();
     console.log(data);
     if (data) {
-      this.presentLoading('Consultando Datos...Por favor espere.....');
       switch (data.action) {
-        case 'a4': console.log('a4'); this.reportesservice.ReporteVentaDiaGeneralPDF(dia).then(() => this.loading.dismiss());  break;
-        case 'ticked': console.log('ticked'); this.reportesservice.ReporteTiket(dia).then(() => this.loading.dismiss()); break;
+        case 'a4': console.log('a4'); this.reportesservice.ReporteVentaDiaGeneralPDF(dia); break;
+        case 'ticked': console.log('ticked'); this.reportesservice.ReporteTiket(dia); break;
       }
     }
   }
 
   ReporteProoductosSede(){
-    this.presentLoading('Por favor espere.....');
     const dataExcel = [];
     const sus = this.dataApi.obtenerListaProductosSinLIMITE(this.storage.datosAdmi.sede).subscribe((data: any) => {
       sus.unsubscribe();
       console.log(data);
       if (data.length === 0){
-        this.loading.dismiss();
-        this.globalSrv.presentToast('No hay productos de sede: ' + this.sede, {color: 'danger', position: 'top'});
+        this.globalSrv.presentToast('No hay productos de sede: ' + this.sede, {color: 'danger', position: 'bottom'});
       }else{
         for (const datos of data) {
-          if (datos.medida !== 'servicios'){
-            const formato: any = {
-              UID: datos.id,
-              'Nombre Producto': datos.nombre.toUpperCase(),
-              Codigo: datos.codigo ? datos.codigo : null,
-              'Codigo Barra': datos.codigoBarra ? datos.codigoBarra : null,
-              Stock: datos.cantStock ? datos.cantStock  : null,
-              Categoria: datos.subCategoria ? datos.subCategoria : null,
-              Estado: null
-            };
-            this.loading.dismiss();
-            dataExcel.push(formato);
-          }
+          const formato: any = {
+            UID: datos.id,
+            'Nombre Producto': datos.nombre.toUpperCase(),
+            Codigo: datos.codigo ? datos.codigo : null,
+            'Codigo Barra': datos.codigoBarra ? datos.codigoBarra : null,
+            Stock: datos.cantStock ? datos.cantStock  : null,
+            Categoria: datos.subCategoria ? datos.subCategoria : null,
+            'precio de Compra': datos.precioCompra ? datos.precioCompra : null,
+            Estado: null
+          };
+          dataExcel.push(formato);
         }
         this.excelService.exportAsExcelFile(dataExcel, 'ReporteProductos' + this.sede);
 
       }
     });
   }
-  async presentLoading(mensaje: string) {
-    this.loading = await this.loadingController.create({
-      cssClass: 'my-custom-class',
-      message: mensaje,
-      // duration: 5000
-    });
-    await this.loading.present();
-  }
 
   ObtenerVentasMes(){
-    this.presentLoading('Por favor espere...');
     const d = new Date();
     const mes = d.getMonth() + 1;
     const anio = d.getFullYear();
-    this.ObtenerVentasMesAnio(mes, anio).then(() => {
-      this.loading.dismiss();
-    });
+    this.ObtenerVentasMesAnio(mes, anio);
   }
 
   async ObtenerVentasMesAnio(mes: number, anio: number) {
@@ -143,50 +130,81 @@ export class ReporteVentasPage implements OnInit {
     let formato: string;
     for (let contador = 1 ; contador <= 31; contador++) {
       formato = ((contador <= 9 ) ? '0' + contador : contador) + '-' + ((mes <= 9 ) ? '0' + mes : mes)  + '-' + anio;
-      await this.dataApi.obtenerVentasBoletasFacturasPorDia(this.sede.toLocaleLowerCase(), formato).then(async (res: any) => {
+      await this.dataApi.obtenerVentasPorDia(this.sede.toLocaleLowerCase(), formato).then(async (res: any) => {
         if (res.length === 0) {
           console.log('no hay datos de dia', contador );
         }else {
           console.log('datos de dia', contador );
-          console.log('datos ', res );
-          for (const venta of res) {
-            if (venta.tipoComprobante === 'boleta' || venta.tipoComprobante === 'factura'){
-              // this.arrayMes = [...this.arrayMes, ...res];
-              this.arrayMes = [...this.arrayMes, venta];
-
-              }
-          }
+          this.arrayMes = [...this.arrayMes, ...res];
         }
         if (contador === 31) {
-        console.log('boletas y facturas ', this.arrayMes);
         if (!this.arrayMes.length) {
-          this.globalSrv.presentToast('No hay productos de sede: ' + this.sede, {color: 'danger', position: 'top'});
+          this.globalSrv.presentToast('No hay productos de sede: ' + this.sede, {color: 'danger', position: 'bottom'});
 
         } else {
           // tslint:disable-next-line:no-shadowed-variable
           let contador = 0;
-          console.log('total ', this.arrayMes);
-
 
           for (const venta of this.arrayMes) {
             contador++;
-            await this.dataApi.obtenerProductosDeVenta(venta.idListaProductos, this.sede ).then( productoVenta => {
-              let  nombres = '';
-              console.log('producto venta', productoVenta);
-              for (const item2 of productoVenta) {
-                // if (item2.subCategoria === 'cortes' || item2.subCategoria === 'servicio') {
-                  nombres = nombres + item2.producto.nombre.toUpperCase()  + '( s/. ' + (item2.totalxprod ) + ')' + ', ';
-                  venta.productos = nombres;
-                  console.log('item:' ,  item2.producto.nombre + '(' + item2.producto.precio  + ')');
+            if (venta.tipoComprobante !== 'n. venta') {
+              await this.dataApi.obtenerProductosDeVenta(venta.idListaProductos, this.sede ).then( productoVenta => {
+                let  nombres = '';
+                console.log('producto venta', productoVenta);
+                for (const item2 of productoVenta) {
+                  // if (item2.subCategoria === 'cortes' || item2.subCategoria === 'servicio') {
+                    nombres = nombres + item2.producto.nombre.toUpperCase() + ', ';
+                    venta.productos = nombres;
+                    console.log('item:' ,  item2.producto.nombre);
+                  // }
+                }
+                if (contador === this.arrayMes.length) {
+                console.log(this.arrayMes);
+                this.exelVentas(this.arrayMes, mes, anio);
+                }
+              });
+            }
+          }
+        }
+        }
+      });
+    }
+  }
 
-                // }
-              }
-              if (contador === this.arrayMes.length) {
+  async ObtenerVentasMesAnioDescargarComprobantes(mes: number, anio: number) {
+    console.log(mes, anio);
+    this.arrayMes = [];
+    let formato: string;
+    for (let contador = 1 ; contador <= 31; contador++) {
+      formato = ((contador <= 9 ) ? '0' + contador : contador) + '-' + ((mes <= 9 ) ? '0' + mes : mes)  + '-' + anio;
+      await this.dataApi.obtenerVentasPorDia(this.sede.toLocaleLowerCase(), formato).then(async (res: any) => {
+        if (res.length === 0) {
+          console.log('no hay datos de dia', contador );
+        }else {
+          console.log('datos de dia', contador );
+          this.arrayMes = [...this.arrayMes, ...res];
+        }
+        if (contador === 31) {
+        if (!this.arrayMes.length) {
+          this.globalSrv.presentToast('No hay productos de sede: ' + this.sede, {color: 'danger', position: 'bottom'});
+
+        } else {
+          // tslint:disable-next-line:no-shadowed-variable
+          let contadorarray = 0;
+          let ContadorBoletas = 0;
+
+          for (const venta of this.arrayMes) {
+            contadorarray++;
+            if (venta.tipoComprobante === 'boleta' || venta.tipoComprobante === 'factura') {
+              ContadorBoletas++ ;
+              await this.comprobanteSrv.generarComprobante(venta);
+            }
+            if (contadorarray === this.arrayMes.length) {
               console.log(this.arrayMes);
-              this.exelVentas(this.arrayMes, mes, anio);
+              console.log('BOLEEETAS: ', ContadorBoletas);
+              this.globalSrv.presentToast('se descarganron todos los comprobantes' + ContadorBoletas);
 
               }
-            });
           }
         }
         }
@@ -210,11 +228,10 @@ export class ReporteVentasPage implements OnInit {
     const { data } = await popover.onWillDismiss();
     console.log(data);
     if (data) {
-      this.presentLoading('Por favor espere....');
       const d = new Date();
       const mes = data.action;
       const anio = d.getFullYear();
-      this.ObtenerVentasMesAnio(mes, anio).then(() => this.loading.dismiss());
+      this.ObtenerVentasMesAnio(mes, anio);
     }
 
   }
@@ -225,85 +242,41 @@ export class ReporteVentasPage implements OnInit {
     let dataExcel = [];
     if (data.length === 0) {
       console.log('toast de no hay datos');
-      this.globalSrv.presentToast('No existe datos del mes ', {color: 'danger', position: 'top'});
+      this.globalSrv.presentToast('No existe datos del mes ', {color: 'danger', position: 'bottom'});
     }else {
       let contador = 0;
       console.log('datos', data);
       for (const datos of data) {
         contador++;
-        // tslint:disable-next-line:prefer-const
-        let FechaConsulta = new Date(moment.unix(datos.fechaEmision.seconds).format('D MMM YYYY H:mm'));
-        const formato: any = {
-          'Nombre/Razon social': datos.cliente.nombre.toUpperCase(),
-          'Tipo Doc': datos.cliente.tipoDoc.toUpperCase(),
-          'DNI/RUC': datos.cliente.numDoc,
-          'Tipo Comprobante': datos.tipoComprobante.toUpperCase(),
-          // tslint:disable-next-line:max-line-length
-          'Serie Comprobante': datos.serieComprobante,
-          // tslint:disable-next-line:max-line-length
-          'Num. Comprobante': datos.numeroComprobante,
-          // tslint:disable-next-line:max-line-length
-          'Serie con Numero': datos.serieComprobante + '-' + this.digitosFaltantes('0', (8 - datos.numeroComprobante.length)) + datos.numeroComprobante,
-          'Monto Pagado': datos.totalPagarVenta,
-          'Metodo Pago': datos.tipoPago.toUpperCase(),
-          'Fecha Emision': formatDate(FechaConsulta, 'dd-MM-yyyy', 'en'),
-          'Cant. bolsa': datos.cantidadBolsa,
-          'Sede: ': datos.vendedor.sede,
-          'Estado Comprobante': datos.estadoVenta,
-          'Descuento ': datos.descuentoVenta ? datos.descuentoVenta : null ,
-          'Servicio / Producto ': datos.productos ,
-        };
-        dataExcel.push(formato);
+        if (datos.tipoComprobante !== 'n. venta') {
+          const FechaConsulta = new Date(moment.unix(datos.fechaEmision.seconds).format('D MMM YYYY H:mm'));
+          const formato: any = {
+            'Nombre/Razon social': datos.cliente.nombre.toUpperCase(),
+            'Tipo Doc': datos.cliente.tipoDoc.toUpperCase(),
+            'DNI/RUC': datos.cliente.numDoc,
+            'Tipo Comprobante': datos.tipoComprobante.toUpperCase(),
+            // tslint:disable-next-line:max-line-length
+            'Serie Comprobante': datos.serieComprobante,
+            // tslint:disable-next-line:max-line-length
+            'Num. Comprobante': datos.numeroComprobante,
+            // tslint:disable-next-line:max-line-length
+            'Serie con Numero': datos.serieComprobante + '-' + this.digitosFaltantes('0', (8 - datos.numeroComprobante.length)) + datos.numeroComprobante,
+            'Monto Pagado': datos.totalPagarVenta,
+            'Metodo Pago': datos.tipoPago.toUpperCase(),
+            'Fecha Emision': formatDate(FechaConsulta, 'dd-MM-yyyy', 'en'),
+            'Cant. bolsa': datos.cantidadBolsa,
+            'Sede: ': datos.vendedor.sede,
+            'Estado Comprobante': datos.estadoVenta,
+            'Producto/Servicio': datos.productos,
+          };
+          dataExcel.push(formato);
+        }
         if (contador === data.length){
-          this.excelService.exportAsExcelFile(dataExcel, 'ReporteVentas ' + this.sede + mes + '-' + anio);
+          this.excelService.exportAsExcelFile(dataExcel, 'ReporteVentas ' + mes + '-' + anio);
         }
       }
     }
 
-  }
-  async ObtenerVentasMesAnioDescargarComprobantes(mes: number, anio: number) {
-    this.presentLoading('Consultando Comprobantes... Por Favor Espere...');
-    console.log(mes, anio);
-    this.arrayMes = [];
-    let formato: string;
-    for (let contador = 1 ; contador <= 31; contador++) {
-      formato = ((contador <= 9 ) ? '0' + contador : contador) + '-' + ((mes <= 9 ) ? '0' + mes : mes)  + '-' + anio;
-      await this.dataApi.obtenerVentasBoletasFacturasPorDia(this.sede.toLocaleLowerCase(), formato).then(async (res: any) => {
-        if (res.length === 0) {
-          console.log('no hay datos de dia', contador );
-        }else {
-          console.log('datos de dia', contador );
-          this.arrayMes = [...this.arrayMes, ...res];
-        }
-        if (contador === 31) {
-        if (!this.arrayMes.length) {
-          this.loading.dismiss();
-          this.globalSrv.presentToast('No hay productos de sede: ' + this.sede, {color: 'danger', position: 'top'});
-
-        } else {
-          // tslint:disable-next-line:no-shadowed-variable
-          let contadorarray = 0;
-          let ContadorBoletas = 0;
-
-          for (const venta of this.arrayMes) {
-            contadorarray++;
-            if (venta.tipoComprobante === 'boleta' || venta.tipoComprobante === 'factura') {
-              ContadorBoletas++ ;
-              await this.comprobanteSrv.generarComprobante(venta);
-            }
-            if (contadorarray === this.arrayMes.length) {
-              console.log(this.arrayMes);
-              console.log('BOLEEETAS: ', ContadorBoletas);
-              this.loading.dismiss();
-
-              this.globalSrv.presentToast('se descarganron todos los comprobantes' + ContadorBoletas);
-
-              }
-          }
-        }
-        }
-      });
-    }
   }
 
   digitosFaltantes(caracter: string, num: number) {
