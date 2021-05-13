@@ -157,7 +157,7 @@ export class ListaDeVentasPage implements OnInit {
         }
 
         // tslint:disable-next-line:max-line-length
-        if (venta.cdrAnulado && !venta.cdr.sunatResponse.error && venta.cdrAnulado.cdr.sunatResponse.cdrResponse.notes && venta.cdrAnulado.cdr.sunatResponse.cdrResponse.notes.length) {
+        if (venta.cdrAnulado && !venta.cdr.sunatResponse.error && venta.cdrAnulado.cdr.sunatResponse.cdrResponse && venta.cdrAnulado.cdr.sunatResponse.cdrResponse.notes && venta.cdrAnulado.cdr.sunatResponse.cdrResponse.notes.length) {
           const data = {
             boleta: venta.cdrAnulado.cdr.sunatResponse.cdrResponse.id,
             // notas: venta.cdrAnulado.cdr.sunatResponse.cdrResponse.notes
