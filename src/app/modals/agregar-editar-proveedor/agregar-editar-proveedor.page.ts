@@ -1,12 +1,11 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
-import { ModalController, ToastController } from '@ionic/angular';
+import { ModalController} from '@ionic/angular';
 import { ProveedorInterface } from 'src/app/models/proveedor';
-import { DbDataService } from 'src/app/services/db-data.service';
-import { StorageService } from '../../services/storage.service';
-import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { isNullOrUndefined } from 'util';
 import { DataBaseService } from '../../services/data-base.service';
+import { ConsultarRUC_DNI } from 'src/app/global/consultaRucDni';
+import { EMAIL_REGEXP_PATTERN, NumberOnlyValidation } from 'src/app/global/validadores';
+import { GlobalService } from 'src/app/global/global.service';
 
 @Component({
   selector: 'app-agregar-editar-proveedor',
@@ -15,12 +14,11 @@ import { DataBaseService } from '../../services/data-base.service';
 })
 export class AgregarEditarProveedorPage implements OnInit {
 
+  /** Adaptacion de funciones importadas */
+  numberOnlyValidation = NumberOnlyValidation;
+
   proveedorModalForm: FormGroup;
 
-  // @Input() eventoInvoker: string;
-  // @Input() tagInvoker: string;
-  // @Input() titleInvoker: string;
-  // @Input() dataInvoker: ProveedorInterface;
   @Input() dataModal: {
     evento: 'actualizar' | 'agregar',
     proveedor?: ProveedorInterface
@@ -33,43 +31,33 @@ export class AgregarEditarProveedorPage implements OnInit {
   constructor(
     private dataApi: DataBaseService,
     private modalCtlr: ModalController,
-    private toastCtrl: ToastController,
-    private storage: StorageService,
-    private http: HttpClient
+    private globalService: GlobalService,
   ) {
     this.proveedorModalForm = this.createFormProveedor();
-    // console.log(this.eventoInvoker, this.tagInvoker, this.dataInvoker);
   }
 
 
   ngOnInit() {
-    // if ( this.dataModal.evento === 'actualizar' ){
-    //   this.proveedorModalForm = this.formForUpdate();
-    // }
-
-    // console.log('datainvoker', this.dataInvoker);
-  }
-
-  ionViewWillEnter(){
     if ( this.dataModal.evento === 'actualizar' ){
       this.proveedorModalForm = this.formForUpdate();
     }
   }
 
+  ionViewWillEnter(){
+  }
+
   createFormProveedor() {
     return new FormGroup({
       nombre: new FormControl('', [Validators.required, Validators.minLength(3)]),
-      // ruc: new FormControl('', [Validators.required, Validators.minLength(11), Validators.maxLength(11)]),
       tipoDocumento: new FormControl('ruc', [Validators.required]),
-      numeroDocumento: new FormControl('', [Validators.required, Validators.minLength(8), Validators.maxLength(11)]),
+      numeroDocumento: new FormControl('', [Validators.required, Validators.minLength(11), Validators.maxLength(11)]),
       telefono: new FormControl('', [Validators.minLength(6), Validators.maxLength(9)]),
       direccion: new FormControl('', [Validators.minLength(3)]),
-      email: new FormControl('', [Validators.minLength(3), Validators.pattern('^[_a-z0-9]+(\.[_a-z0-9]+)*@[a-z0-9-]+(\.[_a-z0-9]+)*\.([a-z]{2,4})$')])
+      email: new FormControl('', [Validators.minLength(3), Validators.pattern(EMAIL_REGEXP_PATTERN)])
     });
   }
 
   get nombre() { return this.proveedorModalForm.get('nombre'); }
-  // get ruc() { return this.proveedorModalForm.get('ruc'); }
   get tipoDocumento() { return this.proveedorModalForm.get('tipoDocumento'); }
   get numeroDocumento() { return this.proveedorModalForm.get('numeroDocumento'); }
   get telefono() { return this.proveedorModalForm.get('telefono'); }
@@ -79,25 +67,26 @@ export class AgregarEditarProveedorPage implements OnInit {
   formForUpdate(){
     return new FormGroup({
       nombre: new FormControl(this.dataModal.proveedor.nombre, [Validators.required, Validators.minLength(3)]),
-      // ruc: new FormControl(this.dataInvoker.ruc, [Validators.required, Validators.minLength(11), Validators.maxLength(11)]),
       tipoDocumento: new FormControl(this.dataModal.proveedor.tipoDocumento, [Validators.required]),
       numeroDocumento: new FormControl(this.dataModal.proveedor.numeroDocumento, [Validators.required]),
       telefono: new FormControl(this.dataModal.proveedor.telefono, [Validators.minLength(6), Validators.maxLength(9)]),
       direccion: new FormControl(this.dataModal.proveedor.direccion, [Validators.minLength(3)]),
-      email: new FormControl(this.dataModal.proveedor.email, [Validators.minLength(3), Validators.pattern('^[_a-z0-9]+(\.[_a-z0-9]+)*@[a-z0-9-]+(\.[_a-z0-9]+)*\.([a-z]{2,4})$')])
+      email: new FormControl(this.dataModal.proveedor.email, [Validators.minLength(3), Validators.pattern(EMAIL_REGEXP_PATTERN)])
     });
   }
 
-  siRucoDni(){
+  resetearTypoDocumento() {
     const typeDoc = this.proveedorModalForm.value.tipoDocumento;
-    if (typeDoc === 'ruc'){
+
+    console.log(this.proveedorModalForm.value.tipoDoc);
+    if (typeDoc === 'ruc') {
       this.proveedorModalForm.setControl(
         'numeroDocumento',
         new FormControl('', [Validators.required, Validators.minLength(11), Validators.maxLength(11)])
       );
 
       this.typoDocumento = 'ruc';
-    } else if (typeDoc === 'dni'){
+    } else if (typeDoc === 'dni') {
       this.proveedorModalForm.setControl(
         'numeroDocumento',
         new FormControl('', [Validators.required, Validators.minLength(8), Validators.maxLength(8)])
@@ -110,40 +99,39 @@ export class AgregarEditarProveedorPage implements OnInit {
   }
 
 
-  execFun(){
+  async  execFun(){
+    const loadController = await this.globalService.presentLoading('Guardando datos...');
     if (this.dataModal.evento === 'agregar'){
-      this.guardarProveedor();
-
+      await this.guardarProveedor();
     }
     else if (this.dataModal.evento === 'actualizar'){
-      this.actualizarProveedor();
+      await this.actualizarProveedor();
 
     } else {
       console.log('La función no existe');
     }
 
+    loadController.dismiss();
   }
 
-  guardarProveedor(){
-    // console.log(this.proveedorModalForm.value);
-    this.dataApi.guardarProveedor(this.proveedorModalForm.value).then(() => {
-      // console.log("Se ingreso Correctamente")
-      this.presentToast('Datos guardados correctamente');
+  async guardarProveedor() {
+    await this.dataApi.guardarProveedor(this.proveedorModalForm.value).then(() => {
+      this.globalService.presentToast('Datos guardados correctamente', {color: 'success'});
       this.modalCtlr.dismiss();
       this.proveedorModalForm.reset();
 
     });
   }
 
-  actualizarProveedor(){
+  async actualizarProveedor() {
 
-    this.dataApi.actualizarProveedor(this.dataModal.proveedor.id, this.proveedorModalForm.value).then(
-        () => {
-          console.log('Se ingreso Correctamente');
-          this.presentToast('Datos actualizados correctamente');
-          this.modalCtlr.dismiss();
-      }
-    );
+    await this.dataApi.actualizarProveedor(this.dataModal.proveedor.id, this.proveedorModalForm.value)
+    .then(() => {
+      console.log('Se ingreso Correctamente');
+      this.globalService.presentToast('Datos actualizados correctamente', {color: 'success'});
+
+      this.modalCtlr.dismiss();
+    });
 
   }
 
@@ -153,92 +141,80 @@ export class AgregarEditarProveedorPage implements OnInit {
   }
 
 
-  async presentToast(message: string){
-    const toast = await this.toastCtrl.create({
-      message,
-      duration: 2000
-    });
-
-    toast.present();
-  }
-
-
-  numberOnlyValidation(event: any) {
-    const pattern = /[0-9]/;
-    const inputChar = String.fromCharCode(event.charCode);
-
-    if (!pattern.test(inputChar)) {
-      // invalid character, prevent input
-      event.preventDefault();
+  /** CONSULTA RUC O DNI A SUNAT APIS */
+  async consultaApiDniRuc(event) {
+    if (event.detail.value.length === 8 || event.detail.value.length === 11){
+      this.consultando = true;
+      await ConsultarRUC_DNI(event.detail.value, this.typoDocumento).then( (data: any) => {
+        this.encontrado = true;
+        this.proveedorModalForm.setControl('nombre', new FormControl(data.nombre, [Validators.required, Validators.minLength(3)]));
+        this.proveedorModalForm.setControl('direccion', new FormControl(data.direccion, [Validators.minLength(3)]));
+        this.consultando = false;
+      }).catch(() => {
+        this.encontrado = false;
+        this.consultando = false;
+      });
     }
   }
 
-  stringOnlyValidation(event: any) {
-    const pattern = /[a-zA-ZÀ-ÿ\u00f1\u00d1 ]/;
-    const inputChar = String.fromCharCode(event.charCode);
+  // consultaSunat(event) {
+  //   console.log(event.detail.value);
+  //   if (this.typoDocumento === 'dni') {
+  //     if (event.detail.value.length === 8) {
+  //       this.consultando = true;
+  //       const httpOptions = {
+  //         headers: new HttpHeaders({
+  //           // 'Content-Type':  'application/json',
+  //           // tslint:disable-next-line:object-literal-key-quotes
+  //           'Authorization': 'token k4d2956bd531ab61d44f4fa07304b20e13913815'
+  //         })
+  //       };
+  //       this.http.get('https://dni.optimizeperu.com/api/persons/' + event.detail.value).subscribe((data: any) => {
+  //         console.log(data);
+  //         if (!isNullOrUndefined(data) && data !== 'Peticiones diarias excedidas' && data.name) {
+  //           this.encontrado = true;
+  //           this.proveedorModalForm.value.nombre = data.name + ' ' + data.first_name + ' ' + data.last_name;
+  //           this.consultando = false;
+  //         } else {
+  //           this.encontrado = false;
+  //         }
+  //       }, err => {
+  //         this.consultando = false;
+  //         this.encontrado = false;
+  //       });
+  //     }
+  //   } else {
+  //     if (event.detail.value.length === 11) {
+  //       this.consultando = true;
+  //       const httpOptions = {
+  //         headers: new HttpHeaders({
+  //           // 'Content-Type':  'application/json',
+  //           // tslint:disable-next-line:object-literal-key-quotes
+  //           'Authorization': 'token k4d2956bd531ab61d44f4fa07304b20e13913815'
+  //         })
+  //       };
+  //       const url = 'https://dni.optimizeperu.com/api/company/';
+  //       this.http.get('https://dniruc.apisperu.com/api/v1/ruc/'
+  // tslint:disable-next-line: max-line-length
+  //  + event.detail.value + '?token=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJlbWFpbCI6ImFpaXp4Ym92c2dxcnRpZ2J3cEBuaXdnaHguY29tIn0.BwArIEbkSUE_GuXwPjETGTLvl88rhANKTsVcA7NY-WE').subscribe((data: any) => {
+  //         if (!isNullOrUndefined(data) && data !== 'Peticiones diarias excedidas' && data.razonSocial && data.direccion) {
+  //           this.encontrado = true;
+  //           console.log(data);
+  //           this.proveedorModalForm.setControl('nombre', new FormControl(data.razonSocial, [Validators.minLength(3)]));
+  //           this.proveedorModalForm.setControl('direccion', new FormControl(data.direccion, [Validators.minLength(3)]));
+  //           console.log(this.proveedorModalForm.value.direccion);
+  //           this.consultando = false;
+  //         } else {
+  //           this.encontrado = false;
+  //         }
+  //       }, err => {
+  //         this.consultando = false;
+  //         this.encontrado = false;
+  //       });
+  //     }
+  //   }
+  // }
 
-    if (!pattern.test(inputChar)) {
-      // invalid character, prevent input
-      event.preventDefault();
-    }
-  }
 
-  // consulta sunat
-
-  consultaSunat(event) {
-    console.log(event.detail.value);
-    if (this.typoDocumento === 'dni') {
-      if (event.detail.value.length === 8) {
-        this.consultando = true;
-        const httpOptions = {
-          headers: new HttpHeaders({
-            // 'Content-Type':  'application/json',
-            // tslint:disable-next-line:object-literal-key-quotes
-            'Authorization': 'token k4d2956bd531ab61d44f4fa07304b20e13913815'
-          })
-        };
-        this.http.get('https://dni.optimizeperu.com/api/persons/' + event.detail.value).subscribe((data: any) => {
-          console.log(data);
-          if (!isNullOrUndefined(data) && data !== 'Peticiones diarias excedidas' && data.name) {
-            this.encontrado = true;
-            this.proveedorModalForm.value.nombre = data.name + ' ' + data.first_name + ' ' + data.last_name;
-            this.consultando = false;
-          } else {
-            this.encontrado = false;
-          }
-        }, err => {
-          this.consultando = false;
-          this.encontrado = false;
-        });
-      }
-    } else {
-      if (event.detail.value.length === 11) {
-        this.consultando = true;
-        const httpOptions = {
-          headers: new HttpHeaders({
-            // 'Content-Type':  'application/json',
-            // tslint:disable-next-line:object-literal-key-quotes
-            'Authorization': 'token k4d2956bd531ab61d44f4fa07304b20e13913815'
-          })
-        };
-        const url = 'https://dni.optimizeperu.com/api/company/';
-        this.http.get('https://dniruc.apisperu.com/api/v1/ruc/' + event.detail.value + '?token=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJlbWFpbCI6ImFpaXp4Ym92c2dxcnRpZ2J3cEBuaXdnaHguY29tIn0.BwArIEbkSUE_GuXwPjETGTLvl88rhANKTsVcA7NY-WE').subscribe((data: any) => {
-          if (!isNullOrUndefined(data) && data !== 'Peticiones diarias excedidas' && data.razonSocial && data.direccion) {
-            this.encontrado = true;
-            console.log(data);
-            this.proveedorModalForm.setControl('nombre', new FormControl(data.razonSocial, [Validators.minLength(3)]));
-            this.proveedorModalForm.setControl('direccion', new FormControl(data.direccion, [Validators.minLength(3)]));
-            console.log(this.proveedorModalForm.value.direccion);
-            this.consultando = false;
-          } else {
-            this.encontrado = false;
-          }
-        }, err => {
-          this.consultando = false;
-          this.encontrado = false;
-        });
-      }
-    }
-  }
 
 }

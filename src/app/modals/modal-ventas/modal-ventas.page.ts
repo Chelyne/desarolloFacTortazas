@@ -80,7 +80,7 @@ export class ModalVentasPage implements OnInit {
     const canvas = document.querySelector('canvas') as HTMLCanvasElement;
     const imageData = canvas.toDataURL('image/jpeg').toString();
     return imageData;
-    }
+  }
 
   obtenerTipoComprobante(serie: string) {
     const letra = serie[0];

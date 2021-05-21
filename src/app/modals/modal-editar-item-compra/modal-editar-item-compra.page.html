@@ -13,40 +13,37 @@
   <form [formGroup]="formItemDeCompras">
     <ion-item lines="none">
       <ion-label position="floating" color="primary">Nombre del producto<ion-text color="danger">*</ion-text></ion-label>
-      <ion-input  type="text" formControlName="nombre" placeholder="Nombre" required  readonly></ion-input>
+      <ion-input  type="text" formControlName="nombre" placeholder="Nombre" required  readonly color="primary"></ion-input>
     </ion-item>
     <ion-grid>
       <ion-row>
         <ion-col size-lg="6">
           <ion-item lines="none">
             <ion-label position="floating" color="primary">Precio Unitario de compra(s/.)<ion-text color="danger">*</ion-text></ion-label>
-            <ion-input type="text" formControlName="pu_compra" placeholder="Precio" placeholder="00.00" required></ion-input>
-            <div class="alertDanger" *ngIf="pu_compra.invalid && (pu_compra.dirty || pu_compra.touched)">
-              <div class="mensajeError" *ngIf="pu_compra.errors.required">
-                *Ingrese precio unitario compra
-              </div>
-              <div class="mensajeError" *ngIf="pu_compra.errors.pattern">
-                *solo formato de moneda 00.00
-              </div>
-              <div class="mensajeError" *ngIf="pu_compra.errors.min">
-                *El monto debe ser numero positivo
-              </div>
-            </div>
+            <ion-input type="number" formControlName="pu_compra" placeholder="Precio" placeholder="00.00" required (keypress)="decimalOnlyValidation($event)"></ion-input>
           </ion-item>
+          <div class="alertDanger" *ngIf="pu_compra.invalid && (pu_compra.dirty || pu_compra.touched)">
+            <div class="mensajeError" *ngIf="pu_compra.errors.required">
+              *Ingrese precio unitario compra: 00.00
+            </div>
+            <div class="mensajeError" *ngIf="pu_compra.errors.pattern">
+              *solo formato de moneda 00.00
+            </div>
+          </div>
         </ion-col>
         <ion-col size-lg="6">
           <ion-item lines="none">
             <ion-label position="floating" color="primary">Cantidades<ion-text color="danger">*</ion-text></ion-label>
-            <ion-input type="text" formControlName="cantidad" placeholder="00" required></ion-input>
-            <div class="alertDanger" *ngIf="cantidad.invalid && (cantidad.dirty || cantidad.touched)">
-              <div class="mensajeError" *ngIf="cantidad.errors.required">
-                *Ingrese cantidad
-              </div>
-              <div class="mensajeError" *ngIf="cantidad.errors.pattern">
-                *solo ingrese numeros
-              </div>
-            </div>
+            <ion-input type="number" formControlName="cantidad" placeholder="00" required (keypress)="decimalOnlyValidation($event)"></ion-input>
           </ion-item>
+          <div class="alertDanger" *ngIf="cantidad.invalid && (cantidad.dirty || cantidad.touched)">
+            <div class="mensajeError" *ngIf="cantidad.errors.required">
+              *Ingrese cantidad: 00.00
+            </div>
+            <div class="mensajeError" *ngIf="cantidad.errors.pattern">
+              *solo ingrese formato decimal: 00.00
+            </div>
+          </div>
         </ion-col>
       </ion-row>
     </ion-grid>

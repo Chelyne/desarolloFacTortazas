@@ -42,53 +42,23 @@
       </ion-item>
       <ion-grid fixed>
         <ion-row class="header">
-          <ion-col size="0.3">
-            <ion-label color="light">#</ion-label>
-          </ion-col>
-          <ion-col size="1.5">
-            <ion-label color="light">Vendedor</ion-label>
-          </ion-col>
-          <ion-col size="1.5">
-            <ion-label color="light">Apertura</ion-label>
-          </ion-col>
-          <ion-col size="1.5">
-            <ion-label color="light">Cierre</ion-label>
-          </ion-col>
-          <ion-col size="1">
-            <ion-label color="light">Saldo Inicial</ion-label>
-          </ion-col>
-          <ion-col size="1">
-            <ion-label color="light">Saldo Final</ion-label>
-          </ion-col>
-          <ion-col size="1.5">
-            <ion-label color="light">Estado</ion-label>
-          </ion-col>
-          <ion-col size="3.7">
-            <ion-label color="light">Acciones</ion-label>
-          </ion-col>
+          <ion-col size="0.3"><ion-label color="light">#</ion-label></ion-col>
+          <ion-col size="1.5"><ion-label color="light">Vendedor</ion-label></ion-col>
+          <ion-col size="1.5"><ion-label color="light">Apertura</ion-label></ion-col>
+          <ion-col size="1.5"><ion-label color="light">Cierre</ion-label></ion-col>
+          <ion-col size="1"><ion-label color="light">Saldo Inicial</ion-label></ion-col>
+          <ion-col size="1"><ion-label color="light">Saldo Final</ion-label></ion-col>
+          <ion-col size="1.5"><ion-label color="light">Estado</ion-label></ion-col>
+          <ion-col size="3.7"><ion-label color="light">Acciones</ion-label></ion-col>
         </ion-row>
-        <ion-row style="text-align: center;" *ngFor="let item of listaCajaChica; let i=index ">
-          <ion-col size="0.3">
-            <ion-label>{{i+1}}</ion-label>
-          </ion-col>
-          <ion-col size="1.5">
-            <ion-label>{{item.nombreVendedor}}</ion-label>
-          </ion-col>
-          <ion-col size="1.5">
-            <ion-label>{{item.FechaApertura}}</ion-label>
-          </ion-col>
-          <ion-col size="1.5">
-            <ion-label>{{item.FechaCierre}}</ion-label>
-          </ion-col>
-          <ion-col size="1">
-            <ion-label>{{item.saldoInicial}}</ion-label>
-          </ion-col>
-          <ion-col size="1">
-            <ion-label>{{item.saldoFinal}}</ion-label>
-          </ion-col>
-          <ion-col size="1.5">
-            <ion-label>{{item.estado}}</ion-label>
-          </ion-col>
+        <ion-row style="text-align: center;" *ngFor="let item of listaCajaChica; let i=index">
+          <ion-col size="0.3"><ion-label>{{i+1}}</ion-label></ion-col>
+          <ion-col size="1.5"><ion-label>{{item.nombreVendedor}}</ion-label></ion-col>
+          <ion-col size="1.5"><ion-label>{{item.FechaApertura}}</ion-label></ion-col>
+          <ion-col size="1.5"><ion-label>{{item.FechaCierre}}</ion-label></ion-col>
+          <ion-col size="1"><ion-label>{{item.saldoInicial}}</ion-label></ion-col>
+          <ion-col size="1"><ion-label>{{item.saldoFinal}}</ion-label></ion-col>
+          <ion-col size="1.5"><ion-label>{{item.estado}}</ion-label></ion-col>
           <ion-col size="3.7">
             <ion-label>
               <ion-button *ngIf="item.estado==='Cerrado'" size="small" class="botones" color="primary"
@@ -117,9 +87,7 @@
                 Editar
               </ion-button>
             </ion-label>
-
           </ion-col>
-
         </ion-row>
       </ion-grid>
     </ion-card-content>

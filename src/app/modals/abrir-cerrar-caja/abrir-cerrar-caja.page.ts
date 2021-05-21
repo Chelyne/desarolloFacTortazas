@@ -23,14 +23,14 @@ export class AbrirCerrarCajaPage implements OnInit {
   loading;
 
   constructor(
-              private dataApi: DataBaseService,
-              private globalSrv: GlobalService,
-              private modalCrl: ModalController,
-              private storage: StorageService,
-              private loadingController: LoadingController
-              ) {
-                this.abrirCajaChicaForm = this.guardarCajaChicaFormGroup();
-                this.CerrarCajaChicaForm =  this.createFormGroupCerrarCajaChica();
+    private dataApi: DataBaseService,
+    private globalSrv: GlobalService,
+    private modalCrl: ModalController,
+    private storage: StorageService,
+    private loadingController: LoadingController
+  ) {
+    this.abrirCajaChicaForm = this.guardarCajaChicaFormGroup();
+    this.CerrarCajaChicaForm =  this.createFormGroupCerrarCajaChica();
   }
 
   ngOnInit() {

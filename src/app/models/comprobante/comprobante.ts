@@ -146,7 +146,7 @@ export interface SaleDetailInterface {
 
 export interface ChangeInterface {
     codTipo?: string;
-    factor?: number;
+    factor?: number; /** este era string, quisa debe ser number */
     monto?: number;
     montoBase?: number;
 }
@@ -179,8 +179,8 @@ export interface SalePerceptionInterface {
 }
 
 export interface EmbededDespatchInterface {
-    llegada	?: DirectionInterface;
-    partida	?: DirectionInterface;
+    llegada?: DirectionInterface;
+    partida?: DirectionInterface;
     transportista?: ClientInterface;
     nroLicencia?: string;
     transpPlaca?: string;

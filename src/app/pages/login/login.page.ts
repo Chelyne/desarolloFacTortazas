@@ -4,11 +4,10 @@ import { MenuController, LoadingController, ToastController, Platform } from '@i
 import { FormGroup, FormControl, Validators } from '@angular/forms';
 import { AuthServiceService } from '../../services/auth-service.service';
 import { StorageService } from '../../services/storage.service';
-// import { FCM } from '@ionic-native/fcm/ngx';
-import { DbDataService } from '../../services/db-data.service';
 import { isNullOrUndefined } from 'util';
 import { GENERAL_CONFIG } from '../../../config/generalConfig';
 import { DataBaseService } from '../../services/data-base.service';
+import { EMAIL_REGEXP_PATTERN } from 'src/app/global/validadores';
 
 @Component({
   selector: 'app-login',
@@ -20,7 +19,7 @@ export class LoginPage implements OnInit {
   logo = GENERAL_CONFIG.datosEmpresa.logo;
 
   // tslint:disable-next-line:max-line-length
-  emailPattern: any = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+  emailPattern: RegExp = EMAIL_REGEXP_PATTERN;
   loading;
   token: string;
   constructor(private authService: AuthServiceService,
@@ -133,6 +132,10 @@ export class LoginPage implements OnInit {
       mode: 'ios'
     });
     await this.loading.present();
+  }
+
+  teclaEnter(){
+    console.log('se presiono la tecla enter');
   }
 
 }

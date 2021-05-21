@@ -1,6 +1,7 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { ModalController } from '@ionic/angular';
+import { DecimalOnlyValidation, DECIMAL_REGEXP_PATTERN } from 'src/app/global/validadores';
 import { ItemDeCompraInterface } from 'src/app/models/Compra';
 
 @Component({
@@ -9,6 +10,9 @@ import { ItemDeCompraInterface } from 'src/app/models/Compra';
   styleUrls: ['./modal-editar-item-compra.page.scss'],
 })
 export class ModalEditarItemCompraPage implements OnInit {
+
+  /** AFI */
+  decimalOnlyValidation = DecimalOnlyValidation;
 
   @Input() dataModal: {
     itemCompra: ItemDeCompraInterface
@@ -37,8 +41,8 @@ export class ModalEditarItemCompraPage implements OnInit {
     return new FormGroup({
       nombre: new FormControl('', [Validators.required]),
       descripcion: new FormControl('', []),
-      cantidad: new FormControl('', [Validators.required, Validators.pattern('^[0-9]*$')]),
-      pu_compra: new FormControl('', [Validators.required, Validators.min(0), Validators.pattern('^[0-9]*\.?[0-9]*$')]),
+      cantidad: new FormControl('', [Validators.required, Validators.pattern(DECIMAL_REGEXP_PATTERN)]),
+      pu_compra: new FormControl('', [Validators.required, Validators.pattern(DECIMAL_REGEXP_PATTERN)]),
       descuento: new FormControl('', [Validators.pattern('^[0-9]*\.?[0-9]*$')])
     });
   }
@@ -47,8 +51,8 @@ export class ModalEditarItemCompraPage implements OnInit {
     return new FormGroup({
       nombre: new FormControl(this.dataModal.itemCompra.producto.nombre, [Validators.required]),
       descripcion: new FormControl('', []),
-      cantidad: new FormControl(this.dataModal.itemCompra.cantidad, [Validators.required, Validators.pattern('^[0-9]*$')]),
-      pu_compra: new FormControl(this.dataModal.itemCompra.pu_compra, [Validators.required, Validators.min(0), Validators.pattern('^[0-9]*\.?[0-9]*$')]),
+      cantidad: new FormControl(this.dataModal.itemCompra.cantidad, [Validators.required, Validators.pattern(DECIMAL_REGEXP_PATTERN)]),
+      pu_compra: new FormControl(this.dataModal.itemCompra.pu_compra, [Validators.required, Validators.pattern(DECIMAL_REGEXP_PATTERN)]),
       descuento: new FormControl('', [Validators.pattern('^[0-9]*\.?[0-9]*$')])
     });
   }

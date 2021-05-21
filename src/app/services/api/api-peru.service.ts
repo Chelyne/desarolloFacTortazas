@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { EmpresaInterface } from 'src/app/models/api-peru/empresa';
 import { ClienteInterface } from 'src/app/models/cliente-interface';
-import { AddressInterface, ClientInterface, CompanyInterface } from 'src/app/models/comprobante/comprobante';
+import { AddressInterface, ChangeInterface, ClientInterface, CompanyInterface } from 'src/app/models/comprobante/comprobante';
 import { ComprobanteInterface, NotaDeCreditoInterface, SaleDetailInterface } from 'src/app/models/comprobante/comprobante';
 import { ItemDeVentaInterface } from 'src/app/models/venta/item-de-venta';
 import { VentaInterface } from 'src/app/models/venta/venta';
@@ -10,6 +10,8 @@ import { StorageService } from '../storage.service';
 import { redondeoDecimal, formatearDateTime } from 'src/app/global/funciones-globales';
 import { MontoALetras } from 'src/app/global/monto-a-letra';
 import { GENERAL_CONFIG } from '../../../config/generalConfig';
+import { GLOBAL_FACTOR_ICBPER } from '../../../config/otherConfig';
+
 import { ApiPeruConfigInterface, DatosApiPeruInterface, DatosEmpresaInterface } from './apiPeruInterfaces';
 import { CDRInterface } from 'src/app/models/api-peru/cdr-interface';
 import { DataBaseService } from '../data-base.service';
@@ -37,7 +39,7 @@ export class ApiPeruService {
   // datosSede: AddressInterface;
   sedeDireccion: AddressInterface;
 
-  FACTOR_ICBPER = 0.3;
+  FACTOR_ICBPER = GLOBAL_FACTOR_ICBPER;
 
   enviroment = '';
 
@@ -428,7 +430,7 @@ export class ApiPeruService {
   // NOTE - Esta es la función más importante que se encarga de enviar una factura a sunat
   enviarComprobanteASunat(ventaFormateada: ComprobanteInterface){
     const myHeaders = new Headers();
-    myHeaders.append('Authorization', 'Bearer '.concat(this.datosEmpresa.token));
+    myHeaders.append('Authorization', 'Bearer '.concat(this.datosEmpresa.token ?? ''));
     myHeaders.append('Content-Type', 'application/json');
 
     let raw: string;
@@ -651,7 +653,7 @@ export class ApiPeruService {
       return '1';
     } else if (typoDoc === 'ruc') {
       return '6';
-    } else{
+    } else {
       throw String('TYPO DE DOCUMENTO DEL CLIENTE INVALIDO');
     }
   }
@@ -861,7 +863,7 @@ export class ApiPeruService {
 
   async enviarNotaCreditoASunat(notaCreditoFormateado: NotaDeCreditoInterface){
     const myHeaders = new Headers();
-    myHeaders.append('Authorization', 'Bearer '.concat(this.datosEmpresa.token));
+    myHeaders.append('Authorization', 'Bearer '.concat(this.datosEmpresa.token ?? ''));
     myHeaders.append('Content-Type', 'application/json');
 
     let raw: string;
@@ -975,6 +977,7 @@ export class ApiPeruService {
 /* ---------------------------------------------------------------------------------------------- */
 /* ---------------------------------------------------------------------------------------------- */
 /* ---------------------------------------------------------------------------------------------- */
+
 
 /* ---------------------------------------------------------------------------------------------- */
   formatearResumenDiario(listaDeVentas: VentaInterface[], fechaVenta: string){
@@ -1117,10 +1120,13 @@ export class ApiPeruService {
 
   async formatearVentas(listaDeVentas: VentaInterface[]){
     for (const venta of listaDeVentas) {
-      console.log('VENTA ORIGINAL', venta);
       const productos = await this.obtenerProductosDeVenta(venta.idListaProductos).catch(err => err);
       venta.listaItemsDeVenta = productos;
       const ventaFormateada: ComprobanteInterface = this.intentarFormatearVenta(venta);
+
+      console.log('%c---------------------------------', 'color:white;background-color:orange');
+      console.log('VENTA ORIGINAL', venta);
+      console.log('PRODUCTOS',  productos);
       console.log('VENTA FORMATEADO', ventaFormateada);
     }
   }

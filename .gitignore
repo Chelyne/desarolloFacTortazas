@@ -29,7 +29,8 @@ npm-debug.log*
 /platforms
 /plugins
 /www
-/functions
+/functions/node_modules/
+/functions/lib/
 /dataBeto
 /.firebase
 

@@ -12,14 +12,8 @@ export class ProductoVentaComponent implements OnInit {
 
   @Input() itemDeVenta: ItemDeVentaInterface;
 
-  @Output()  cambiarPropiedadesProducto = new EventEmitter<{
-    id: string,
-    cantidad: number,
-    porcentaje: number,
-    descuento: number,
-    montoNeto: number,
-    totalxprod: number
-  }>();
+  @Output() cambiarPropiedadesItemVenta = new EventEmitter<ItemDeVentaInterface>();
+
   @Output()  quitarItemDeVenta = new EventEmitter<{id: string}>();
 
   formVenta: FormGroup;
@@ -103,12 +97,14 @@ export class ProductoVentaComponent implements OnInit {
 
   cambioCantidad(){
     this.itemDeVenta.cantidad = this.formVenta.value.cantidad ? parseInt(this.formVenta.value.cantidad, 10) : 0;
-    this.itemDeVenta.montoNeto = this.itemDeVenta.cantidad * this.itemDeVenta.producto.precio;
+    this.itemDeVenta.montoNeto = this.itemDeVenta.cantidad * this.itemDeVenta.precio;
     // this.itemDeVenta.porcentajeDescuento = this.formVenta.value.porcentaje ? parseFloat(this.formVenta.value.porcentaje) : 0;
     this.itemDeVenta.descuentoProducto = this.calcularPorcentaje(this.itemDeVenta.montoNeto, this.itemDeVenta.porcentajeDescuento);
     this.itemDeVenta.totalxprod = this.itemDeVenta.montoNeto - this.itemDeVenta.descuentoProducto;
 
-    this.emitirCambioDePropiedades();
+    // this.emitirCambioDePropiedades();
+    this.emitirCambioDePropiedadesItemVenta();
+
     // setTimeout( () =>  this.emitirCambioDePropiedades()
     // , 500);
     console.log('cambioCantidad', this.itemDeVenta);
@@ -116,35 +112,43 @@ export class ProductoVentaComponent implements OnInit {
 
   cambioPorcentaje(){
     // this.itemDeVenta.cantidad = this.formVenta.value.cantidad ? parseInt(this.formVenta.value.cantidad, 10) : 0;
-    this.itemDeVenta.montoNeto = this.itemDeVenta.cantidad * this.itemDeVenta.producto.precio;
+    this.itemDeVenta.montoNeto = this.itemDeVenta.cantidad * this.itemDeVenta.precio;
     this.itemDeVenta.porcentajeDescuento = this.formVenta.value.porcentaje ? parseFloat(this.formVenta.value.porcentaje) : 0;
 
     this.itemDeVenta.descuentoProducto = this.calcularPorcentaje(this.itemDeVenta.montoNeto, this.itemDeVenta.porcentajeDescuento);
     this.itemDeVenta.totalxprod = this.itemDeVenta.montoNeto - this.itemDeVenta.descuentoProducto;
 
-    this.emitirCambioDePropiedades();
+    // this.emitirCambioDePropiedades();
+    this.emitirCambioDePropiedadesItemVenta();
+
     console.log('cambioPorcentaje', this.itemDeVenta);
   }
 
   cambioPrecio(){
     // this.itemDeVenta.cantidad = this.formVenta.value.cantidad ? parseInt(this.formVenta.value.cantidad, 10) : 0;
-    this.itemDeVenta.montoNeto = this.itemDeVenta.cantidad * this.itemDeVenta.producto.precio;
+    this.itemDeVenta.montoNeto = this.itemDeVenta.cantidad * this.itemDeVenta.precio;
     this.itemDeVenta.porcentajeDescuento = 0.0;
 
     // tslint:disable-next-line:max-line-length
     this.itemDeVenta.totalxprod = this.formVenta.value.precioVenta ? parseFloat(this.formVenta.value.precioVenta) : this.itemDeVenta.montoNeto;
     this.itemDeVenta.descuentoProducto = this.itemDeVenta.montoNeto - this.itemDeVenta.totalxprod;
 
-    this.emitirCambioDePropiedades();
+    // this.emitirCambioDePropiedades();
+    this.emitirCambioDePropiedadesItemVenta();
+
     console.log('cambioPrecio', this.itemDeVenta);
   }
 
-  emitirCambioDePropiedades(){
-    this.cambiarPropiedadesProducto.emit({
-      id: this.itemDeVenta.idProducto,
+  emitirCambioDePropiedadesItemVenta(){
+    this.cambiarPropiedadesItemVenta.emit({
+      idProducto: this.itemDeVenta.idProducto,
+      producto: this.itemDeVenta.producto,
       cantidad: this.itemDeVenta.cantidad,
-      porcentaje: this.itemDeVenta.porcentajeDescuento,
-      descuento: this.itemDeVenta.descuentoProducto,
+      precio: this.itemDeVenta.precio,
+      factor: this.itemDeVenta.factor,
+      medida: this.itemDeVenta.medida,
+      porcentajeDescuento: this.itemDeVenta.porcentajeDescuento,
+      descuentoProducto: this.itemDeVenta.descuentoProducto,
       montoNeto: this.itemDeVenta.montoNeto,
       totalxprod: this.itemDeVenta.totalxprod
     });

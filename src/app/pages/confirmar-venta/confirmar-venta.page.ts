@@ -78,7 +78,7 @@ export class ConfirmarVentaPage implements OnInit {
     this.generandoPago = false;
     this.venta = this.confirmarVentaServ.getVentaService();
     console.log(this.venta);
-    if (isNullOrUndefined(this.venta)) {
+    if (!Object.entries(this.venta).length) {
       this.router.navigate(['/punto-venta']);
     } else {
       if (Object.entries(this.venta).length !== 0){
@@ -176,6 +176,7 @@ export class ConfirmarVentaPage implements OnInit {
   }
 
   ActualizarMontoEntrante(monto: number){
+    console.log('%cMONTOOOOO', 'color:white; background-color:black', monto);
     this.formPago.setControl('montoIngreso',
     new FormControl(monto.toFixed(2), [Validators.required, Validators.pattern('^[0-9]*\.?[0-9]*$')]));
   }

@@ -14,6 +14,7 @@ import { GlobalService } from '../../global/global.service';
 export class ListaDeClientesPage implements OnInit {
 
   listaDeclientes: ClienteInterface[];
+  obsClientes: any;
   clienteItem: ClienteInterface;
   sinDatos: boolean;
 
@@ -24,10 +25,12 @@ export class ListaDeClientesPage implements OnInit {
 
   textoBuscar = '';
 
-  constructor(private dataApi: DataBaseService,
-              private modalCtlr: ModalController,
-              private menuCtrl: MenuController,
-              private servGlobal: GlobalService) {
+  constructor(
+    private dataApi: DataBaseService,
+    private modalCtlr: ModalController,
+    private menuCtrl: MenuController,
+    private servGlobal: GlobalService
+  ) {
     // this.usuarioForm = this.createFormGroupUsuario();
     this.ObtenerClientes();
   }
@@ -42,7 +45,8 @@ export class ListaDeClientesPage implements OnInit {
   }
 
   ObtenerClientes(){
-    this.dataApi.obtenerListaDeClientes().subscribe(data => {
+    this.obsClientes = this.dataApi.obtenerListaDeClientes();
+    this.obsClientes.subscribe(data => {
       if (data.length) {
         this.sinDatos = false;
         this.listaDeclientes = data;
@@ -75,37 +79,24 @@ export class ListaDeClientesPage implements OnInit {
       }
     });
     await modal.present();
-
-    const {data} = await modal.onWillDismiss();
-    console.log(data);
-    if (data && data.data) {
-      if (data.evento === 'agregar') {
-        console.log('agregar', data.data);
-        this.agregar(data.data);
-      }
-      if (data.evento === 'actualizar') {
-        console.log('actualizar', data.data);
-        this.actualizar(data.id, data.data);
-      }
-    }
   }
 
 
-  agregar(cliente: ClienteInterface){
-    this.dataApi.guardarCliente(cliente).then(() => {
-      this.servGlobal.presentToast('Cliente guardado correctamente', {color: 'success'});
-    }).catch(err => {
-      this.servGlobal.presentToast('No se pudo guardar el cliente', {color: 'danger'});
-    });
-  }
+  // agregar(cliente: ClienteInterface){
+  //   this.dataApi.guardarCliente(cliente).then(() => {
+  //     this.servGlobal.presentToast('Cliente guardado correctamente', {color: 'success'});
+  //   }).catch(err => {
+  //     this.servGlobal.presentToast('No se pudo guardar el cliente', {color: 'danger'});
+  //   });
+  // }
 
-  actualizar(id: string, cliente: ClienteInterface){
-    this.dataApi.actualizarCliente(id, cliente).then(() => {
-      this.servGlobal.presentToast('Cliente actualizado correctamente', {color: 'success'});
-    }).catch(err => {
-      this.servGlobal.presentToast('No se pudo actualizar los datos', {color: 'danger'});
-    });
-  }
+  // actualizar(id: string, cliente: ClienteInterface){
+  //   this.dataApi.actualizarCliente(id, cliente).then(() => {
+  //     this.servGlobal.presentToast('Cliente actualizado correctamente', {color: 'success'});
+  //   }).catch(err => {
+  //     this.servGlobal.presentToast('No se pudo actualizar los datos', {color: 'danger'});
+  //   });
+  // }
 
 
 }

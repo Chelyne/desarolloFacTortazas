@@ -1,6 +1,21 @@
 <ion-list>
+  <ion-item color="primary">
+    <ion-icon slot="start" name="grid-outline" color="primary"></ion-icon>
+    <ion-label>medida</ion-label>
+    <ion-label>factor</ion-label>
+    <ion-label>precio</ion-label>
+  </ion-item>
+
+  <ion-item (click)="seleccionVariante({medida: producto.medida, factor: 1, precio: producto.precio})" color="light">
+    <ion-icon slot="start" name="grid-outline" color="primary"></ion-icon>
+    <ion-label>{{producto.medida | titlecase}}</ion-label>
+    <ion-label>{{1 | number:'.2'}}</ion-label>
+    <ion-label>S/.{{producto.precio | number:'.2'}}</ion-label>
+  </ion-item>
   <ion-item *ngFor="let variante of producto.variantes" (click)="seleccionVariante(variante)">
     <ion-icon slot="start" name="grid-outline" color="primary"></ion-icon>
     <ion-label>{{variante.medida | titlecase}}</ion-label>
+    <ion-label>{{variante.factor | number:'.2'}}</ion-label>
+    <ion-label>S/.{{variante.precio | number:'.2'}}</ion-label>
   </ion-item>
 </ion-list>

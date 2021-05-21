@@ -15,7 +15,7 @@ export class DetallesDeCompraPage implements OnInit {
   constructor(private modalCtrl: ModalController) { }
 
   ngOnInit() {
-    console.log('aaaaaaaa', this.compra);
+    // console.log('aaaaaaaa', this.compra);
   }
 
   cerrarModal() {

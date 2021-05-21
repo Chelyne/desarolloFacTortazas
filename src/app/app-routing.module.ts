@@ -173,7 +173,7 @@ const routes: Routes = [
   {
     path: 'print/:sede/:fecha/:id',
     loadChildren: () => import('./pages/print/print.module').then( m => m.PrintPageModule)
-  }
+  },
 ];
 
 @NgModule({
