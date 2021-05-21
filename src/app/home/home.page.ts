@@ -1,4 +1,4 @@
-import { Component, Input } from '@angular/core';
+import { Component, Input, OnInit } from '@angular/core';
 import { MenuController} from '@ionic/angular';
 import { Router } from '@angular/router';
 import { StorageService } from '../services/storage.service';
@@ -15,7 +15,7 @@ import { CategoriasService } from '../services/categorias.service';
   templateUrl: 'home.page.html',
   styleUrls: ['home.page.scss'],
 })
-export class HomePage {
+export class HomePage implements OnInit {
   logo = GENERAL_CONFIG.datosEmpresa.logo;
   sede = this.storage.datosAdmi ? this.storage.datosAdmi.sede : '';
   Datos = [
@@ -36,8 +36,14 @@ export class HomePage {
               private exportar: ExportarPDFService,
               private categorias: CategoriasService) {
     this.menuCtrl.enable(true);
+    this.sede = this.storage.datosAdmi.sede;
   }
+  ngOnInit(){
+    // if (isNullOrUndefined(this.storage.datosAdmi)) {
+    //   this.authSrvc.logOut();
 
+    // }
+  }
   categoriaPage(categoria: string) {
     switch (categoria) {
       case 'dashboard':

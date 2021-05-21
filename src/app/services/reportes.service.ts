@@ -35,7 +35,7 @@ export class ReportesService {
               private storage: StorageService
   ) {}
   ReporteVentaDiaGeneralPDF(dia) {
-    this.consultaVentaReporteGeneral(dia).then( (data: any) => {
+    return this.consultaVentaReporteGeneral(dia).then( (data: any) => {
       console.log('datos', data);
       const doc = new jsPDF('portrait', 'px', 'a4') as jsPDFWithPlugin;
       doc.setFontSize(16);
@@ -170,7 +170,7 @@ export class ReportesService {
   }
 
   ReporteTiket(dia: any) {
-    this.listaVendedoresDatos(dia).then((data: any) => {
+    return this.listaVendedoresDatos(dia).then((data: any) => {
       console.log('lista de vendedores', data);
       let index = 0;
 
@@ -415,7 +415,7 @@ export class ReportesService {
   }
 
   ReportePDFDiaIngresoEgreso(dia: any){
-    this.consultaIngresoEgreso(dia).then((data: any) => {
+    return this.consultaIngresoEgreso(dia).then((data: any) => {
       console.log('datos', data);
       const doc = new jsPDF('portrait', 'px', 'a4') as jsPDFWithPlugin;
       doc.setFontSize(16);
@@ -453,6 +453,8 @@ export class ReportesService {
             let formato: any;
             formato = [
               contador,
+              item.nombreVendedor ? item.nombreVendedor.toUpperCase() : null,
+              item.dniVendedor ? item.dniVendedor.toUpperCase() : null,
               item.tipo.toUpperCase(),
               item.detalles.toUpperCase(),
               item.monto
@@ -463,7 +465,7 @@ export class ReportesService {
           doc.text( 'Ingresos: ' + ingreso.toFixed(2)  , 40, 85);
           doc.text( 'Egresos: ' + egreso.toFixed(2) , 180, 85);
           doc.autoTable({
-            head: [['#', 'Tipo', 'Detalles', 'Monto']],
+            head: [['#', 'Nombre', 'Dni', 'Tipo', 'Detalles', 'Monto']],
             body: datosEgresoIngreso,
             startY: 115 ,
             theme: 'grid',
@@ -481,7 +483,7 @@ export class ReportesService {
       if (snapshot.length === 0) {
         this.Ingresos = 0;
         this.Egresos = 0;
-        throw null;
+        return null;
       } else {
         for (const datos of snapshot) {
           if (datos.tipo === 'ingreso'){

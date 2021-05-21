@@ -507,56 +507,71 @@ export class DataBaseService {
       }));
     }
 
-    // REPORTES
-    obtenerVentasPorDia(sede: string, fecha: string) {
-      return this.afs.collection('sedes').doc(sede.toLocaleLowerCase()).collection('ventas').doc(fecha)
-      .collection('ventasDia').ref.get()
-      .then((querySnapshot) => {
-        const datos: any [] = [];
-        querySnapshot.forEach((doc) => {
-          // console.log(doc.id, ' => ', doc.data());
-          datos.push({...doc.data(), id: doc.id});
-        });
-        return datos;
-      }).catch(err => {
-        console.log('no se pudo obtener las ventas', err);
-        throw String ('fail');
+   // REPORTES
+   obtenerVentasPorDia(sede: string, fecha: string) {
+    return this.afs.collection('sedes').doc(sede.toLocaleLowerCase()).collection('ventas').doc(fecha)
+    .collection('ventasDia').ref.get()
+    .then((querySnapshot) => {
+      const datos: any [] = [];
+      querySnapshot.forEach((doc) => {
+        // console.log(doc.id, ' => ', doc.data());
+        datos.push({...doc.data(), id: doc.id});
       });
-    }
+      return datos;
+    }).catch(err => {
+      console.log('no se pudo obtener las ventas', err);
+      throw String ('fail');
+    });
+  }
 
-    obtenerVentasPorId(sede: string, fecha: string, idVenta: string) {
-      return this.afs.collection('sedes').doc(sede.toLocaleLowerCase()).collection('ventas').doc(fecha)
-      .collection('ventasDia').doc(idVenta).ref.get()
-      .then((doc: any) => {
-        if (doc.exists) {
-          return {idVenta: doc.id, ...doc.data()};
-        } else {
-          // console.log('No such document!');
-          return {};
-        }
-      }).catch(err => {
-        console.log('Error al obtener items de Venta: ', err);
-        throw String('fail');
+  obtenerVentasPorId(sede: string, fecha: string, idVenta: string) {
+    return this.afs.collection('sedes').doc(sede.toLocaleLowerCase()).collection('ventas').doc(fecha)
+    .collection('ventasDia').doc(idVenta).ref.get()
+    .then((doc: any) => {
+      if (doc.exists) {
+        return {idVenta: doc.id, ...doc.data()};
+      } else {
+        // console.log('No such document!');
+        return {};
+      }
+    }).catch(err => {
+      console.log('Error al obtener items de Venta: ', err);
+      throw String('fail');
+    });
+  }
+  obtenerVentasBoletasFacturasPorDia(sede: string, fecha: string) {
+    return this.afs.collection('sedes').doc(sede.toLocaleLowerCase()).collection('ventas').doc(fecha)
+    .collection('ventasDia').ref.where('tipoComprobante', '<', 'n. venta').get()
+    .then((querySnapshot) => {
+      const datos: any [] = [];
+      querySnapshot.forEach((doc) => {
+        // console.log(doc.id, ' => ', doc.data());
+        datos.push({...doc.data(), id: doc.id});
       });
-    }
+      return datos;
+    }).catch(err => {
+      console.log('no se pudo obtener las ventas', err);
+      throw String ('fail');
+    });
+  }
 
-    // OBTENER LISTA DE VENTAS
-    obtenerVentasPorDiaObs(sede: string, fachaventas: string) {
-      return this.afs.collection('sedes').doc(sede.toLocaleLowerCase()).collection('ventas').doc(fachaventas)
-      .collection('ventasDia', ref => ref.orderBy('fechaEmision', 'desc'))
-      .snapshotChanges().pipe(map(changes => {
-        const datos: VentaInterface[] = [];
+  // OBTENER LISTA DE VENTAS
+  obtenerVentasPorDiaObs(sede: string, fachaventas: string) {
+    return this.afs.collection('sedes').doc(sede.toLocaleLowerCase()).collection('ventas').doc(fachaventas)
+    .collection('ventasDia', ref => ref.orderBy('fechaEmision', 'desc'))
+    .snapshotChanges().pipe(map(changes => {
+      const datos: VentaInterface[] = [];
 
-        changes.map((action: any) => {
-          datos.push({
-            idVenta: action.payload.doc.id,
-            ...action.payload.doc.data() as VentaInterface
-          });
+      changes.map((action: any) => {
+        datos.push({
+          idVenta: action.payload.doc.id,
+          ...action.payload.doc.data() as VentaInterface
         });
+      });
 
-        return datos;
-      }));
-    }
+      return datos;
+    }));
+  }
 
   // OBTENER LISTA DE VENTAS
   obtenerVentasPorDiaBoletaFacturaObs(sede: string, fachaventas: string) {

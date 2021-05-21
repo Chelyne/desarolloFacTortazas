@@ -1,5 +1,5 @@
 import { Component, OnInit, Input } from '@angular/core';
-import { ModalController } from '@ionic/angular';
+import { ModalController, LoadingController } from '@ionic/angular';
 import { StorageService } from '../../services/storage.service';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { CajaChicaInterface } from '../../models/CajaChica';
@@ -20,12 +20,14 @@ export class AbrirCerrarCajaPage implements OnInit {
   cajaChicaEditForm: FormGroup;
   listaUsuarios;
   sede = this.storage.datosAdmi.sede;
+  loading;
 
   constructor(
               private dataApi: DataBaseService,
               private globalSrv: GlobalService,
               private modalCrl: ModalController,
               private storage: StorageService,
+              private loadingController: LoadingController
               ) {
                 this.abrirCajaChicaForm = this.guardarCajaChicaFormGroup();
                 this.CerrarCajaChicaForm =  this.createFormGroupCerrarCajaChica();
@@ -60,6 +62,7 @@ export class AbrirCerrarCajaPage implements OnInit {
     });
   }
   abrirCajachica(){
+    this.presentLoading('Guardando datos...');
     let nombreVend ;
     console.log('guardar caja', this.abrirCajaChicaForm.value);
     for (const datos of this.listaUsuarios) {
@@ -81,9 +84,11 @@ export class AbrirCerrarCajaPage implements OnInit {
     this.dataApi.validarCajaChicaVendedor('Aperturado', this.abrirCajaChicaForm.value.dniUsuario).then(snapshot => {
       if (!snapshot) {
         console.log('deja ingresar');
-        this.GuardarDatosCajaChica(cajaApertura);
+        this.GuardarDatosCajaChica(cajaApertura).then(() =>  this.loading.dismiss());
+
 
       } else {
+        this.loading.dismiss();
         console.log('no deja entrar', snapshot);
         // tslint:disable-next-line:max-line-length
         this.globalSrv.presentToast('No se pudo crear Caja Chica.Por favor cierre Caja Chica para el usuario: ' + cajaApertura.nombreVendedor, {color: 'warning', position: 'top', icon: 'alert-circle-outline'});
@@ -93,7 +98,7 @@ export class AbrirCerrarCajaPage implements OnInit {
   }
 
   GuardarDatosCajaChica(caja: any){
-    this.dataApi.guardarCajaChica(caja).then( () => {
+    return this.dataApi.guardarCajaChica(caja).then( () => {
       this.cerrarModal();
       this.globalSrv.presentToast('Caja Chica guardado correctamente.',
                                   {color: 'success', icon: 'checkmark-circle-outline', position: 'top'});
@@ -175,6 +180,14 @@ export class AbrirCerrarCajaPage implements OnInit {
   cerrarModal() {
     console.log('cerrado modal.....');
     this.modalCrl.dismiss();
+  }
+  async presentLoading(mensaje: string) {
+    this.loading = await this.loadingController.create({
+      cssClass: 'my-custom-class',
+      message: mensaje,
+      // duration: 5000
+    });
+    await this.loading.present();
   }
 
 }

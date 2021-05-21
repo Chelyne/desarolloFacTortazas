@@ -14,6 +14,8 @@ export class ModalIngresosEgresosPage implements OnInit {
 
   ingresoEgresoForm: FormGroup;
   public saldoInsuficiente = false;
+  nombreVendedor = this.storage.datosAdmi.nombre;
+  dniVendedor = this.storage.datosAdmi.dni;
 
   @Input() dataModal: {
     evento: 'ingreso' | 'egreso',
@@ -65,6 +67,8 @@ export class ModalIngresosEgresosPage implements OnInit {
       monto: parseFloat(this.ingresoEgresoForm.value.monto),
       detalles: this.ingresoEgresoForm.value.detalles,
       tipo: this.ingresoEgresoForm.value.tipo,
+      nombreVendedor: this.nombreVendedor,
+      dniVendedor: this.dniVendedor,
     };
     this.dataApi.guardarIngresoEgreso(ingresoEgreso, this.storage.datosAdmi.sede).then(() => {
       const monto: number = parseFloat(this.ingresoEgresoForm.value.monto);
@@ -81,6 +85,8 @@ export class ModalIngresosEgresosPage implements OnInit {
       monto: parseFloat(this.ingresoEgresoForm.value.monto),
       detalles: this.ingresoEgresoForm.value.detalles,
       tipo: this.ingresoEgresoForm.value.tipo,
+      nombreVendedor: this.nombreVendedor,
+      dniVendedor: this.dniVendedor,
     };
     this.dataApi.guardarIngresoEgreso(ingresoEgreso, this.storage.datosAdmi.sede).then(() => {
       const monto: number = parseFloat(this.ingresoEgresoForm.value.monto);

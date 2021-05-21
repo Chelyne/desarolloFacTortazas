@@ -16,8 +16,8 @@ import { redondeoDecimal } from 'src/app/global/funciones-globales';
 import { ReportesService } from '../../services/reportes.service';
 import { DataBaseService } from '../../services/data-base.service';
 import { GlobalService } from 'src/app/global/global.service';
-import { GENERAL_CONFIG } from '../../../config/generalConfig';
 import { VentaInterface } from 'src/app/models/venta/venta';
+import { GENERAL_CONFIG } from '../../../config/generalConfig';
 // tslint:disable-next-line:class-name
 interface jsPDFWithPlugin extends jsPDF {
   autoTable: (options: UserOptions) => jsPDF;
@@ -34,7 +34,6 @@ interface jsPDFWithPlugin extends jsPDF {
 export class CajaChicaPage implements OnInit {
   sede =  this.storage.datosAdmi.sede;
   rolDatosAdmi = this.storage.datosAdmi.rol;
-  dniAdmi = this.storage.datosAdmi.dni;
   LogoEmpresa = GENERAL_CONFIG.datosEmpresa.logo;
   RUC = GENERAL_CONFIG.datosEmpresa.ruc;
   nombreEmpresa = GENERAL_CONFIG.datosEmpresa.razon_social;
@@ -46,11 +45,9 @@ export class CajaChicaPage implements OnInit {
   totalEfectivo = 0;
   totalTargeta = 0;
   totalGeneral = 0;
-  totalEnCaja = 0;
 
   contadorConsultaProdcutos = 0;
   apilados = [];
-
   loading;
   constructor(
     private dataApi: DataBaseService,
@@ -62,8 +59,8 @@ export class CajaChicaPage implements OnInit {
     private datePipe: DatePipe,
     private popoverCtrl: PopoverController,
     private reportesservice: ReportesService,
-    private modalController: ModalController,
-    private loadingController: LoadingController) {
+    private loadingController: LoadingController,
+    private modalController: ModalController) {
       this.listaCajaChicaSede(this.sede);
     }
 
@@ -72,7 +69,6 @@ export class CajaChicaPage implements OnInit {
   }
   listaCajaChicaSede(sede: string){
     this.dataApi.obtenerListaCajaChica(sede).subscribe(data => {
-      console.log(data);
       this.listaCajaChica = data;
       this.convertirFecha(this.listaCajaChica);
     });
@@ -91,12 +87,7 @@ export class CajaChicaPage implements OnInit {
     });
   }
 
-  async modalAperturaCajaChica(modoCaja: string, datos: CajaChicaInterface) {
-    if (modoCaja === 'cerrar'){
-      await this.ReporteProductosVendedorDia( datos, 'pdf');
-      datos.saldoFinal = this.totalEnCaja;
-      this.loading.dismiss();
-    }
+  async modalAperturaCajaChica(modoCaja: string, datos: any) {
     const modal = await this.modalController.create({
       component: AbrirCerrarCajaPage,
       cssClass: 'my-custom-class',
@@ -142,17 +133,16 @@ export class CajaChicaPage implements OnInit {
       this.globalSrv.presentToast('No se pudo eliminar', {color: 'danger', icon: 'alert-circle-outline', position: 'top'});
     });
   }
-
   async presentLoading(mensaje: string) {
     this.loading = await this.loadingController.create({
       cssClass: 'my-custom-class',
       message: mensaje,
-      duration: 10000
+      // duration: 5000
     });
     await this.loading.present();
   }
 
-  async confirmarCerrarCaja(dataCaja: CajaChicaInterface) {
+  async confirmarCerrarCaja(id) {
     const alert = await this.alertCtrl.create({
       cssClass: 'my-custom-class',
       header: 'Cerrar Caja Chica POS',
@@ -169,8 +159,7 @@ export class CajaChicaPage implements OnInit {
         }, {
           text: 'Aceptar',
           handler: () => {
-            this.presentLoading('Cerrando caja...');
-            this.modalAperturaCajaChica('cerrar', dataCaja);
+            this.modalAperturaCajaChica('cerrar', id);
           }
         }
       ]
@@ -179,8 +168,9 @@ export class CajaChicaPage implements OnInit {
   }
 
   ReportePDFDiaIngresoEgreso(){
+    this.presentLoading('Consultando... Por Favor espere');
     const dia = formatDate(new Date(), 'dd-MM-yyyy', 'en');
-    this.reportesservice.ReportePDFDiaIngresoEgreso(dia);
+    this.reportesservice.ReportePDFDiaIngresoEgreso(dia).then(() => {this.loading.dismiss(); });
   }
 
   async ReporteVentaGeneralDia(ev: any){
@@ -199,18 +189,17 @@ export class CajaChicaPage implements OnInit {
     const { data } = await popover.onWillDismiss();
     console.log(data);
     if (data) {
+      this.presentLoading('consultando Datos...');
       switch (data.action) {
-        case 'a4': console.log('a4'); this.reportesservice.ReporteVentaDiaGeneralPDF(dia); break;
-        case 'ticked': console.log('ticked'); this.reportesservice.ReporteTiket(dia); break;
+        case 'a4': console.log('a4'); this.reportesservice.ReporteVentaDiaGeneralPDF(dia).then(() => this.loading.dismiss()); break;
+        case 'ticked': console.log('ticked'); this.reportesservice.ReporteTiket(dia).then(() => this.loading.dismiss()); break;
       }
     }
   }
 
-  async ReportePuntoVenta(datosCaja: CajaChicaInterface) {
-    await this.presentLoading('Generando reporte...');
+  ReportePuntoVenta(datosCaja: CajaChicaInterface) {
     console.log('fecha consulta', datosCaja.FechaConsulta , ' dni', datosCaja.dniVendedor);
     this.ConsultaPuntoVentaVendedor(datosCaja.FechaConsulta, datosCaja.dniVendedor, 'ventas').then((data: any) => {
-      this.loading.dismiss();
       const doc = new jsPDF('portrait', 'px', 'a4') as jsPDFWithPlugin;
 
       doc.setFontSize(18);
@@ -269,8 +258,7 @@ export class CajaChicaPage implements OnInit {
           theme: 'grid',
         });
       }
-      window.open(doc.output('bloburl').toString(), '_blank');
-      // doc.save('reporte Punto de Venta ' + formatDate(new Date(), 'dd-MM-yyyy', 'en') + '.pdf');
+      doc.save('reporte Punto de Venta ' + formatDate(new Date(), 'dd-MM-yyyy', 'en') + '.pdf');
     });
   }
 
@@ -332,9 +320,8 @@ export class CajaChicaPage implements OnInit {
     });
   }
 
-  async ReporteIngresoMetPagoVendedor(datosCaja: CajaChicaInterface) {
-    await this.presentLoading('Generando reporte...');
-    await this.ConsultaPuntoVentaVendedor(datosCaja.FechaConsulta, datosCaja.dniVendedor, 'ventasMetodoPago').then(data => {
+  ReporteIngresoMetPagoVendedor(datosCaja: CajaChicaInterface) {
+    this.ConsultaPuntoVentaVendedor(datosCaja.FechaConsulta, datosCaja.dniVendedor, 'ventasMetodoPago').then(data => {
       const doc = new jsPDF('portrait', 'px', 'a4') as jsPDFWithPlugin;
       doc.setFontSize(16);
       doc.setFont('bold');
@@ -388,25 +375,8 @@ export class CajaChicaPage implements OnInit {
             theme: 'grid',
           });
         }
-      this.loading.dismiss();
-      window.open(doc.output('bloburl').toString(), '_blank');
-      // doc.save('reporteIngresos' + datosCaja.FechaConsulta + '.pdf');
+      doc.save('reporteIngresos' + datosCaja.FechaConsulta + '.pdf');
       });
-  }
-  consultaIngresoEgreso(dia) {
-    // this.Ingresos = 0;
-    // this.Egresos = 0;
-    return this.dataApi.obtenerIngresoEgresoDia(this.sede.toLowerCase(), dia).then( snapshot => {
-      console.log('snapshot', snapshot);
-      if (snapshot.length === 0) {
-        // this.Ingresos = 0;
-        // this.Egresos = 0;
-        return null;
-      } else {
-        return snapshot;
-      }
-    });
-
   }
 
   async ReporteProductos(ev: any, item: CajaChicaInterface) {
@@ -431,13 +401,11 @@ export class CajaChicaPage implements OnInit {
     }
   }
 
-  async ReporteProductosVendedorDia(datosCaja: CajaChicaInterface, formato: string) {
-    await this.presentLoading('Generando reporte...');
+  ReporteProductosVendedorDia(datosCaja: CajaChicaInterface, formato: string) {
     console.log('datos caja', datosCaja );
-    await this.ConsultaRepProductosVendedorDia(datosCaja.FechaConsulta, datosCaja.dniVendedor, formato, datosCaja)
-    .then( async listaProductos => {
+    this.ConsultaRepProductosVendedorDia(datosCaja.FechaConsulta, datosCaja.dniVendedor, formato, datosCaja).then( listaProductos => {
       console.log('datos obtenidos', listaProductos);
-      await this.crearArchivoExportar(datosCaja, formato, listaProductos.productos, listaProductos.listaDeVentas);
+      this.crearArchivoExportar(datosCaja, formato, listaProductos);
     });
   }
 
@@ -447,49 +415,31 @@ export class CajaChicaPage implements OnInit {
     .then( async (listaVentas: VentaInterface[]) => {
       if (!listaVentas.length) {
         productosArray = null;
-        this.crearArchivoExportar(datosCaja, extencionDoc, null, null); // no hay productos
-        const juntos = {
-          productos: productosArray,
-          listaDeVentas: null
-        };
-        return (juntos);
+        this.crearArchivoExportar(datosCaja, extencionDoc, null);
+        return (productosArray);
 
       } else {
         for (const venta of listaVentas) {
-          if (venta.estadoVenta !== 'anulado'){
-            await this.dataApi.obtenerProductosDeVenta(venta.idListaProductos, this.sede ).then( productoVenta => {
-              const produtosformteados: any[] = [];
-              for (const producto of productoVenta) {
-                produtosformteados.push({
-                  serieComprobante: venta.serieComprobante + '-' +
-                  this.digitosFaltantes('0', (8 - venta.numeroComprobante.length))  + venta.numeroComprobante, ... producto
-                });
-              }
-              productosArray = [...productosArray, ... produtosformteados];
-            });
-          }
+          await this.dataApi.obtenerProductosDeVenta(venta.idListaProductos, this.sede ).then( productoVenta => {
+            const produtosformteados: any[] = [];
+            for (const producto of productoVenta) {
+              produtosformteados.push({
+                serieComprobante: venta.serieComprobante + '-' +
+                this.digitosFaltantes('0', (8 - venta.numeroComprobante.length))  + venta.numeroComprobante, ... producto
+              });
+            }
+            productosArray = [...productosArray, ... produtosformteados];
+          });
         }
-        const juntos = {
-          productos: productosArray,
-          listaDeVentas: listaVentas
-        };
-        return (juntos);
+        return (productosArray);
       }
     });
 
   }
 
-  async crearArchivoExportar(datosCaja: CajaChicaInterface, formato: string, productos: any, ventas: any) {
+  crearArchivoExportar(datosCaja: CajaChicaInterface, formato: string, productos: any) {
       if (formato === 'pdf') {
-        await this.consultaIngresoEgreso(datosCaja.FechaConsulta).then(ingresos => {
         console.log('formato pdf');
-        let ingreso = 0;
-        let egreso = 0;
-        let totalVentas = 0;
-        let totalAnulados = 0;
-        let descuento = 0;
-        let totalEfectivo = 0;
-        let totalETarjeta = 0;
         const doc = new jsPDF('portrait', 'px', 'a4') as jsPDFWithPlugin;
         doc.setFontSize(16);
         doc.setFont('bold');
@@ -497,7 +447,7 @@ export class CajaChicaPage implements OnInit {
         doc.addImage(this.LogoEmpresa, 'JPEG', 370, 20, 30, 15);
         doc.setLineWidth(0.5);
         doc.line(100, 35, 305, 35);
-        doc.rect(30, 50, 387, 80); // empty square
+        doc.rect(30, 50, 387, 50); // empty square
         doc.setFontSize(12);
         doc.text( 'Empresa:', 40, 60);
         doc.text( 'RUC:', 40, 70);
@@ -517,13 +467,12 @@ export class CajaChicaPage implements OnInit {
         doc.setFontSize(11);
         doc.text( datosCaja.sede, 247, 70);
         doc.text( datosCaja.FechaApertura, 267, 80);
-        doc.text( datosCaja.FechaCierre ? datosCaja.FechaCierre : 'Aun no cerrado', 258, 90);
+        doc.text( datosCaja.FechaCierre, 258, 90);
         if (isNullOrUndefined(productos)) {
           doc.setFontSize(15);
           doc.text( 'No se encontraron registros.', 35, 120);
-        } else {
+          } else {
             let contador = 0;
-            this.datosReporteIngresoPagoVendedorDia = [];
             productos.forEach(datos => {
               contador++ ;
               // tslint:disable-next-line:no-shadowed-variable
@@ -533,89 +482,20 @@ export class CajaChicaPage implements OnInit {
                 datos.producto.nombre.toUpperCase() || null,
                 datos.cantidad || null,
                 datos.serieComprobante || null,
-                datos.totalxprod || null,
               ];
               this.datosReporteIngresoPagoVendedorDia.push(formato);
             });
-            if (!isNullOrUndefined(ingresos)) {
-              console.log('entra cuando hay');
-              ingresos.forEach(datos => {
-                if (datos.tipo === 'ingreso'){
-                  ingreso += parseFloat(datos.monto);
-                }
-                else if (datos.tipo === 'egreso') {
-                  egreso += parseFloat(datos.monto);
-                }
-                contador++ ;
-                // tslint:disable-next-line:no-shadowed-variable
-                let formato1: any;
-                formato1 = [
-                  contador,
-                  datos.detalles.toUpperCase() || null,
-                   1,
-                  datos.tipo.toUpperCase() || null,
-                  parseFloat(datos.monto) || null,
-                ];
-                this.datosReporteIngresoPagoVendedorDia.push(formato1);
-            });
-            }else {
-              ingreso = 0;
-              egreso = 0;
-              console.log('no hay ingresos');
-            }
-            if (!isNullOrUndefined(ventas)) {
-              for (const item of ventas) {
-                if (item.estadoVenta === 'anulado'){
-                  totalAnulados += item.totalPagarVenta;
-                }else {
-                  totalVentas += item.totalPagarVenta;
-                  if (item.tipoPago === 'efectivo') {
-                    totalEfectivo += item.totalPagarVenta;
-                  }
-                  if (item.tipoPago === 'tarjeta') {
-                    totalETarjeta += item.totalPagarVenta;
-                  }
-                  if (item.descuentoVenta) {
-                    descuento += item.descuentoVenta;
-
-                  }
-                }
-              }
-              doc.setFont('Arial');
-              doc.text( 'Total Venta: ' + totalVentas.toFixed(2), 40, 100);
-              doc.text( 'Total Anulados: ' + totalAnulados.toFixed(2), 180, 100);
-              doc.text( 'Saldo Inicial: ' + datosCaja.saldoInicial.toFixed(2), 300, 100);
-              doc.text( 'Ingresos: ' + ingreso.toFixed(2), 40, 110);
-              doc.text( 'Egresos: ' + egreso.toFixed(2), 180, 110);
-              doc.text( 'Descuento: ' + descuento.toFixed(2) , 300, 110);
-
-              // doc.text( 'N° Notas de Venta: ', 300, 85);
-              // doc.text( 'Total Facturas: ' + totalFacturas.toFixed(2), 40, 100);
-              // doc.text( 'Total Boletas: ' + totalBoletas.toFixed(2), 180, 100);
-              // doc.text( 'Total N. Venta: ' + totalNotas.toFixed(2), 300, 100);
-              doc.text( 'Total Efectivo: ' + totalEfectivo.toFixed(2) , 40, 120);
-              doc.text( 'Total Tarjeta: ' + totalETarjeta.toFixed(2) , 180, 120);
-              this.totalEnCaja = datosCaja.saldoInicial + totalVentas + ingreso - egreso - totalETarjeta;
-              doc.text( 'TOTAL CAJA: ' + (this.totalEnCaja).toFixed(2) ,
-               300, 120);
-            }
-
-
             doc.autoTable({
-              head: [['#', 'Producto', 'cantidad', 'Comprobante', 'Precio']],
+              head: [['#', 'Producto', 'cantidad', 'Comprobante']],
               body: this.datosReporteIngresoPagoVendedorDia,
-              startY: 140,
+              startY: 110,
               theme: 'grid',
             });
           }
-        this.loading.dismiss();
-        window.open(doc.output('bloburl').toString(), '_blank');
-      });
-        // doc.save('reporteProductos' + datosCaja.FechaConsulta + '.pdf');
+        doc.save('reporteProductos' + datosCaja.FechaConsulta + '.pdf');
       }
       if (formato === 'excel') {
         const dataExcel = [];
-        this.loading.dismiss();
         if (!isNullOrUndefined(productos)) {
           console.log(productos);
           let contador = 0;
