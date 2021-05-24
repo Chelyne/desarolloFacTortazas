@@ -23,23 +23,23 @@
                     accept=".jpg, .jpeg, .png" />
                   <ion-toolbar color="primary">
                     <ion-item color="transulcent" style="text-align: center;" lines="none">
-                      <ion-icon slot="end" name="camera-outline" (click)="subirFoto(fileLoader)"></ion-icon>
+                      <ion-icon slot="end" name="camera-outline" (click)="abrirFileExplorer(fileLoader)"></ion-icon>
                       <ion-icon slot="end" name="trash-outline" (click)="removePic()"></ion-icon>
                     </ion-item>
                   </ion-toolbar>
                   <div class="fotoProducto">
-                    <img (click)="subirFoto(fileLoader)" *ngIf="!image" src="../../../assets/img/load_image.jpg" alt="">
-                    <img (click)="subirFoto(fileLoader)" *ngIf="image" [src]="uploadImage" alt="foto">
+                    <img (click)="abrirFileExplorer(fileLoader)" *ngIf="!imagenTargetFile" src="../../../assets/img/load_image.jpg" alt="">
+                    <img (click)="abrirFileExplorer(fileLoader)" *ngIf="imagenTargetFile" [src]="imagenBin64" alt="foto">
                   </div>
-                  <span *ngIf="uploadImage != null">
-                    <img id="checkinImage" (load)="imageLoaded()" />
+                  <span *ngIf="imagenBin64">
+                    <!-- <img id="checkinImage" (load)="imageLoaded()" /> -->
                   </span>
                 </div>
-                <div class="alertDanger" *ngIf="sinFoto">
+                <!-- <div class="alertDanger" *ngIf="sinFoto">
                   <div class="mensajeError">
                     {{sinFoto}}
                   </div>
-                </div>
+                </div> -->
               </ion-card>
             </div>
           </ion-col>
@@ -56,13 +56,13 @@
                     </ion-input>
                   </ion-item>
                   <div class="alertDanger" *ngIf="categoria.invalid && (categoria.dirty || categoria.touched)">
-                    <div class="mensajeError" *ngIf="!!categoria.errors.required">
+                    <div class="mensajeError" *ngIf="categoria.errors.required">
                       Complete la categoria
                     </div>
-                    <div class="mensajeError" *ngIf="!!categoria.errors.minlength">
+                    <div class="mensajeError" *ngIf="categoria.errors.minlength">
                       La categoria debe tener al menos 3 caracteres.
                     </div>
-                    <div class="mensajeError" *ngIf="!!categoria.errors.maxlength">
+                    <div class="mensajeError" *ngIf="categoria.errors.maxlength">
                       La categoria debe tener máximo 35 caracteres.
                     </div>
                   </div>
@@ -82,7 +82,7 @@
       {{mensaje}}
     </div>
   </div>
-  <ion-button (click)="guardarCategoria()" expand="block">
+  <ion-button (click)="guardarCatogiaV2()" expand="block">
     <ion-label color="light">Agregar Categoria</ion-label>
   </ion-button>
 </ion-footer>

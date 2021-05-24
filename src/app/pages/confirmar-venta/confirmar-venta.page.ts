@@ -78,7 +78,7 @@ export class ConfirmarVentaPage implements OnInit {
     this.generandoPago = false;
     this.venta = this.confirmarVentaServ.getVentaService();
     console.log(this.venta);
-    if (isNullOrUndefined(this.venta)) {
+    if (!Object.entries(this.venta).length) {
       this.router.navigate(['/punto-venta']);
     } else {
       if (Object.entries(this.venta).length !== 0){
@@ -176,6 +176,7 @@ export class ConfirmarVentaPage implements OnInit {
   }
 
   ActualizarMontoEntrante(monto: number){
+    console.log('%cMONTOOOOO', 'color:white; background-color:black', monto);
     this.formPago.setControl('montoIngreso',
     new FormControl(monto.toFixed(2), [Validators.required, Validators.pattern('^[0-9]*\.?[0-9]*$')]));
   }
@@ -323,13 +324,13 @@ export class ConfirmarVentaPage implements OnInit {
     return imageData;
     }
 
-    digitosFaltantes(caracter: string, num: number) {
-      let final = '';
-      for ( let i = 0; i < num; i++) {
-        final = final + caracter;
-      }
-      return final;
+  digitosFaltantes(caracter: string, num: number) {
+    let final = '';
+    for ( let i = 0; i < num; i++) {
+      final = final + caracter;
     }
+    return final;
+  }
 
   generarComprobante() {
     const qr = this.getImage();
@@ -396,7 +397,7 @@ export class ConfirmarVentaPage implements OnInit {
             doc.text(c.producto.nombre.toUpperCase(), 2, index);
           }
           // tslint:disable-next-line:max-line-length
-          doc.text( c.cantidad.toFixed(2) + '    ' + c.producto.medida + '      ' + c.producto.precio.toFixed(2), 2, index + 3, {align: 'justify'});
+          doc.text( c.cantidad.toFixed(2) + '    ' + c.medida + '      ' + c.precio.toFixed(2), 2, index + 3, {align: 'justify'});
           doc.text((c.totalxprod).toFixed(2), 43, index + 3, {align: 'right'} );
 
           doc.text( '__________________________________________', 22.5, index +  3, {align: 'center'});
@@ -509,7 +510,7 @@ export class ConfirmarVentaPage implements OnInit {
             doc.text(c.producto.nombre.toUpperCase(), 2, index);
           }
           // tslint:disable-next-line:max-line-length
-          doc.text( c.cantidad.toFixed(2) + '    ' + c.producto.medida + '      ' + c.producto.precio.toFixed(2), 2, index + 3, {align: 'justify'});
+          doc.text( c.cantidad.toFixed(2) + '    ' + c.medida + '      ' + c.precio.toFixed(2), 2, index + 3, {align: 'justify'});
           doc.text((c.totalxprod).toFixed(2), 43, index + 3, {align: 'right'} );
 
           doc.text( '__________________________________________', 22.5, index +  3, {align: 'center'});
@@ -636,7 +637,7 @@ export class ConfirmarVentaPage implements OnInit {
             doc.text(c.producto.nombre.toUpperCase(), 2, index);
           }
           // tslint:disable-next-line:max-line-length
-          doc.text( c.cantidad.toFixed(2) + '    ' + c.producto.medida + '      ' + c.producto.precio.toFixed(2), 2, index + 3, {align: 'justify'});
+          doc.text( c.cantidad.toFixed(2) + '    ' + c.medida + '      ' + c.precio.toFixed(2), 2, index + 3, {align: 'justify'});
           doc.text((c.totalxprod).toFixed(2), 43, index + 3, {align: 'right'} );
 
           doc.text( '__________________________________________', 22.5, index +  3, {align: 'center'});

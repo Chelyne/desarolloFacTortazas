@@ -4,6 +4,7 @@ import { ModalController, LoadingController } from '@ionic/angular';
 import { StorageService } from '../../services/storage.service';
 import { GlobalService } from '../../global/global.service';
 import { DataBaseService } from '../../services/data-base.service';
+import { DecimalOnlyValidation, DECIMAL_REGEXP_PATTERN, DECIMAL_STRING_PATTERN } from 'src/app/global/validadores';
 
 @Component({
   selector: 'app-modal-ingresos-egresos',
@@ -11,6 +12,11 @@ import { DataBaseService } from '../../services/data-base.service';
   styleUrls: ['./modal-ingresos-egresos.page.scss'],
 })
 export class ModalIngresosEgresosPage implements OnInit {
+
+  /** AFI */
+  decimalOnlyValidation = DecimalOnlyValidation;
+
+
 
   ingresoEgresoForm: FormGroup;
   public saldoInsuficiente = false;
@@ -22,13 +28,12 @@ export class ModalIngresosEgresosPage implements OnInit {
   };
 
 
-  loading;
+  // loading;
   constructor(
     private modalCtlr: ModalController,
     private dataApi: DataBaseService,
     private storage: StorageService,
-    private loadingController: LoadingController,
-    private servGlobal: GlobalService
+    private globalService: GlobalService
   ) {
     this.ingresoEgresoForm = this.createFormIngresoEgreso();
   }
@@ -38,7 +43,7 @@ export class ModalIngresosEgresosPage implements OnInit {
 
   createFormIngresoEgreso() {
     return new FormGroup({
-      monto: new FormControl('', [Validators.required,  Validators.pattern('[0-9]*[\.]?[0-9]+$')]),
+      monto: new FormControl('', [Validators.required,  Validators.pattern(DECIMAL_REGEXP_PATTERN)]),
       detalles: new FormControl('', [Validators.required]),
       tipo: new FormControl('')
     });
@@ -61,8 +66,10 @@ export class ModalIngresosEgresosPage implements OnInit {
   }
 
   async IngresarMonto() {
-    await this.presentLoading('Guardando datos...');
+    const loadController = await this.globalService.presentLoading('Guardando Ingreso...');
+
     this.ingresoEgresoForm.value.tipo = 'ingreso';
+
     const ingresoEgreso = {
       monto: parseFloat(this.ingresoEgresoForm.value.monto),
       detalles: this.ingresoEgresoForm.value.detalles,
@@ -70,17 +77,21 @@ export class ModalIngresosEgresosPage implements OnInit {
       nombreVendedor: this.nombreVendedor,
       dniVendedor: this.dniVendedor,
     };
-    this.dataApi.guardarIngresoEgreso(ingresoEgreso, this.storage.datosAdmi.sede).then(() => {
+
+    await this.dataApi.guardarIngresoEgreso(ingresoEgreso, this.storage.datosAdmi.sede).then(() => {
       const monto: number = parseFloat(this.ingresoEgresoForm.value.monto);
       this.modalCtlr.dismiss();
-      this.servGlobal.presentToast('Ingreso exitoso.', {color: 'success'});
-      this.loading.dismiss();
+      this.globalService.presentToast('Ingreso exitoso.', {color: 'success'});
     });
+
+    loadController.dismiss();
   }
 
   async EgresarMonto(){
-    await this.presentLoading('Guardando datos...');
+    const loadController = await this.globalService.presentLoading('Guardando Egreso...');
+
     this.ingresoEgresoForm.value.tipo = 'egreso';
+
     const ingresoEgreso = {
       monto: parseFloat(this.ingresoEgresoForm.value.monto),
       detalles: this.ingresoEgresoForm.value.detalles,
@@ -88,33 +99,18 @@ export class ModalIngresosEgresosPage implements OnInit {
       nombreVendedor: this.nombreVendedor,
       dniVendedor: this.dniVendedor,
     };
-    this.dataApi.guardarIngresoEgreso(ingresoEgreso, this.storage.datosAdmi.sede).then(() => {
+
+    await this.dataApi.guardarIngresoEgreso(ingresoEgreso, this.storage.datosAdmi.sede).then(() => {
       const monto: number = parseFloat(this.ingresoEgresoForm.value.monto);
       this.modalCtlr.dismiss();
-      this.servGlobal.presentToast('Retiro exitoso.', {color: 'success'});
-      this.loading.dismiss();
+      this.globalService.presentToast('Retiro exitoso.', {color: 'success'});
     });
+
+    loadController.dismiss();
   }
 
   cerrarModal(){
     this.modalCtlr.dismiss();
   }
 
-
-  numberOnlyValidation(event: any) {
-    const pattern = /[0-9.]/;
-    const inputChar = String.fromCharCode(event.charCode);
-
-    if (!pattern.test(inputChar)) {
-      event.preventDefault();
-    }
-  }
-
-  async presentLoading(mensaje: string) {
-    this.loading = await this.loadingController.create({
-      cssClass: 'my-custom-class',
-      message: mensaje,
-    });
-    await this.loading.present();
-  }
 }

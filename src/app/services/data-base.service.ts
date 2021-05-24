@@ -26,8 +26,8 @@ export class DataBaseService {
   //                          ANCHOR GUARDAR                            */
   // ----------------------------------------------------------- */
   guardarCategoria(newCategoria: CategoriaInterface, sede: string) {
-    const sede1 =  sede.toLocaleLowerCase();
-    return this.afs.collection('sedes').doc(sede1).collection('categorias').ref.add(newCategoria).then(data => {
+    // const sede1 =  sede.toLocaleLowerCase();
+    return this.afs.collection('sedes').doc(sede.toLowerCase()).collection('categorias').ref.add(newCategoria).then(data => {
       if (data.id) {
         return data.id;
       } else {
@@ -52,6 +52,10 @@ export class DataBaseService {
   }
 
   async guardarProductoIncrementaCodigo(newProducto: ProductoInterface, sede: string, correlacionActual: number) {
+    console.log('%c%s', 'color: #aa00ff', newProducto);
+    console.log( newProducto);
+
+
     const correlacion = parseInt(newProducto.codigo, 10);
     const arrayNombre = newProducto.nombre.toLowerCase().split(' ');
     newProducto.arrayNombre = arrayNombre;
@@ -259,7 +263,7 @@ export class DataBaseService {
 
     const obj = {
       cdr: cdrAnulacion,
-      fechaDeAnulacion: fechaEmision,
+      fechaDeAnulacion: fechaAnulacion,
       serie: DatosSerie.serie,
       correlacion: DatosSerie.correlacion
     };
@@ -297,7 +301,7 @@ export class DataBaseService {
 
   // CLIENTES
   obtenerListaDeClientes() {
-    return this.afs.collection('clientes')
+    return this.afs.collection('clientes') // ,  ref => ref.orderBy('fechaRegistro', 'desc'))
     .snapshotChanges().pipe(map(changes => {
     const datos: ClienteInterface[] = [];
     changes.map((action: any) => {
@@ -838,27 +842,34 @@ export class DataBaseService {
   }
 
   actualizarProducto(productoObtenido: ProductoInterface) {
-    const producto: ProductoInterface = {
-      img: productoObtenido.img ? productoObtenido.img : null,
-      nombre: productoObtenido.nombre,
-      arrayNombre: productoObtenido.nombre.toLowerCase().split(' '),
-      cantidad: productoObtenido.cantidad,
-      medida: productoObtenido.medida,
-      marca: productoObtenido.marca,
-      codigo: productoObtenido.codigo,
-      codigoBarra: productoObtenido.codigoBarra,
-      precio: productoObtenido.precio,
-      cantStock: productoObtenido.cantStock,
-      fechaDeVencimiento: productoObtenido.fechaDeVencimiento,
-      descripcionProducto: productoObtenido.descripcionProducto,
-    };
+    console.log('Actualizar producto');
+    // const producto: ProductoInterface = {
+    //   img: productoObtenido.img ? productoObtenido.img : null,
+    //   nombre: productoObtenido.nombre,
+    //   arrayNombre: productoObtenido.nombre.toLowerCase().split(' '),
+    //   cantidad: productoObtenido.cantidad,
+    //   medida: productoObtenido.medida,
+    //   marca: productoObtenido.marca,
+    //   codigo: productoObtenido.codigo,
+    //   codigoBarra: productoObtenido.codigoBarra,
+    //   precio: productoObtenido.precio,
+    //   cantStock: productoObtenido.cantStock,
+    //   fechaDeVencimiento: productoObtenido.fechaDeVencimiento,
+    //   descripcionProducto: productoObtenido.descripcionProducto,
+    // };
 
-    if (productoObtenido.variantes) {
-      producto.variantes = productoObtenido.variantes;
-    }
-    console.log(producto);
-    return this.afs.collection('sedes').doc(productoObtenido.sede.toLocaleLowerCase()).collection('productos')
-    .doc(productoObtenido.id).ref.update(producto)
+    // if (productoObtenido.variantes) {
+    //   producto.variantes = productoObtenido.variantes;
+    // }
+    // console.log(producto);
+    console.log('%c%s', 'color: #3e2066', productoObtenido);
+
+    console.log('producto obtenido', productoObtenido);
+
+
+
+    return this.afs.collection('sedes').doc(productoObtenido.sede.toLowerCase()).collection('productos')
+    .doc(productoObtenido.id).ref.update(productoObtenido)
     .then(() => 'exito').catch(err => {
       console.log('error', err);
       throw String('fail');

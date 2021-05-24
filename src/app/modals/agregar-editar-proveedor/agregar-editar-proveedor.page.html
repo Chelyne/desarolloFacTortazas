@@ -29,7 +29,7 @@
 
     <ion-item>
       <ion-label color="primary">Tipo de Documento</ion-label>
-      <ion-select  multiple="false" interface="popover" formControlName="tipoDocumento" (ionChange)="siRucoDni()">
+      <ion-select  multiple="false" interface="popover" formControlName="tipoDocumento" (ionChange)="resetearTypoDocumento()">
         <ion-select-option value="ruc">RUC</ion-select-option>
         <ion-select-option value="dni">DNI</ion-select-option>
       </ion-select>
@@ -37,7 +37,7 @@
 
     <ion-item>
       <ion-label color="primary" position="floating">Número Documento</ion-label>
-      <ion-input (ionChange)="consultaSunat($event)" placeholder="Número Documento" maxlength="11" type="text" formControlName="numeroDocumento" (keypress)="numberOnlyValidation($event)"></ion-input>
+      <ion-input (ionChange)="consultaApiDniRuc($event)" placeholder="Número Documento" [maxlength]="typoDocumento === 'dni' ? 8 : 11" type="text" formControlName="numeroDocumento" (keypress)="numberOnlyValidation($event)"></ion-input>
       <ion-buttons slot="end">
         <ion-button>
           <ion-spinner slot="icon-only" color="primary" *ngIf="consultando" name="crescent"></ion-spinner>
@@ -47,14 +47,14 @@
       </ion-buttons>
     </ion-item>
     <div class="alertDanger" *ngIf="numeroDocumento.invalid && (numeroDocumento.dirty || numeroDocumento.touched)">
-      <div *ngIf="typoDocumento=='ruc'">
+      <div *ngIf="typoDocumento==='ruc'">
         <div class="mensajeError" *ngIf="numeroDocumento.errors.required">
           *Ingrese el Número del Documento
         </div>
-        <div class="alertDanger" *ngIf="numeroDocumento.errors.minlength">
-          *Ingresaste al menos 8 carácteres
+        <div class="mensajeError" *ngIf="numeroDocumento.errors.minlength">
+          *Ingrese al menos 11 carácteres
         </div>
-        <div class="alertDanger" *ngIf="numeroDocumento.errors.maxlength">
+        <div class="mensajeError" *ngIf="numeroDocumento.errors.maxlength">
           *Ingrese máximo 11 caracteres
         </div>
       </div>
@@ -86,7 +86,7 @@
 
     <ion-item>
       <ion-label color="primary" position="floating">Teléfono / Celular</ion-label>
-      <ion-input type="text" (keypress)="numberOnlyValidation($event)" formControlName="telefono" placeholder="Teléfono o Celular"></ion-input>
+      <ion-input type="text" (keypress)="numberOnlyValidation($event)" formControlName="telefono" placeholder="Teléfono o Celular" mask="{000 000 000}"></ion-input>
     </ion-item>
     <div class="alertDanger" *ngIf="telefono.invalid && (telefono.dirty || telefono.touched)">
       <div class="mensajeError" *ngIf="telefono.errors.required">

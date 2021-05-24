@@ -80,7 +80,7 @@ export class ModalVentasPage implements OnInit {
     const canvas = document.querySelector('canvas') as HTMLCanvasElement;
     const imageData = canvas.toDataURL('image/jpeg').toString();
     return imageData;
-    }
+  }
 
   obtenerTipoComprobante(serie: string) {
     const letra = serie[0];
@@ -208,7 +208,7 @@ export class ModalVentasPage implements OnInit {
             }
             // tslint:disable-next-line:max-line-length
             // tslint:disable-next-line:max-line-length
-            doc.text( c.cantidad.toFixed(2) + '    ' + c.producto.medida + '      ' + c.producto.precio.toFixed(2), 2, index + 3, {align: 'justify'});
+            doc.text( c.cantidad.toFixed(2) + '    ' + c.medida + '      ' + c.precio.toFixed(2), 2, index + 3, {align: 'justify'});
             doc.text((c.totalxprod).toFixed(2), 43, index + 3, {align: 'right'} );
 
             doc.text( '__________________________________________', 22.5, index +  3, {align: 'center'});
@@ -306,7 +306,7 @@ export class ModalVentasPage implements OnInit {
             }
             // tslint:disable-next-line:max-line-length
             // tslint:disable-next-line:max-line-length
-            doc.text( c.cantidad.toFixed(2) + '    ' + c.producto.medida + '      ' + c.producto.precio.toFixed(2), 2, index + 3, {align: 'justify'});
+            doc.text( c.cantidad.toFixed(2) + '    ' + c.medida + '      ' + c.precio.toFixed(2), 2, index + 3, {align: 'justify'});
             doc.text((c.totalxprod).toFixed(2), 43, index + 3, {align: 'right'} );
 
             doc.text( '__________________________________________', 22.5, index +  3, {align: 'center'});
@@ -407,7 +407,7 @@ export class ModalVentasPage implements OnInit {
             }
             // tslint:disable-next-line:max-line-length
             // tslint:disable-next-line:max-line-length
-            doc.text( c.cantidad.toFixed(2) + '    ' + c.producto.medida + '      ' + c.producto.precio.toFixed(2), 2, index + 3, {align: 'justify'});
+            doc.text( c.cantidad.toFixed(2) + '    ' + c.medida + '      ' + c.precio.toFixed(2), 2, index + 3, {align: 'justify'});
             doc.text((c.totalxprod).toFixed(2), 43, index + 3, {align: 'right'} );
 
             doc.text( '__________________________________________', 22.5, index +  3, {align: 'center'});

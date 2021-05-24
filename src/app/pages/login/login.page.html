@@ -1,4 +1,4 @@
-<ion-content>
+<ion-content (keyup.enter)="logIn()">
   <ion-grid>
     <ion-row>
       <ion-col size-lg="8" size-md="6" size-sm="0" size-xs="0">
@@ -8,7 +8,7 @@
       </ion-col>
       <ion-col size-lg="4" size-md="6" size-sm="12" size-xs="12">
         <div class="content">
-          <form [formGroup]="LoginForm" autocomplete="off">
+          <form [formGroup]="LoginForm" autocomplete="off" >
             <div class="logo">
               <img src="{{logo}}" alt="">
             </div>
@@ -20,7 +20,7 @@
               <ion-input maxlength="60" formControlName="email" type="email" placeholder="Ingrese su correo"></ion-input>
             </ion-item>
             <div class="alertDanger"*ngIf="email.invalid && (email.dirty || email.touched)">
-              <div class="mensajeError" *ngIf="!!email.errors.pattern">
+              <div class="mensajeError" *ngIf="email.errors.pattern">
                 <span>* Ingrese un correo válido</span><br>
               </div>
             </div>
@@ -29,10 +29,10 @@
               <ion-input maxlength="16" formControlName="password" type="password" placeholder="Ingrese su contraseña"></ion-input>
             </ion-item>
             <div class="alertDanger" *ngIf="password.invalid && (password.dirty || password.touched)">
-              <div class="mensajeError" *ngIf="!!password.errors.minlength">
+              <div class="mensajeError" *ngIf="password.errors.minlength">
                 <span>* La contraseña debe tener al menos 6 digitos</span>
               </div>
-              <div class="mensajeError" *ngIf="!!password.errors.required">
+              <div class="mensajeError" *ngIf="password.errors.required">
                 <span>* La contraseña es necesaria</span>
               </div>
             </div>

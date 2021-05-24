@@ -3,7 +3,7 @@ import { MenuController, PopoverController, ModalController } from '@ionic/angul
 
 import { VentaInterface } from 'src/app/models/venta/venta';
 import { ItemDeVentaInterface } from 'src/app/models/venta/item-de-venta';
-import { ProductoInterface } from 'src/app/models/ProductoInterface';
+import { ProductoInterface, VariantesInterface } from 'src/app/models/ProductoInterface';
 import { StorageService } from '../../services/storage.service';
 import { PoppoverClientesComponent } from '../../components/poppover-clientes/poppover-clientes.component';
 
@@ -70,15 +70,18 @@ export class PuntoVentaPage implements OnInit {
   productoItem: ProductoInterface;
   cajaChica = false;
 
-  constructor(private menuCtrl: MenuController,
-              private dataApi: DataBaseService,
-              public storage: StorageService,
-              private popoverController: PopoverController,
-              private confirmarVentaServ: ConfirmarVentaService,
-              private router: Router,
-              private modalCtlr: ModalController,
-              private buscadorService: BuscadorService,
-              private servGlobal: GlobalService
+  categoriaObservador;
+
+  constructor(
+    private menuCtrl: MenuController,
+    private dataApi: DataBaseService,
+    public storage: StorageService,
+    private popoverController: PopoverController,
+    private confirmarVentaServ: ConfirmarVentaService,
+    private router: Router,
+    private modalCtlr: ModalController,
+    private buscadorService: BuscadorService,
+    private servGlobal: GlobalService
   ) {
     this.menuCtrl.enable(true);
   }
@@ -95,7 +98,7 @@ export class PuntoVentaPage implements OnInit {
     });
     this.sinDatos = false;
 
-    if (!isNullOrUndefined(this.storage.listaVenta)) {
+    if (!isNullOrUndefined(this.storage.listaVenta)){
       this.listaDeVentas = this.storage.listaVenta;
     }
   }
@@ -121,7 +124,6 @@ export class PuntoVentaPage implements OnInit {
     });
   }
 
-  // agregar producto
   async abrirModalNuevoProducto(){
     const modal =  await this.modalCtlr.create({
       component: ModalAgregarProductoPage,
@@ -129,7 +131,6 @@ export class PuntoVentaPage implements OnInit {
     });
     await modal.present();
   }
-
 
   listaProductosCategoria(categoria: string) {
     this.sinDatos = null;
@@ -147,7 +148,9 @@ export class PuntoVentaPage implements OnInit {
       });
 
     }
-    this.dataApi.ObtenerProductosCategoria(this.sede, categoria).subscribe(datos => {
+
+    this.categoriaObservador = this.dataApi.ObtenerProductosCategoria(this.sede, categoria);
+    this.categoriaObservador.subscribe(datos => {
       console.log(datos);
       if (datos.length > 0) {
         this.listaProductos =  datos;
@@ -158,95 +161,149 @@ export class PuntoVentaPage implements OnInit {
     });
   }
 
-  AgregarItemDeVenta(prodItem: ProductoInterface){
+  async AgregarItemDeVenta(productoSelect: ProductoInterface){
+    try {
+      let varianteSelected: VariantesInterface;
+      let idProdItem: string = productoSelect.id;
 
-    if (prodItem.variantes) {
-      this.presentPopoverVariantes(prodItem);
-    } else {
+      if (productoSelect.variantes && productoSelect.variantes.length) {
+        const data = await this.presentPopoverVariantes(productoSelect);
+        if (data.variante){
+          varianteSelected = data.variante;
+          console.log('%c⧭', 'color: #bfffc8', varianteSelected);
+          idProdItem = `${productoSelect.id}-${varianteSelected.medida}`;
+
+          console.log('%c%s', 'color: #731d6d', idProdItem);
+        } else {
+          return;
+        }
+      } else {
+        /** variante por defecto */
+        varianteSelected = {
+          medida: productoSelect.medida,
+          factor: 1,
+          precio: productoSelect.precio,
+        };
+      }
+
       let producExist = false;
-      const idProdItem: string = prodItem.id;
 
-      if (this.listaItemsDeVenta.length > 0) {
+      if (this.listaItemsDeVenta.length) {
+        console.log('%c⧭', 'color: #997326', this.listaItemsDeVenta);
         for (const item of this.listaItemsDeVenta) {
+
+          console.log('%c%s', 'color: #1d3f73', idProdItem, item.idProducto, Boolean(idProdItem === item.idProducto));
           if (idProdItem === item.idProducto){
               producExist = true;
               item.cantidad += 1;
-              item.totalxprod = item.cantidad * item.producto.precio;
+              item.totalxprod = item.cantidad * varianteSelected.precio;
               break;
           }
         }
       }
 
       if (!producExist){
-        this.listaItemsDeVenta.unshift( this.CrearItemDeVenta(prodItem));
+        const productoCreado = this.CrearItemDeVenta(productoSelect, varianteSelected);
+        if (productoCreado){
+          this.listaItemsDeVenta.unshift(productoCreado);
+        }
       }
 
       this.calcularTotalaPagar();
       this.servGlobal.presentToast('Agregado a lista de venta', {icon: 'cart-outline', duracion: 500, position: 'top'});
+
+
+    } catch (error) {
+      console.log('%cOCURRIO UN ERROR', 'color:white;background-color:red' , error);
+      this.servGlobal.presentToast(error, {color: 'danger'});
     }
   }
 
-  async presentPopoverVariantes(prodItem: ProductoInterface) {
+  async presentPopoverVariantes(productoSelect: ProductoInterface) {
+    console.log('PRODUCTO DE VENTA CON VARIANTE', productoSelect);
+
     const popover = await this.popoverController.create({
       component: PopoverVariantesComponent,
       cssClass: 'my-custom-class',
       componentProps: {
-        producto: prodItem
+        producto: productoSelect
       },
-      // event: ev,
       translucent: true
     });
     await popover.present();
 
     const { data } = await popover.onWillDismiss();
     if (data) {
-      console.log('VAriante seleccionado', data);
+      return data; /** retorna data.variante */
     }
+    return 'VARIANTE_NO_SELECT';
   }
 
-  CrearItemDeVenta(prodItem: ProductoInterface): ItemDeVentaInterface{
-    if (!prodItem.precio) {
-      prodItem.precio = 0;
+  CrearItemDeVenta(itemProducto: ProductoInterface, variante: VariantesInterface): ItemDeVentaInterface{
+    // if (!itemProducto.precio) {
+    //   itemProducto.precio = 0;
+    // }
+
+    const TryToconvertNumber = (numero: any) => {
+      if (typeof(numero) === 'number'){
+        return numero;
+      }
+      const num = parseFloat(`${numero}`);
+      return num;
+    };
+
+    variante.factor = TryToconvertNumber(variante.factor);
+    if (isNaN(variante.factor)){
+      throw String('El factor es una cadena, Edite el producto');
     }
-    return {
-      producto: prodItem,
-      idProducto: prodItem.id,
+
+    variante.precio = TryToconvertNumber(variante.precio);
+    if (isNaN(variante.precio)){
+      throw String('El precio es una cadena, Edite el producto');
+    }
+
+    const itemDeventa: ItemDeVentaInterface =  {
+      producto: itemProducto,
       cantidad: 1,
-      montoNeto: prodItem.precio,
+      precio: variante.precio,
+      factor: variante.factor,
+      medida: variante.medida,
+      montoNeto: variante.precio,
       descuentoProducto: 0,
       porcentajeDescuento: 0,
-      totalxprod: prodItem.precio // ya que descuento es 0;
+      totalxprod: variante.precio /** ya que descuento es */
     };
+
+    if (itemProducto.variantes && itemProducto.variantes.length){
+      // itemDeventa.idProducto = itemProducto.id;
+      itemDeventa.idProducto = `${itemProducto.id}-${variante.medida}`;
+    } else {
+      itemDeventa.idProducto = `${itemProducto.id}`;
+    }
+    // itemDeventa.idProducto = `${itemProducto.id}-${variante.medida}`;
+
+
+    console.log('%c⧭', 'color: #cc0088', itemDeventa);
+
+    return itemDeventa;
   }
 
   inputModificado(
-    evento: {id: string, cantidad: number, porcentaje: number, descuento: number,
-    montoNeto: number, totalxprod: number}
+    evento: ItemDeVentaInterface
   ){
-    console.log(evento);
-    this.ActualizarMonto(evento.id, evento.cantidad,
-    evento.porcentaje, evento.descuento, evento.montoNeto, evento.totalxprod);
-  }
+    const itemVentaActualizado: ItemDeVentaInterface = evento;
 
-  ActualizarMonto(
-    idProdItem: string, cantidad: number, porcentaje: number, descuento: number,
-    montoNeto: number, totalxprod: number
-  ){
     if (this.listaItemsDeVenta.length > 0) {
-      for (const itemDeVenta of this.listaItemsDeVenta) {
-        if (idProdItem === itemDeVenta.idProducto){
-            itemDeVenta.cantidad = cantidad;
-            itemDeVenta.descuentoProducto = descuento;
-            itemDeVenta.porcentajeDescuento = porcentaje;
-            itemDeVenta.montoNeto = montoNeto;
-            itemDeVenta.totalxprod = totalxprod;
+      for (let itemDeVenta of this.listaItemsDeVenta) {
+        if (itemVentaActualizado.idProducto === itemDeVenta.idProducto){
+          itemDeVenta = itemVentaActualizado;
+          break;
         }
       }
     }
 
     this.calcularTotalaPagar();
   }
-
 
   quitarProducto(evento: {id: string}){
 
@@ -257,7 +314,7 @@ export class PuntoVentaPage implements OnInit {
 
       for (const itemDeVenta of this.listaItemsDeVenta) {
         if (idProdItem === itemDeVenta.idProducto){
-            console.log('quitar producto', index);
+            // console.log('quitar producto', index);
             this.listaItemsDeVenta.splice(index, 1);
             break;
         }
@@ -490,23 +547,23 @@ export class PuntoVentaPage implements OnInit {
     });
     await modal.present();
 
-    const {data} = await modal.onWillDismiss();
-    console.log(data);
-    if (data && data.data) {
-      if (data.evento === 'agregar') {
-        console.log('agregar', data.data);
-        this.agregar(data.data);
-      }
-    }
+    // const {data} = await modal.onWillDismiss();
+    // console.log(data);
+    // if (data && data.data) {
+    //   if (data.evento === 'agregar') {
+    //     console.log('agregar', data.data);
+    //     this.agregar(data.data);
+    //   }
+    // }
   }
 
-  agregar(cliente: ClienteInterface){
-    this.dataApi.guardarCliente(cliente).then(() => {
-      this.servGlobal.presentToast('Cliente guardado correctamente', {color: 'success'});
-    }).catch(err => {
-      this.servGlobal.presentToast('No se pudo guardar el cliente', {color: 'danger'});
-    });
-  }
+  // agregar(cliente: ClienteInterface){
+  //   this.dataApi.guardarCliente(cliente).then(() => {
+  //     this.servGlobal.presentToast('Cliente guardado correctamente', {color: 'success'});
+  //   }).catch(err => {
+  //     this.servGlobal.presentToast('No se pudo guardar el cliente', {color: 'danger'});
+  //   });
+  // }
 
   async modalVentas() {
     const modal = await this.modalCtlr.create({

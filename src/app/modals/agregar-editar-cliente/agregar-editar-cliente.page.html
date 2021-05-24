@@ -15,7 +15,7 @@
 
     <ion-item>
       <ion-label color="primary">Tipo de Documento</ion-label>
-      <ion-select  multiple="false" interface="popover" formControlName="tipoDoc" (ionChange)="siRucoDni()">
+      <ion-select  multiple="false" interface="popover" formControlName="tipoDoc" (ionChange)="resetearTypoDocumento()">
         <ion-select-option value="ruc">RUC</ion-select-option>
         <ion-select-option value="dni">DNI</ion-select-option>
       </ion-select>
@@ -23,7 +23,9 @@
 
     <ion-item>
       <ion-label color="primary" position="floating">Nro Documento</ion-label>
-      <ion-input (ionChange)="consultaSunat($event)" maxlength="11" type="text" (keypress)="numberOnlyValidation($event)" formControlName="numDoc" placeholder="{{this.clienteModalForm.value.tipoDoc | uppercase}}"></ion-input>
+      <ion-input (ionChange)="consultaApiDniRuc($event)" (keypress)="numberOnlyValidation($event)"
+      type="text" formControlName="numDoc" [maxlength]="typoDocumento === 'dni' ? 8 : 11"
+      placeholder="{{this.clienteModalForm.value.tipoDoc | uppercase}}"></ion-input>
       <ion-buttons slot="end">
         <ion-button>
           <ion-spinner slot="icon-only" color="primary" *ngIf="consultando" name="crescent"></ion-spinner>

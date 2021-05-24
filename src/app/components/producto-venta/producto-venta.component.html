@@ -1,53 +1,61 @@
 <form [formGroup]="formVenta" autocomplete="off">
-<ion-row class="ion-justify-content-center ion-align-items-center">
-  <ion-col size="1">
-      <ion-input type="text" formControlName="cantidad" placeholder="Cantidad" [value]="itemDeVenta.cantidad==0?'':itemDeVenta.cantidad" maxlength="5"
-        (keyup)="cambioCantidad()" ></ion-input>
+  <ion-row class="ion-justify-content-center ion-align-items-center">
+    <ion-col size="1.5">
+      <ion-input type="number" formControlName="cantidad" placeholder="Cantidad"
+      [value]="itemDeVenta.cantidad==0?'':itemDeVenta.cantidad" maxlength="5" (keyup)="cambioCantidad()"
+      (change)="cantChange()">
+      </ion-input>
       <div class="alertDanger" *ngIf="cantidad.invalid && (cantidad.dirty || cantidad.touched)">
         <div class="mensajeError" *ngIf="cantidad.errors.required">
           *Complete la cantidad
         </div>
         <div class="mensajeError" *ngIf="cantidad.errors.pattern">
-          *Solo ingresar enteros positivos
+          *Solo ingresar formato decimal: 00.00
         </div>
       </div>
-  </ion-col>
-  <ion-col size="6.5">
-    <ion-label class="ion-text-wrap"> {{itemDeVenta.producto.nombre | titlecase}} </ion-label>
-  </ion-col>
-  <ion-col size="1">
-    <ion-input (keyup)="cambioPorcentaje()"  formControlName="porcentaje" placeholder="%" value="{{itemDeVenta.porcentajeDescuento}}" maxlength="3"></ion-input>
-    <div class="alertDanger" *ngIf="porcentaje.invalid && (porcentaje.dirty || porcentaje.touched)">
-      <div class="mensajeError" *ngIf="porcentaje.errors.required">
-        *Complete
+    </ion-col>
+
+    <ion-col size="6">
+      <ion-label class="ion-text-wrap"> {{itemDeVenta.producto.nombre | titlecase}} ({{itemDeVenta.medida}})</ion-label>
+    </ion-col>
+    <!-- <ion-col size="2">
+      <ion-label>{{itemDeVenta.medida}}</ion-label>
+    </ion-col> -->
+    <ion-col size="1">
+      <ion-input (keyup)="cambioPorcentaje()" formControlName="porcentaje" placeholder="%"
+        value="{{itemDeVenta.porcentajeDescuento}}" maxlength="3"></ion-input>
+      <div class="alertDanger" *ngIf="porcentaje.invalid && (porcentaje.dirty || porcentaje.touched)">
+        <div class="mensajeError" *ngIf="porcentaje.errors.required">
+          *Complete
+        </div>
       </div>
-    </div>
-  </ion-col>
-  <ion-col size="1" style="text-align: center;">
-    <ion-label color="dark" style="font-weight: bold;">S/</ion-label>
-  </ion-col>
-  <ion-col size="1.5">
-    <ion-input (keyup)="cambioPrecio()"  formControlName="precioVenta" placeholder="Precio"
-    value="{{itemDeVenta.montoNeto !== itemDeVenta.totalxprod ? itemDeVenta.totalxprod:itemDeVenta.montoNeto}}"
-    maxlength="5"></ion-input>
-    <div class="alertDanger" *ngIf="precioVenta.invalid && (precioVenta.dirty || precioVenta.touched)">
-      <div class="mensajeError" *ngIf="precioVenta.errors.required">
-        *Complete el precio
+    </ion-col>
+    <ion-col size="1" style="text-align: center;">
+      <ion-label color="dark" style="font-weight: bold;">S/</ion-label>
+    </ion-col>
+    <ion-col size="1.5">
+      <ion-input (keyup)="cambioPrecio()"  formControlName="precioVenta" placeholder="Precio"
+        value="{{itemDeVenta.montoNeto !== itemDeVenta.totalxprod ? itemDeVenta.totalxprod:itemDeVenta.montoNeto}}"
+        maxlength="5"
+        ></ion-input>
+      <div class="alertDanger" *ngIf="precioVenta.invalid && (precioVenta.dirty || precioVenta.touched)">
+        <div class="mensajeError" *ngIf="precioVenta.errors.required">
+          *Complete el precio
+        </div>
       </div>
-    </div>
-  </ion-col>
-  <ion-col size="1">
-    <ion-buttons>
-      <ion-button (click)="eventoEliminarItem()">
-        <ion-icon slot="icon-only" color="danger" name="trash"></ion-icon>
-      </ion-button>
-    </ion-buttons>
-  </ion-col>
-</ion-row>
+    </ion-col>
+    <ion-col size="1">
+      <ion-buttons>
+        <ion-button (click)="eventoEliminarItem()">
+          <ion-icon slot="icon-only" color="danger" name="trash"></ion-icon>
+        </ion-button>
+      </ion-buttons>
+    </ion-col>
+  </ion-row>
 </form>
 <!-- <ion-item> -->
 
-  <!-- <ion-label> S/ {{itemDeVenta.producto.precio | number: '1.2'}} </ion-label> -->
+<!-- <ion-label> S/ {{itemDeVenta.producto.precio | number: '1.2'}} </ion-label> -->
 
 
 <!-- </ion-item> -->

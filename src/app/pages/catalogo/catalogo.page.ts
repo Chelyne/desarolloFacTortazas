@@ -19,8 +19,11 @@ export class CatalogoPage implements OnInit {
   sedes = this.storage.datosAdmi.sede;
   listaDeProductosObservada: ProductoInterface[] = [];
   listaDeProductos: ProductoInterface[] = [];
+  obsProducto: any;
   buscando = false;
   ordenarStock =  false;
+
+
   constructor(
     private dataApi2: DataBaseService,
     private buscadorService: BuscadorService,
@@ -41,11 +44,10 @@ export class CatalogoPage implements OnInit {
   // ======================================================================================
   // btener lista de productos
   ObtenerProductos(){
-    this.dataApi2.obtenerListaProductos(this.sedes).subscribe(data => {
-      console.log(data);
+    this.obsProducto = this.dataApi2.obtenerListaProductos(this.sedes);
+    this.obsProducto.subscribe(data => {
       this.listaDeProductosObservada = data;
       this.listaDeProductos = data;
-
     });
   }
 
@@ -53,8 +55,8 @@ export class CatalogoPage implements OnInit {
     const estado = event.detail.checked;
     console.log(estado);
     if (estado === true) {
-      this.dataApi2.obtenerListaProductosStock(this.sedes).subscribe(productos => {
-        console.log(productos);
+      this.obsProducto = this.dataApi2.obtenerListaProductosStock(this.sedes);
+      this.obsProducto.subscribe(productos => {
         this.listaDeProductos = productos;
       });
     } else {
@@ -94,37 +96,54 @@ export class CatalogoPage implements OnInit {
     await modal.present();
   }
 
-  async borrarProducto(producto: ProductoInterface) {
-    const alert = await this.alertController.create({
-      cssClass: 'my-custom-class',
-      header: 'Confirmar',
-      message: '¿Está seguro que desea eliminar el producto?',
-      mode: 'ios',
-      buttons: [
-        {
-          text: 'Cancelar',
-          role: 'cancel',
-          cssClass: 'secondary',
-          handler: (blah) => {
-            console.log('Confirm Cancel: blah');
-          }
-        }, {
-          text: 'Eliminar',
-          handler: () => {
-            this.eliminarProducto(producto.id);
-          }
-        }
-      ]
-    });
-    await alert.present();
+  async alertEliminarProducto(producto: ProductoInterface) {
+
+    this.srvGlobal.crearAlertController(
+      `¿Está seguro que desea eliminar el producto: ${producto.nombre} ?`,
+      'Eliminar',
+      () => this.eliminarProducto(producto)
+    );
+
   }
-  eliminarProducto(idProducto: string) {
-    this.dataApi2.eliminarProducto(idProducto, this.sedes).then(() => {
+
+  // async borrarProducto(producto: ProductoInterface) {
+  //   const alert = await this.alertController.create({
+  //     cssClass: 'my-custom-class',
+  //     header: 'Confirmar',
+  //     message: '¿Está seguro que desea eliminar el producto?',
+  //     mode: 'ios',
+  //     buttons: [
+  //       {
+  //         text: 'Cancelar',
+  //         role: 'cancel',
+  //         cssClass: 'secondary',
+  //         handler: (blah) => {
+  //           console.log('Confirm Cancel: blah');
+  //         }
+  //       }, {
+  //         text: 'Eliminar',
+  //         handler: () => {
+  //           this.eliminarProducto(producto.id);
+  //         }
+  //       }
+  //     ]
+  //   });
+  //   await alert.present();
+  // }
+
+  async eliminarProducto(producto: ProductoInterface) {
+    const newLoading =  await this.srvGlobal.presentLoading('Eliminando producto...', {duracion: 10000});
+
+    if (producto.img){
+      await this.srvGlobal.ElimarImagen(producto.img);
+    }
+
+    await this.dataApi2.eliminarProducto(producto.id, producto.sede).then(() => {
       this.srvGlobal.presentToast('El producto fue eliminado exitosamente', {position: 'top', color: 'success'} );
     }).catch(() => {
       this.srvGlobal.presentToast('El producto no se pudo eliminar', {position: 'top', color: 'danger'} );
-
     });
+    newLoading.dismiss();
   }
 
   async presentModalEditar(prod) {
@@ -137,16 +156,6 @@ export class CatalogoPage implements OnInit {
       }
     });
     await modal.present();
-
-    const { data } =  await modal.onWillDismiss();
-    console.log('ACTUALIZA: ', data);
-    if (data) {
-      this.dataApi2.actualizarProducto(data.producto).then(() => {
-        this.srvGlobal.presentToast('Producto se actualizó correctamente', {color: 'success'});
-      }).catch(() => {
-        this.srvGlobal.presentToast('Producto no se actualizó', {color: 'danger'});
-      });
-    }
   }
 
 }

@@ -72,7 +72,7 @@
               <ion-row class="ion-justify-content-center ion-align-items-center">
                 <ion-col size-xs="3" class="colImg">
                   <img *ngIf="prod.img" [src]='prod.img' alt="">
-                  <img *ngIf="!prod.img" src='../../../assets/img/producto_default.png' alt="">
+                  <img *ngIf="!prod.img" src="../../../assets/img/producto_default.png" alt="">
                 </ion-col>
                 <ion-col size-xs="5" class="colDatos">
                   <ion-label style="font-size: 17px; font-weight: bold;">{{prod.nombre | titlecase}}</ion-label><br>
@@ -179,29 +179,25 @@
           </div>
           <ion-grid class="itemsVender" *ngIf="listaItemsDeVenta.length > 0">
             <ion-row class="headerItems">
-              <ion-col size="1">
-                <ion-label>Cant.</ion-label>
-              </ion-col>
-              <ion-col size="6.5">
-                <ion-label>Nombre</ion-label>
-              </ion-col>
-              <ion-col size="1">
-                <ion-label>%</ion-label>
-              </ion-col>
-              <ion-col size="1">
-                <ion-label>S/</ion-label>
-              </ion-col>
-              <ion-col size="1.5">
-                <ion-label>Total</ion-label>
-              </ion-col>
-              <ion-col size="1">
-                <ion-label></ion-label>
-              </ion-col>
+              <ion-col size="1"><ion-label>Cant.</ion-label></ion-col>
+              <ion-col size="6.5"><ion-label>Nombre</ion-label></ion-col>
+              <ion-col size="1"><ion-label>%</ion-label></ion-col>
+              <ion-col size="1"><ion-label>S/</ion-label></ion-col>
+              <ion-col size="1.5"><ion-label>Total</ion-label></ion-col>
+              <ion-col size="1"><ion-label></ion-label></ion-col>
             </ion-row>
             <ion-row class="contentItems">
               <ion-col size="12" *ngFor="let item of listaItemsDeVenta; let i = index">
-                <app-producto-venta [itemDeVenta]="item" (cambiarPropiedadesProducto)="inputModificado($event)"
-                  (quitarItemDeVenta)="quitarProducto($event)"></app-producto-venta>
+                <!-- <app-producto-venta
+                  [itemDeVenta]="item"
+                  (cambiarPropiedadesProducto)="inputModificado($event)"
+                  (quitarItemDeVenta)="quitarProducto($event)"
+                ></app-producto-venta> -->
+                <app-producto-venta
+                  [itemDeVenta]="item"
+                  (cambiarPropiedadesItemVenta)="inputModificado($event)"
+                  (quitarItemDeVenta)="quitarProducto($event)"
+                ></app-producto-venta>
               </ion-col>
             </ion-row>
           </ion-grid>

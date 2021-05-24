@@ -51,8 +51,35 @@ describe('Testear conversion de Numero a Texto moneda', () => {
     expect(MontoALetras(99)).toEqual('SON NOVENTA Y NUEVE SOLES');
     expect(MontoALetras(69)).toEqual('SON SESENTA Y NUEVE SOLES');
   });
+  it('Decenas con uno', () => {
+    expect(MontoALetras(11)).toEqual('SON ONCE SOLES');
+    expect(MontoALetras(11.23)).toEqual('SON ONCE CON 23/100 SOLES');
+    expect(MontoALetras(21)).toEqual('SON VEINTIUN SOLES');
+    expect(MontoALetras(21.23)).toEqual('SON VEINTIUNO CON 23/100 SOLES');
+    expect(MontoALetras(22.23)).toEqual('SON VEINTIDOS CON 23/100 SOLES');
+    expect(MontoALetras(23.23)).toEqual('SON VEINTITRES CON 23/100 SOLES');
+    expect(MontoALetras(24.23)).toEqual('SON VEINTICUATRO CON 23/100 SOLES');
+    expect(MontoALetras(25.23)).toEqual('SON VEINTICINCO CON 23/100 SOLES');
+    expect(MontoALetras(31)).toEqual('SON TREINTA Y UN SOLES');
+    expect(MontoALetras(31.23)).toEqual('SON TREINTA Y UNO CON 23/100 SOLES');
+    expect(MontoALetras(41)).toEqual('SON CUARENTA Y UN SOLES');
+    expect(MontoALetras(41.23)).toEqual('SON CUARENTA Y UNO CON 23/100 SOLES');
+    expect(MontoALetras(51)).toEqual('SON CINCUENTA Y UN SOLES');
+    expect(MontoALetras(51.23)).toEqual('SON CINCUENTA Y UNO CON 23/100 SOLES');
+    expect(MontoALetras(61)).toEqual('SON SESENTA Y UN SOLES');
+    expect(MontoALetras(61.23)).toEqual('SON SESENTA Y UNO CON 23/100 SOLES');
+    expect(MontoALetras(71)).toEqual('SON SETENTA Y UN SOLES');
+    expect(MontoALetras(71.23)).toEqual('SON SETENTA Y UNO CON 23/100 SOLES');
+    expect(MontoALetras(81)).toEqual('SON OCHENTA Y UN SOLES');
+    expect(MontoALetras(81.23)).toEqual('SON OCHENTA Y UNO CON 23/100 SOLES');
+    expect(MontoALetras(91)).toEqual('SON NOVENTA Y UN SOLES');
+    expect(MontoALetras(91.23)).toEqual('SON NOVENTA Y UNO CON 23/100 SOLES');
+    expect(MontoALetras(101)).toEqual('SON CIENTO UN SOLES');
+    expect(MontoALetras(101.23)).toEqual('SON CIENTO UNO CON 23/100 SOLES');
+
+  });
   it('Decenas con decimales', () => {
-    expect(MontoALetras(21.34)).toEqual('SON VEINTIUN CON 34/100 SOLES');
+    expect(MontoALetras(21.34)).toEqual('SON VEINTIUNO CON 34/100 SOLES');
     expect(MontoALetras(45.94)).toEqual('SON CUARENTA Y CINCO CON 94/100 SOLES');
     expect(MontoALetras(55.64)).toEqual('SON CINCUENTA Y CINCO CON 64/100 SOLES');
     expect(MontoALetras(82.24)).toEqual('SON OCHENTA Y DOS CON 24/100 SOLES');

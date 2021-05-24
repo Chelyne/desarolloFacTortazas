@@ -1,7 +1,7 @@
 import { Component, OnInit, Input } from '@angular/core';
-import { ProductoInterface } from '../../models/ProductoInterface';
+import { ProductoInterface, VariantesInterface } from '../../models/ProductoInterface';
 import { PopoverController } from '@ionic/angular';
-import { VariantesInterface } from '../../models/variantes';
+import { GlobalService } from 'src/app/global/global.service';
 
 @Component({
   selector: 'app-popover-variantes',
@@ -16,9 +16,18 @@ export class PopoverVariantesComponent implements OnInit {
   ngOnInit() {
   }
 
-  seleccionVariante(seleccion: VariantesInterface) {
+  seleccionVariante(varianteSelect: VariantesInterface) {
+    console.log('VARIANTE SELECCIONADA EN POPOVER', varianteSelect);
+    const varianteValidada: VariantesInterface = {
+      medida: varianteSelect.medida,
+      factor: parseFloat(`${varianteSelect.factor}`),
+      precio: parseFloat(`${varianteSelect.precio}`)
+    };
+    console.log('VARIANTE SELECCIONADA EN POPOVER', varianteValidada);
+
+
     this.popoverCtrl.dismiss({
-      data: seleccion
+      variante: varianteValidada
     });
   }
 }

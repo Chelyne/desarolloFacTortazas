@@ -173,7 +173,12 @@ const routes: Routes = [
   {
     path: 'print/:sede/:fecha/:id',
     loadChildren: () => import('./pages/print/print.module').then( m => m.PrintPageModule)
-  }
+  },
+  // {
+  //   path: 'agregar-editar-producto',
+  //   // tslint:disable-next-line: max-line-length
+  //   loadChildren: () => import('./modals/agregar-editar-producto/agregar-editar-producto.module').then( m => m.AgregarEditarProductoPageModule)
+  // },
 ];
 
 @NgModule({

@@ -19,6 +19,7 @@ import { DataBaseService } from '../data-base.service';
 import { ItemDeVentaInterface } from 'src/app/models/venta/item-de-venta';
 import { formatearDateTime } from 'src/app/global/funciones-globales';
 import { ContadorDeSerieInterface } from 'src/app/models/serie';
+import { ChangeInterface } from 'src/app/models/comprobante/comprobante';
 
 
 class MockStorageService {
@@ -54,16 +55,16 @@ describe('description', () => {
   });
 
 
-  it('should be created', () => {
+  xit('should be created', () => {
     expect(service).toBeTruthy();
   });
-  it('test saludo', () => {
+  xit('test saludo', () => {
     expect('hola').toEqual(service.saludo());
   });
-  it('test getSede', () => {
+  xit('test getSede', () => {
     expect('andahuaylas').toEqual(service.getSede());
   });
-  it('probar setApiPeruTest', () => {
+  xit('probar setApiPeruTest', () => {
     service.setApiPeruConfig(apiPeruFuncinal);
   });
   /** NOTE - Todos los test se realizan en estado beta con el usuario HZ */
@@ -133,7 +134,7 @@ describe('description', () => {
   //   then( exito => console.log(exito)).catch( err => console.log(err));
   // });
 
-  describe('TEST FORMATEAR VENTA', () => {
+  xdescribe('TEST FORMATEAR VENTA', () => {
     let ventaMock: VentaInterface;
     let ventaMockConBolsa: VentaInterface;
 
@@ -281,7 +282,7 @@ describe('description', () => {
     });
   });
 
-  describe('TEST FORMATEAR NOTA DE CREDITO', () => {
+  xdescribe('TEST FORMATEAR NOTA DE CREDITO', () => {
     /** NOTE - DRY */
     let ventaMock: VentaInterface;
     let ventaMockConBolsa: VentaInterface;
@@ -346,7 +347,7 @@ describe('description', () => {
     });
   });
 
-  describe('ENVIAR COMPROBANTE A SUNAT', () => {
+  xdescribe('ENVIAR COMPROBANTE A SUNAT', () => {
     /** NOTE - DRY */
     let ventaMock: VentaInterface;
     let ventaMockConBolsa: VentaInterface;
@@ -505,6 +506,189 @@ describe('description', () => {
     });
   });
 
+  xit('venta prueba a obtener', async () => {
+    let idVenta = 'p2HAkpSESAsE6JJBAyAv';
+    let idListaVenta = 'KXkoDwL0bYuyxxRhPBiZ';
+    let sede = 'andahuaylas';
+    let fecha = '10-04-2021';
+
+    /** VENTA MODELO POR DEFECTO */
+    let ventaDefaul = await dataApi.obtenerVentasPorId(sede, fecha, idVenta);
+    let listProducDefaul: ItemDeVentaInterface[] = await dataApi.obtenerProductosDeVenta(idListaVenta, sede);
+
+    console.log('%-------------------------------------', 'color:white;background-color:black');
+    console.log('VENTA ORIGINAL', ventaDefaul, 'ITEMS DE VENTA', listProducDefaul);
+
+    /** ----------------------------------------------------------------------------------------------- */
+    /** ----------------------------------------------------------------------------------------------- */
+
+    idVenta = 'tOyFdXj9Q4nY96vvtHaj';
+    idListaVenta = 'INg4agDYfsKkB6bqYlwj';
+    sede = 'andahuaylas';
+    fecha = '13-04-2021';
+
+    /** VENTA MODELO POR DEFECTO */
+    ventaDefaul = await dataApi.obtenerVentasPorId(sede, fecha, idVenta);
+    listProducDefaul = await dataApi.obtenerProductosDeVenta(idListaVenta, sede);
+
+    console.log('%-------------------------------------', 'color:white;background-color:black');
+    console.log('VENTA ORIGINAL', ventaDefaul, 'ITEMS DE VENTA', listProducDefaul);
+
+    /** ----------------------------------------------------------------------------------------------- */
+    /** ----------------------------------------------------------------------------------------------- */
+
+    idVenta = 'fzmwhA5vzd4n9KjlT8x2';
+    idListaVenta = 'OctOk0J9LJb42QcMIkm9';
+    sede = 'andahuaylas';
+    fecha = '13-04-2021';
+
+    /** VENTA MODELO POR DEFECTO */
+    ventaDefaul = await dataApi.obtenerVentasPorId(sede, fecha, idVenta);
+    listProducDefaul = await dataApi.obtenerProductosDeVenta(idListaVenta, sede);
+
+    console.log('%-------------------------------------', 'color:white;background-color:black');
+    console.log('VENTA ORIGINAL', ventaDefaul, 'ITEMS DE VENTA', listProducDefaul);
+
+    /** ----------------------------------------------------------------------------------------------- */
+    /** ----------------------------------------------------------------------------------------------- */
+
+    idVenta = 'mOJKcf5Pe0a8NTX9Gaad';
+    idListaVenta = 'uHWzkTqBoQGfVaW0Dl3u';
+    sede = 'andahuaylas';
+    fecha = '13-04-2021';
+
+    /** VENTA MODELO POR DEFECTO */
+    ventaDefaul = await dataApi.obtenerVentasPorId(sede, fecha, idVenta);
+    listProducDefaul = await dataApi.obtenerProductosDeVenta(idListaVenta, sede);
+
+    console.log('%-------------------------------------', 'color:white;background-color:black');
+    console.log('VENTA ORIGINAL', ventaDefaul, 'ITEMS DE VENTA', listProducDefaul);
+
+  });
+
+  xit('venta con descuento global', async () => {
+    const ventaConDescuento: VentaInterface = {
+      idVenta: 'tOyFdXj9Q4nY96vvtHaj',
+      estadoVenta: 'anulado',
+      vendedor: {
+        token: 'token laptop',
+        celular: '910426974',
+        id: 'nerio@gmail.com',
+        rol: 'Administrador',
+        sede: 'Andahuaylas',
+        nombre: 'Nerio',
+        dni: '70148737',
+        foto: null,
+        password: 'nerio123',
+        correo: 'nerio@gmail.com',
+        apellidos: 'Cañari Huarcaya'
+      },
+      montoBase: 10.16949152542373,
+      idListaProductos: 'INg4agDYfsKkB6bqYlwj',
+      bolsa: false,
+      cantidadBolsa: 0,
+      totalPagarVenta: 12,
+      numeroComprobante: '2728',
+      fechaEmision: {
+        seconds: 1618337323,
+        nanoseconds: 510000000
+      },
+      cliente: {
+        celular: '999999999',
+        numDoc: '00000000',
+        tipoDoc: 'dni',
+        nombre: 'cliente varios',
+        direccion: 'jr. prueba',
+        id: '5FwjPZ7ClHegWoQqOQzN',
+        email: 'cliente@gmail.com'
+      },
+      igv: 1.8305084745762699,
+      montoNeto: 15,
+      descuentoVenta: 3,
+      tipoComprobante: 'boleta',
+      tipoPago: 'efectivo',
+      montoPagado: 12,
+      serieComprobante: 'B001'
+    };
+
+    const listaItemsDeVenta: ItemDeVentaInterface[] = [
+      {
+        porcentajeDescuento: 0,
+        descuentoProducto: 0,
+        idProducto: 'ebXferOtr0qmMbjhRcTv',
+        montoNeto: 15,
+        cantidad: 1,
+        producto: {
+          id: 'ebXferOtr0qmMbjhRcTv',
+          medida: 'Unidad',
+          cantStock: 8,
+          codigo: '344',
+          categoria: 'petshop',
+          codigoBarra: null,
+          precio: 15,
+          nombre: 'pechera nacional t2',
+          sede: 'Andahuaylas',
+          cantidad: 1,
+          subCategoria: 'pecheras',
+          arrayNombre: [
+            'pechera',
+            'nacional',
+            't2'
+          ]
+        },
+        totalxprod: 15
+      }
+    ];
+
+    ventaConDescuento.listaItemsDeVenta = listaItemsDeVenta;
+
+    const ventaFormateada = service.intentarFormatearVenta(ventaConDescuento);
+    console.log('venta Formateada', ventaFormateada);
+
+    const descuentos: ChangeInterface[] = [
+      {
+        codTipo: '02',
+        montoBase: 3,
+        factor: 1,
+        monto: 3
+      }
+      ];
+    ventaFormateada.descuentos = descuentos;
+
+    const cdr = await service.enviarComprobanteASunat(ventaFormateada);
+    console.log('CDR DE VENTA CON DESCUENTO', cdr);
+
+    const notaDeCreditoFormateada = await service.intentarFormatearNotaDeCredito(ventaConDescuento, {serie: 'BC01', correlacion: 4});
+    console.log('nota de credito formateada', notaDeCreditoFormateada);
+
+    notaDeCreditoFormateada.descuentos = descuentos;
+    const cdrAnulado = await service.enviarNotaCreditoASunat(notaDeCreditoFormateada);
+    console.log('CDR DE NOTA DE CREDITO', cdrAnulado);
+  });
+  xit('OBTENER UNA VENTA Y SUS PRODUCTOS ', async () => {
+    const sede = 'andahuaylas';
+    const fecha = '25-04-2021';
+    const idVenta = 'xn4yLrPNTToqJRTFnuUp';
+    const idListaProductos = 'OFR6dx3nvhwFtAwRYgpW';
+
+
+    /** obtener venta */
+    let ventaDefaul: VentaInterface = await dataApi.obtenerVentasPorId(sede, fecha, idVenta);
+    let listProducDefaul: ItemDeVentaInterface[] = await dataApi.obtenerProductosDeVenta(idListaProductos, sede);
+    console.log(ventaDefaul, listProducDefaul);
+    /** obtener producotos */
+
+    ventaDefaul.listaItemsDeVenta = listProducDefaul;
+
+    const ventaFormateada = await service.intentarFormatearVenta(ventaDefaul);
+    console.log('%cVenta FORMATEADA', 'color:white;background-color:purple', ventaFormateada);
+
+    const cdr = await service.enviarComprobanteASunat(ventaFormateada);
+    console.log('CDR DE VENTA CON DESCUENTO', cdr);
+
+  });
+
+
 
   // it('Test Guardar Correlacion', () => {
 
@@ -620,7 +804,7 @@ describe('description', () => {
    *    GuardarCDR anulado
    */
 
-  it('Test de obtener medida', () => {
+  xit('Test de obtener medida', () => {
     expect(service.ObtenerCodigoMedida('botellas')).toEqual('BO');
     expect(service.ObtenerCodigoMedida('cajas')).toEqual('BX');
     expect(service.ObtenerCodigoMedida('docena')).toEqual('DZN');

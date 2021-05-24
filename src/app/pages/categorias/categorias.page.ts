@@ -1,6 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { MenuController, ModalController, AlertController } from '@ionic/angular';
-import { DbDataService } from 'src/app/services/db-data.service';
+import { MenuController, ModalController} from '@ionic/angular';
 import { CategoriaInterface } from '../../models/CategoriaInterface';
 import { StorageService } from '../../services/storage.service';
 import { Router } from '@angular/router';
@@ -15,19 +14,22 @@ import { GENERAL_CONFIG } from '../../../config/generalConfig';
   styleUrls: ['./categorias.page.scss'],
 })
 export class CategoriasPage implements OnInit {
-  logo = GENERAL_CONFIG.datosEmpresa.logo;
   sede = this.storage.datosAdmi.sede;
+  logo = GENERAL_CONFIG.datosEmpresa.logo;
+
   listaDeCategorias: CategoriaInterface[] = [];
+  obsCategorias: any;
+
   sinDatos: boolean;
   textoBuscar = '';
+
   constructor(
     private menuCtrl: MenuController,
     private dataApi: DataBaseService,
     private storage: StorageService,
     private router: Router,
     private modalCtlr: ModalController,
-    private servGlobal: GlobalService,
-    private alertController: AlertController
+    private globalService: GlobalService,
     ) {
     this.menuCtrl.enable(true);
    }
@@ -36,16 +38,15 @@ export class CategoriasPage implements OnInit {
     this.ObtenerCategorias();
   }
 
-  // Obtener lista de productos
   ObtenerCategorias(){
-    this.dataApi.obtenerListaCategorias(this.sede).subscribe(data => {
-      console.log(data);
+    this.obsCategorias = this.dataApi.obtenerListaCategorias(this.sede);
+    this.obsCategorias.subscribe((data: any) => {
       if (data.length) {
         this.listaDeCategorias = data;
         this.sinDatos = false;
       } else {
         this.sinDatos = true;
-        this.servGlobal.presentToast('Posible error de conexion', {color: 'danger', duracion: 2000});
+        this.globalService.presentToast('Posible error de conexion', {color: 'danger', duracion: 2000});
       }
     });
   }
@@ -56,58 +57,72 @@ export class CategoriasPage implements OnInit {
   }
 
 
-  buscarCategoria(event) {
+  buscarCategoria(event: any) {
     const texto = event.target.value;
     this.textoBuscar = texto;
   }
 
-  async abrirModalNuevoCategoria(){
+  async abrirModalNuevaCategoria(){
 
     const modal =  await this.modalCtlr.create({
       component: ModalAgregarCategoriasPage,
-      // cssClass: 'modal-fullscreen',
-      componentProps: {
-        sede: this.sede,
-      }
     });
 
     await modal.present();
   }
 
   async alertEliminarCategoria(categoria: CategoriaInterface) {
-    const alert = await this.alertController.create({
-      cssClass: 'my-custom-class',
-      header: 'Confirmar',
-      message: '¿Está seguro que desea eliminar la categoria?',
-      mode: 'ios',
-      buttons: [
-        {
-          text: 'Cancelar',
-          role: 'cancel',
-          cssClass: 'secondary',
-          handler: (blah) => {
-            console.log('Confirm Cancel: blah');
-          }
-        }, {
-          text: 'Eliminar',
-          handler: () => {
-            this.eliminarCat(categoria.id);
-          }
-        }
-      ]
-    });
-    await alert.present();
+
+    this.globalService.crearAlertController(
+      `¿Está seguro que desea eliminar la categoría: ${categoria.categoria} ?`,
+      'Eliminar',
+      () =>  this.eliminarCategoria(categoria)
+    );
   }
 
+  // async alertEliminarCategoria(categoria: CategoriaInterface) {
+  //   const alert = await this.alertController.create({
+  //     cssClass: 'my-custom-class',
+  //     header: 'Confirmar',
+  //     message: '¿Está seguro que desea eliminar la categoria?',
+  //     mode: 'ios',
+  //     buttons: [
+  //       {
+  //         text: 'Cancelar',
+  //         role: 'cancel',
+  //         cssClass: 'secondary',
+  //         handler: (blah) => {
+  //           console.log('Confirm Cancel: blah');
+  //         }
+  //       }, {
+  //         text: 'Eliminar',
+  //         handler: () => {
+  //           this.eliminarCat(categoria.id);
+  //         }
+  //       }
+  //     ]
+  //   });
+  //   await alert.present();
+  // }
 
-  eliminarCat(id: string) {
-    console.log(id);
-    this.dataApi.eliminarCategoria(id, this.sede).then(res => {
+
+  async eliminarCategoria(categoria: CategoriaInterface) {
+    const newLoading =  await this.globalService.presentLoading('Eliminando Categoria...', {duracion: 10000});
+
+    if (categoria.img) {
+      await this.globalService.ElimarImagen(categoria.img);
+    }
+
+    await this.dataApi.eliminarCategoria(categoria.id, this.sede).then(res => {
       console.log(res);
-      this.servGlobal.presentToast('Categoria eliminada', {color: 'success', duracion: 2000});
+      this.globalService.presentToast('Categoria eliminada', {color: 'success', duracion: 2000});
     }).catch(err => {
-      this.servGlobal.presentToast('No se pudo eliminar la categoria, error: ' + err, {color: 'danger', duracion: 2000});
+      this.globalService.presentToast('No se pudo eliminar la categoria, error: ' + err, {color: 'danger', duracion: 2000});
     });
+
+    newLoading.dismiss();
   }
+
+
 
 }

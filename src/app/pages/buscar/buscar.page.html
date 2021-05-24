@@ -22,7 +22,7 @@
                                     </ion-item>
                                     <div class="alertDanger"
                                         *ngIf="tipoComprobante.invalid && (tipoComprobante.dirty || tipoComprobante.touched)">
-                                        <div class="mensajeError" *ngIf="!!tipoComprobante.errors.required">
+                                        <div class="mensajeError" *ngIf="tipoComprobante.errors.required">
                                             Complete el tipo de Comprobante
                                         </div>
                                     </div>
@@ -35,7 +35,7 @@
                                     </ion-item>
                                     <div class="alertDanger"
                                         *ngIf="fechaEmision && fechaEmision.invalid && (fechaEmision.dirty || fechaEmision.touched)">
-                                        <div class="mensajeError" *ngIf="  !!fechaEmision.errors.required">
+                                        <div class="mensajeError" *ngIf="  fechaEmision.errors.required">
                                             Ingrese fecha de fecha de emision
                                         </div>
                                     </div>
@@ -50,13 +50,13 @@
                                     </ion-item>
                                     <div class="alertDanger"
                                         *ngIf="serieComprobante.invalid && (serieComprobante.dirty || serieComprobante.touched)">
-                                        <div class="mensajeError" *ngIf="!!serieComprobante.errors.required">
+                                        <div class="mensajeError" *ngIf="serieComprobante.errors.required">
                                             Complete el serie
                                         </div>
-                                        <div class="mensajeError" *ngIf="!!serieComprobante.errors.minlength">
+                                        <div class="mensajeError" *ngIf="serieComprobante.errors.minlength">
                                             La serie debe tener al menos 3 caracteres.
                                         </div>
-                                        <div class="mensajeError" *ngIf="!!serieComprobante.errors.maxlength">
+                                        <div class="mensajeError" *ngIf="serieComprobante.errors.maxlength">
                                             La serie debe tener máximo 35 caracteres.
                                         </div>
                                     </div>
@@ -69,7 +69,7 @@
                                     </ion-item>
                                     <div class="alertDanger"
                                         *ngIf="numeroComprobante.invalid && (numeroComprobante.dirty || numeroComprobante.touched)">
-                                        <div class="mensajeError" *ngIf="!!numeroComprobante.errors.required">
+                                        <div class="mensajeError" *ngIf="numeroComprobante.errors.required">
                                             Complete el numero
                                         </div>
                                     </div>
@@ -83,13 +83,13 @@
                                             placeholder="Ingrese documento"></ion-input>
                                     </ion-item>
                                     <div class="alertDanger" *ngIf="numDoc.invalid && (numDoc.dirty || numDoc.touched)">
-                                        <div class="mensajeError" *ngIf="!!numDoc.errors.required">
+                                        <div class="mensajeError" *ngIf="numDoc.errors.required">
                                             Complete el documento
                                         </div>
-                                        <div class="mensajeError" *ngIf="!!numDoc.errors.minlength">
+                                        <div class="mensajeError" *ngIf="numDoc.errors.minlength">
                                             El documento debe tener al menos 3 caracteres.
                                         </div>
-                                        <div class="mensajeError" *ngIf="!!numDoc.errors.maxlength">
+                                        <div class="mensajeError" *ngIf="numDoc.errors.maxlength">
                                             El documento debe tener máximo 35 caracteres.
                                         </div>
                                     </div>
@@ -102,7 +102,7 @@
                                     </ion-item>
                                     <div class="alertDanger"
                                         *ngIf="totalPagarVenta.invalid && (totalPagarVenta.dirty || totalPagarVenta.touched)">
-                                        <div class="mensajeError" *ngIf="!!totalPagarVenta.errors.required">
+                                        <div class="mensajeError" *ngIf="totalPagarVenta.errors.required">
                                             Complete el monto total
                                         </div>
                                     </div>

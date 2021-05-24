@@ -8,7 +8,7 @@ import { DataBaseService } from '../../services/data-base.service';
 import { GlobalService } from '../../global/global.service';
 import { ProductoInterface } from '../../models/ProductoInterface';
 import * as FileSaver from 'file-saver';
-import {CalcularPorcentaje} from 'src/app/global/funciones-globales';
+import {MostrarPorcentaje} from 'src/app/global/funciones-globales';
 
 @Component({
   selector: 'app-lista-de-ventas',
@@ -245,13 +245,21 @@ export class ListaDeVentasPage implements OnInit {
         let response: any;
 
         if ((venta.tipoComprobante === 'boleta' || venta.tipoComprobante === 'factura') && !venta.cdr) {
-          CalcularPorcentaje(index, maximo);
+          MostrarPorcentaje(index, maximo);
 
           response = await this.apiPeru.enviarASunatAdaptador(venta).catch( err => err);
 
           if (response === 'COMPROBANTE NO ENVIADO A SUNAT' || response === 'NO SE GUARDO EL CDR'){
             console.log('Error al Enviar Comprobantes: ', response);
             this.loading.dismiss();
+            return;
+          }
+
+          if (
+            !response.success ||
+            Object.entries(response.observaciones).length ||
+            response.observaciones.length
+          ){
             return;
           }
 
@@ -274,8 +282,15 @@ export class ListaDeVentasPage implements OnInit {
         let response: any;
         if (venta.estadoVenta === 'anulado' && venta.cdr && venta.cdr.sunatResponse.success) {
           if (!venta.cdrAnulado){
-            CalcularPorcentaje(index, maximo);
+            MostrarPorcentaje(index, maximo);
             response = await this.apiPeru.enviarNotaDeCreditoAdaptador(venta);
+            if (
+              !response.success ||
+              Object.entries(response.observaciones).length ||
+              response.observaciones.length
+            ){
+              return;
+            }
           }
         } else {
           if (venta.estadoVenta === 'anulado') {
@@ -399,4 +414,10 @@ export class ListaDeVentasPage implements OnInit {
     this.loading.dismiss();
     a.click();
   }
+
+  DarformatoALasVentas(){
+    this.apiPeru.formatearVentas(this.listaDeVentas);
+  }
+
 }
+

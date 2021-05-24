@@ -14,6 +14,7 @@ import { DataBaseService } from 'src/app/services/data-base.service';
 export class ListaDeProveedoresPage implements OnInit {
 
   listaDeProveedores: ProveedorInterface[];
+  obsProveedores: any;
 
   modalEvento: string;
   modalDataProveedor: ProveedorInterface;
@@ -33,7 +34,8 @@ export class ListaDeProveedoresPage implements OnInit {
   }
 
   ObtenerProveedores(){
-    this.dataApi.obtenerProveedores().subscribe(data => {
+    this.obsProveedores =  this.dataApi.obtenerProveedores();
+    this.obsProveedores.subscribe(data => {
       this.listaDeProveedores = data;
     });
   }
