@@ -43,7 +43,6 @@ export class ModalIngresosEgresosPage implements OnInit {
 
   createFormIngresoEgreso() {
     return new FormGroup({
-      // monto: new FormControl('', [Validators.required,  Validators.pattern(DECIMAL_STRING_PATTERN)]),
       monto: new FormControl('', [Validators.required,  Validators.pattern(DECIMAL_REGEXP_PATTERN)]),
       detalles: new FormControl('', [Validators.required]),
       tipo: new FormControl('')
@@ -114,21 +113,4 @@ export class ModalIngresosEgresosPage implements OnInit {
     this.modalCtlr.dismiss();
   }
 
-
-  // numberOnlyValidation(event: any) {
-  //   const pattern = /[0-9.]/;
-  //   const inputChar = String.fromCharCode(event.charCode);
-
-  //   if (!pattern.test(inputChar)) {
-  //     event.preventDefault();
-  //   }
-  // }
-
-  // async presentLoading(mensaje: string) {
-  //   this.loading = await this.loadingController.create({
-  //     cssClass: 'my-custom-class',
-  //     message: mensaje,
-  //   });
-  //   await this.loading.present();
-  // }
 }

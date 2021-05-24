@@ -127,27 +127,4 @@ export class AgregarEditarUsuarioPage implements OnInit {
     this.passwordTypeInput = this.passwordTypeInput === 'text' ? 'password' : 'text';
   }
 
-
-  // numberOnlyValidation(event: any) {
-  //   const pattern = /[0-9]/;
-  //   const inputChar = String.fromCharCode(event.charCode);
-
-  //   if (!pattern.test(inputChar)) {
-  //     // invalid character, prevent input
-  //     event.preventDefault();
-  //   }
-  // }
-
-  // stringOnlyValidation(event: any) {
-  //   const pattern = /[a-zA-ZÀ-ÿ\u00f1\u00d1 ]/;
-  //   const inputChar = String.fromCharCode(event.charCode);
-
-  //   if (!pattern.test(inputChar)) {
-  //     // invalid character, prevent input
-  //     event.preventDefault();
-  //   }
-  // }
-
-
-
 }

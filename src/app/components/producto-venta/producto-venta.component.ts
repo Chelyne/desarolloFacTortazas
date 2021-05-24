@@ -1,6 +1,7 @@
 import { Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { fromEvent } from 'rxjs';
+import { DECIMAL_REGEXP_PATTERN } from 'src/app/global/validadores';
 import { ItemDeVentaInterface } from 'src/app/models/venta/item-de-venta';
 
 @Component({
@@ -19,7 +20,7 @@ export class ProductoVentaComponent implements OnInit {
   formVenta: FormGroup;
 
 
-
+  cacheTotalPagarItem = 0;
   constructor() {
     // this.formVenta = this.createFormVenta();
     // console.log("se creo el modulo venta");
@@ -56,7 +57,7 @@ export class ProductoVentaComponent implements OnInit {
 
   createFormVenta() {
     return new FormGroup({
-      cantidad: new FormControl('', [Validators.required, Validators.pattern('[0-9]+')]),
+      cantidad: new FormControl('', [Validators.required, Validators.pattern(DECIMAL_REGEXP_PATTERN)]),
       precioVenta: new FormControl('', [Validators.required]),
       porcentaje: new FormControl('', [Validators.required])
     });
@@ -64,7 +65,7 @@ export class ProductoVentaComponent implements OnInit {
 
   updateFormVenta() {
     return new FormGroup({
-      cantidad: new FormControl(this.itemDeVenta.cantidad, [Validators.required, Validators.pattern('[0-9]+')]),
+      cantidad: new FormControl(this.itemDeVenta.cantidad, [Validators.required, Validators.pattern(DECIMAL_REGEXP_PATTERN)]),
       precioVenta: new FormControl(this.obtenerPrecioVenta(), [Validators.required]),
       porcentaje: new FormControl(this.itemDeVenta.porcentajeDescuento, [Validators.required])
     });
@@ -96,11 +97,16 @@ export class ProductoVentaComponent implements OnInit {
   // }
 
   cambioCantidad(){
-    this.itemDeVenta.cantidad = this.formVenta.value.cantidad ? parseInt(this.formVenta.value.cantidad, 10) : 0;
+
+    this.itemDeVenta.cantidad = this.formVenta.value.cantidad ? parseFloat(this.formVenta.value.cantidad) : 0;
     this.itemDeVenta.montoNeto = this.itemDeVenta.cantidad * this.itemDeVenta.precio;
     // this.itemDeVenta.porcentajeDescuento = this.formVenta.value.porcentaje ? parseFloat(this.formVenta.value.porcentaje) : 0;
-    this.itemDeVenta.descuentoProducto = this.calcularPorcentaje(this.itemDeVenta.montoNeto, this.itemDeVenta.porcentajeDescuento);
-    this.itemDeVenta.totalxprod = this.itemDeVenta.montoNeto - this.itemDeVenta.descuentoProducto;
+
+    // this.itemDeVenta.descuentoProducto = this.calcularPorcentaje(this.itemDeVenta.montoNeto, this.itemDeVenta.porcentajeDescuento);
+    this.itemDeVenta.descuentoProducto = 0;
+    this.itemDeVenta.porcentajeDescuento = 0;
+
+    this.itemDeVenta.totalxprod = this.calculoTotalProducto();
 
     // this.emitirCambioDePropiedades();
     this.emitirCambioDePropiedadesItemVenta();
@@ -110,13 +116,18 @@ export class ProductoVentaComponent implements OnInit {
     console.log('cambioCantidad', this.itemDeVenta);
   }
 
+  calculoTotalProducto(){
+    return ((100 -  this.itemDeVenta.porcentajeDescuento) / 100 ) * (this.itemDeVenta.montoNeto - this.itemDeVenta.descuentoProducto);
+  }
+
   cambioPorcentaje(){
     // this.itemDeVenta.cantidad = this.formVenta.value.cantidad ? parseInt(this.formVenta.value.cantidad, 10) : 0;
-    this.itemDeVenta.montoNeto = this.itemDeVenta.cantidad * this.itemDeVenta.precio;
+    // this.itemDeVenta.montoNeto = this.itemDeVenta.cantidad * this.itemDeVenta.precio;
     this.itemDeVenta.porcentajeDescuento = this.formVenta.value.porcentaje ? parseFloat(this.formVenta.value.porcentaje) : 0;
 
-    this.itemDeVenta.descuentoProducto = this.calcularPorcentaje(this.itemDeVenta.montoNeto, this.itemDeVenta.porcentajeDescuento);
-    this.itemDeVenta.totalxprod = this.itemDeVenta.montoNeto - this.itemDeVenta.descuentoProducto;
+    // this.itemDeVenta.descuentoProducto = this.calcularPorcentaje(this.itemDeVenta.montoNeto, this.itemDeVenta.porcentajeDescuento);
+    // this.itemDeVenta.totalxprod = this.itemDeVenta.montoNeto - this.itemDeVenta.descuentoProducto;
+    this.itemDeVenta.totalxprod = this.calculoTotalProducto();
 
     // this.emitirCambioDePropiedades();
     this.emitirCambioDePropiedadesItemVenta();
@@ -125,13 +136,22 @@ export class ProductoVentaComponent implements OnInit {
   }
 
   cambioPrecio(){
+    this.cacheTotalPagarItem = this.itemDeVenta.totalxprod;
+
+    if (this.cacheTotalPagarItem === parseFloat(this.formVenta.value.precioVenta)){
+      return;
+    }
+
+
     // this.itemDeVenta.cantidad = this.formVenta.value.cantidad ? parseInt(this.formVenta.value.cantidad, 10) : 0;
-    this.itemDeVenta.montoNeto = this.itemDeVenta.cantidad * this.itemDeVenta.precio;
+    // this.itemDeVenta.montoNeto = this.itemDeVenta.cantidad * this.itemDeVenta.precio;
     this.itemDeVenta.porcentajeDescuento = 0.0;
 
     // tslint:disable-next-line:max-line-length
     this.itemDeVenta.totalxprod = this.formVenta.value.precioVenta ? parseFloat(this.formVenta.value.precioVenta) : this.itemDeVenta.montoNeto;
     this.itemDeVenta.descuentoProducto = this.itemDeVenta.montoNeto - this.itemDeVenta.totalxprod;
+
+    this.itemDeVenta.totalxprod = this.calculoTotalProducto();
 
     // this.emitirCambioDePropiedades();
     this.emitirCambioDePropiedadesItemVenta();
@@ -140,6 +160,8 @@ export class ProductoVentaComponent implements OnInit {
   }
 
   emitirCambioDePropiedadesItemVenta(){
+
+    console.log('%c⧭', 'color: #093980', this.itemDeVenta);
     this.cambiarPropiedadesItemVenta.emit({
       idProducto: this.itemDeVenta.idProducto,
       producto: this.itemDeVenta.producto,
@@ -167,6 +189,11 @@ export class ProductoVentaComponent implements OnInit {
     });
   }
 
+  cantChange(){
+
+    console.log('%c%s', 'color: #2fc22a', 'cantidad cambio');
+    this.cambioCantidad();
+  }
 
 
 }

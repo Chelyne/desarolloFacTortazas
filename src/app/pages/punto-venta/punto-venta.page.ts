@@ -274,13 +274,13 @@ export class PuntoVentaPage implements OnInit {
       totalxprod: variante.precio /** ya que descuento es */
     };
 
-    // if (variante.medida === itemProducto.medida){
-    //   // itemDeventa.idProducto = itemProducto.id;
-    //   itemDeventa.idProducto = `${itemProducto.id}-${variante.medida}`;
-    // } else {
-    //   itemDeventa.idProducto = `${itemProducto.id}-${variante.medida}`;
-    // }
-    itemDeventa.idProducto = `${itemProducto.id}-${variante.medida}`;
+    if (itemProducto.variantes && itemProducto.variantes.length){
+      // itemDeventa.idProducto = itemProducto.id;
+      itemDeventa.idProducto = `${itemProducto.id}-${variante.medida}`;
+    } else {
+      itemDeventa.idProducto = `${itemProducto.id}`;
+    }
+    // itemDeventa.idProducto = `${itemProducto.id}-${variante.medida}`;
 
 
     console.log('%c⧭', 'color: #cc0088', itemDeventa);

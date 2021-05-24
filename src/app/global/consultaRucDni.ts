@@ -1,4 +1,3 @@
-// import { HttpClient, HttpHeaders } from '@angular/common/http';
 
 export async function ConsultarRUC_DNI(numDoc: string, typoDoc: string) {
 
