@@ -426,13 +426,15 @@ export class ReportesService {
       doc.line(120, 35, 290, 35);
       doc.rect(30, 40, 387, 60); // empty square
       doc.setFontSize(12);
-      doc.text( 'Empresa:', 40, 55);
-      doc.text( 'RUC:', 40, 70);
-      doc.text( this.nombreEmpresa + ' ,' + this.sede, 75, 55);
-      doc.text( this.RUC, 64, 70);
+      doc.text( 'Empresa: ' + this.nombreEmpresa + ' ,' + this.sede, 40, 55);
+      doc.text( 'RUC: ' + this.RUC, 40, 70);
+      // doc.text( this.nombreEmpresa + ' ,' + this.sede, 75, 55);
+      // doc.text( this.RUC, 64, 70);
       doc.setFontSize(12);
-      doc.text( 'Fecha reporte:', 300, 55);
-      doc.text( dia, 355, 55);
+      doc.text( 'Fecha reporte: ' + dia, 300, 55);
+      // doc.text( dia, 355, 55);
+      doc.text( 'Ingresos: ' + this.Ingresos.toFixed(2)  , 40, 85);
+      doc.text( 'Egresos: ' + this.Egresos.toFixed(2) , 180, 85);
       if (isNullOrUndefined(data)) {
         doc.text( 'No se encontraron registros.', 40, 115);
         } else {
@@ -462,8 +464,6 @@ export class ReportesService {
             datosEgresoIngreso.push(formato);
 
           }
-          doc.text( 'Ingresos: ' + ingreso.toFixed(2)  , 40, 85);
-          doc.text( 'Egresos: ' + egreso.toFixed(2) , 180, 85);
           doc.autoTable({
             head: [['#', 'Nombre', 'Dni', 'Tipo', 'Detalles', 'Monto']],
             body: datosEgresoIngreso,
