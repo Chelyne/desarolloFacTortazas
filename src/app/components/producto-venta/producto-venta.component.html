@@ -1,6 +1,6 @@
 <form [formGroup]="formVenta" autocomplete="off">
   <ion-row class="ion-justify-content-center ion-align-items-center">
-    <ion-col size="2">
+    <ion-col size="1.5">
       <ion-input type="number" formControlName="cantidad" placeholder="Cantidad"
       [value]="itemDeVenta.cantidad==0?'':itemDeVenta.cantidad" maxlength="5" (keyup)="cambioCantidad()"
       (change)="cantChange()">
@@ -15,12 +15,12 @@
       </div>
     </ion-col>
 
-    <ion-col size="6.5">
-      <ion-label class="ion-text-wrap"> {{itemDeVenta.producto.nombre | titlecase}} </ion-label>
+    <ion-col size="6">
+      <ion-label class="ion-text-wrap"> {{itemDeVenta.producto.nombre | titlecase}} ({{itemDeVenta.medida}})</ion-label>
     </ion-col>
-    <ion-col size="2">
+    <!-- <ion-col size="2">
       <ion-label>{{itemDeVenta.medida}}</ion-label>
-    </ion-col>
+    </ion-col> -->
     <ion-col size="1">
       <ion-input (keyup)="cambioPorcentaje()" formControlName="porcentaje" placeholder="%"
         value="{{itemDeVenta.porcentajeDescuento}}" maxlength="3"></ion-input>
