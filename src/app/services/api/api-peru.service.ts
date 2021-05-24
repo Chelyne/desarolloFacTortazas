@@ -15,7 +15,6 @@ import { GLOBAL_FACTOR_ICBPER } from '../../../config/otherConfig';
 import { ApiPeruConfigInterface, DatosApiPeruInterface, DatosEmpresaInterface } from './apiPeruInterfaces';
 import { CDRInterface } from 'src/app/models/api-peru/cdr-interface';
 import { DataBaseService } from '../data-base.service';
-import { ChangeInterface } from '../../models/comprobante/comprobante';
 
 
 
