@@ -224,7 +224,7 @@ export class PuntoVentaPage implements OnInit {
 
     const popover = await this.popoverController.create({
       component: PopoverVariantesComponent,
-      cssClass: 'my-custom-class',
+      cssClass: 'popoverVariantes',
       componentProps: {
         producto: productoSelect
       },

@@ -16,7 +16,7 @@
     </ion-col>
 
     <ion-col size="6">
-      <ion-label class="ion-text-wrap"> {{itemDeVenta.producto.nombre | titlecase}} ({{itemDeVenta.medida}})</ion-label>
+      <ion-label class="ion-text-wrap"> {{itemDeVenta.producto.nombre | titlecase}} <span *ngIf="itemDeVenta.producto.variantes">({{itemDeVenta.medida}})</span></ion-label>
     </ion-col>
     <!-- <ion-col size="2">
       <ion-label>{{itemDeVenta.medida}}</ion-label>

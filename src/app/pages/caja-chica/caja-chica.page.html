@@ -5,7 +5,7 @@
       </ion-menu-button>
     </ion-buttons>
     <ion-title color="primary">Caja Chica</ion-title>
-    <ion-item lines="none" slot="end">
+    <!-- <ion-item lines="none" slot="end">
       <ion-button (click)="ReportePDFDiaIngresoEgreso()" color="primary">
         <ion-icon color="light" slot="start" name="albums-outline"></ion-icon>
         <ion-label color="light">R. Ingreso/Egreso</ion-label>
@@ -19,12 +19,158 @@
         <ion-icon color="light" slot="start" name="cart"></ion-icon>
         <ion-label color="light">Apertura Caja Chica</ion-label>
       </ion-button>
-    </ion-item>
+    </ion-item> -->
   </ion-toolbar>
 </ion-header>
 
 <ion-content class="ion-padding">
-  <ion-card>
+  <ion-grid class="gridReportes">
+    <ion-row>
+      <ion-col size-lg="2.4" size-md="4" size-sm="6" size-xs="12">
+        <ion-card (click)="GenerarPDFReporteVentasTarjeta(fechaActualFormateado)"  class="reportes" mode="ios">
+          <ion-card-content>
+            <ion-icon name="card-outline"></ion-icon><br>
+            <ion-label>R. Ventas Tarjeta</ion-label>
+          </ion-card-content>
+        </ion-card>
+      </ion-col>
+      <ion-col size-lg="2.4" size-md="4" size-sm="6" size-xs="12">
+        <ion-card (click)="ReporteVendedorDiaIngresoEgreso()" class="reportes" mode="ios">
+          <ion-card-content>
+            <ion-icon name="albums-outline"></ion-icon><br>
+            <ion-label>R. I/E de {{nombreVendedor | titlecase}}</ion-label>
+          </ion-card-content>
+        </ion-card>
+      </ion-col>
+      <ion-col size-lg="2.4" size-md="4" size-sm="6" size-xs="12">
+        <ion-card (click)="ReportePDFDiaIngresoEgreso()" class="reportes" mode="ios">
+          <ion-card-content>
+            <ion-icon name="reader-outline"></ion-icon><br>
+            <ion-label>R. I/E General</ion-label>
+          </ion-card-content>
+        </ion-card>
+      </ion-col>
+      <ion-col size-lg="2.4" size-md="4" size-sm="6" size-xs="12">
+        <ion-card (click)="ReporteVentaGeneralDia($event)" class="reportes" mode="ios">
+          <ion-card-content>
+            <ion-icon name="receipt-outline"></ion-icon><br>
+            <ion-label>Reporte General</ion-label>
+          </ion-card-content>
+        </ion-card>
+      </ion-col>
+      <ion-col size-lg="2.4" size-md="4" size-sm="6" size-xs="12">
+        <ion-card (click)="modalAperturaCajaChica('abrir',null)" class="reportes" mode="ios">
+          <ion-card-content>
+            <ion-icon name="cart-outline"></ion-icon><br>
+            <ion-label>Aperturar caja chica</ion-label>
+          </ion-card-content>
+        </ion-card>
+      </ion-col>
+    </ion-row>
+  </ion-grid>
+
+  <ion-item-divider lines="none">
+    <ion-title>Listado de cajas</ion-title>
+  </ion-item-divider>
+
+  <div class="sinDatos" *ngIf="sinDatos===true">
+    <div class="textoSindatos">
+      <ion-icon class="icono" name="cart-outline" color="medium"></ion-icon> <br><br>
+      <ion-label color="medium">No se encontró ninguna caja registrada</ion-label> <br> <br>
+    </div>
+  </div>
+  <div class="cargando" *ngIf="(sinDatos===null || sinDatos===undefined)">
+    <div class="textoCargando">
+      <ion-spinner name="lines" color="primary"></ion-spinner>
+    </div>
+  </div>
+
+    <ion-grid class="gridCajas" *ngIf="sinDatos === false">
+    <ion-row>
+      <ion-col size-lg="12" size-md="4" size-sm="12" size-xs="12" *ngFor="let item of listaCajaChica">
+        <ion-card mode="ios" class="cardCaja">
+          <ion-grid>
+            <ion-row>
+              <ion-col class="colImg" size-lg="1.5" size-md="12" size-sm="12" size-xs="12">
+                <ion-badge [color]="item.estado === 'Aperturado' ? 'success': 'danger'">{{item.estado | titlecase}}</ion-badge>
+                <img (click)="ReporteProductosVendedorDia(item, 'pdf')" src="https://image.freepik.com/vector-gratis/ilustracion-icono-dibujos-animados-cajero-masculino-concepto-icono-profesion-personas_138676-2123.jpg" alt="">
+              </ion-col>
+              <ion-col>
+                <ion-row>
+                  <ion-col>
+                    <ion-item lines="none">
+                      <ion-label position="stacked" color="primary">Saldo Inicial</ion-label>
+                      <ion-input readonly>S/. {{item.saldoInicial.toFixed(2)}}</ion-input>
+                    </ion-item>
+                  </ion-col>
+                  <ion-col>
+                    <ion-item lines="none">
+                      <ion-label position="stacked" color="primary">Saldo Final</ion-label>
+                      <ion-input readonly>S/. {{item.saldoFinal.toFixed(2)}}</ion-input>
+                    </ion-item>
+                  </ion-col>
+                  <ion-col>
+                    <ion-item lines="none">
+                      <ion-label position="stacked" color="primary">F. Apertura</ion-label>
+                      <ion-input readonly>{{item.FechaApertura}}</ion-input>
+                    </ion-item>
+                  </ion-col>
+                  <ion-col>
+                    <ion-item lines="none">
+                      <ion-label position="stacked" color="primary">F. Cierre</ion-label>
+                      <ion-input readonly>{{item.FechaCierre}}</ion-input>
+                    </ion-item>
+                  </ion-col>
+                </ion-row>
+                <ion-row>
+                  <ion-col size-lg="3">
+                    <ion-item lines="none">
+                      <ion-label position="stacked" color="primary">Vendedor</ion-label>
+                      <ion-input readonly>{{item.nombreVendedor | titlecase}}</ion-input>
+                    </ion-item>
+                  </ion-col>
+                  <ion-col size-lg="9">
+                    <ion-item lines="none">
+                      <ion-label position="stacked" color="primary">Acciones</ion-label>
+                      <ion-input readonly>
+                        <ion-button *ngIf="item.estado==='Cerrado'" size="small" class="botones" color="primary"
+                          (click)="ReportePuntoVenta(item)">
+                          Reporte
+                        </ion-button>
+                        <ion-button *ngIf="item.estado==='Cerrado'" size="small" class="botones" color="primary"
+                          (click)="ReporteProductos($event,item)">
+                          <ion-icon slot="end" name="chevron-down-outline"></ion-icon>
+                          R. productos
+                        </ion-button>
+                        <ion-button *ngIf="item.estado==='Cerrado'" size="small" class="botones" color="success"
+                          (click)="ReporteIngresoMetPagoVendedor(item)">
+                          R. Ingreso
+                        </ion-button>
+                        <ion-button *ngIf="rolDatosAdmi === 'Administrador' && item.estado==='Aperturado'" size="small"
+                          class="botones" color="danger" (click)="confirmarBorrarCaja(item.id)">
+                          Eliminar
+                        </ion-button>
+                        <ion-button *ngIf="item.estado==='Aperturado' && item.dniVendedor === dniAdmi" size="small" class="botones" color="warning"
+                          (click)="confirmarCerrarCaja(item)">
+                          Cerrar Caja
+                        </ion-button>
+                        <ion-button *ngIf=" rolDatosAdmi === 'Administrador' && item.estado==='Aperturado'" size="small"
+                          class="botones" color="primary" (click)="modalAperturaCajaChica('editar',item)">
+                          Editar
+                        </ion-button>
+                      </ion-input>
+                    </ion-item>
+                  </ion-col>
+                </ion-row>
+              </ion-col>
+            </ion-row>
+          </ion-grid>
+        </ion-card>
+      </ion-col>
+    </ion-row>
+  </ion-grid>
+
+  <!-- <ion-card>
     <ion-card-header color="primary">
       <ion-card-title>Listado de caja</ion-card-title>
     </ion-card-header>
@@ -91,5 +237,5 @@
         </ion-row>
       </ion-grid>
     </ion-card-content>
-  </ion-card>
+  </ion-card> -->
 </ion-content>

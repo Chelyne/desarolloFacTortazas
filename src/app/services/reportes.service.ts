@@ -26,7 +26,7 @@ export class ReportesService {
   sede = this.storage.datosAdmi.sede;
   Ingresos = 0;
   Egresos = 0;
-  datosReporteVentaGeneral = [];
+  // datosReporteVentaGeneral = [];
 
 
   constructor(
@@ -36,7 +36,7 @@ export class ReportesService {
   ) {}
   ReporteVentaDiaGeneralPDF(dia) {
     return this.consultaVentaReporteGeneral(dia).then( (data: any) => {
-      console.log('datos', data);
+      console.log('datos Generales', data);
       const doc = new jsPDF('portrait', 'px', 'a4') as jsPDFWithPlugin;
       doc.setFontSize(16);
       doc.setFont('bold');
@@ -46,85 +46,28 @@ export class ReportesService {
       doc.line(120, 35, 290, 35);
       doc.rect(30, 40, 387, 115); // empty square
       doc.setFontSize(12);
-      doc.text( 'Empresa:', 40, 55);
-      doc.text( 'RUC:', 40, 70);
-      doc.text( this.nombreEmpresa + ' ,' + this.sede, 75, 55);
-      doc.text( this.RUC, 64, 70);
-      doc.setFontSize(12);
-      doc.text( 'Fecha reporte:', 300, 55);
-      doc.text( dia, 355, 55);
-      let totalVentas = 0;
-      let totalAnulados = 0;
-      let numBoletas = 0;
-      let numFacturas = 0;
-      let numNotas = 0;
-      let totalBoletas = 0;
-      let totalFacturas = 0;
-      let totalNotas = 0;
-      let totalEfectivo = 0;
-      let totalETarjeta = 0;
+      doc.text( 'Empresa: ' + this.nombreEmpresa + ' ,' + this.sede, 40, 55);
+      doc.text( 'RUC: ' + this.RUC, 40, 70);
+      doc.text( 'Fecha reporte: ' + dia, 300, 55);
       doc.text( 'Ingresos: ' + this.Ingresos.toFixed(2) , 40, 130);
       doc.text( 'Egresos: ' + this.Egresos.toFixed(2) , 180, 130);
-      if (isNullOrUndefined(data)) {
-      doc.text( 'TOTAL CAJA: ' + (totalVentas + this.Ingresos - this.Egresos - totalETarjeta).toFixed(2) , 300, 145);
-      doc.text( 'Total Venta: ' + totalVentas.toFixed(2), 40, 115);
-      doc.text( 'Total Anulados: ' + totalAnulados.toFixed(2), 180, 115);
-      doc.text( 'N° Facturas: ' + numFacturas, 40, 85);
-      doc.text( 'N° Boletas: ' + numBoletas, 180, 85);
-      doc.text( 'N° Notas de Venta: ' + numNotas, 300, 85);
-      doc.text( 'Total Facturas: ' + totalFacturas.toFixed(2), 40, 100);
-      doc.text( 'Total Boletas: ' + totalBoletas.toFixed(2), 180, 100);
-      doc.text( 'Total N. Venta: ' + totalNotas.toFixed(2), 300, 100);
-      doc.text( 'Total Efectivo: ' + totalEfectivo.toFixed(2) , 40, 145);
-      doc.text( 'Total Tarjeta: ' + totalETarjeta.toFixed(2) , 180, 145);
+      doc.text( 'TOTAL CAJA: ' + (data.totalVentas + this.Ingresos - this.Egresos - data.totalTarjeta).toFixed(2) , 300, 145);
+      doc.text( 'Total Venta: ' + data.totalVentas.toFixed(2), 40, 115);
+      doc.text( 'Total Anulados: ' + data.totalAnulados.toFixed(2), 180, 115);
+      doc.text( 'N° Facturas: ' + data.numFacturas, 40, 85);
+      doc.text( 'N° Boletas: ' + data.numBoletas, 180, 85);
+      doc.text( 'N° Notas de Venta: ' + data.numNotas, 300, 85);
+      doc.text( 'Total Facturas: ' + data.totalFacturas.toFixed(2), 40, 100);
+      doc.text( 'Total Boletas: ' + data.totalBoletas.toFixed(2), 180, 100);
+      doc.text( 'Total N. Venta: ' + data.totalNotas.toFixed(2), 300, 100);
+      doc.text( 'Total Efectivo: ' + data.totalEfectivo.toFixed(2) , 40, 145);
+      doc.text( 'Total Tarjeta: ' + data.totalTarjeta.toFixed(2) , 180, 145);
+      if (isNullOrUndefined(data.formatoVentasGeneral)) {
       doc.text( 'No se encontraron registros.', 40, 165);
       } else {
-        for (const item of data) {
-          if (item.estadoVenta === 'anulado'){
-            totalAnulados += item.totalPagarVenta;
-          }else {
-            totalVentas += item.totalPagarVenta;
-            if (item.tipoPago === 'efectivo') {
-              totalEfectivo += item.totalPagarVenta;
-            }
-            if (item.tipoPago === 'tarjeta') {
-              totalETarjeta += item.totalPagarVenta;
-            }
-          }
-          if (item.tipoComprobante === 'boleta'){
-            numBoletas++;
-            if (item.estadoVenta !== 'anulado'){
-              totalBoletas += item.totalPagarVenta;
-            }
-          }
-          if (item.tipoComprobante === 'factura'){
-            numFacturas++;
-            if (item.estadoVenta !== 'anulado'){
-              totalFacturas += item.totalPagarVenta;
-            }
-          }
-          if (item.tipoComprobante === 'n. venta'){
-            numNotas++;
-            if (item.estadoVenta !== 'anulado'){
-              totalNotas += item.totalPagarVenta;
-            }
-          }
-        }
-        doc.setFont('Arial');
-        doc.text( 'Total Venta: ' + totalVentas.toFixed(2), 40, 115);
-        doc.text( 'Total Anulados: ' + totalAnulados.toFixed(2), 180, 115);
-        doc.text( 'N° Facturas: ' + numFacturas, 40, 85);
-        doc.text( 'N° Boletas: ' + numBoletas, 180, 85);
-        doc.text( 'N° Notas de Venta: ' + numNotas, 300, 85);
-        doc.text( 'Total Facturas: ' + totalFacturas.toFixed(2), 40, 100);
-        doc.text( 'Total Boletas: ' + totalBoletas.toFixed(2), 180, 100);
-        doc.text( 'Total N. Venta: ' + totalNotas.toFixed(2), 300, 100);
-        doc.text( 'Total Efectivo: ' + totalEfectivo.toFixed(2) , 40, 145);
-        doc.text( 'Total Tarjeta: ' + totalETarjeta.toFixed(2) , 180, 145);
-        doc.text( 'TOTAL CAJA: ' + (totalVentas + this.Ingresos - this.Egresos - totalETarjeta).toFixed(2) , 300, 145);
         doc.autoTable({
           head: [['#', 'Tip. Trans.', 'Tipo Doc.', 'Documento', 'Fecha emisión', 'Cliente' , 'N. Doc.', 'Estado', 'M pago', 'Total']],
-          body: this.datosReporteVentaGeneral,
+          body: data.formatoVentasGeneral,
           startY: 165,
           theme: 'grid',
         });
@@ -135,16 +78,56 @@ export class ReportesService {
   }
   consultaVentaReporteGeneral(dia: any) {
     this.consultaIngresoEgreso(dia);
-    let productosArray;
+    // tslint:disable-next-line:prefer-const
+    let datosReporteVentaGeneral = [];
+
+    let totalVentas1 = 0;
+    let totalAnulados1 = 0;
+    let numBoletas1 = 0;
+    let numFacturas1 = 0;
+    let numNotas1 = 0;
+    let totalBoletas1 = 0;
+    let totalFacturas1 = 0;
+    let totalNotas1 = 0;
+    let totalEfectivo1 = 0;
+    let totalETarjeta1 = 0;
+    let boletasAnuladas1 = 0;
+    let facturasAnuladas1 = 0;
+    let notasAnuladas1 = 0;
+    let boletasAnuladasAnuladas1 = 0;
+    let facturasAnuladasAnuladas1 = 0;
+    let notasAnuladasAnuladas1 = 0;
+
+    const arrayDni  = [];
+    const vendedores = [];
+    const arrayVendDatos = [];
     return this.dataApi.obtenerVentasPorDia(this.sede.toLowerCase(), dia).then( snapshot => {
       console.log('snapshot', snapshot);
       if (snapshot.length === 0) {
-        this.datosReporteVentaGeneral = null;
-        productosArray = null;
-        return(productosArray);
+        const juntos = {
+          totalVentas: totalVentas1,
+          totalAnulados:  totalAnulados1,
+          numBoletas : numBoletas1,
+          numFacturas : numFacturas1,
+          numNotas :  numNotas1,
+          totalBoletas : totalBoletas1,
+          totalFacturas : totalFacturas1,
+          totalNotas : totalNotas1,
+          totalEfectivo : totalEfectivo1,
+          totalTarjeta : totalETarjeta1,
+          formatoVentasGeneral : null,
+          formatoVentasTiked: null,
+
+          boletasAnuladas: boletasAnuladas1,
+          facturasAnuladas: facturasAnuladas1,
+          notasAnuladas: notasAnuladas1,
+          numBoletasAnuladas : boletasAnuladasAnuladas1,
+          numFacturasAnuladas : facturasAnuladasAnuladas1,
+          numNotasAnuladas :  notasAnuladasAnuladas1,
+
+        };
+        return(juntos);
       } else {
-        productosArray = snapshot;
-        this.datosReporteVentaGeneral = [];
         let contador = 0;
         for (const datos of snapshot) {
           contador++;
@@ -162,35 +145,124 @@ export class ReportesService {
            this.convertirMayuscula(datos.tipoPago),
            redondeoDecimal( datos.totalPagarVenta, 2).toFixed(2)
           ];
-          this.datosReporteVentaGeneral.push(formato);
+          datosReporteVentaGeneral.push(formato);
+
+          if (datos.estadoVenta === 'anulado'){
+            totalAnulados1 += datos.totalPagarVenta;
+            if (datos.tipoComprobante === 'boleta'){
+              boletasAnuladasAnuladas1++;
+              boletasAnuladas1 = datos.totalPagarVenta;
+            }
+            if (datos.tipoComprobante === 'factura'){
+              facturasAnuladasAnuladas1++;
+              facturasAnuladas1 = datos.totalPagarVenta;
+            }
+            if (datos.tipoComprobante === 'n. venta'){
+              notasAnuladasAnuladas1++;
+              notasAnuladas1 = datos.totalPagarVenta;
+            }
+          }else {
+            totalVentas1 += datos.totalPagarVenta;
+            if (datos.tipoPago === 'efectivo') {
+              totalEfectivo1 += datos.totalPagarVenta;
+            }
+            if (datos.tipoPago === 'tarjeta') {
+              totalETarjeta1 += datos.totalPagarVenta;
+            }
+          }
+          if (datos.tipoComprobante === 'boleta'){
+            numBoletas1++;
+            if (datos.estadoVenta !== 'anulado'){
+              totalBoletas1 += datos.totalPagarVenta;
+            }
+          }
+          if (datos.tipoComprobante === 'factura'){
+            numFacturas1++;
+            if (datos.estadoVenta !== 'anulado'){
+              totalFacturas1 += datos.totalPagarVenta;
+            }
+          }
+          if (datos.tipoComprobante === 'n. venta'){
+            numNotas1++;
+            if (datos.estadoVenta !== 'anulado'){
+              totalNotas1 += datos.totalPagarVenta;
+            }
+          }
+          const dni = datos.vendedor.dni;
+          if (typeof(vendedores[dni]) === 'undefined') {
+            console.log('no existe aun', vendedores[dni], snapshot);
+            vendedores[dni] = {
+              montoFinal: 0,
+              nombreVendedor: datos.vendedor.nombre,
+              totalVentas: 0
+            };
+            arrayDni.push(dni);
+            if (datos.estadoVenta !== 'anulado') {
+              vendedores[dni].totalVentas++;
+              vendedores[dni].montoFinal += redondeoDecimal( datos.totalPagarVenta, 2);
+            }
+
+          }
+          else {
+            console.log('ya existe solo apila');
+            if (datos.estadoVenta !== 'anulado') {
+              vendedores[dni].totalVentas++;
+              vendedores[dni].montoFinal += redondeoDecimal( datos.totalPagarVenta, 2);
+            }
+
+          }
         }
-        return(productosArray);
+        for (const dni of arrayDni) {
+          arrayVendDatos.push(vendedores[dni]);
+        }
+        console.log('datos Vendedor', arrayVendDatos[0]);
+        if (contador === snapshot.length) {
+          const juntos = {
+            totalVentas: totalVentas1,
+            totalAnulados:  totalAnulados1,
+            numBoletas : numBoletas1,
+            numFacturas : numFacturas1,
+            numNotas :  numNotas1,
+            totalBoletas : totalBoletas1,
+            totalFacturas : totalFacturas1,
+            totalNotas : totalNotas1,
+            totalEfectivo : totalEfectivo1,
+            totalTarjeta : totalETarjeta1,
+            formatoVentasGeneral: datosReporteVentaGeneral,
+            formatoVentasTiked: arrayVendDatos,
+
+            boletasAnuladas: boletasAnuladas1,
+            facturasAnuladas: facturasAnuladas1,
+            notasAnuladas: notasAnuladas1,
+            numBoletasAnuladas : boletasAnuladasAnuladas1,
+            numFacturasAnuladas : facturasAnuladasAnuladas1,
+            numNotasAnuladas :  notasAnuladasAnuladas1,
+
+          };
+          return(juntos);
+        }
       }
     });
   }
 
   ReporteTiket(dia: any) {
-    return this.listaVendedoresDatos(dia).then((data: any) => {
-      console.log('lista de vendedores', data);
+    return this.consultaVentaReporteGeneral(dia).then((data: any) => {
+      console.log('lista de ventas', data);
       let index = 0;
 
       const doc = new jsPDF( 'p', 'mm', [45, 70]);
       doc.addImage(this.LogoEmpresa, 'JPEG', 11, 1, 22, 8);
       doc.setFontSize(6);
       doc.setFont('helvetica');
-      // doc.text('CLINICA VETERINARIA TOOBY', 22.5, 12, {align: 'center'});
-      // doc.text('CUADRE PARCIAL Nro. ' + formatDate(new Date(), 'dd-MM', 'en'), 22.5, 16, {align: 'center'});
       doc.text('Reporte General de ventas POS', 22.5, 12, {align: 'center'});
 
       doc.text('HORA:' +  formatDate(new Date(), 'HH:mm aa', 'en'), 22.5, 17, {align: 'center'});
       doc.text(this.sede, 22.5, 20, {align: 'center'});
-      // tslint:disable-next-line:max-line-length
       doc.text( 'Fecha Inicio: ', 2 , 23, {align: 'left'});
       doc.text( dia, 43 , 23, {align: 'right'});
-
       doc.text( 'Fecha Final: ', 2 , 25, {align: 'left'});
       doc.text( dia, 43 , 25, {align: 'right'});
-      if (data) {
+      if (!isNullOrUndefined(data.formatoVentasTiked)) {
 
       doc.text( '____________________________________', 22.5, 26, {align: 'center'});
 
@@ -200,43 +272,13 @@ export class ReportesService {
       doc.text( '____________________________________', 22.5, 30, {align: 'center'});
       // tslint:disable-next-line:prefer-const
       index += 31;
-      let montoFinal = 0;
-      let numFacturas = 0;
-      let numBoletas = 0;
-      let numNotas = 0;
-      let totalNotas = 0;
-      let FacAnulada = 0;
-      let BolAnuladas = 0;
-      let NotasAnuladas = 0; // notas anuladas
-      let MontoFacAnulado = 0;
-      let montoBolAnulado = 0;
-      let montoNotasAnulado = 0; // inicializar monto notas anuladas
-      let montoBoleta = 0;
-      let montoFactura = 0;
-      let montoTarjeta = 0;
-      let montoEfectivo = 0;
 
-      for (const vendedor of data) {
+      for (const vendedor of data.formatoVentasTiked) {
         console.log('numNotas' , typeof(vendedor.numNotas), vendedor.numNotas);
-        montoFinal += vendedor.montoFinal;
-        numFacturas += vendedor.numFacturas;
-        numBoletas += vendedor.numBoletas;
-        numNotas += vendedor.numNotas;
-        totalNotas += vendedor.totalNotas;
-        FacAnulada += vendedor.FacAnuladas;
-        BolAnuladas += vendedor.BolAnuladas;
-        NotasAnuladas += vendedor.NotasAnuladas; // notas anuladas
-        MontoFacAnulado += vendedor.MontoFacAnulado;
-        montoBolAnulado += vendedor.montoBolAnulado;
-        montoNotasAnulado += vendedor.montoNotasAnulado; // monto notas anuladas
-        montoBoleta += vendedor.montoBoleta;
-        montoFactura += vendedor.montoFactura;
-        montoTarjeta += vendedor.montoTarjeta;
-        montoEfectivo += vendedor.montoEfectivo;
         console.log('vendedor', vendedor);
         doc.text( vendedor.nombreVendedor, 2 , index + 2, {align: 'left'});
         // tslint:disable-next-line:max-line-length
-        doc.text( (vendedor.numFacturas + vendedor.numBoletas + vendedor.numNotas) + '' , 22.5 , index + 2, {align: 'center'});
+        doc.text( (vendedor.totalVentas) + '' , 22.5 , index + 2, {align: 'center'});
         doc.text( vendedor.montoFinal.toFixed(2), 43 , index + 2, {align: 'right'});
         index = index + 2;
       }
@@ -246,37 +288,37 @@ export class ReportesService {
       doc.text( 'S/. ', 43 , index + 4, {align: 'right'});
       doc.text( '____________________________________', 22.5, index + 5, {align: 'center'});
       doc.text('Facturas', 2, index + 8 , {align: 'left'});
-      doc.text( '' + numFacturas, 22.5 , index + 8, {align: 'center'});
-      doc.text( '' + montoFactura.toFixed(2), 43 , index + 8, {align: 'right'});
+      doc.text( '' + data.numFacturas, 22.5 , index + 8, {align: 'center'});
+      doc.text( '' + data.totalFacturas.toFixed(2), 43 , index + 8, {align: 'right'});
       doc.text('Boletas', 2, index + 10 , {align: 'left'});
-      doc.text( '' + numBoletas, 22.5 , index + 10, {align: 'center'});
-      doc.text( '' + montoBoleta.toFixed(2), 43 , index + 10, {align: 'right'});
+      doc.text( '' + data.numBoletas, 22.5 , index + 10, {align: 'center'});
+      doc.text( '' + data.totalBoletas.toFixed(2), 43 , index + 10, {align: 'right'});
       doc.text('N. venta', 2, index + 12 , {align: 'left'});
-      doc.text( '' + numNotas, 22.5 , index + 12, {align: 'center'});
-      doc.text( '' + totalNotas.toFixed(2), 43 , index + 12, {align: 'right'});
+      doc.text( '' + data.numNotas, 22.5 , index + 12, {align: 'center'});
+      doc.text( '' + data.totalNotas.toFixed(2), 43 , index + 12, {align: 'right'});
       doc.text('Fact. Anuladas', 2, index + 14 , {align: 'left'});
-      doc.text( '' + FacAnulada, 22.5 , index + 14, {align: 'center'});
-      doc.text( '' + MontoFacAnulado.toFixed(2), 43 , index + 14, {align: 'right'});
+      doc.text( '' + data.numFacturasAnuladas, 22.5 , index + 14, {align: 'center'});
+      doc.text( '' + data.facturasAnuladas.toFixed(2), 43 , index + 14, {align: 'right'});
       doc.text('Bol. Anuladas', 2, index + 16 , {align: 'left'});
-      doc.text( '' + BolAnuladas, 22.5 , index + 16, {align: 'center'});
-      doc.text( '' + montoBolAnulado.toFixed(2), 43 , index + 16, {align: 'right'});
+      doc.text( '' + data.numBoletasAnuladas, 22.5 , index + 16, {align: 'center'});
+      doc.text( '' + data.boletasAnuladas.toFixed(2), 43 , index + 16, {align: 'right'});
       doc.text('N.Ventas Anuladas', 2, index + 18 , {align: 'left'});
-      doc.text( '' + NotasAnuladas, 22.5 , index + 18, {align: 'center'});
-      doc.text( '' + montoNotasAnulado.toFixed(2), 43 , index + 18, {align: 'right'});
+      doc.text( '' + data.numNotas, 22.5 , index + 18, {align: 'center'});
+      doc.text( '' + data.notasAnuladas.toFixed(2), 43 , index + 18, {align: 'right'});
       doc.text( '____________________________________', 22.5, index + 19, {align: 'center'});
       doc.text('Total Efectivo', 2, index + 22 , {align: 'left'});
-      doc.text( '' + montoEfectivo.toFixed(2), 43 , index + 22, {align: 'right'});
+      doc.text( '' + data.totalEfectivo.toFixed(2), 43 , index + 22, {align: 'right'});
       doc.text('Total Tarjeta', 2, index + 24 , {align: 'left'});
-      doc.text( '' + montoTarjeta.toFixed(2), 43 , index + 24, {align: 'right'});
+      doc.text( '' + data.totalTarjeta.toFixed(2), 43 , index + 24, {align: 'right'});
       doc.text('Total Ventas', 2, index + 26 , {align: 'left'});
-      doc.text( '' + montoFinal.toFixed(2), 43 , index + 26, {align: 'right'});
+      doc.text( '' + data.totalVentas.toFixed(2), 43 , index + 26, {align: 'right'});
       doc.text('Ingresos', 2, index + 28 , {align: 'left'});
       doc.text( '' + this.Ingresos.toFixed(2), 43 , index + 28, {align: 'right'});
       doc.text('Egresos', 2, index + 30 , {align: 'left'});
       doc.text( '' + this.Egresos.toFixed(2), 43 , index + 30, {align: 'right'});
       doc.text( '____________________________________', 22.5, index + 31, {align: 'center'});
       doc.setFontSize(6.5);
-      doc.text('TOTAL CAJA: ' + ( montoFinal + this.Ingresos - this.Egresos).toFixed(2), 2, index + 34 , {align: 'left'});
+      doc.text('TOTAL CAJA: ' + ( data.totalVentas + this.Ingresos - this.Egresos).toFixed(2), 2, index + 34 , {align: 'left'});
 
       index = index + 35;
 
@@ -288,130 +330,7 @@ export class ReportesService {
       }
       window.open(doc.output('bloburl').toString(), '_blank');
       // doc.save('reporte tiket General Ventas ' + dia + '.pdf');
-      // doc.autoPrint();
       });
-  }
-  listaVendedoresDatos(dia: any) {
-    const arrayDni  = [];
-    const vendedores = [];
-    const arrayVendDatos = [];
-    return this.consultaVentaReporteGeneral(dia).then((res: any) => {
-      console.log(res);
-      if (!isNullOrUndefined(res)) {
-        console.log('datos de ventas generales', res);
-        let contador = 0;
-        for (const venta of res) {
-          contador ++;
-          const dni = venta.vendedor.dni;
-          if (typeof(vendedores[dni]) === 'undefined') {
-            vendedores[dni] = {
-              montoFinal: 0,
-              montoTarjeta: 0,
-              montoEfectivo: 0,
-              nombreVendedor: venta.vendedor.nombre,
-              numFacturas: 0,
-              numBoletas: 0,
-              numNotas: 0,
-              numAnulados: 0,
-              totalDescuentos: 0,
-              montoAnulado: 0,
-              montoBoleta: 0,
-              montoFactura: 0,
-              FacAnuladas: 0,
-              BolAnuladas: 0,
-              NotasAnuladas: 0,
-              MontoFacAnulado: 0,
-              montoBolAnulado: 0,
-              montoNotasAnulado: 0,
-              totalNotas: 0
-            };
-            arrayDni.push(dni);
-            if (venta.tipoPago === 'efectivo' && venta.estadoVenta !== 'anulado') {
-              vendedores[dni].montoEfectivo += redondeoDecimal( venta.totalPagarVenta, 2);
-            }
-            if (venta.tipoPago === 'tarjeta' && venta.estadoVenta !== 'anulado') {
-              vendedores[dni].montoTarjeta += redondeoDecimal( venta.totalPagarVenta, 2);
-            }
-            if (venta.tipoComprobante === 'factura' && venta.estadoVenta === 'anulado') {
-              vendedores[dni].FacAnuladas += 1;
-              vendedores[dni].MontoFacAnulado += redondeoDecimal( venta.totalPagarVenta, 2);
-            }
-            if (venta.tipoComprobante === 'boleta' && venta.estadoVenta === 'anulado') {
-              vendedores[dni].BolAnuladas += 1;
-              vendedores[dni].montoBolAnulado += redondeoDecimal( venta.totalPagarVenta, 2);
-            }
-            if (venta.tipoComprobante === 'n. venta' && venta.estadoVenta === 'anulado') {
-              vendedores[dni].NotasAnuladas += 1;
-              vendedores[dni].montoNotasAnulado += redondeoDecimal( venta.totalPagarVenta, 2);
-            }
-            if (venta.tipoComprobante === 'boleta') {vendedores[dni].numBoletas += 1; }
-            if (venta.tipoComprobante === 'factura') {vendedores[dni].numFacturas += 1; }
-            if (venta.tipoComprobante === 'n. venta') {
-              vendedores[dni].numNotas += 1;
-              vendedores[dni].totalNotas += redondeoDecimal( venta.totalPagarVenta, 2);
-            }
-            if (venta.descuentoVenta) {
-              vendedores[dni].totalDescuentos += redondeoDecimal(venta.descuentoVenta, 2);
-            }
-            if (venta.estadoVenta !== 'anulado') {
-              vendedores[dni].montoFinal += redondeoDecimal( venta.totalPagarVenta, 2);
-              if (venta.tipoComprobante === 'boleta') {redondeoDecimal(vendedores[dni].montoBoleta += venta.totalPagarVenta, 2); }
-              if (venta.tipoComprobante === 'factura') {redondeoDecimal(vendedores[dni].montoFactura += venta.totalPagarVenta, 2 ); }
-            }else {
-              vendedores[dni].numAnulados += 1;
-              vendedores[dni].montoAnulado += redondeoDecimal( venta.totalPagarVenta, 2);
-            }
-
-          }
-          else {
-            if (venta.tipoPago === 'efectivo' && venta.estadoVenta !== 'anulado') {
-              vendedores[dni].montoEfectivo += redondeoDecimal( venta.totalPagarVenta, 2);
-            }
-            if (venta.tipoPago === 'tarjeta' && venta.estadoVenta !== 'anulado') {
-              vendedores[dni].montoTarjeta += redondeoDecimal( venta.totalPagarVenta, 2);
-            }
-            if (venta.tipoComprobante === 'factura' && venta.estadoVenta === 'anulado') {
-              vendedores[dni].FacAnuladas += 1;
-              vendedores[dni].MontoFacAnulado += redondeoDecimal( venta.totalPagarVenta, 2);
-            }
-            if (venta.tipoComprobante === 'boleta' && venta.estadoVenta === 'anulado') {
-              vendedores[dni].BolAnuladas += 1;
-              vendedores[dni].montoBolAnulado += redondeoDecimal( venta.totalPagarVenta, 2);
-            }
-            if (venta.tipoComprobante === 'boleta') {vendedores[dni].numBoletas += 1; }
-            if (venta.tipoComprobante === 'factura') {vendedores[dni].numFacturas += 1; }
-            if (venta.tipoComprobante === 'n. venta') {
-              vendedores[dni].numNotas += 1;
-              vendedores[dni].totalNotas += redondeoDecimal( venta.totalPagarVenta, 2);
-            }
-            if (venta.descuentoVenta) {
-              vendedores[dni].totalDescuentos += redondeoDecimal(venta.descuentoVenta, 2);
-            }
-            if (venta.estadoVenta !== 'anulado') {
-              vendedores[dni].montoFinal += redondeoDecimal( venta.totalPagarVenta, 2);
-              if (venta.tipoComprobante === 'boleta') {redondeoDecimal(vendedores[dni].montoBoleta += venta.totalPagarVenta, 2); }
-              if (venta.tipoComprobante === 'factura') {redondeoDecimal(vendedores[dni].montoFactura += venta.totalPagarVenta, 2 ); }
-            }else {
-              vendedores[dni].numAnulados += 1;
-              vendedores[dni].montoAnulado += redondeoDecimal( venta.totalPagarVenta, 2);
-            }
-          }
-          console.log('vendedores', vendedores);
-          console.log('array dni', arrayDni);
-
-        }
-        for (const dni of arrayDni) {
-          arrayVendDatos.push(vendedores[dni]);
-        }
-        console.log('datos Vendedor', arrayVendDatos[0]);
-        if (contador === res.length) {
-          return(arrayVendDatos);
-        }
-      }else {
-        console.log('no hay datos que mostrar');
-        return (null);
-      }
-    });
   }
 
   ReportePDFDiaIngresoEgreso(dia: any){
@@ -426,66 +345,45 @@ export class ReportesService {
       doc.line(120, 35, 290, 35);
       doc.rect(30, 40, 387, 60); // empty square
       doc.setFontSize(12);
-      doc.text( 'Empresa:', 40, 55);
-      doc.text( 'RUC:', 40, 70);
-      doc.text( this.nombreEmpresa + ' ,' + this.sede, 75, 55);
-      doc.text( this.RUC, 64, 70);
+      doc.text( 'Empresa: ' + this.nombreEmpresa + ' ,' + this.sede, 40, 55);
+      doc.text( 'RUC: ' + this.RUC, 40, 70);
       doc.setFontSize(12);
-      doc.text( 'Fecha reporte:', 300, 55);
-      doc.text( dia, 355, 55);
+      doc.text( 'Fecha reporte: ' + dia, 300, 55);
+      doc.text( 'Ingresos: ' + this.Ingresos.toFixed(2)  , 40, 85);
+      doc.text( 'Egresos: ' + this.Egresos.toFixed(2) , 180, 85);
       if (isNullOrUndefined(data)) {
         doc.text( 'No se encontraron registros.', 40, 115);
         } else {
-          let ingreso = 0;
-          let egreso = 0;
-          let contador = 0;
-          // tslint:disable-next-line:prefer-const
-          let datosEgresoIngreso = [];
-          for (const item of data) {
-            contador++;
-            if (item.tipo === 'ingreso'){
-              ingreso += Number(item.monto);
-              console.log(Number(item.monto));
-            }
-            if (item.tipo === 'egreso'){
-              egreso += Number(item.monto);
-            }
-            let formato: any;
-            formato = [
-              contador,
-              item.nombreVendedor ? item.nombreVendedor.toUpperCase() : null,
-              item.dniVendedor ? item.dniVendedor.toUpperCase() : null,
-              item.tipo.toUpperCase(),
-              item.detalles.toUpperCase(),
-              item.monto
-            ];
-            datosEgresoIngreso.push(formato);
-
-          }
-          doc.text( 'Ingresos: ' + ingreso.toFixed(2)  , 40, 85);
-          doc.text( 'Egresos: ' + egreso.toFixed(2) , 180, 85);
           doc.autoTable({
             head: [['#', 'Nombre', 'Dni', 'Tipo', 'Detalles', 'Monto']],
-            body: datosEgresoIngreso,
+            body: data,
             startY: 115 ,
             theme: 'grid',
           });
         }
-      doc.save('reporteIngresoEgreso ' + formatDate(new Date(), 'dd-MM-yyyy', 'en') + '.pdf');
+      // doc.save('reporteIngresoEgreso ' + formatDate(new Date(), 'dd-MM-yyyy', 'en') + '.pdf');
+      window.open(doc.output('bloburl').toString(), '_blank');
+
     });
   }
 
   consultaIngresoEgreso(dia) {
     this.Ingresos = 0;
     this.Egresos = 0;
+    // tslint:disable-next-line:prefer-const
+    let datosEgresoIngreso = [];
+
     return this.dataApi.obtenerIngresoEgresoDia(this.sede.toLowerCase(), dia).then( snapshot => {
       console.log('snapshot', snapshot);
       if (snapshot.length === 0) {
         this.Ingresos = 0;
         this.Egresos = 0;
+        datosEgresoIngreso = null;
         return null;
       } else {
+        let contador = 0;
         for (const datos of snapshot) {
+          contador++;
           if (datos.tipo === 'ingreso'){
             this.Ingresos += parseFloat(datos.monto);
             console.log(parseFloat(datos.monto));
@@ -493,9 +391,19 @@ export class ReportesService {
           if (datos.tipo === 'egreso'){
             this.Egresos += parseFloat(datos.monto);
           }
+          let formato: any;
+          formato = [
+            contador,
+            datos.nombreVendedor ? datos.nombreVendedor.toUpperCase() : null,
+            datos.dniVendedor ? datos.dniVendedor.toUpperCase() : null,
+            datos.tipo.toUpperCase(),
+            datos.detalles.toUpperCase(),
+            datos.monto
+            ];
+          datosEgresoIngreso.push(formato);
         }
         console.log(this.Ingresos, this.Egresos);
-        return snapshot;
+        return datosEgresoIngreso;
       }
     });
 
