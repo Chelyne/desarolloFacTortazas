@@ -40,6 +40,7 @@ export class CajaChicaPage implements OnInit {
   LogoEmpresa = GENERAL_CONFIG.datosEmpresa.logo;
   RUC = GENERAL_CONFIG.datosEmpresa.ruc;
   nombreEmpresa = GENERAL_CONFIG.datosEmpresa.razon_social;
+  fechaActualFormateado = formatDate(new Date(), 'dd-MM-yyyy', 'en');
 
   listaCajaChica;
 
@@ -300,7 +301,7 @@ export class CajaChicaPage implements OnInit {
               contador,
               'Venta',
               doc.tipoComprobante.toUpperCase() || null,
-              doc.serieComprobante + '-' + this.digitosFaltantes('0', (8 - doc.numeroComprobante.length)) + doc.numeroComprobante,
+              doc.serieComprobante + '-' + doc.numeroComprobante,
               doc.fechaEmision ? this.datePipe.transform(new Date(moment.unix(doc.fechaEmision.seconds)
                                                                   .format('D MMM YYYY H:mm')), 'short') : null,
               doc.cliente.nombre.toUpperCase() || null,
@@ -314,7 +315,7 @@ export class CajaChicaPage implements OnInit {
               doc.fechaEmision ? this.datePipe.transform(new Date(moment.unix(doc.fechaEmision.seconds)
                                                                   .format('D MMM YYYY H:mm')), 'short') : null,
               doc.tipoComprobante.toUpperCase() || null,
-              doc.serieComprobante + '-' + this.digitosFaltantes('0', (8 - doc.numeroComprobante.length)) + doc.numeroComprobante,
+              doc.serieComprobante + '-' + doc.numeroComprobante,
               doc.tipoPago ? doc.tipoPago.toUpperCase() : null,
               'PEN',
               1,
@@ -415,7 +416,7 @@ export class CajaChicaPage implements OnInit {
   ReporteProductosVendedorDia(datosCaja: CajaChicaInterface, formato: string) {
     console.log('datos caja', datosCaja );
     this.ConsultaRepProductosVendedorDia(datosCaja.FechaConsulta, datosCaja.dniVendedor, formato, datosCaja).then( listaProductos => {
-      console.log('datos obtenidos', listaProductos);
+      console.log('datos obtenidos lista productos', listaProductos);
       this.crearArchivoExportar(datosCaja, formato, listaProductos);
     });
   }
@@ -426,7 +427,7 @@ export class CajaChicaPage implements OnInit {
     .then( async (listaVentas: VentaInterface[]) => {
       if (!listaVentas.length) {
         productosArray = null;
-        this.crearArchivoExportar(datosCaja, extencionDoc, null);
+        // this.crearArchivoExportar(datosCaja, extencionDoc, null);
         return (productosArray);
 
       } else {
@@ -434,9 +435,9 @@ export class CajaChicaPage implements OnInit {
           await this.dataApi.obtenerProductosDeVenta(venta.idListaProductos, this.sede ).then( productoVenta => {
             const produtosformteados: any[] = [];
             for (const producto of productoVenta) {
+              console.log('productos');
               produtosformteados.push({
-                serieComprobante: venta.serieComprobante + '-' +
-                this.digitosFaltantes('0', (8 - venta.numeroComprobante.length))  + venta.numeroComprobante, ... producto
+                serieComprobante: venta.serieComprobante + '-'  + venta.numeroComprobante, ... producto
               });
             }
             productosArray = [...productosArray, ... produtosformteados];
@@ -449,6 +450,7 @@ export class CajaChicaPage implements OnInit {
   }
 
   crearArchivoExportar(datosCaja: CajaChicaInterface, formato: string, productos: any) {
+      console.log('datos obtenidos a procesar' + formato + productos);
       if (formato === 'pdf') {
         console.log('formato pdf');
         const doc = new jsPDF('portrait', 'px', 'a4') as jsPDFWithPlugin;
@@ -478,7 +480,7 @@ export class CajaChicaPage implements OnInit {
         doc.setFontSize(11);
         doc.text( datosCaja.sede, 247, 70);
         doc.text( datosCaja.FechaApertura, 267, 80);
-        doc.text( datosCaja.FechaCierre, 258, 90);
+        // doc.text( datosCaja.FechaCierre || null, 258, 90);
         if (isNullOrUndefined(productos)) {
           doc.setFontSize(15);
           doc.text( 'No se encontraron registros.', 35, 120);
@@ -503,7 +505,8 @@ export class CajaChicaPage implements OnInit {
               theme: 'grid',
             });
           }
-        doc.save('reporteProductos' + datosCaja.FechaConsulta + '.pdf');
+        // doc.save('reporteProductos' + datosCaja.FechaConsulta + '.pdf');
+        window.open(doc.output('bloburl').toString(), '_blank');
       }
       if (formato === 'excel') {
         const dataExcel = [];
@@ -533,13 +536,105 @@ export class CajaChicaPage implements OnInit {
         }
       }
   }
+  // ------------INICIO REPORTE TARJETAS------------
+  ventasTarjeta(fechaFormateada) {
+    let formatoListaVentasTarjeta = [];
+    let sumaTotal = 0;
+    return this.dataApi.obtenerVentasDiaTarjeta(this.sede, fechaFormateada).then(ventas => {
+      console.log('ventas por tarjeta', ventas);
+      if (ventas.length === 0){
+          formatoListaVentasTarjeta = [];
+          sumaTotal = 0;
+          return { suma: sumaTotal, ventasTarjeta: formatoListaVentasTarjeta};
+      }
+      else{
+        let contador = 0;
+        ventas.forEach(datos => {
+          contador++ ;
+          if (datos.estadoVenta !== 'anulado'){
+            sumaTotal += datos.totalPagarVenta;
+          }
+          let formato: any;
+          formato = [
+            contador,
+           datos.vendedor.nombre.toUpperCase() || null,
+           datos.tipoComprobante.toUpperCase() || null,
+           datos.serieComprobante + '-' + datos.numeroComprobante,
+           // tslint:disable-next-line:max-line-length
+           datos.fechaEmision ? this.datePipe.transform(new Date(moment.unix(datos.fechaEmision.seconds).format('D MMM YYYY H:mm')), 'short') : null,
+           datos.cliente.nombre.toUpperCase() || null,
+           datos.cliente.numDoc || null,
+           // tslint:disable-next-line:max-line-length
+           this.convertirMayuscula(datos.estadoVenta) ,
+           this.convertirMayuscula(datos.tipoPago),
+           redondeoDecimal( datos.totalPagarVenta, 2).toFixed(2)
+          ];
+          formatoListaVentasTarjeta.push(formato);
+          });
+        return { suma: sumaTotal, ventasTarjeta: formatoListaVentasTarjeta};
+      }
 
-  digitosFaltantes(caracter: string, num: number) {
-    let final = '';
-    for ( let i = 0; i < num; i++) {
-      final = final + caracter;
+    }).catch(err => console.log(err));
+  }
+  GenerarPDFReporteVentasTarjeta(fechaFormateada) {
+    this.presentLoading('Generando Reporte...');
+    this.ventasTarjeta(fechaFormateada).then((VentasFormateada: any) => {
+      const ListaVentasTarjeta = VentasFormateada.ventasTarjeta;
+      const sumaTotal = VentasFormateada.suma;
+      console.log('Ventas Formateadas' + VentasFormateada.ventasTarjeta + VentasFormateada.suma);
+      const doc = new jsPDF('portrait', 'px', 'a4') as jsPDFWithPlugin;
+      doc.setFontSize(16);
+      doc.setFont('bold');
+      doc.text('Resúmen General de Ventas por Tarjeta : ', 100, 30);
+      doc.addImage(this.LogoEmpresa, 'JPEG', 370, 20, 30, 15);
+      doc.setLineWidth(0.5);
+      doc.line(100, 35, 305, 35);
+      doc.rect(30, 50, 387, 45); // empty square
+      doc.setFontSize(12);
+      doc.text( 'Empresa: ' + this.nombreEmpresa, 40, 60);
+      doc.text( 'RUC: ' + this.RUC, 40, 70);
+      doc.text( 'SEDE: ' + this.sede, 40, 80);
+      doc.text( 'Fecha reporte: ' + fechaFormateada, 300, 60);
+      doc.text( 'TOTAL VENTAS: ' + sumaTotal.toFixed(2) , 300, 80);
+      if ( ListaVentasTarjeta.length){
+        doc.autoTable({
+          head: [['#', 'Vend.', 'Tipo Doc.', 'Num Doc.', 'Fecha emisión', 'Cliente' , 'N. Doc.', 'Estado', 'M pago', 'Total']],
+          body: ListaVentasTarjeta,
+          startY: 110,
+          theme: 'grid',
+        });
+      }
+      else {
+        doc.text( 'No se encontraron registros.', 40, 110);
+      }
+      this.loading.dismiss();
+      window.open(doc.output('bloburl').toString(), '_blank');
+
+    });
+  }
+  // ------------FIN REPORTE TARJETAS------------
+  // ------------INICIO REPORTE INGRESOS EGRESOS POR VENDEDOR------------
+  ReporteVendedorDiaIngresoEgreso(){
+    const dia = formatDate(new Date(), 'dd-MM-yyyy', 'en');
+    this.reportesservice.ReportePDFDiaIngresoEgresoVendedor(dia, this.dniAdmi, this.storage.datosAdmi.nombre);
+  }
+  // ------------FIN REPORTE INGRESOS EGRESOS POR VENDEDOR------------
+
+
+  // digitosFaltantes(caracter: string, num: number) {
+  //   let final = '';
+  //   for ( let i = 0; i < num; i++) {
+  //     final = final + caracter;
+  //   }
+  //   return final;
+  // }
+  convertirMayuscula(letra: string) {
+    const textoAreaDividido = letra.split(' ');
+    let letraCompleta = '';
+    for (const iterator of textoAreaDividido) {
+      letraCompleta = letraCompleta + iterator.charAt(0).toUpperCase() + iterator.slice(1) + ' ';
     }
-    return final;
+    return letraCompleta;
   }
 
 

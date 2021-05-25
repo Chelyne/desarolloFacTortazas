@@ -26,7 +26,6 @@ export class ReportesService {
   sede = this.storage.datosAdmi.sede;
   Ingresos = 0;
   Egresos = 0;
-  // datosReporteVentaGeneral = [];
 
 
   constructor(
@@ -34,6 +33,7 @@ export class ReportesService {
               private datePipe: DatePipe,
               private storage: StorageService
   ) {}
+  // ------------INICIO REPORTE GENERAL------------
   ReporteVentaDiaGeneralPDF(dia) {
     return this.consultaVentaReporteGeneral(dia).then( (data: any) => {
       console.log('datos Generales', data);
@@ -66,7 +66,7 @@ export class ReportesService {
       doc.text( 'No se encontraron registros.', 40, 165);
       } else {
         doc.autoTable({
-          head: [['#', 'Tip. Trans.', 'Tipo Doc.', 'Documento', 'Fecha emisión', 'Cliente' , 'N. Doc.', 'Estado', 'M pago', 'Total']],
+          head: [['#', 'Vend.', 'Tipo Doc.', 'Documento', 'Fecha emisión', 'Cliente' , 'N. Doc.', 'Estado', 'M pago', 'Total']],
           body: data.formatoVentasGeneral,
           startY: 165,
           theme: 'grid',
@@ -76,6 +76,8 @@ export class ReportesService {
       // doc.save('reporte General Ventas ' + dia + '.pdf');
     });
   }
+  // ------------FIN REPORTE GENERAL------------
+  // ------------INICIO REPORTE GENERAL PDF TICKED FORMATEO-----------
   consultaVentaReporteGeneral(dia: any) {
     this.consultaIngresoEgreso(dia);
     // tslint:disable-next-line:prefer-const
@@ -134,16 +136,16 @@ export class ReportesService {
           let formato: any;
           formato = [
             contador,
-           'Venta',
-           datos.tipoComprobante.toUpperCase() || null,
-           datos.serieComprobante + '-' + this.digitosFaltantes('0', (8 - datos.numeroComprobante.length)) + datos.numeroComprobante,
-           // tslint:disable-next-line:max-line-length
-           datos.fechaEmision ? this.datePipe.transform(new Date(moment.unix(datos.fechaEmision.seconds).format('D MMM YYYY H:mm')), 'short') : null,
-           datos.cliente.nombre.toUpperCase() || null,
-           datos.cliente.numDoc || null,
-           this.convertirMayuscula(datos.estadoVenta),
-           this.convertirMayuscula(datos.tipoPago),
-           redondeoDecimal( datos.totalPagarVenta, 2).toFixed(2)
+            this.convertirMayuscula(datos.vendedor.nombre) || null,
+            this.convertirMayuscula(datos.tipoComprobante) || null,
+            datos.serieComprobante + '-' + datos.numeroComprobante,
+            // tslint:disable-next-line:max-line-length
+            datos.fechaEmision ? this.datePipe.transform(new Date(moment.unix(datos.fechaEmision.seconds).format('D MMM YYYY H:mm')), 'short') : null,
+            this.convertirMayuscula(datos.cliente.nombre) || null,
+            datos.cliente.numDoc || null,
+            this.convertirMayuscula(datos.estadoVenta),
+            this.convertirMayuscula(datos.tipoPago),
+            redondeoDecimal( datos.totalPagarVenta, 2).toFixed(2)
           ];
           datosReporteVentaGeneral.push(formato);
 
@@ -244,7 +246,8 @@ export class ReportesService {
       }
     });
   }
-
+  // ------------FIN REPORTE GENERAL PDF TICKED FORMATEO-----------
+  // ------------INICIO REPORTE GENERAL TICKED-----------
   ReporteTiket(dia: any) {
     return this.consultaVentaReporteGeneral(dia).then((data: any) => {
       console.log('lista de ventas', data);
@@ -332,7 +335,8 @@ export class ReportesService {
       // doc.save('reporte tiket General Ventas ' + dia + '.pdf');
       });
   }
-
+  // ------------FIN REPORTE GENERAL TICKED-----------
+  // ------------INICIO REPORTE INGRESOS EGRESOS GENERAL------------
   ReportePDFDiaIngresoEgreso(dia: any){
     return this.consultaIngresoEgreso(dia).then((data: any) => {
       console.log('datos', data);
@@ -374,7 +378,7 @@ export class ReportesService {
     let datosEgresoIngreso = [];
 
     return this.dataApi.obtenerIngresoEgresoDia(this.sede.toLowerCase(), dia).then( snapshot => {
-      console.log('snapshot', snapshot);
+      console.log('Ingresos  y Egresos', snapshot);
       if (snapshot.length === 0) {
         this.Ingresos = 0;
         this.Egresos = 0;
@@ -406,19 +410,99 @@ export class ReportesService {
         return datosEgresoIngreso;
       }
     });
+  }
+  // ------------FIN INGRESOS EGRESOS GENERAL------------
+  // ------------INICIO REPORTE INGRESOS EGRESOS POR VENDEDOR------------
+  ReportePDFDiaIngresoEgresoVendedor(dia: any, dniVendedor, nombreVendedor){
+    this.consultaIngresoEgresoVendedor(dia, dniVendedor).then((data: any) => {
+      console.log('datos', data);
+      const doc = new jsPDF('portrait', 'px', 'a4') as jsPDFWithPlugin;
+      doc.setFontSize(16);
+      doc.setFont('bold');
+      doc.text('Reporte de Ingresos y Egresos ' + this.convertirMayuscula(nombreVendedor), 120, 30);
+      doc.addImage(this.LogoEmpresa, 'JPEG', 370, 20, 30, 15);
+      doc.setLineWidth(0.5);
+      doc.line(120, 35, 290, 35);
+      doc.rect(30, 40, 387, 60); // empty square
+      doc.setFontSize(12);
+      doc.text( 'Empresa: ' + this.nombreEmpresa + ' - ' + this.sede.toUpperCase(), 40, 55);
+      doc.text( 'RUC: ' + this.RUC, 40, 70);
+      doc.setFontSize(12);
+      doc.text( 'Fecha reporte: ' + dia, 300, 70);
+      doc.text( 'Ingresos: ' + data.ingresosVend.toFixed(2)  , 40, 85);
+      doc.text( 'Egresos: ' + data.egresosVend.toFixed(2) , 180, 85);
+      if (isNullOrUndefined(data.FormatoIngresoEgresoVend)) {
+        doc.text( 'No se encontraron registros.', 40, 115);
+        } else {
+          doc.autoTable({
+            head: [['#', 'Dni', 'Nombre', 'Tipo', 'Detalles', 'Monto']],
+            body: data.FormatoIngresoEgresoVend,
+            startY: 115 ,
+            theme: 'grid',
+          });
+        }
+      window.open(doc.output('bloburl').toString(), '_blank');
+      // doc.save('reporteIngresoEgreso ' + formatDate(new Date(), 'dd-MM-yyyy', 'en') + '.pdf');
+    });
+  }
+  consultaIngresoEgresoVendedor(dia, dniVendedor) {
+    let IngresosVend = 0;
+    let EgresosVend = 0;
+    let datosFormatoIngresoEgresoVend = [];
+    return this.dataApi.obtenerIngresoEgresoDiaVendedor(this.sede.toLowerCase(), dia, dniVendedor).then( snapshot => {
+      console.log('snapshot', snapshot);
+      if (snapshot.length === 0) {
+        IngresosVend = 0;
+        EgresosVend = 0;
+        const juntos = {
+          ingresosVend: 0,
+          egresosVend:  0,
+          FormatoIngresoEgresoVend: null
+        };
+        return juntos;
+      } else {
+        datosFormatoIngresoEgresoVend = [];
+        let contador = 0;
+        for (const datos of snapshot) {
+          if (datos.tipo === 'ingreso'){
+            IngresosVend += parseFloat(datos.monto);
+          }
+          if (datos.tipo === 'egreso'){
+            EgresosVend += parseFloat(datos.monto);
+          }
+          contador++;
+          let formato: any;
+          formato = [
+            contador,
+            datos.nombreVendedor ? datos.nombreVendedor.toUpperCase() : null,
+            datos.dniVendedor ? datos.dniVendedor.toUpperCase() : null,
+            datos.tipo ? datos.tipo.toUpperCase() : null,
+            datos.detalles ? datos.detalles.toUpperCase() : null,
+            datos.monto ? parseFloat(datos.monto).toFixed(2) : '0.00',
+          ];
+          datosFormatoIngresoEgresoVend.push(formato);
+        }
+        const juntos = {
+          ingresosVend: IngresosVend,
+          egresosVend:  EgresosVend,
+          FormatoIngresoEgresoVend: datosFormatoIngresoEgresoVend
+        };
+        return juntos;
+      }
+    });
 
   }
+  // ------------FIN REPORTE INGRESOS EGRESOS POR VENDEDOR------------
+
 
   convertirMayuscula(letra: string) {
-    return letra.charAt(0).toUpperCase() + letra.slice(1);
+    const textoAreaDividido = letra.split(' ');
+    let letraCompleta = '';
+    for (const iterator of textoAreaDividido) {
+      letraCompleta = letraCompleta + iterator.charAt(0).toUpperCase() + iterator.slice(1) + ' ';
+    }
+    return letraCompleta;
   }
 
-  digitosFaltantes(caracter: string, num: number) {
-    let final = '';
-    for ( let i = 0; i < num; i++) {
-      final = final + caracter;
-    }
-    return final;
-  }
 
 }
