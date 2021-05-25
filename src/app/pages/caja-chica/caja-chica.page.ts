@@ -34,6 +34,9 @@ interface jsPDFWithPlugin extends jsPDF {
 export class CajaChicaPage implements OnInit {
   sede =  this.storage.datosAdmi.sede;
   rolDatosAdmi = this.storage.datosAdmi.rol;
+  dniAdmi = this.storage.datosAdmi.dni;
+
+  nombreVendedor: string;
   LogoEmpresa = GENERAL_CONFIG.datosEmpresa.logo;
   RUC = GENERAL_CONFIG.datosEmpresa.ruc;
   nombreEmpresa = GENERAL_CONFIG.datosEmpresa.razon_social;
@@ -49,6 +52,8 @@ export class CajaChicaPage implements OnInit {
   contadorConsultaProdcutos = 0;
   apilados = [];
   loading;
+  sinDatos: boolean;
+
   constructor(
     private dataApi: DataBaseService,
     private globalSrv: GlobalService,
@@ -62,6 +67,7 @@ export class CajaChicaPage implements OnInit {
     private loadingController: LoadingController,
     private modalController: ModalController) {
       this.listaCajaChicaSede(this.sede);
+      this.nombreVendedor = this.storage.datosAdmi.nombre;
     }
 
   ngOnInit() {
@@ -69,8 +75,13 @@ export class CajaChicaPage implements OnInit {
   }
   listaCajaChicaSede(sede: string){
     this.dataApi.obtenerListaCajaChica(sede).subscribe(data => {
-      this.listaCajaChica = data;
-      this.convertirFecha(this.listaCajaChica);
+      if (data.length) {
+        this.listaCajaChica = data;
+        this.convertirFecha(this.listaCajaChica);
+        this.sinDatos = false;
+      } else {
+        this.sinDatos = true;
+      }
     });
   }
 

@@ -1,5 +1,66 @@
 * {
-    ion-label {
+    ion-label, ion-input{
         font-family: Nunito;
     }
+    .datos {
+        --background: var(--ion-color-light);
+        border-radius: 5px;
+    }
+    ion-input {
+        border: solid 1px var(--ion-color-primary);
+        border-radius: 5px;
+        --padding-start: 12px;
+    }
+}
+
+
+ion-grid {
+    padding: 0px;
+    ion-row {
+        padding: 0px;
+        ion-col {
+            // padding: 0px;
+            ion-card {
+                padding: 0px;
+                margin: 8px;
+            }
+        }
+    }
+    
+    .graficos {
+        ion-input {
+            border: none;
+            background: var(--ion-color-light);
+        }
+    }
+}
+
+.sinDatos {
+    height: 40%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    align-content: center;
+    .textoSindatos {
+        text-align: center;
+        padding: 5%;
+        margin: 5%;
+        border-radius: 10px;
+        font-weight: bold;
+        .icono {
+            zoom: 4;
+        }
+    }
+}
+
+.cargando {
+    height: 80%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    align-content: center;
+}
+
+.ocultar {
+    display: none;
 }

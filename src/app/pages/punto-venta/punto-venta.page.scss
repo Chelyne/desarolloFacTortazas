@@ -1,3 +1,8 @@
+.searchbar-input {
+  // --background: red !important;
+  --border-radius: 10px !important;
+  --box-shadow: 0 0 3px 0.05px var(--ion-color-medium);
+}
 .contentItemsVenta {
   // overwrite inline styles
   height: 80%;
@@ -18,11 +23,29 @@
   --overflow: hidden;
   overflow: auto;
   &::-webkit-scrollbar {
-    width: 5px;
+    width: 10px;
   }
   &::-webkit-scrollbar-thumb {
     background: var(--ion-color-primary);
     border-radius: 10px;
+  }
+
+  ion-segment::-webkit-scrollbar {
+    // width: 5px;
+    height: 5px;
+  }
+  ion-segment::-webkit-scrollbar-thumb {
+    background: var(--ion-color-primary);
+    border-radius: 5px;
+  }
+  .segment-button-checked{
+    background: var(--ion-color-primary);
+    color: var(--ion-color-light);
+  }
+  .segment-button-checked:hover {
+    ion-label {
+      color: var(--ion-color-light);
+    }
   }
 }
 
@@ -31,7 +54,7 @@
   --overflow: hidden;
   overflow: auto;
   &::-webkit-scrollbar {
-    width: 5px;
+    width: 10px;
   }
   &::-webkit-scrollbar-thumb {
     background: var(--ion-color-primary);
@@ -44,7 +67,7 @@
   --overflow: hidden;
   overflow: auto;
   &::-webkit-scrollbar {
-    width: 5px;
+    width: 10px;
   }
   &::-webkit-scrollbar-thumb {
     background: var(--ion-color-primary);
@@ -88,18 +111,36 @@ ion-card:hover {
 // }
 
 .categorias {
+  padding: 0px;
+  ion-row {
+    padding: 0px;
+    ion-col {
+      padding: 0px;
+    }
+  }
   ion-card {
-    height: 100px;
     text-align: center;
-    img {
-      height: 70%;
+    .imgCategoria {
+      height: 150px;
       width: 100%;
-      object-fit: cover;
+      img {
+        height: 100%;
+        width: 100%;
+        object-fit: cover;
+        object-position: middle;
+      }
     }
-    ion-label {
-      height: 30%;
-      font-size: 2vh;
+    ion-item {
+      --background: var(--ion-color-primary);
+      ion-label {
+        font-family: Nunito;
+        color: var(--ion-color-light);
+      }
     }
+  }
+
+  ion-card:hover {
+    transform: (scale(1.02));
   }
 }
 
@@ -108,21 +149,26 @@ ion-card:hover {
     margin: 0px;
     ion-row {
       padding: 0px;
-      // margin-left: 5%;
-      // margin-right: 5%;
-      // margin-bottom: 5%;
       ion-col{
       padding: 0px;
-      // margin-bottom: 5%;
         ion-card {
           height: 100%;
-          // margin: 5%;
+          margin: 5%;
           text-align: center;
-          img{
-            height: 70px;
+          .imagenProducto {
+            height: 100px;
             width: 100%;
-            object-fit: contain;
-            object-position: center center;
+            img{
+              height: 100%;
+              width: 100%;
+              object-fit: contain;
+              object-position: center center;
+            }
+            ion-badge {
+              position: absolute;
+              border-bottom-left-radius: 0px;
+              border-top-right-radius: 0px;
+            }
           }
           ion-card-title{
             font-weight: bold;
@@ -136,6 +182,9 @@ ion-card:hover {
             margin: 2px;
             border-radius: 5px;
           }
+        }
+        ion-card:hover {
+          transform: (scale(1.02));
         }
       }
     }
@@ -188,24 +237,35 @@ ion-card:hover {
 
 .cardBuscador{
   padding: 5px;
-  border-radius: 10px;
-  // height: 100px;
   ion-row {
+    padding: 0px;
       .colImg{
-          text-align: center;
-          img {
-            max-height: 80px;
+        padding: 0px;
+        text-align: center;
+          .buscarImg {
+            height: 80px;
+            width: 100%;
+            img {
+              height: 100%;
+              width: 100%;
+              border-radius: 5px;
+              object-position: middle;
+              object-fit: contain;
+            }
           }
       }
       .colDatos{
-          display: table-cell;
-          vertical-align: middle;
+        padding-left: 5px;
+        display: table-cell;
+        vertical-align: middle;
+        border-right: solid 1.5px var(--ion-color-primary);
       }
   }
 }
 
 .cardBuscador:hover {
   cursor: pointer;
+  transform: scale(1.02);
 }
 
 .sinDatosVenta {

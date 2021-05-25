@@ -1,32 +1,122 @@
-ion-label{
-    font-size: 13px;
-}
+// ion-label{
+//     font-size: 13px;
+// }
 
-.header {
-    // background-color: var(--ion-color-secondary);
-    // font-weight: bold;
-    text-align: center;
-    background-color: var(--ion-color-primary);
-}
-.botones{
-    width:105px; height:25px;
-    font-size: 10px;
-}
+// .header {
+//     // background-color: var(--ion-color-secondary);
+//     // font-weight: bold;
+//     text-align: center;
+//     background-color: var(--ion-color-primary);
+// }
+// .botones{
+//     width:105px; height:25px;
+//     font-size: 10px;
+// }
 
-.containerComprobante {
-    margin: 0px;
+// .containerComprobante {
+//     margin: 0px;
+//     padding: 0px;
+//     width: 350mm;
+//     height: auto;
+//     h1 {
+//         text-align: center;
+//         }
+//         #pdf {
+//         border: solid 3px #000;
+//         margin: 0;
+//         text-align: justify;
+//         p {
+//             font-size: 6px;
+//         }
+//         }
+// }
+
+// NUEVO CSS
+* {
+    ion-label, ion-input {
+        font-family: Nunito;
+    }
+}
+.gridReportes {
     padding: 0px;
-    width: 350mm;
-    height: auto;
-    h1 {
+    ion-row {
+        padding: 0px;
+        ion-col {
+            padding: 0px;
+            margin: 0px;
+        }
+    }
+}
+.reportes {
+    margin: 5%;
+    text-align: center;
+    ion-icon {
+        font-size: 30px;
+    }
+}
+.reportes:hover {
+    cursor: pointer;
+    background-color: var(--ion-color-light);
+    transform: scale(1.05);
+}
+
+.gridCajas {
+    padding: 0px;
+    margin: 0px;
+    ion-row {
+        padding: 0px;
+        margin: 0px;
+        ion-col{
+            // padding: 3px;
+            margin: 0px;
+        }
+    }
+}
+.cardCaja {
+    margin: 0.5%;
+    ion-item {
+        // border: solid 1px var(--ion-color-primary);
+        border-radius: 10px;
+        --background: var(--ion-color-light);
+    }
+    .colImg {
+        ion-badge {
+            position: absolute;
+            border-top-right-radius: 0px;
+            border-bottom-left-radius: 0px;
+        }
+        img {
+            border-radius: 10px;
+            object-fit: cover;
+        }
+        img:hover {
+            cursor: pointer;
+        }
+    }
+}
+
+.sinDatos {
+    height: 80%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    align-content: center;
+    .textoSindatos {
         text-align: center;
+        padding: 10%;
+        margin: 10%;
+        border-radius: 10px;
+        font-weight: bold;
+        .icono {
+            zoom: 4;
         }
-        #pdf {
-        border: solid 3px #000;
-        margin: 0;
-        text-align: justify;
-        p {
-            font-size: 6px;
-        }
-        }
+    }
+}
+
+.cargando {
+    height: 60%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    align-content: center;
 }
