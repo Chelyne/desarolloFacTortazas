@@ -54,6 +54,7 @@ export class CajaChicaPage implements OnInit {
   apilados = [];
   loading;
   sinDatos: boolean;
+  totalEnCaja = 0;
 
   constructor(
     private dataApi: DataBaseService,
@@ -100,6 +101,11 @@ export class CajaChicaPage implements OnInit {
   }
 
   async modalAperturaCajaChica(modoCaja: string, datos: any) {
+    if (modoCaja === 'cerrar'){
+      this.loading.dismiss();
+      await this.ReporteProductosVendedorDia( datos, 'pdf');
+      datos.saldoFinal = this.totalEnCaja;
+    }
     const modal = await this.modalController.create({
       component: AbrirCerrarCajaPage,
       cssClass: 'my-custom-class',
@@ -170,7 +176,8 @@ export class CajaChicaPage implements OnInit {
           }
         }, {
           text: 'Aceptar',
-          handler: () => {
+          handler: async () => {
+            await this.presentLoading('Consultando... Por Favor espere');
             this.modalAperturaCajaChica('cerrar', id);
           }
         }

@@ -431,11 +431,19 @@ export class DataBaseService {
     console.log('obteniedno caja de: ', dni, ' con el estado ABIERTO: ', estadoCaja);
     return this.afs.collection('CajaChica').ref.where( 'dniVendedor', '==', dni).where('estado', '==', estadoCaja)
     .get().then( snapshot => {
-      if (snapshot.empty) {
-        return false;
-      } else {
-        return true;
-      }
+      // if (snapshot.empty) {
+      //   return false;
+      // } else {
+      //   return true;
+      // }
+      const datos: any[] = [];
+      snapshot.forEach((doc) => {
+        datos.push( {...doc.data(), id: doc.id});
+      });
+      return datos;
+    }).catch(err => {
+      console.log('no se pudo obtener caja chica', err);
+      throw String ('fail');
     });
   }
 

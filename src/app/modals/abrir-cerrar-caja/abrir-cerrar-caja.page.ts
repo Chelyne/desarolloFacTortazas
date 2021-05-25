@@ -82,7 +82,7 @@ export class AbrirCerrarCajaPage implements OnInit {
     };
     console.log('datos a guardar', cajaApertura);
     this.dataApi.validarCajaChicaVendedor('Aperturado', this.abrirCajaChicaForm.value.dniUsuario).then(snapshot => {
-      if (!snapshot) {
+      if (!snapshot.length) {
         console.log('deja ingresar');
         this.GuardarDatosCajaChica(cajaApertura).then(() =>  this.loading.dismiss());
 

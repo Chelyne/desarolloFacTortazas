@@ -116,7 +116,7 @@ export class PuntoVentaPage implements OnInit {
   ionViewDidEnter() {
     this.dataApi.validarCajaChicaVendedor('Aperturado', this.storage.datosAdmi.dni).then(data => {
       console.log('CAJA, ', data);
-      if (data) {
+      if (data.length) {
         this.cajaChica = true;
       } else {
         this.cajaChica = false;
