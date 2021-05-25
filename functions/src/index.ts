@@ -1291,11 +1291,15 @@ class ApiPeruService {
   }
 
   formatearDetalleVenta(itemDeVenta: ItemDeVentaInterface): SaleDetailInterface {
-    if (!itemDeVenta.cantidad || !itemDeVenta.producto?.precio) {
+    if (!itemDeVenta.cantidad || !itemDeVenta.precio) {
       throw String('ITEM DE VENTA INCONSISTENTE, CANTIDA O PU_VENTA NO DEFINIDO');
     }
+    // const cantidadItems = itemDeVenta.cantidad;
+    // const precioUnit = itemDeVenta.producto.precio; /** montoBase + IGV */
+
     const cantidadItems = itemDeVenta.cantidad;
-    const precioUnit = itemDeVenta.producto.precio; /** montoBase + IGV */
+
+    const precioUnit = itemDeVenta.precio; /** montoBase + IGV */
 
     const precioUnitarioBase = precioUnit / 1.18;
     const igvUnitario = precioUnit - precioUnitarioBase;
@@ -1305,8 +1309,8 @@ class ApiPeruService {
 
     return {
       // codProducto : 'P001',
-      unidad: this.ObtenerCodigoMedida(itemDeVenta.producto.medida ?? ''),
-      descripcion: itemDeVenta.producto.nombre ?? '',
+      unidad: this.ObtenerCodigoMedida(itemDeVenta.producto?.medida ?? ''),
+      descripcion: itemDeVenta.producto?.nombre ?? '',
       cantidad: itemDeVenta.cantidad,
       mtoBaseIgv: redondeoDecimal(montoBase, 2),
       porcentajeIgv: 18,

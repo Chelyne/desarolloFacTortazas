@@ -16,6 +16,8 @@ import { MontoALetras } from 'src/app/global/monto-a-letra';
 import { GENERAL_CONFIG } from '../../../config/generalConfig';
 import { GlobalService } from '../../global/global.service';
 import { DataBaseService } from '../../services/data-base.service';
+import { GLOBAL_FACTOR_ICBPER } from 'src/config/otherConfig';
+import { DECIMAL_REGEXP_PATTERN } from 'src/app/global/validadores';
 
 @Component({
   selector: 'app-confirmar-venta',
@@ -23,6 +25,10 @@ import { DataBaseService } from '../../services/data-base.service';
   styleUrls: ['./confirmar-venta.page.scss'],
 })
 export class ConfirmarVentaPage implements OnInit {
+
+  /** AFI */
+  ICBP_PER = GLOBAL_FACTOR_ICBPER;
+
   sede = this.storage.datosAdmi.sede.toLocaleLowerCase();
   formPago: FormGroup;
 
@@ -118,15 +124,15 @@ export class ConfirmarVentaPage implements OnInit {
   ngOnInit() {
     this.menuCtrl.enable(true);
     this.formPago.setControl('montoIngreso',
-      new FormControl(this.importeTotal, [Validators.required, Validators.pattern('^[0-9]*\.?[0-9]*$')])
+      new FormControl(this.importeTotal, [Validators.required, Validators.pattern(DECIMAL_REGEXP_PATTERN)])
     );
   }
 
   createFormPago(){
     return new FormGroup({
-      montoIngreso: new FormControl(0, [Validators.required, Validators.pattern('^[0-9]*\.?[0-9]*$')]),
-      descuentoMonto: new FormControl('', [Validators.pattern('^[0-9]*\.?[0-9]*$')]),
-      descuentoPorcentaje: new FormControl('', [Validators.pattern('^[0-9]*\.?[0-9]*$')])
+      montoIngreso: new FormControl(0, [Validators.required, Validators.pattern(DECIMAL_REGEXP_PATTERN)]),
+      descuentoMonto: new FormControl('', [Validators.pattern(DECIMAL_REGEXP_PATTERN)]),
+      descuentoPorcentaje: new FormControl('', [Validators.pattern(DECIMAL_REGEXP_PATTERN)])
     });
   }
 
@@ -178,7 +184,7 @@ export class ConfirmarVentaPage implements OnInit {
   ActualizarMontoEntrante(monto: number){
     console.log('%cMONTOOOOO', 'color:white; background-color:black', monto);
     this.formPago.setControl('montoIngreso',
-    new FormControl(monto.toFixed(2), [Validators.required, Validators.pattern('^[0-9]*\.?[0-9]*$')]));
+    new FormControl(monto.toFixed(2), [Validators.required, Validators.pattern(DECIMAL_REGEXP_PATTERN)]));
   }
 
   calcularVuelto(){
@@ -194,13 +200,15 @@ export class ConfirmarVentaPage implements OnInit {
   sumarAMontoEntrante(montoAdd: number){
     console.log(montoAdd);
     this.montoEntrante =  montoAdd;
-    this.formPago.setControl('montoIngreso', new FormControl(this.montoEntrante, [Validators.required, Validators.pattern('^[0-9]*\.?[0-9]*$')]));
+    this.formPago.setControl('montoIngreso',
+    new FormControl(this.montoEntrante, [Validators.required, Validators.pattern(DECIMAL_REGEXP_PATTERN)]));
     this.calcularVuelto();
   }
 
   ponerMontoExactoYCalularVuelto(){
     this.montoEntrante = this.importeTotal;
-    this.formPago.setControl('montoIngreso', new FormControl(this.montoEntrante.toFixed(2), [Validators.required, Validators.pattern('^[0-9]*\.?[0-9]*$')]));
+    this.formPago.setControl('montoIngreso',
+    new FormControl(this.montoEntrante.toFixed(2), [Validators.required, Validators.pattern(DECIMAL_REGEXP_PATTERN)]));
     this.calcularVuelto();
   }
 
@@ -233,7 +241,7 @@ export class ConfirmarVentaPage implements OnInit {
   cambiarPrecioUnitarioSiLoRequiere(listaItemsDeVenta: ItemDeVentaInterface[]): ItemDeVentaInterface[]{
     for (const itemdeventa of listaItemsDeVenta) {
       if ( itemdeventa.totalxprod !== itemdeventa.montoNeto){
-        itemdeventa.producto.precio = itemdeventa.totalxprod / itemdeventa.cantidad;
+        itemdeventa.precio = itemdeventa.totalxprod / itemdeventa.cantidad;
       }
     }
     return listaItemsDeVenta;
@@ -266,7 +274,8 @@ export class ConfirmarVentaPage implements OnInit {
           this.venta.totalPagarVenta +  '|' + fecha +  '|' + this.venta.cliente.numDoc);
           this.dataApi.confirmarVenta(this.venta, this.storage.datosAdmi.sede).then(data => {
             for (const itemVenta of this.venta.listaItemsDeVenta) {
-              this.dataApi.decrementarStockProducto(itemVenta.producto.id, this.storage.datosAdmi.sede, itemVenta.cantidad);
+              // tslint:disable-next-line: max-line-length
+              this.dataApi.decrementarStockProducto(itemVenta.producto.id, this.storage.datosAdmi.sede, itemVenta.cantidad * itemVenta.factor);
             }
             this.dataApi.actualizarCorrelacion(numero[0].id, this.storage.datosAdmi.sede, numero[0].correlacion + 1);
             this.resetFormPago();
@@ -302,10 +311,10 @@ export class ConfirmarVentaPage implements OnInit {
     if (this.bolsa === true) {
       this.cantidadBolsa = 1;
       this.servGlobal.presentToast('Bolsa agregada');
-      this.importeTotal = this.importeTotal + 0.3;
+      this.importeTotal = this.importeTotal + this.ICBP_PER;
     } else {
       this.servGlobal.presentToast('Bolsa quitada');
-      this.importeTotal = this.importeTotal - (0.3 * this.cantidadBolsa);
+      this.importeTotal = this.importeTotal - (this.ICBP_PER * this.cantidadBolsa);
       this.cantidadBolsa = 0;
     }
     this.ponerMontoExactoYCalularVuelto();
@@ -408,8 +417,8 @@ export class ConfirmarVentaPage implements OnInit {
         doc.text('Descuento: S/ ', 35, index + 5, {align: 'right'});
         doc.text(this.venta.descuentoVenta.toFixed(2), 43, index + 5, {align: 'right'});
         index = index + 4;
-        doc.text('ICBP(0.30): S/ ', 35, index + 3, {align: 'right'});
-        doc.text((this.venta.cantidadBolsa * 0.3).toFixed(2), 43, index + 3, {align: 'right'});
+        doc.text(`ICBP(${this.ICBP_PER.toFixed(2)}): S/`, 35, index + 3, {align: 'right'});
+        doc.text((this.venta.cantidadBolsa * this.ICBP_PER).toFixed(2), 43, index + 3, {align: 'right'});
         doc.text('Importe Total: S/ ', 35, index + 5, {align: 'right'});
         doc.text(this.venta.totalPagarVenta.toFixed(2), 43, index + 5, {align: 'right'});
         doc.text('Vuelto: S/ ', 35, index + 7, {align: 'right'});
@@ -530,8 +539,8 @@ export class ConfirmarVentaPage implements OnInit {
         doc.text( (this.venta.descuentoVenta).toFixed(2), 43, index + 13, {align: 'right'});
         doc.text('I.G.V. (18%)', 2, index + 15, {align: 'left'});
         doc.text( (this.calcularIGVincluido(this.venta.totalPagarVenta)).toFixed(2), 43, index + 15, {align: 'right'});
-        doc.text('ICBP(0.30)', 2, index + 17, {align: 'left'});
-        doc.text( (this.venta.cantidadBolsa * 0.30).toFixed(2), 43, index + 17, {align: 'right'});
+        doc.text(`ICBP(${this.ICBP_PER.toFixed(2)}): S/`, 2, index + 17, {align: 'left'});
+        doc.text( (this.venta.cantidadBolsa * this.ICBP_PER).toFixed(2), 43, index + 17, {align: 'right'});
         doc.text('I.S.C.', 2, index + 19, {align: 'left'});
         doc.text( (0).toFixed(2), 43, index + 19, {align: 'right'});
         doc.text( '__________________________________________', 22.5, index + 19, {align: 'center'});
@@ -647,15 +656,15 @@ export class ConfirmarVentaPage implements OnInit {
           console.log(this.venta.bolsa, this.venta.cantidadBolsa);
           doc.text('BOLSA PLASTICA ', 2, index + 3);
           // tslint:disable-next-line:max-line-length
-          doc.text( this.venta.cantidadBolsa.toFixed(2) + '    ' + 'Unidad' + '      ' + (0.3).toFixed(2), 2, index + 5, {align: 'justify'});
-          doc.text((this.venta.cantidadBolsa * 0.30).toFixed(2), 43, index + 5, {align: 'right'} );
+          doc.text( this.venta.cantidadBolsa.toFixed(2) + '    ' + 'Unidad' + '      ' + (this.ICBP_PER).toFixed(2), 2, index + 5, {align: 'justify'});
+          doc.text((this.venta.cantidadBolsa * this.ICBP_PER).toFixed(2), 43, index + 5, {align: 'right'} );
           doc.text( '__________________________________________', 22.5, index +  5, {align: 'center'});
           index = index + 5;
 
         }
         if (this.venta.descuentoVenta > 0) {
           doc.text('SubTotal: S/ ', 35, index + 3, {align: 'right'});
-          doc.text((this.venta.montoNeto + (this.venta.cantidadBolsa * 0.30)).toFixed(2), 43, index + 3, {align: 'right'});
+          doc.text((this.venta.montoNeto + (this.venta.cantidadBolsa * this.ICBP_PER)).toFixed(2), 43, index + 3, {align: 'right'});
           doc.text('Descuento: S/ ', 35, index + 5, {align: 'right'});
           doc.text(this.venta.descuentoVenta.toFixed(2), 43, index + 5, {align: 'right'});
           index = index + 4;
@@ -746,14 +755,14 @@ export class ConfirmarVentaPage implements OnInit {
 
   agregarBolsa() {
     this.cantidadBolsa++;
-    this.importeTotal = this.importeTotal + 0.3;
+    this.importeTotal = this.importeTotal + this.ICBP_PER;
     this.ponerMontoExactoYCalularVuelto();
   }
 
   quitarBolsa() {
     if (this.cantidadBolsa > 1) {
       this.cantidadBolsa--;
-      this.importeTotal = this.importeTotal - 0.3;
+      this.importeTotal = this.importeTotal - this.ICBP_PER;
     } else {
       this.servGlobal.presentToast('Minimo 0');
       this.bolsa = false;

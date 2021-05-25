@@ -134,7 +134,7 @@ describe('description', () => {
   //   then( exito => console.log(exito)).catch( err => console.log(err));
   // });
 
-  xdescribe('TEST FORMATEAR VENTA', () => {
+  describe('TEST FORMATEAR VENTA', () => {
     let ventaMock: VentaInterface;
     let ventaMockConBolsa: VentaInterface;
 
@@ -148,6 +148,7 @@ describe('description', () => {
 
     it('test formatear detalle de venta', async () => {
       const detalle = source.listaProductosDefecto.productos[0];
+
       let target = JSON.parse(JSON.stringify(detalle));
       delete target.cantidad;
       expect(() => service.formatearDetalleVenta(target)).toThrow('ITEM DE VENTA INCONSISTENTE, CANTIDA O PU_VENTA NO DEFINIDO');
@@ -157,6 +158,9 @@ describe('description', () => {
       expect(() => service.formatearDetalleVenta(target)).toThrow('ITEM DE VENTA INCONSISTENTE, CANTIDA O PU_VENTA NO DEFINIDO');
 
       target = JSON.parse(JSON.stringify(detalle));
+      target.medida = 'unidad';
+      target.precio = 5;
+      target.factor = 1;
       const atributtes = [
         'cantidad', 'descripcion', 'igv', 'mtoBaseIgv',
         'mtoPrecioUnitario', 'mtoValorUnitario', 'mtoValorVenta',
@@ -241,6 +245,8 @@ describe('description', () => {
       expect(isObjsEqual(service.obtenerDetalleBolsaGratuita(2), expectDetail)).toBeTrue();
     });
     it('formatear venta', async () => {
+      ventaMock.listaItemsDeVenta = service.agregarVariantesAItemVenta(ventaMock.listaItemsDeVenta);
+      ventaMockConBolsa.listaItemsDeVenta = service.agregarVariantesAItemVenta(ventaMockConBolsa.listaItemsDeVenta);
       let targetVenta: VentaInterface;
       const atributos = [
         'ublVersion', 'tipoOperacion', 'tipoDoc', 'serie', 'correlativo',
@@ -282,7 +288,7 @@ describe('description', () => {
     });
   });
 
-  xdescribe('TEST FORMATEAR NOTA DE CREDITO', () => {
+  describe('TEST FORMATEAR NOTA DE CREDITO', () => {
     /** NOTE - DRY */
     let ventaMock: VentaInterface;
     let ventaMockConBolsa: VentaInterface;
@@ -347,7 +353,7 @@ describe('description', () => {
     });
   });
 
-  xdescribe('ENVIAR COMPROBANTE A SUNAT', () => {
+  describe('ENVIAR COMPROBANTE A SUNAT', () => {
     /** NOTE - DRY */
     let ventaMock: VentaInterface;
     let ventaMockConBolsa: VentaInterface;
@@ -371,7 +377,7 @@ describe('description', () => {
       expect((await service.obtenerProductosDeVenta('YR1evM6WAiIgNs6EzgUa')).length).toEqual(6);
     });
 
-    xit('ENVIAR COMPROBANTE: BOLETA O FACTURA', async () => {
+    it('ENVIAR COMPROBANTE: BOLETA O FACTURA', async () => {
 
       let targetVenta: VentaInterface;
 
@@ -398,7 +404,7 @@ describe('description', () => {
 
     });
 
-    xit('ENVIAR NOTA DE CREDITO', async () => {
+    it('ENVIAR NOTA DE CREDITO', async () => {
 
       let targetVenta: VentaInterface;
       const cdrMock: CDRInterface = {sunatResponse: {success: true}};
@@ -451,7 +457,7 @@ describe('description', () => {
 
       /** ANTES DE ENVIAR LAS NOTAS DE CREDITO SE GUARDA LA SERIE INICIAL */
       serieInicial = await service.obtenerSerie('n.credito.boleta').catch(() => 'fail');
-      console.log('%cSerieInicial', 'color:white;background-color:red', serieInicial);
+      console.log('%cSerieInicial', 'color:white; background-color: #ff00f2', serieInicial);
 
       /** VENTA MODELO CON BOLSA */
       let idVenta = ventaMock.idVenta;
@@ -485,14 +491,14 @@ describe('description', () => {
     });
     it('RESETEAR EL ESTADO DE LA SERIE AL ESTADO INICIAL: ', async () => {
       const serieFinal: any| ContadorDeSerieInterface = await service.obtenerSerie('n.credito.boleta').catch(() => 'fail');
-      console.log('%cSerieInicial', 'color:white;background-color:red', serieInicial);
-      console.log('%cSerieInicial', 'color:white;background-color:red', serieFinal);
+      console.log('%cSerieInicial', 'color:white;background-color: #ff00f2', serieInicial);
+      console.log('%cSerieInicial', 'color:white;background-color: #ff00f2', serieFinal);
 
 
 
       await dataApi.actualizarCorrelacion(serieInicial.id, 'andahuaylas', serieFinal.correlacion - 2);
       // const serieInicialFinal = await service.obtenerSerie('n.credito.boleta').catch(() => 'fail');
-      console.log('%cSerieActual', 'color:white;background-color:red',  await service.obtenerSerie('n.credito.boleta').catch(() => 'fail'));
+      console.log('%cSerieActual', 'color:white;background-color: #ff00f2',  await service.obtenerSerie('n.credito.boleta').catch(() => 'fail'));
 
 
       await expectAsync(service.obtenerSerie('n.credito.boleta')).toBeResolvedTo(serieInicial);
@@ -506,7 +512,7 @@ describe('description', () => {
     });
   });
 
-  xit('venta prueba a obtener', async () => {
+  it('venta prueba a obtener', async () => {
     let idVenta = 'p2HAkpSESAsE6JJBAyAv';
     let idListaVenta = 'KXkoDwL0bYuyxxRhPBiZ';
     let sede = 'andahuaylas';
@@ -566,7 +572,7 @@ describe('description', () => {
 
   });
 
-  xit('venta con descuento global', async () => {
+  it('venta con descuento global', async () => {
     const ventaConDescuento: VentaInterface = {
       idVenta: 'tOyFdXj9Q4nY96vvtHaj',
       estadoVenta: 'anulado',
@@ -618,6 +624,9 @@ describe('description', () => {
         idProducto: 'ebXferOtr0qmMbjhRcTv',
         montoNeto: 15,
         cantidad: 1,
+        factor: 1,
+        medida: 'unidad',
+        precio: 34,
         producto: {
           id: 'ebXferOtr0qmMbjhRcTv',
           medida: 'Unidad',
@@ -689,122 +698,7 @@ describe('description', () => {
   });
 
 
-
-  // it('Test Guardar Correlacion', () => {
-
-  //   const  serie = {
-  //     tipoComprobante: 'n.credito.boleta',
-  //     correlacion: 14,
-  //     numero: '1',
-  //     disponible: true,
-  //     serie: 'BC01',
-  //     id: 'OmtymKkPvLdGhvxWmaLZ'
-  //   };
-
-  //   const IdSerie =  serie.id;
-  //   const DatosSerie = {
-  //     serie: serie.serie,
-  //     correlacion: serie.correlacion + 1
-  //   };
-  //   service.incrementarCorrelacionNotaCredito(IdSerie, DatosSerie).then(() => console.log('se incremento correctamente'));
-  // });
-
-
-  // it('Test EnviarComprobante a Sunat, por pasos', async () => {
-  //   // console.log('-----------------------Enviar venta a sunat por pasos-----------------------');
-
-
-
-  //   /** Error Fallo Obtencion de productos */
-  //   // await service.enviarASunatAdaptador(source.ventaSinProductosYSinCDR).
-  //   // then( exito => console.log('EXITO_ENVIO_SUNAT', exito)).catch( err => console.log('ERROR_ENVIO_SUNAT', err));
-
-  //   // /** Error se obtuvo una lista vacia de productos */
-  //   // await service.enviarASunatAdaptador2(ventaSinItemsDeLista).
-  //   // then( exito => console.log('EVITO_ENVIO_SUNAT', exito)).catch( err => console.log('ERROR_ENVIO_SUNAT', err));
-
-  //   // /** Error fecha invalida */
-  //   // await service.enviarASunatAdaptador2(ventaConFechaInvalida).
-  //   // then( exito => console.log('EVITO_ENVIO_SUNAT', exito)).catch( err => console.log('ERROR_ENVIO_SUNAT', err));
-
-
-  //   /** No se envio el comprobante a SUNAT */
-  //   /** Error se Obtuvo el cdr pero no se guardo */
-
-  // });
-
-
-
-  // it('testear Buscar productos por codigo', async () => {
-  //   /** Si la lista de productos esxiste devuel la litaDeproductos */
-  //   await service.obtenerProductosDeVenta(ventaSinProductosConCDR.idListaProductos)
-  //   .then( data => console.log('BuscarProductosByIdList', data));
-
-  //   /** Si el producto no existe devuelve una lista vacia */
-  //   service.obtenerProductosDeVenta('').then( data => console.log('BuscarProductosByIdList', data));
-
-  //   await service.obtenerProductosDeVenta('sdfsdf').then( data => console.log('BuscarProductosByIdList', data))
-  //   .catch( err => console.log(err));
-  // });
-
-
-
-  // it('Formatear venta sin productos', async () => {
-  //   // const productos = await service.obtenerProductosDeVenta(ventaSinProductosConCDR.idListaProductos).catch(err => err);
-  //   const productos = await service.obtenerProductosDeVenta('').catch(err => err);
-  //   if (productos === 'fail'){
-  //     console.log('No se pudo obtener productos');
-  //   } else {
-  //     ventaSinProductosConCDR.listaItemsDeVenta = productos;
-  //     console.log('venta formateada venta sin productos', service.formatearVenta(ventaSinProductosConCDR));
-  //   }
-  // });
-
-
-
-  // it('Testear guardar Cdr de prueba', async () => {
-  //   /** Envia cdr a venta que existe */
-  //   await service.guardarCDR(ventaSinProductosConCDR.idVenta, ventaSinProductosConCDR.fechaEmision, cdrDePrueba)
-  //   .then( data => console.log(data)).catch( err => console.log(err));
-
-  //   /** Envia cdr a venta que no existe */
-  //   await service.guardarCDR('betobetobeto', ventaSinProductosConCDR.fechaEmision, cdrDePrueba)
-  //   .then( data => console.log('Usted a tenido exito', data)).catch( err => console.log('fail', err));
-  // });.
-
-
-  /**
-   *  ENVIAR A SUNAR BOLETA O FACTURA
-   *    Obtener lista de productos
-   *    formatear venta
-   *      formatearDetallesDeVenta
-   *         formatearDetalle
-   *            ObtenerCodigoMedida
-   *      obtenerCodigoDeComprobante
-   *      formatearcliente
-   *      FormatearEmpresa
-   *      icbr
-   *      Descuentos
-   *    Enviar a Sunat
-   *    Guardar cdr
-   */
-
-  /**
-   *  ENVIAR A SUNAR NOTA DE CREDITO
-   *    Obtener lista de productos
-   *    Obtener serie
-   *    formatear nota de credito
-   *      formatear detalles de venta
-   *        formatear detalles
-   *      obtener codigo de comprobante
-   *      formatear cliente
-   *      formatear empresa
-   *    Enviar nota de credito a sunat
-   *    Incrementar correlacion
-   *    GuardarCDR anulado
-   */
-
-  xit('Test de obtener medida', () => {
+  it('Test de obtener medida', () => {
     expect(service.ObtenerCodigoMedida('botellas')).toEqual('BO');
     expect(service.ObtenerCodigoMedida('cajas')).toEqual('BX');
     expect(service.ObtenerCodigoMedida('docena')).toEqual('DZN');

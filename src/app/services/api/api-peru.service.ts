@@ -10,7 +10,7 @@ import { StorageService } from '../storage.service';
 import { redondeoDecimal, formatearDateTime } from 'src/app/global/funciones-globales';
 import { MontoALetras } from 'src/app/global/monto-a-letra';
 import { GENERAL_CONFIG } from '../../../config/generalConfig';
-import { GLOBAL_FACTOR_ICBPER } from '../../../config/otherConfig';
+import { FECHA_DE_DEPLOY, GLOBAL_FACTOR_ICBPER } from '../../../config/otherConfig';
 
 import { ApiPeruConfigInterface, DatosApiPeruInterface, DatosEmpresaInterface } from './apiPeruInterfaces';
 import { CDRInterface } from 'src/app/models/api-peru/cdr-interface';
@@ -344,6 +344,10 @@ export class ApiPeruService {
 
       venta.listaItemsDeVenta = productos;
 
+      if (this.esDateVentaMenorFechaDaploy(venta.fechaEmision)){
+        venta.listaItemsDeVenta = this.agregarVariantesAItemVenta(venta.listaItemsDeVenta);
+      }
+
 
       const ventaFormateada: ComprobanteInterface = this.intentarFormatearVenta(venta);
       // const ventaFormateada: ComprobanteInterface = this.formatearVenta(venta);
@@ -407,6 +411,16 @@ export class ApiPeruService {
       return cdrStatusForResponse;
       // return 'exito';
     }
+  }
+
+  agregarVariantesAItemVenta(listaItemsDeVenta: ItemDeVentaInterface[]): ItemDeVentaInterface[]{
+    for (const itemVenta of listaItemsDeVenta) {
+        itemVenta.medida =  itemVenta.producto.medida;
+        itemVenta.factor =  1;
+        itemVenta.precio =  itemVenta.producto.precio;
+    }
+
+    return listaItemsDeVenta;
   }
 
   async guardarCDR(idVenta: string, fechaEmision: any, cdrRespuesta: CDRInterface){
@@ -590,11 +604,14 @@ export class ApiPeruService {
   }
 
   formatearDetalleVenta(itemDeVenta: ItemDeVentaInterface): SaleDetailInterface{
-    if (!itemDeVenta.cantidad || !itemDeVenta.producto?.precio){
+    if (!itemDeVenta.cantidad || !itemDeVenta.precio){
       throw String('ITEM DE VENTA INCONSISTENTE, CANTIDA O PU_VENTA NO DEFINIDO');
     }
+    // const cantidadItems = itemDeVenta.cantidad;
     const cantidadItems = itemDeVenta.cantidad;
-    const precioUnit = itemDeVenta.producto.precio; /** montoBase + IGV */
+
+    // const precioUnit = itemDeVenta.producto.precio; /** montoBase + IGV */
+    const precioUnit = itemDeVenta.precio; /** montoBase + IGV */
 
     const precioUnitarioBase = precioUnit / 1.18;
     const igvUnitario = precioUnit - precioUnitarioBase;
@@ -706,6 +723,10 @@ export class ApiPeruService {
         throw String(`no se encontro productos por idListaProductos: ${venta.idListaProductos}`);
       }
       venta.listaItemsDeVenta = productos;
+
+      if (this.esDateVentaMenorFechaDaploy(venta.fechaEmision)){
+        this.agregarVariantesAItemVenta(venta.listaItemsDeVenta);
+      }
 
       let DatosSerie: {serie: string, correlacion: number};
       let IdSerie = '';
@@ -1138,6 +1159,13 @@ export class ApiPeruService {
         console.log('VENTA FORMATEADO', ventaFormateada);
       }
     }
+  }
+
+  esDateVentaMenorFechaDaploy(fechaVenta: string | {seconds?: number, nanoseconds?: number} | Date){
+    // venta: VentaInterface;
+    // const FECHA_DEPLOY = '24/05/2021 00:00:00';
+    // const FECHA_DEPLOY = '2021/05/24';
+    return new Date(formatearDateTime('YYYY/MM/DD', fechaVenta)).getTime() <= new Date(FECHA_DE_DEPLOY).getTime();
   }
 
   /* -------------------------------------------------------------------------- */

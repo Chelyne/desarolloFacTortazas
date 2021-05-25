@@ -140,7 +140,7 @@ export class ModalVentasPage implements OnInit {
   anularItemsDeVenta(listaItemsDeVenta: ItemDeVentaInterface[]){
     for (const itemVenta of listaItemsDeVenta) {
       console.log('itemDeVenta a Decrementar', itemVenta);
-      this.dataApi.incrementarStockProducto(itemVenta.producto.id, this.sede, itemVenta.cantidad);
+      this.dataApi.incrementarStockProducto(itemVenta.producto.id, this.sede, itemVenta.cantidad * itemVenta.factor);
     }
   }
 
