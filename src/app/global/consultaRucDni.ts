@@ -10,8 +10,8 @@ export async function ConsultarRUC_DNI(numDoc: string, typoDoc: string) {
       if (numDoc.length === 8) {
         await consultarDni(numDoc).then( (data: any) => {
             console.log('consultarDNI', data);
-            if (data && data !== 'Peticiones diarias excedidas' && data.name) {
-                objRespuesta.nombre = data.name + ' ' + data.first_name + ' ' + data.last_name;
+            if (data && data !== 'Peticiones diarias excedidas' && data.nombres) {
+                objRespuesta.nombre = data.nombres + ' ' + data.apellidoPaterno + ' ' + data.apellidoMaterno;
             }
         });
       }
@@ -41,7 +41,8 @@ function consultarDni(numDoc: string) {
         redirect: 'follow'
     };
 
-    return fetch('https://dni.optimizeperu.com/api/persons/' + numDoc, requestOptions)
+    // return fetch('https://dni.optimizeperu.com/api/persons/' + numDoc, requestOptions)
+    return fetch('https://dniruc.apisperu.com/api/v1/dni/' + numDoc + '?token=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJlbWFpbCI6ImFpaXp4Ym92c2dxcnRpZ2J3cEBuaXdnaHguY29tIn0.BwArIEbkSUE_GuXwPjETGTLvl88rhANKTsVcA7NY-WE')
         .then(response => response.json())
         .catch(error => console.log('error', error));
 }
