@@ -36,7 +36,7 @@ export class ReportesService {
   ) {}
   ReporteVentaDiaGeneralPDF(dia) {
     return this.consultaVentaReporteGeneral(dia).then( (data: any) => {
-      console.log('datos', data);
+      console.log('datos Generales', data);
       const doc = new jsPDF('portrait', 'px', 'a4') as jsPDFWithPlugin;
       doc.setFontSize(16);
       doc.setFont('bold');
@@ -51,7 +51,7 @@ export class ReportesService {
       doc.text( 'Fecha reporte: ' + dia, 300, 55);
       doc.text( 'Ingresos: ' + this.Ingresos.toFixed(2) , 40, 130);
       doc.text( 'Egresos: ' + this.Egresos.toFixed(2) , 180, 130);
-      doc.text( 'TOTAL CAJA: ' + (data.totalVentas + this.Ingresos - this.Egresos - data.totalETarjeta).toFixed(2) , 300, 145);
+      doc.text( 'TOTAL CAJA: ' + (data.totalVentas + this.Ingresos - this.Egresos - data.totalTarjeta).toFixed(2) , 300, 145);
       doc.text( 'Total Venta: ' + data.totalVentas.toFixed(2), 40, 115);
       doc.text( 'Total Anulados: ' + data.totalAnulados.toFixed(2), 180, 115);
       doc.text( 'N° Facturas: ' + data.numFacturas, 40, 85);
@@ -61,7 +61,7 @@ export class ReportesService {
       doc.text( 'Total Boletas: ' + data.totalBoletas.toFixed(2), 180, 100);
       doc.text( 'Total N. Venta: ' + data.totalNotas.toFixed(2), 300, 100);
       doc.text( 'Total Efectivo: ' + data.totalEfectivo.toFixed(2) , 40, 145);
-      doc.text( 'Total Tarjeta: ' + data.totalETarjeta.toFixed(2) , 180, 145);
+      doc.text( 'Total Tarjeta: ' + data.totalTarjeta.toFixed(2) , 180, 145);
       if (isNullOrUndefined(data.formatoVentasGeneral)) {
       doc.text( 'No se encontraron registros.', 40, 165);
       } else {
