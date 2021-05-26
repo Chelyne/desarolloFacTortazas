@@ -342,17 +342,27 @@ export class PuntoVentaPage implements OnInit {
   // ......................................
   // nuevas funcionalidades
 
-  AgregaraListaDeEspera(){
+  async AgregaraListaDeEspera(){
     // poner la venta en la lista de espera
     // anadir el array de itemsDeVenta a listaDeVentas
     if (this.cliente) {
-      this.listaDeVentas.push(this.CrearItemDeVentas());
+      const loadController = await this.servGlobal.presentLoading('Guardando venta congelada...');
+      await this.dataApi.guardarCongelarVenta(this.sede, this.CrearItemDeVentas()).then(res => {
+        if (res) {
+          this.servGlobal.presentToast('Se guardo la lista de venta', {color: 'success'});
+        } else {
+          this.servGlobal.presentToast('No se pudo guardar la venta', {color: 'danger'});
+        }
+      });
+      loadController.dismiss();
       this.listaItemsDeVenta = [];
       this.importeTotalPagar = 0;
-      console.log(this.listaDeVentas);
-      this.storage.congelarVenta(this.listaDeVentas).then(() => {
-        this.servGlobal.presentToast('Se guardo la lista de venta', {color: 'success'});
-      });
+
+      // this.listaDeVentas.push(this.CrearItemDeVentas());
+      // console.log(this.listaDeVentas);
+      // this.storage.congelarVenta(this.listaDeVentas).then(() => {
+      //   this.servGlobal.presentToast('Se guardo la lista de venta', {color: 'success'});
+      // });
     } else {
       this.servGlobal.presentToast('Selecione un cliente', {color: 'danger'});
     }
@@ -364,7 +374,10 @@ export class PuntoVentaPage implements OnInit {
       listaItemsDeVenta: this.listaItemsDeVenta,
       idVenta: this.CrearVentaId(),
       montoNeto: this.importeTotalPagar,
-      idCajaChica: this.datosCaja.id
+      idCajaChica: this.datosCaja.id,
+      vendedor: {
+        id: this.storage.datosAdmi.id
+      }
       // totalPagarVenta: this.importeTotalPagar // Descuento 0;
     };
   }

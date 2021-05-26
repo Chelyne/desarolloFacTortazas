@@ -173,7 +173,6 @@ export class ModalVentasPage implements OnInit {
       console.log(tipoComprobante);
       console.log(venta);
       const qr = this.getImage();
-      console.log(qr);
       switch (tipoComprobante) {
         case 'boleta': {
           let index = 39;

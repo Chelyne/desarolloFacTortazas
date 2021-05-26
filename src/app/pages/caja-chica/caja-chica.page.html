@@ -97,39 +97,39 @@
               </ion-col>
               <ion-col>
                 <ion-row>
-                  <ion-col>
+                  <ion-col size-lg="4">
                     <ion-item lines="none">
                       <ion-label position="stacked" color="primary">Saldo Inicial</ion-label>
                       <ion-input readonly>S/. {{item.saldoInicial.toFixed(2)}}</ion-input>
                     </ion-item>
                   </ion-col>
-                  <ion-col>
+                  <ion-col size-lg="4">
                     <ion-item lines="none">
                       <ion-label position="stacked" color="primary">Saldo Final</ion-label>
                       <ion-input readonly>S/. {{item.saldoFinal.toFixed(2)}}</ion-input>
                     </ion-item>
                   </ion-col>
-                  <ion-col>
-                    <ion-item lines="none">
-                      <ion-label position="stacked" color="primary">F. Apertura</ion-label>
-                      <ion-input readonly>{{item.FechaApertura}}</ion-input>
-                    </ion-item>
-                  </ion-col>
-                  <ion-col>
-                    <ion-item lines="none">
-                      <ion-label position="stacked" color="primary">F. Cierre</ion-label>
-                      <ion-input readonly>{{item.FechaCierre}}</ion-input>
-                    </ion-item>
-                  </ion-col>
-                </ion-row>
-                <ion-row>
-                  <ion-col size-lg="3">
+                  <ion-col size-lg="4">
                     <ion-item lines="none">
                       <ion-label position="stacked" color="primary">Vendedor</ion-label>
                       <ion-input readonly>{{item.nombreVendedor | titlecase}}</ion-input>
                     </ion-item>
                   </ion-col>
-                  <ion-col size-lg="9">
+                </ion-row>
+                <ion-row>
+                  <ion-col size-lg="4">
+                    <ion-item lines="none">
+                      <ion-label position="stacked" color="primary">F. Apertura</ion-label>
+                      <ion-input readonly>{{item.FechaApertura}}</ion-input>
+                    </ion-item>
+                  </ion-col>
+                  <ion-col size-lg="4">
+                    <ion-item lines="none">
+                      <ion-label position="stacked" color="primary">F. Cierre</ion-label>
+                      <ion-input readonly>{{item.FechaCierre}}</ion-input>
+                    </ion-item>
+                  </ion-col>
+                  <ion-col size-lg="4">
                     <ion-item lines="none">
                       <ion-label position="stacked" color="primary">Acciones</ion-label>
                       <ion-input readonly>

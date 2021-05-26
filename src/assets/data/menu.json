@@ -85,11 +85,7 @@
     {
         "icon": "stats-chart-outline",
         "name": "Reportes",
-        "sub": [{
-                "icon": "receipt-outline",
-                "name": "Compras",
-                "redirecTo": "#"
-            },
+        "sub": [
             {
                 "icon": "receipt-outline",
                 "name": "Ventas",

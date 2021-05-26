@@ -313,7 +313,7 @@ export class EditarProductoPage implements OnInit {
      */
 
     /** config */
-    const path = 'testimage';
+    const path = 'productos';
     const name = this.dataProducto.sede + this.datePipe.transform(new Date(), 'medium');
     const file = this.imagenTargetFile; // imagenTargetFile
     console.log('fffffffffffffffffffffffffffff', file, path, name);
@@ -533,7 +533,7 @@ export class EditarProductoPage implements OnInit {
 
       const regex = new RegExp(/(\?alt).*/, 'ig'); /** eliminar cadena de texto extra */
       filePath = filePath.replace(regex, '');
-      console.log('%c%s', 'color: #1d5673', filePath); 
+      console.log('%c%s', 'color: #1d5673', filePath);
       return filePath;
     }
 

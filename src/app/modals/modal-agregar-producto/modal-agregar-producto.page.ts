@@ -156,7 +156,7 @@ export class ModalAgregarProductoPage implements OnInit {
      */
 
     /** config */
-    const path = 'testimage';
+    const path = 'productos';
     const name = this.sede + this.datePipe.transform(new Date(), 'medium');
     const file = this.imagenTargetFile; // imagenTargetFile
 
