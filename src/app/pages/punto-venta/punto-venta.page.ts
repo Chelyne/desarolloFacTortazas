@@ -185,7 +185,7 @@ export class PuntoVentaPage implements OnInit {
         varianteSelected = {
           medida: productoSelect.medida,
           factor: 1,
-          precio: productoSelect.precio,
+          precio: parseFloat(`${productoSelect.precio}`) || 0
         };
       }
 
@@ -450,6 +450,7 @@ export class PuntoVentaPage implements OnInit {
 
     if (target.length) {
       this.buscadorService.Buscar(target).then( data => {
+        console.log(data);
         if (data.length){
           this.productos = data;
 

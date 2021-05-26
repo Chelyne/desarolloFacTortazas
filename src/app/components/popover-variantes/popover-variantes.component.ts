@@ -20,8 +20,8 @@ export class PopoverVariantesComponent implements OnInit {
     console.log('VARIANTE SELECCIONADA EN POPOVER', varianteSelect);
     const varianteValidada: VariantesInterface = {
       medida: varianteSelect.medida,
-      factor: parseFloat(`${varianteSelect.factor}`),
-      precio: parseFloat(`${varianteSelect.precio}`)
+      factor: parseFloat(`${varianteSelect.factor}`) || 1,
+      precio: parseFloat(`${varianteSelect.precio}`) || 0
     };
     console.log('VARIANTE SELECCIONADA EN POPOVER', varianteValidada);
 
