@@ -1,8 +1,7 @@
 .usuario {
-    height: 200px;
     text-align: center;
     .img {
-        height: 40%;
+        height: 100px;
         img {
             height: 100%;
             object-fit: contain;
@@ -15,9 +14,10 @@
             border-top-right-radius: 0px;
         }
     }
-    ion-card-content {
-        padding: 0px;
-        height: 40%;
+    ion-item {
+        ion-label {
+            font-family: Nunito;
+        }
     }
 }
 

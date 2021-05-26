@@ -12,7 +12,7 @@
   <ion-grid>
     <ion-row>
       <ion-col>
-        <ion-card>
+        <ion-card mode="ios">
           <ion-card-content>
             <ion-item lines="none">
               <ion-label color="primary">Usuarios</ion-label>
@@ -27,23 +27,25 @@
     </ion-row>
     <ion-row>
       <ion-col size-lg="2.4" size-md="3" size-sm="4" size-xs="6" *ngFor="let usuario of listaDeUsuarios">
-        <ion-card class="usuario">
+        <ion-card mode="ios" class="usuario">
           <div class="img">
             <img src="../../../assets/img/usuario_cliente_default.jpg" alt="">
             <ion-badge>{{usuario.rol}}</ion-badge>
           </div>
-          <ion-card-content>
-            <ion-card-title>{{(((usuario.nombre + ' ' + usuario.apellidos).length > 20) ? ((usuario.nombre + ' ' + usuario.apellidos).slice(0, 20) + '...') : (usuario.nombre + ' ' + usuario.apellidos)) | titlecase}}</ion-card-title>
-            <ion-card-subtitle>{{usuario.sede}}</ion-card-subtitle>
-          </ion-card-content>
           <ion-item lines="none">
-            <ion-button size="small" color="success" expand="block" (click)="ActualizarDataUsuario(usuario)">
-              <ion-icon name="create-outline" color="light"></ion-icon> &nbsp;
-              <ion-label color="light">Editar</ion-label>
+            <ion-label>{{(((usuario.nombre + ' ' + usuario.apellidos).length > 20) ? ((usuario.nombre + ' ' + usuario.apellidos).slice(0, 20) + '...') : (usuario.nombre + ' ' + usuario.apellidos)) | titlecase}}</ion-label>
+          </ion-item>
+          <ion-item color="light" lines="none">
+            <ion-label color="primary" class="ion-text-center">{{usuario.sede}}</ion-label>
+          </ion-item>
+          <ion-item lines="none">
+            <ion-button fill="clear" size="small" color="success" expand="block" (click)="ActualizarDataUsuario(usuario)">
+              <ion-icon name="create-outline"></ion-icon> &nbsp;
+              <ion-label>Editar</ion-label>
             </ion-button>
-            <ion-button size="small" color="danger" (click)="alertEliminarUsuario(usuario)">
-              <ion-icon name="trash-outline" color="light"></ion-icon> &nbsp;
-              <!-- <ion-label color="light">Eliminar</ion-label> -->
+            <ion-button fill="clear" size="small" color="danger" (click)="alertEliminarUsuario(usuario)">
+              <ion-icon name="trash-outline"></ion-icon> &nbsp;
+              <ion-label>Eliminar</ion-label>
             </ion-button>
           </ion-item>
         </ion-card>

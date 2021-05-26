@@ -14,11 +14,11 @@ import { DataBaseService } from 'src/app/services/data-base.service';
 export class ListaDeProveedoresPage implements OnInit {
 
   listaDeProveedores: ProveedorInterface[];
-  obsProveedores: any;
 
   modalEvento: string;
   modalDataProveedor: ProveedorInterface;
 
+  sinDatos: boolean;
   constructor(
     private dataApi: DataBaseService,
     private modalCtlr: ModalController,
@@ -34,9 +34,13 @@ export class ListaDeProveedoresPage implements OnInit {
   }
 
   ObtenerProveedores(){
-    this.obsProveedores =  this.dataApi.obtenerProveedores();
-    this.obsProveedores.subscribe(data => {
-      this.listaDeProveedores = data;
+    this.dataApi.obtenerProveedores().subscribe(data => {
+      if (data.length) {
+        this.listaDeProveedores = data;
+        this.sinDatos = false;
+      } else {
+        this.sinDatos = true;
+      }
     });
   }
 

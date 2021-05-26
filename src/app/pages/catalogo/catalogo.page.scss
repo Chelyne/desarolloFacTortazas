@@ -1,12 +1,56 @@
-@media only screen and (orientation: landscape) {
-    .my-modal {
-        .modal-wrapper {
+
+* {
+    ion-label {
+        font-family: Nunito;
+    }
+}
+
+.producto {
+    .img {
+        height: 100px;
+        text-align: center;
+        img {
+            height: 100%;
+            object-fit: contain;
+        }
+        ion-badge {
             position: absolute;
-            top: 0 !important;
-            left: 0 !important;
-            display: block;
-            width: 100% !important;
-            height: 100% !important;
+            left: 0px;
+            color: white;
+            border-bottom-left-radius: 0px;
+            border-top-right-radius: 0px;
         }
     }
+    ion-item {
+        ion-label {
+            font-family: Nunito;
+        }
+    }
+}
+
+
+.sinDatos {
+    height: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    align-content: center;
+    .textoSindatos {
+        text-align: center;
+        padding: 10%;
+        margin: 10%;
+        border-radius: 10px;
+        font-weight: bold;
+        .icono {
+            zoom: 4;
+        }
+    }
+}
+
+.cargando {
+    height: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    align-content: center;
 }

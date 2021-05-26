@@ -8,7 +8,7 @@ import { DataBaseService } from '../../services/data-base.service';
 import { GlobalService } from '../../global/global.service';
 import { ProductoInterface } from '../../models/ProductoInterface';
 import * as FileSaver from 'file-saver';
-import {MostrarPorcentaje} from 'src/app/global/funciones-globales';
+import { MostrarPorcentaje, formatearDateTime } from 'src/app/global/funciones-globales';
 
 @Component({
   selector: 'app-lista-de-ventas',
@@ -44,6 +44,8 @@ export class ListaDeVentasPage implements OnInit {
 
   // beta o produccion
   activo = false;
+
+  fechaConsulta = formatearDateTime('YYYY-MM-DD');
   constructor(
     private dataApi: DataBaseService,
     private storage: StorageService,
@@ -55,11 +57,17 @@ export class ListaDeVentasPage implements OnInit {
   ) {
     this.ventasForm = this.createFormGroup();
     this.setEnviroment();
+    console.log(this.fechaConsulta);
    }
 
   ngOnInit() {
     this.menuCtrl.enable(true);
-    // this.ObtenerVentas();
+    const event = {
+      detail: {
+        value:  this.fechaConsulta
+      }
+    };
+    this.ObtenerVentas(event);
   }
 
   createFormGroup() {
@@ -68,26 +76,29 @@ export class ListaDeVentasPage implements OnInit {
     });
   }
 
-  NoEnviados(){
+  // NoEnviados(){ // no se si usamoss
 
-    this.ObtenerVentas();
+  //   this.ObtenerVentas();
 
-  }
+  // }
 
 /* -------------------------------------------------------------------------- */
 /*                           obtener lista de ventas                          */
 /* -------------------------------------------------------------------------- */
 /* -------------------------------------------------------------------------- */
 
-  ObtenerVentas(){
+  ObtenerVentas(event: any){
+    console.log(event);
     this.buscando = true;
     // const fecha = this.ventasForm.value.fechadeventa;
-    this.fechaventaYYYYMMDD = this.ventasForm.value.fechadeventa;
-    this.ventasForm.value.fechadeventa = this.ventasForm.value.fechadeventa.split('-').reverse().join('-');
+    // this.fechaventaYYYYMMDD = this.ventasForm.value.fechadeventa;
+    // this.ventasForm.value.fechadeventa = this.ventasForm.value.fechadeventa.split('-').reverse().join('-');
     // console.log(this.ventasForm.value.fechadeventa);
-    this.fechaventaDDMMYYYY = this.ventasForm.value.fechadeventa;
-    console.log(this.fechaventaDDMMYYYY, this.fechaventaYYYYMMDD);
-    this.dataApi.obtenerVentasPorDiaBoletaFacturaObs(this.sede, this.ventasForm.value.fechadeventa).subscribe(data => {
+    // this.fechaventaDDMMYYYY = this.ventasForm.value.fechadeventa;
+    // console.log(this.fechaventaDDMMYYYY, this.fechaventaYYYYMMDD);
+
+    const fecha = event.detail.value.split('-').reverse().join('-');
+    this.dataApi.obtenerVentasPorDiaBoletaFacturaObs(this.sede, fecha).subscribe(data => {
       if (data.length > 0) {
         this.listaDeVentas = data;
         console.log(this.listaDeVentas);
