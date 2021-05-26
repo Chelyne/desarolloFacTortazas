@@ -113,7 +113,7 @@ export class ModalIngresosEgresosPage implements OnInit {
       tipo: this.ingresoEgresoForm.value.tipo,
       nombreVendedor: this.nombreVendedor,
       dniVendedor: this.dniVendedor,
-      dCajaChica: this.idCajaChica
+      idCajaChica: this.idCajaChica
     };
 
     await this.dataApi.guardarIngresoEgreso(ingresoEgreso, this.storage.datosAdmi.sede).then(() => {

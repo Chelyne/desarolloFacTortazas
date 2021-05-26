@@ -118,7 +118,8 @@ export class DataBaseService {
           totalPagarVenta: venta.totalPagarVenta,
           igv: venta.igv,
           montoBase: venta.montoBase,
-          montoPagado: venta.montoPagado
+          montoPagado: venta.montoPagado,
+          idCajaChica: venta.idCajaChica
 
         };
         // tslint:disable-next-line:max-line-length
@@ -189,6 +190,21 @@ export class DataBaseService {
   obtenerIngresoEgresoDiaVendedor(sede: string, fecha: string, dniVendedor: string) {
     return this.afs.collection('sedes').doc(sede.toLocaleLowerCase())
     .collection('ingresosEgresos').doc(fecha).collection('ingresosEgresosDia').ref.where('dniVendedor', '==', dniVendedor).get()
+    .then((querySnapshot) => {
+      const datos: any[] = [];
+      querySnapshot.forEach((doc) => {
+        datos.push( {...doc.data(), id: doc.id});
+      });
+      return datos;
+    }).catch(err => {
+      console.log('no se pudo obtener los ingresos', err);
+      throw String ('fail');
+    });
+  }
+  // INGRESO Y EGRESO CAJA CHICA
+  obtenerIngresoEgresoDiaCaja(sede: string, fecha: string, idCaja: string) {
+    return this.afs.collection('sedes').doc(sede.toLocaleLowerCase())
+    .collection('ingresosEgresos').doc(fecha).collection('ingresosEgresosDia').ref.where('idCajaChica', '==', idCaja).get()
     .then((querySnapshot) => {
       const datos: any[] = [];
       querySnapshot.forEach((doc) => {
@@ -631,6 +647,19 @@ export class DataBaseService {
 
       return datos;
     }));
+  }
+  obtenerVentaPorDiaCajaChica(sede: string, dia: string, idCaja: string) {
+    return this.afs.collection('sedes').doc(sede.toLocaleLowerCase()).collection('ventas').doc(dia).collection('ventasDia')
+    .ref.where('idCajaChica', '==', idCaja).get().then((querySnapshot) => {
+      const datos: VentaInterface [] = [];
+      querySnapshot.forEach((doc) => {
+        datos.push( {...doc.data(), idVenta: doc.id});
+      });
+      return datos;
+    }).catch(err => {
+      console.log('no se pudo obtener las ventas', err);
+      throw String ('fail');
+    });
   }
 
     obtenerVentaPorDiaVendedor(sede: string, dia: string, dniVendedor: string) {
