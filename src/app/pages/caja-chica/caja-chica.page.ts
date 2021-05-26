@@ -175,8 +175,8 @@ export class CajaChicaPage implements OnInit {
   // ------------FIN CERRAR CAJA------------
   // ------------INICIO REPORTE INGRESO EGRESO GENERAL CAJA CHICA------------
 
-  ReportePDFDiaIngresoEgreso(){
-    this.presentLoading('Consultando... Por Favor espere');
+  async ReportePDFDiaIngresoEgreso(){
+    await this.presentLoading('Consultando... Por Favor espere');
     const dia = formatDate(new Date(), 'dd-MM-yyyy', 'en');
     this.reportesservice.ReportePDFDiaIngresoEgreso(dia).then(() => {this.loading.dismiss(); });
   }
@@ -199,7 +199,7 @@ export class CajaChicaPage implements OnInit {
     const { data } = await popover.onWillDismiss();
     console.log(data);
     if (data) {
-      this.presentLoading('consultando Datos...');
+      await this.presentLoading('consultando Datos...');
       switch (data.action) {
         case 'a4': console.log('a4'); this.reportesservice.ReporteVentaDiaGeneralPDF(dia).then(() => this.loading.dismiss()); break;
         case 'ticked': console.log('ticked'); this.reportesservice.ReporteTiket(dia).then(() => this.loading.dismiss()); break;
@@ -700,8 +700,8 @@ export class CajaChicaPage implements OnInit {
 
     }).catch(err => console.log(err));
   }
-  GenerarPDFReporteVentasTarjeta(fechaFormateada) {
-    this.presentLoading('Generando Reporte...');
+  async GenerarPDFReporteVentasTarjeta(fechaFormateada) {
+    await this.presentLoading('Generando Reporte...');
     this.ventasTarjeta(fechaFormateada).then((VentasFormateada: any) => {
       const ListaVentasTarjeta = VentasFormateada.ventasTarjeta;
       const sumaTotal = VentasFormateada.suma;
