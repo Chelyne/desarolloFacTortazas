@@ -118,7 +118,8 @@ export class DataBaseService {
           totalPagarVenta: venta.totalPagarVenta,
           igv: venta.igv,
           montoBase: venta.montoBase,
-          montoPagado: venta.montoPagado
+          montoPagado: venta.montoPagado,
+          idCajaChica: venta.idCajaChica
 
         };
         // tslint:disable-next-line:max-line-length
@@ -184,6 +185,36 @@ export class DataBaseService {
       }).catch(err => {
         throw String('fail');
       });
+  }
+  // INGRESO Y EGRESO VENDEDOR
+  obtenerIngresoEgresoDiaVendedor(sede: string, fecha: string, dniVendedor: string) {
+    return this.afs.collection('sedes').doc(sede.toLocaleLowerCase())
+    .collection('ingresosEgresos').doc(fecha).collection('ingresosEgresosDia').ref.where('dniVendedor', '==', dniVendedor).get()
+    .then((querySnapshot) => {
+      const datos: any[] = [];
+      querySnapshot.forEach((doc) => {
+        datos.push( {...doc.data(), id: doc.id});
+      });
+      return datos;
+    }).catch(err => {
+      console.log('no se pudo obtener los ingresos', err);
+      throw String ('fail');
+    });
+  }
+  // INGRESO Y EGRESO CAJA CHICA
+  obtenerIngresoEgresoDiaCaja(sede: string, fecha: string, idCaja: string) {
+    return this.afs.collection('sedes').doc(sede.toLocaleLowerCase())
+    .collection('ingresosEgresos').doc(fecha).collection('ingresosEgresosDia').ref.where('idCajaChica', '==', idCaja).get()
+    .then((querySnapshot) => {
+      const datos: any[] = [];
+      querySnapshot.forEach((doc) => {
+        datos.push( {...doc.data(), id: doc.id});
+      });
+      return datos;
+    }).catch(err => {
+      console.log('no se pudo obtener los ingresos', err);
+      throw String ('fail');
+    });
   }
   // ------------------------------LIBIO----------------------------- */
 
@@ -416,11 +447,19 @@ export class DataBaseService {
     console.log('obteniedno caja de: ', dni, ' con el estado ABIERTO: ', estadoCaja);
     return this.afs.collection('CajaChica').ref.where( 'dniVendedor', '==', dni).where('estado', '==', estadoCaja)
     .get().then( snapshot => {
-      if (snapshot.empty) {
-        return false;
-      } else {
-        return true;
-      }
+      // if (snapshot.empty) {
+      //   return false;
+      // } else {
+      //   return true;
+      // }
+      const datos: any[] = [];
+      snapshot.forEach((doc) => {
+        datos.push( {...doc.data(), id: doc.id});
+      });
+      return datos;
+    }).catch(err => {
+      console.log('no se pudo obtener caja chica', err);
+      throw String ('fail');
     });
   }
 
@@ -558,6 +597,21 @@ export class DataBaseService {
       throw String ('fail');
     });
   }
+  obtenerVentasDiaTarjeta(sede: string, fecha: string) {
+    return this.afs.collection('sedes').doc(sede.toLocaleLowerCase()).collection('ventas').doc(fecha)
+    .collection('ventasDia').ref.where('tipoPago', '==', 'tarjeta').get()
+    .then((querySnapshot) => {
+      const datos: any [] = [];
+      querySnapshot.forEach((doc) => {
+        // console.log(doc.id, ' => ', doc.data());
+        datos.push({...doc.data(), id: doc.id});
+      });
+      return datos;
+    }).catch(err => {
+      console.log('no se pudo obtener las ventas por tarjetas', err);
+      throw String ('fail');
+    });
+  }
 
   // OBTENER LISTA DE VENTAS
   obtenerVentasPorDiaObs(sede: string, fachaventas: string) {
@@ -593,6 +647,19 @@ export class DataBaseService {
 
       return datos;
     }));
+  }
+  obtenerVentaPorDiaCajaChica(sede: string, dia: string, idCaja: string) {
+    return this.afs.collection('sedes').doc(sede.toLocaleLowerCase()).collection('ventas').doc(dia).collection('ventasDia')
+    .ref.where('idCajaChica', '==', idCaja).get().then((querySnapshot) => {
+      const datos: VentaInterface [] = [];
+      querySnapshot.forEach((doc) => {
+        datos.push( {...doc.data(), idVenta: doc.id});
+      });
+      return datos;
+    }).catch(err => {
+      console.log('no se pudo obtener las ventas', err);
+      throw String ('fail');
+    });
   }
 
     obtenerVentaPorDiaVendedor(sede: string, dia: string, dniVendedor: string) {

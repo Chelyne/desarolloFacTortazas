@@ -21,6 +21,7 @@ import { DataBaseService } from '../../services/data-base.service';
 import { GENERAL_CONFIG } from '../../../config/generalConfig';
 import { ModalIngresosEgresosPage } from '../../modals/modal-ingresos-egresos/modal-ingresos-egresos.page';
 import { PopoverVariantesComponent } from '../../components/popover-variantes/popover-variantes.component';
+import { CajaChicaInterface } from '../../models/CajaChica';
 
 @Component({
   selector: 'app-punto-venta',
@@ -71,6 +72,7 @@ export class PuntoVentaPage implements OnInit {
   cajaChica = false;
 
   categoriaObservador;
+  datosCaja: CajaChicaInterface;
 
   constructor(
     private menuCtrl: MenuController,
@@ -116,8 +118,9 @@ export class PuntoVentaPage implements OnInit {
   ionViewDidEnter() {
     this.dataApi.validarCajaChicaVendedor('Aperturado', this.storage.datosAdmi.dni).then(data => {
       console.log('CAJA, ', data);
-      if (data) {
+      if (data && data.length) {
         this.cajaChica = true;
+        this.datosCaja = data[0];
       } else {
         this.cajaChica = false;
       }
@@ -361,6 +364,7 @@ export class PuntoVentaPage implements OnInit {
       listaItemsDeVenta: this.listaItemsDeVenta,
       idVenta: this.CrearVentaId(),
       montoNeto: this.importeTotalPagar,
+      idCajaChica: this.datosCaja.id
       // totalPagarVenta: this.importeTotalPagar // Descuento 0;
     };
   }

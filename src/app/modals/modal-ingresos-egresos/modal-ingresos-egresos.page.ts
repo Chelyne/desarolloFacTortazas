@@ -22,6 +22,7 @@ export class ModalIngresosEgresosPage implements OnInit {
   public saldoInsuficiente = false;
   nombreVendedor = this.storage.datosAdmi.nombre;
   dniVendedor = this.storage.datosAdmi.dni;
+  idCajaChica;
 
   @Input() dataModal: {
     evento: 'ingreso' | 'egreso',
@@ -39,6 +40,19 @@ export class ModalIngresosEgresosPage implements OnInit {
   }
 
   ngOnInit() {
+  }
+  ionViewDidEnter() {
+    this.dataApi.validarCajaChicaVendedor('Aperturado', this.storage.datosAdmi.dni).then(data => {
+      console.log('CAJA, ', data);
+      if (data.length) {
+        this. idCajaChica = data[0].id;
+        // this.cajaChica = true;
+        console.log('true', this.idCajaChica);
+      } else {
+        // this.cajaChica = false;
+          console.log('false');
+      }
+    });
   }
 
   createFormIngresoEgreso() {
@@ -76,6 +90,7 @@ export class ModalIngresosEgresosPage implements OnInit {
       tipo: this.ingresoEgresoForm.value.tipo,
       nombreVendedor: this.nombreVendedor,
       dniVendedor: this.dniVendedor,
+      idCajaChica: this.idCajaChica
     };
 
     await this.dataApi.guardarIngresoEgreso(ingresoEgreso, this.storage.datosAdmi.sede).then(() => {
@@ -98,6 +113,7 @@ export class ModalIngresosEgresosPage implements OnInit {
       tipo: this.ingresoEgresoForm.value.tipo,
       nombreVendedor: this.nombreVendedor,
       dniVendedor: this.dniVendedor,
+      idCajaChica: this.idCajaChica
     };
 
     await this.dataApi.guardarIngresoEgreso(ingresoEgreso, this.storage.datosAdmi.sede).then(() => {

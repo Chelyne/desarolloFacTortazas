@@ -30,6 +30,7 @@ export interface VentaInterface {
     // cdrAnulado?: CDRInterface;
     // fechaDeAnulacion?: string|{seconds?: number, nanoseconds?: number }|Date;
     cdrAnulado?: CDRAnuladoInteface;
+    idCajaChica?: string;
 }
 
 export interface CDRAnuladoInteface {

@@ -82,7 +82,7 @@ export class AbrirCerrarCajaPage implements OnInit {
     };
     console.log('datos a guardar', cajaApertura);
     this.dataApi.validarCajaChicaVendedor('Aperturado', this.abrirCajaChicaForm.value.dniUsuario).then(snapshot => {
-      if (!snapshot) {
+      if (!snapshot.length) {
         console.log('deja ingresar');
         this.GuardarDatosCajaChica(cajaApertura).then(() =>  this.loading.dismiss());
 
@@ -155,7 +155,7 @@ export class AbrirCerrarCajaPage implements OnInit {
       saldoFinal: this.CerrarCajaChicaForm.value.montoFinal,
       FechaCierre: new Date(),
     };
-    if (this.CerrarCajaChicaForm.value.montoFinal >= this.datosCaja.saldoInicial) {
+    if (this.CerrarCajaChicaForm.value.montoFinal >= 0) {
       console.log('cerrar caja', cajaCierre);
       this.dataApi.cerrarCajaChica(this.datosCaja.id, cajaCierre).then(res => {
         this.globalSrv.presentToast('Cerraste la caja correctamente',
@@ -163,7 +163,7 @@ export class AbrirCerrarCajaPage implements OnInit {
         this.cerrarModal();
       });
     } else {
-      this.globalSrv.presentToast('Ingrese un monto mayor o igual al Monto de Apertura: ' + this.datosCaja.saldoInicial + ' Soles.', {color: 'danger', icon: 'alert-circle-outline', position: 'top'});
+      this.globalSrv.presentToast('Ingrese un monto mayor o igual 0.00', {color: 'danger', icon: 'alert-circle-outline', position: 'top'});
     }
 
     console.log('cerramos caja', this.CerrarCajaChicaForm.value.montoFinal, new Date());
