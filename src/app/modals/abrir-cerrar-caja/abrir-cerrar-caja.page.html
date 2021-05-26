@@ -17,7 +17,7 @@
       <form [formGroup]="abrirCajaChicaForm" autocomplete="off">
         <ion-item *ngIf="listaUsuarios">
           <ion-label color="primary">Vendedor</ion-label>
-          <ion-select okText="Aceptar" cancelText="Cancelar" [value]="listaUsuarios ? listaUsuarios[0].dni : ''"
+          <ion-select okText="Aceptar" cancelText="Cancelar"
             mode="ios" formControlName="dniUsuario">
             <div *ngFor="let item of listaUsuarios">
               <ion-select-option value="{{item.dni}}">{{item.nombre | titlecase}} </ion-select-option>

@@ -40,7 +40,7 @@ export class PrintPage implements OnInit {
       this.dataApi.obtenerUnaVentaPorId(this.sede, this.fecha, this.idVenta).subscribe((venta: VentaInterface) => {
         console.log(venta);
         if (venta) {
-          this.comprobante.generarComprobante(venta);
+          this.comprobante.generarComprobante(venta, this.sede);
           this.loading.dismiss();
         } else {
           this.servGlobal.presentToast('No se encontró el comprobante', {color: 'danger'});

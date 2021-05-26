@@ -296,7 +296,7 @@ export class ReporteVentasPage implements OnInit {
             contadorarray++;
             if (venta.tipoComprobante === 'boleta' || venta.tipoComprobante === 'factura') {
               ContadorBoletas++ ;
-              await this.comprobanteSrv.generarComprobante(venta);
+              await this.comprobanteSrv.generarComprobante(venta, this.sede);
             }
             if (contadorarray === this.arrayMes.length) {
               console.log(this.arrayMes);

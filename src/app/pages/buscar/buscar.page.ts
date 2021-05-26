@@ -128,7 +128,7 @@ export class BuscarPage implements OnInit {
     return final;
   }
   descargarComprobante(item: VentaInterface){
-    this.comprobanteSrv.generarComprobante(item);
+    this.comprobanteSrv.generarComprobante(item, this.sede);
   }
 
 }

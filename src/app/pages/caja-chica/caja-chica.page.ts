@@ -483,8 +483,8 @@ export class CajaChicaPage implements OnInit {
         let formato: any;
         formato = [
           contador,
-          datos.producto.nombre.toUpperCase() || null,
-          datos.cantidad || null,
+          this.convertirMayuscula(datos.producto.nombre) || null,
+          (datos.cantidad || null) + '- ' + (datos.medida ? datos.medida : (datos.producto.medida || null) ) ,
           datos.serieComprobante || null,
           datos.totalxprod.toFixed(2) || null,
         ];
@@ -641,8 +641,8 @@ export class CajaChicaPage implements OnInit {
           }
           formato1 = [
             contador,
-            datos.detalles.toUpperCase()  + '( ' + datos.nombreVendedor + ' ) ',
-            datos.tipo ? datos.tipo.toUpperCase() : null,
+            this.convertirMayuscula(datos.detalles),
+            datos.tipo ? this.convertirMayuscula(datos.tipo) : null,
             datos.monto ? parseFloat(datos.monto).toFixed(2) : null,
           ];
           formatoEgresosCaja.push(formato1);

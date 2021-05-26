@@ -26,7 +26,7 @@ export class AbrirCerrarCajaPage implements OnInit {
     private dataApi: DataBaseService,
     private globalSrv: GlobalService,
     private modalCrl: ModalController,
-    private storage: StorageService,
+    public storage: StorageService,
     private loadingController: LoadingController
   ) {
     this.abrirCajaChicaForm = this.guardarCajaChicaFormGroup();
@@ -58,7 +58,7 @@ export class AbrirCerrarCajaPage implements OnInit {
     this.dataApi.obtenerUsuariosPorSede(sede).subscribe(data => {
       this.listaUsuarios = data;
       console.log('lista', this.listaUsuarios);
-      this.abrirCajaChicaForm.addControl('dniUsuario' , new FormControl( this.listaUsuarios[0].dni, [Validators.required]));
+      this.abrirCajaChicaForm.addControl('dniUsuario' , new FormControl( this.storage.datosAdmi.dni, [Validators.required]));
     });
   }
   abrirCajachica(){

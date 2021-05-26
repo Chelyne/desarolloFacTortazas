@@ -19,20 +19,25 @@ export class BoletasFacturasService {
   RUC = GENERAL_CONFIG.datosEmpresa.ruc;
   nombreEmpresa = GENERAL_CONFIG.datosEmpresa.razon_social;
   valueQR;
-  sede = this.storage.datosAdmi.sede.toLocaleLowerCase();
+  sede;
 
 
-  constructor(  private dataApi: DataBaseService, private storage: StorageService) { }
+  constructor(  private dataApi: DataBaseService, private storage: StorageService) {
+  // this.sede = this.storage.datosAdmi.sede.toLocaleLowerCase();
+
+  }
   // getImage() {
   //   const canvas = document.querySelector('canvas') as HTMLCanvasElement;
   //   const imageData = canvas.toDataURL('image/jpeg').toString();
   //   return imageData;
   //   }
-    async generarComprobante(venta) {
+    async generarComprobante(venta, sede) {
     venta.horaEmision = new Date(moment.unix(venta.fechaEmision.seconds).format('D MMM YYYY H:mm'));
     venta.fechaEmision = new Date(moment.unix(venta.fechaEmision.seconds).format('D MMM YYYY H:mm'));
     venta.fechaEmision = formatDate(venta.fechaEmision, 'dd/MM/yyyy', 'en');
     venta.horaEmision = formatDate(venta.horaEmision, 'HH:mm aa', 'en');
+    this.sede = sede;
+
     // const qr = this.getImage();
     // console.log(qr);
 
@@ -50,7 +55,7 @@ export class BoletasFacturasService {
           doc.text(this.nombreEmpresa, 22.5, 12, {align: 'center'});
           doc.text(GENERAL_CONFIG.sedes[this.sede].direccion.direccionCorta, 22.5, 14, {align: 'center'});
           doc.text(GENERAL_CONFIG.sedes[this.sede].direccion.referencia, 22.5, 16, {align: 'center'});
-          doc.text('Telefono: ' + GENERAL_CONFIG.sedes[this.sede].direccion.telefono, 22.5, 19, {align: 'center'});
+          doc.text('Telefono: ' + GENERAL_CONFIG.sedes[this.sede].telefono, 22.5, 19, {align: 'center'});
           doc.text('Ruc: ' + this.RUC, 22.5, 21, {align: 'center'});
           doc.text('Boleta de Venta electrónica', 22.5, 25, {align: 'center'});
           // tslint:disable-next-line:max-line-length
@@ -102,7 +107,7 @@ export class BoletasFacturasService {
             }
             // tslint:disable-next-line:max-line-length
             // tslint:disable-next-line:max-line-length
-            doc.text( c.cantidad.toFixed(2) + '    ' + c.producto.medida + '      ' + c.producto.precio.toFixed(2), 2, index + 3, {align: 'justify'});
+            doc.text( c.cantidad.toFixed(2) + '    ' + ( c.medida ? c.medida : c.producto.medida) + '      ' + ( c.precio ? c.precio.toFixed(2) : c.producto.precio.toFixed(2)), 2, index + 3, {align: 'justify'});
             doc.text((c.totalxprod).toFixed(2), 43, index + 3, {align: 'right'} );
 
             doc.text( '__________________________________________', 22.5, index +  3, {align: 'center'});
@@ -209,8 +214,8 @@ export class BoletasFacturasService {
                 doc.text(c.producto.nombre.toUpperCase(), 2, index);
               }
               // tslint:disable-next-line:max-line-length
-              // tslint:disable-next-line:max-line-length
-              doc.text( c.cantidad.toFixed(2) + '    ' + c.producto.medida + '      ' + c.producto.precio.toFixed(2), 2, index + 3, {align: 'justify'});
+              doc.text( c.cantidad.toFixed(2) + '    ' + ( c.medida ? c.medida : c.producto.medida) + '      ' + ( c.precio ? c.precio.toFixed(2) : c.producto.precio.toFixed(2)), 2, index + 3, {align: 'justify'});
+
               doc.text((c.totalxprod).toFixed(2), 43, index + 3, {align: 'right'} );
               doc.text( '__________________________________________', 22.5, index +  3, {align: 'center'});
               index = index + 3;
