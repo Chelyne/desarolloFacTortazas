@@ -16,6 +16,11 @@
 //     --padding-start: 12px;
 // }
 
+.inputFecha {
+    border: solid 1px var(--ion-color-primary);
+    border-radius: 10px;
+    --padding-start: 12px;
+}
 .sinDatos {
     height: 100%;
     display: flex;
@@ -41,4 +46,27 @@
     justify-content: center;
     align-items: center;
     align-content: center;
+}
+
+.contentVentas {
+    ion-card {
+        margin: 2%;
+        .posicion {
+            margin: 0 auto;
+            border-top-right-radius: 0px;
+            border-bottom-left-radius: 0px;
+        }
+        ion-grid {
+            padding: 0px;
+            margin: 0px;
+            ion-row {
+                padding: 0px;
+                margin: 0px;
+                ion-col {
+                    padding: 0px;
+                    margin: 0px;
+                }
+            }
+        }
+    }
 }

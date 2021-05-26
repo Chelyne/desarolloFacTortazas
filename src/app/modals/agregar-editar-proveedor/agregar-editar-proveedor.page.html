@@ -29,7 +29,7 @@
 
     <ion-item>
       <ion-label color="primary">Tipo de Documento</ion-label>
-      <ion-select  multiple="false" interface="popover" formControlName="tipoDocumento" (ionChange)="resetearTypoDocumento()">
+      <ion-select [interfaceOptions]="{cssClass: 'ionSelects'}"  multiple="false" interface="popover" formControlName="tipoDocumento" (ionChange)="resetearTypoDocumento()">
         <ion-select-option value="ruc">RUC</ion-select-option>
         <ion-select-option value="dni">DNI</ion-select-option>
       </ion-select>

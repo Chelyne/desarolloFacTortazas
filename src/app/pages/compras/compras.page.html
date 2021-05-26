@@ -27,7 +27,7 @@
             <ion-col>
               <ion-item lines="none ">
                 <ion-label color="primary" position="stacked">Tipo de comprobante</ion-label>
-                <ion-select class="custom-options" value="facElectronica" mode="ios" interface="popover" formControlName="tipoComp">
+                <ion-select [interfaceOptions]="{cssClass: 'ionSelects'}" class="custom-options" value="facElectronica" mode="ios" interface="popover" formControlName="tipoComp">
                   <ion-select-option value="factura">Factura</ion-select-option>
                   <ion-select-option value="boleta">Boleta</ion-select-option>
                   <ion-select-option value="nota de venta">Nota de venta</ion-select-option>

@@ -17,7 +17,7 @@ export class ListaDeComprasPage implements OnInit {
   itemDeCompra: CompraInterface;
 
   sede = this.storage.datosAdmi.sede;
-
+  sinDatos: boolean;
   constructor(
     private dataApi: DataBaseService,
     private modalCtlr: ModalController,
@@ -35,7 +35,12 @@ export class ListaDeComprasPage implements OnInit {
 
   ObtenerCompras(){
     this.dataApi.obtenerComprasPorSede(this.sede).subscribe(compras => {
-      this.listaDeCompras = compras;
+      if (compras.length) {
+        this.listaDeCompras = compras;
+        this.sinDatos = false;
+      } else {
+        this.sinDatos = true;
+      }
     });
   }
 

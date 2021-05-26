@@ -186,6 +186,20 @@ export class DataBaseService {
         throw String('fail');
       });
   }
+
+  // GUARDAR CLIENTE
+  guardarCongelarVenta(sede: string, venta: VentaInterface) {
+    return this.afs.collection('sedes').doc(sede.toLocaleLowerCase()).collection('ventasCongeladas').ref.add(venta).then(data => {
+      if (data.id) {
+        return data.id;
+      } else {
+        return '';
+      }
+    }).catch(err => {
+      throw String('fail');
+    });
+  }
+
   // INGRESO Y EGRESO VENDEDOR
   obtenerIngresoEgresoDiaVendedor(sede: string, fecha: string, dniVendedor: string) {
     return this.afs.collection('sedes').doc(sede.toLocaleLowerCase())
@@ -315,6 +329,23 @@ export class DataBaseService {
   // ----------------------------------------------------------- */
   //                          ANCHOR OBTENER                            */
   // ----------------------------------------------------------- */
+
+  // OBTENER VENTAS CONGELADAS
+  obtenerVentasCongeladas(sede: string, idUser: string) {
+    return this.afs.collection('sedes').doc(sede.toLocaleLowerCase()).collection('ventasCongeladas',
+    ref => ref.where('vendedor.id', '==', idUser))
+    .snapshotChanges().pipe(map(changes => {
+      const datos: VentaInterface[] = [];
+      changes.map((action: any) => {
+        datos.push({
+          id: action.payload.doc.id,
+          ...action.payload.doc.data()
+        });
+      });
+      return datos;
+    }));
+  }
+
   obtenerListaCategorias(sede: string) {
     const sede1 = sede.toLocaleLowerCase();
     return this.afs.collection('sedes').doc(sede1).collection('categorias', ref => ref.orderBy('categoria', 'asc'))
@@ -1109,6 +1140,14 @@ export class DataBaseService {
   // -----------------------------LIBIO------------------------------ */
   eliminarProveedor(idProveedor: string) {
     return this.afs.doc<ProductoInterface>(`proveedores/${idProveedor}`).ref.delete()
+    .then(() => 'exito').catch(err => {
+      console.log('error', err);
+      throw String('fail');
+    });
+  }
+
+  eliminarVentaCongelada(sede: string, idVentaCongelada: string) {
+    return this.afs.doc<ProductoInterface>(`sedes/${sede.toLocaleLowerCase()}/ventasCongeladas/${idVentaCongelada}`).ref.delete()
     .then(() => 'exito').catch(err => {
       console.log('error', err);
       throw String('fail');

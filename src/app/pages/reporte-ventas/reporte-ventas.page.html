@@ -97,7 +97,7 @@
             <form [formGroup]="ventasDiaForm">
               <ion-item color="transparent" lines="none">
                 <ion-card-title>Reporte de ventas de fecha</ion-card-title> &nbsp;&nbsp;&nbsp;
-                <ion-input style="border: solid 1px var(--ion-color-light); border-radius: 5px; --padding-start: 12px" type="date" formControlName="fechadeventa" formatDate="dd-mm-yyyy" max="{{fechaActual}}"></ion-input>
+                <ion-input style="border: solid 1px var(--ion-color-primary); border-radius: 5px; --padding-start: 12px" type="date" formControlName="fechadeventa" formatDate="dd-mm-yyyy" max="{{fechaActual}}"></ion-input>
               </ion-item>
             </form>
             <ion-button size="small" fill="outline" expand="block" (click)="ObtenerVentasDia($event)">

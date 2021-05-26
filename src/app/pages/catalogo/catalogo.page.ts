@@ -22,7 +22,7 @@ export class CatalogoPage implements OnInit {
   obsProducto: any;
   buscando = false;
   ordenarStock =  false;
-
+  sinDatos: boolean;
 
   constructor(
     private dataApi2: DataBaseService,
@@ -44,10 +44,14 @@ export class CatalogoPage implements OnInit {
   // ======================================================================================
   // btener lista de productos
   ObtenerProductos(){
-    this.obsProducto = this.dataApi2.obtenerListaProductos(this.sedes);
-    this.obsProducto.subscribe(data => {
-      this.listaDeProductosObservada = data;
-      this.listaDeProductos = data;
+    this.dataApi2.obtenerListaProductos(this.sedes).subscribe(data => {
+      if (data.length) {
+        this.listaDeProductosObservada = data;
+        this.listaDeProductos = data;
+        this.sinDatos = false;
+      } else {
+        this.sinDatos = true;
+      }
     });
   }
 
@@ -72,7 +76,13 @@ export class CatalogoPage implements OnInit {
     const target = ev.detail.value;
 
     if (target.length) {
-      this.buscadorService.Buscar(target).then( data => this.listaDeProductos = data);
+      this.buscadorService.Buscar(target).then( data => {
+        if (data.length) {
+          this.listaDeProductos = data;
+        } else {
+          this.srvGlobal.presentToast('No se encontro resultados de la busqueda', {position: 'top', color: 'danger'});
+        }
+      });
     } else  {
       this.listaDeProductos = this.listaDeProductosObservada;
     }
@@ -99,7 +109,7 @@ export class CatalogoPage implements OnInit {
   async alertEliminarProducto(producto: ProductoInterface) {
 
     this.srvGlobal.crearAlertController(
-      `¿Está seguro que desea eliminar el producto: ${producto.nombre} ?`,
+      `¿Está seguro que desea eliminar el producto: <strong> ${producto.nombre} </strong> ?`,
       'Eliminar',
       () => this.eliminarProducto(producto)
     );

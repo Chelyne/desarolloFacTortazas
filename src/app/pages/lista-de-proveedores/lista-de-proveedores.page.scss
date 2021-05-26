@@ -1,10 +1,44 @@
-.headerProveedores {
-    background-color: var(--ion-color-primary);
-    ion-label{
-        color: var(--ion-color-light);
+.proveedor {
+    text-align: center;
+    .img {
+        height: 100px;
+        img {
+            height: 100%;
+            object-fit: contain;
+        }
+    }
+    ion-item {
+        ion-label {
+            font-family: Nunito;
+        }
     }
 }
 
-.contentProveedores {
-    background-color: var(--ion-color-light);
+
+
+.sinDatos {
+    height: 90%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    align-content: center;
+    .textoSindatos {
+        text-align: center;
+        // border: solid 2px var(--ion-color-danger);
+        padding: 10%;
+        margin: 10%;
+        border-radius: 10px;
+        font-weight: bold;
+        .icono {
+            zoom: 4;
+        }
+    }
+}
+
+.cargando {
+    height: 90%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    align-content: center;
 }

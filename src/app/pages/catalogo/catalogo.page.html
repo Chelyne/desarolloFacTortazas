@@ -9,11 +9,74 @@
 </ion-header>
 
 <ion-content>
+
+  <ion-card mode="ios">
+    <ion-card-content>
+      <ion-item lines="none">
+        <ion-label color="primary">Lista de productos</ion-label>
+        <ion-button size="small" slot="end" fill="outline" (click)="abrirModalNuevoProducto()">
+          <ion-icon slot="start" name="add-circle-outline"></ion-icon>
+          <ion-label>Nuevo Producto</ion-label>
+        </ion-button>
+      </ion-item>
+      <ion-item lines="none" color="light">
+        <ion-toggle mode="md" slot="end" (ionChange)="verPorStock($event)" color="primary"></ion-toggle>
+        <ion-label>Ordenar por Stock</ion-label>
+      </ion-item>
+      <ion-item lines="none">
+        <ion-searchbar (ionClear)="limpiarBuscador()" (ionChange)="Search($event)" #search placeholder="Buscar"
+          inputmode="text" debounce="1000" mode="ios">
+        </ion-searchbar>
+      </ion-item>
+    </ion-card-content>
+  </ion-card>
+
+  <div class="sinDatos" *ngIf="sinDatos===true">
+    <div class="textoSindatos">
+      <ion-icon class="icono" name="gift-outline" color="medium"></ion-icon> <br><br>
+      <ion-label color="medium">No se encontraron los productos</ion-label> <br> <br>
+
+    </div>
+  </div>
+  <div class="cargando" *ngIf="(sinDatos===null || sinDatos===undefined)">
+    <div class="textoCargando">
+      <ion-spinner name="crescent" color="primary"></ion-spinner>
+    </div>
+  </div>
+
+  <ion-grid *ngIf="sinDatos===false">
+    <ion-row>
+      <ion-col  *ngFor="let item of listaDeProductos">
+        <ion-card mode="ios" class="producto">
+          <div class="img">
+            <img *ngIf="item.img" [src]="item.img" alt="">
+            <img *ngIf="!item.img" src="../../../assets/img/producto_default.png" alt="">
+            <ion-badge>Stock: {{item.cantStock}}</ion-badge>
+          </div>
+          <ion-item lines="none">
+            <ion-label class="ion-text-wrap ion-text-center">{{item.nombre | titlecase}}</ion-label>
+            <!-- <ion-label>{{(((usuario.nombre + ' ' + usuario.apellidos).length > 20) ? ((usuario.nombre + ' ' + usuario.apellidos).slice(0, 20) + '...') : (usuario.nombre + ' ' + usuario.apellidos)) | titlecase}}</ion-label> -->
+          </ion-item>
+          <ion-item lines="none" color="light">
+            <ion-button mode="ios" fill="clear" size="small" color="success" expand="block" (click)="presentModalEditar(item)">
+              <ion-icon name="create-outline"></ion-icon> &nbsp;
+              <ion-label>Editar</ion-label>
+            </ion-button>
+            <ion-button mode="ios" fill="clear" size="small" color="danger" (click)="alertEliminarProducto(item)">
+              <ion-icon name="trash-outline"></ion-icon> &nbsp;
+              <ion-label>Eliminar</ion-label>
+            </ion-button>
+          </ion-item>
+        </ion-card>
+      </ion-col>
+    </ion-row>
+  </ion-grid>
+<!-- 
   <ion-grid>
     <ion-row>
-      <ion-col size-xs="0 " size-sm="1" size-md="2 " size-lg="2"></ion-col>
-      <ion-col size="12 " size-xs="12 " size-sm="10" size-md="8 " size-lg="8">
-        <ion-card>
+      <ion-col size-xs="0 " size-sm="1" size-md="1" size-lg="1"></ion-col>
+      <ion-col size="12 " size-xs="12 " size-sm="10" size-md="10 " size-lg="10">
+        <ion-card mode="ios">
           <ion-toolbar>
             <ion-button size="small" slot="end" shape="round" fill="outline" (click)="abrirModalNuevoProducto()">
               <ion-icon slot="start" name="add-circle-outline"></ion-icon>
@@ -73,5 +136,5 @@
       </ion-col>
       <ion-col size-xs="0 " size-sm="1" size-md="2 " size-lg="2"></ion-col>
     </ion-row>
-  </ion-grid>
+  </ion-grid> -->
 </ion-content>

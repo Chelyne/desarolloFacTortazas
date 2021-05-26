@@ -5,9 +5,15 @@
         width: 100%;
         object-fit: cover;
     }
-    ion-card-content {
-        text-align: center;
+    ion-item {
+        ion-label {
+            font-family: Nunito;
+        }
     }
+}
+
+.categoria:hover {
+    transform: scale(1.02);
 }
 
 .sinDatos {

@@ -1,4 +1,6 @@
 import * as moment from 'moment';
+import { FECHA_DE_DEPLOY } from '../../config/otherConfig';
+import { ItemDeVentaInterface } from 'src/app/models/venta/item-de-venta';
 
 export function redondeoDecimal(numero: number, decimal: number): number{
     decimal = Math.trunc(decimal); /** Obtiene la parte entera por si DECIMAL no es entero */
@@ -238,9 +240,25 @@ export function MostrarPorcentaje(num: number, max: number){
 //     );
 // }
 
+
 /* -------------------------------------------------------------------------- */
 /* -------------------------------------------------------------------------- */
 /* -------------------------------------------------------------------------- */
 
+export function agregarVariantesAItemVenta(listaItemsDeVenta: ItemDeVentaInterface[]): ItemDeVentaInterface[]{
+    for (const itemVenta of listaItemsDeVenta) {
+        itemVenta.medida =  itemVenta.producto.medida;
+        itemVenta.factor =  1;
+        itemVenta.precio =  itemVenta.producto.precio;
+    }
+    return listaItemsDeVenta;
+ }
+
+export function esDateVentaMenorFechaDaploy(fechaVenta: string | {seconds?: number, nanoseconds?: number} | Date){
+    // venta: VentaInterface;
+    // const FECHA_DEPLOY = '24/05/2021 00:00:00';
+    // const FECHA_DEPLOY = '2021/05/24';
+    return new Date(formatearDateTime('YYYY/MM/DD', fechaVenta)).getTime() <= new Date(FECHA_DE_DEPLOY).getTime();
+  }
 
 

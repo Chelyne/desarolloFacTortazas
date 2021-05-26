@@ -341,7 +341,7 @@ export class ModalAgregarCategoriasPage implements OnInit {
      */
 
     /** config */
-    const path = 'testimage';
+    const path = 'categorias';
     const name = this.sede + this.datePipe.transform(new Date(), 'medium');
     const file = this.imagenTargetFile; // imagenTargetFile
 

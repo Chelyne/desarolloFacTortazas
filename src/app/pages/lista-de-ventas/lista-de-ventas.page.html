@@ -5,15 +5,28 @@
       </ion-menu-button>
     </ion-buttons>
     <ion-title color="primary">Lista de Ventas</ion-title>
-    <ion-item slot="end" [color]="(enviroment && enviroment!=='beta') ? 'success' : 'medium'">
+    <!-- <ion-item slot="end" [color]="(enviroment && enviroment!=='beta') ? 'success' : 'medium'">
       <ion-spinner color="light" *ngIf="!enviroment" name="crescent"></ion-spinner>
       <ion-label *ngIf="enviroment">{{enviroment | titlecase}}</ion-label>
       <ion-toggle [disabled]="!enviroment" color="light" (click)="cambiarBetaProduccion($event)" [(ngModel)]="activo"></ion-toggle>
-    </ion-item>
+    </ion-item> -->
   </ion-toolbar>
 </ion-header>
 
 <ion-content>
+
+  <ion-card mode="ios">
+    <ion-card-content>
+      <ion-item lines="none">
+        <ion-label color="primary">Lista de ventas</ion-label>
+        <ion-item slot="end" lines="none">
+          <ion-label>Selecciona la fecha</ion-label>
+          <!-- <ion-input (ionChange)="ObtenerVentas()" type="date" formatDate="dd-MM-yyyy" slot="end" [(ngModel)]="fechaActual"></ion-input> -->
+          <ion-input class="inputFecha" (ionChange)="ObtenerVentas($event)" slot="end" type="date" [(ngModel)]="fechaConsulta" formatDate="dd-mm-yyyy" value="{{fechaConsulta}}"></ion-input>
+        </ion-item>
+      </ion-item>
+    </ion-card-content>
+  </ion-card>
 
 
   <!-- <ion-item>
@@ -23,35 +36,36 @@
     <ion-label>{{enviroment}}</ion-label>
   </ion-item> -->
 
-  <ion-item>
+  <!-- <ion-item>
     <ion-button slot="end">
       <ion-label color="light" (click)="DarformatoALasVentas()">formatear ventas</ion-label>
     </ion-button>
-  </ion-item>
+  </ion-item> -->
 
-  <form [formGroup]="ventasForm">
-    <ion-item>
+  <!-- form anterior -->
+      <!-- <ion-item>
       <ion-label>Selecciona la fecha</ion-label>
-      <!-- <ion-input (ionChange)="ObtenerVentas()" type="date" formatDate="dd-MM-yyyy" slot="end" [(ngModel)]="fechaActual"></ion-input> -->
       <ion-input slot="end" type="date" formControlName="fechadeventa" formatDate="dd-mm-yyyy" value="1994-12-1">
       </ion-input>
       <ion-button slot="end" (click)="ObtenerVentas()">
         <ion-label color="light">Consultar</ion-label>
       </ion-button>
-    </ion-item>
+    </ion-item> -->
 
-    <ion-item *ngIf="listaDeVentas.length > 0">
-      <!-- <ion-button color="success" slot="start" (click)="actualizarStockDelDia()">
-                <ion-label color="light">Actualizar stock del dia</ion-label>
-            </ion-button> -->
+    <!-- <ion-button color="success" slot="start" (click)="actualizarStockDelDia()">
+              <ion-label color="light">Actualizar stock del dia</ion-label>
+          </ion-button> -->
+    <!-- <ion-item *ngIf="listaDeVentas.length > 0">
       <ion-button slot="end" (click)="enviarComprobantesDelDia()">
         <ion-label color="light">Enviar todos los comprobantes</ion-label>
       </ion-button>
       <ion-button slot="start" (click)="formatearNotaCredito()">
         <ion-label color="light">Formatear comprobantes</ion-label>
       </ion-button>
-    </ion-item>
-    <ion-card *ngIf="listaDeVentas.length > 0">
+    </ion-item> -->
+
+  <form [formGroup]="ventasForm">
+    <ion-card mode="ios" *ngIf="listaDeVentas.length > 0">
       <ion-grid>
         <ion-row>
           <ion-col>
@@ -197,71 +211,74 @@
       <ion-spinner name="crescent" color="primary"></ion-spinner>
     </div>
   </div>
-  <div class="content" *ngIf="!buscando">
-    <ion-list *ngFor="let venta of listaDeVentas">
-      <ion-card>
-        <ion-grid>
-          <ion-row>
-            <ion-col>
-              <ion-item>
-                <ion-icon slot="start" name="people-outline" color="primary"></ion-icon>
-                <ion-label color="primary" position="stacked">Cliente</ion-label>
-                <ion-input readonly>{{venta.cliente.nombre | titlecase}}</ion-input>
-              </ion-item>
-              <ion-item>
-                <ion-icon slot="start" name="card-outline" color="primary"></ion-icon>
-                <ion-label color="primary" position="stacked">{{venta.cliente.tipoDoc | uppercase}}</ion-label>
-                <ion-input readonly>{{venta.cliente.numDoc}}</ion-input>
-              </ion-item>
-            </ion-col>
-            <ion-col>
-              <ion-item>
-                <ion-icon slot="start" name="reader-outline" color="primary"></ion-icon>
-                <ion-label color="primary" position="stacked">{{venta.tipoComprobante | uppercase}}</ion-label>
-                <ion-input readonly>{{venta.serieComprobante}} {{venta.numeroComprobante}}</ion-input>
-              </ion-item>
-              <ion-item>
-                <ion-icon slot="start" name="person-outline" color="primary"></ion-icon>
-                <ion-label color="primary" position="stacked">Vendedor</ion-label>
-                <ion-input readonly>{{venta.vendedor.nombre | titlecase}} {{venta.vendedor.apellidos | titlecase}}
-                </ion-input>
-              </ion-item>
-            </ion-col>
-            <ion-col>
-              <ion-item>
-                <ion-icon slot="start" name="flag-outline" color="primary"></ion-icon>
-                <ion-label color="primary" position="stacked">Estado</ion-label>
-                <ion-input *ngIf="!venta.cdr" readonly>{{venta.estadoVenta | titlecase}}</ion-input>
-                <ion-input *ngIf="venta.cdr" [color]="venta.cdr.sunatResponse.success ? 'success' : 'danger'" readonly>
-                  {{(venta.cdr.sunatResponse.success) ? 'Aceptado' : 'Rechazado' | titlecase}}</ion-input>
-                <ion-badge slot="end" color="danger" *ngIf="venta.estadoVenta==='anulado'">{{venta.estadoVenta | titlecase}}</ion-badge>
-              </ion-item>
-              <ion-item *ngIf="venta.tipoComprobante !== 'n. venta'">
-                <ion-icon slot="start" name="extension-puzzle-outline" color="primary"></ion-icon>
-                <!-- <ion-label color="primary" position="stacked">Acciones</ion-label> -->
-                <ion-button *ngIf="!venta.cdr && venta.estadoVenta !== 'anulado'" color="danger">
-                  <ion-label>Anular</ion-label>
+  <div class="contentVentas" *ngIf="!buscando">
+    <ion-card mode="ios" *ngFor="let venta of listaDeVentas; index as i">
+      <ion-badge class="posicion">
+        <ion-label color="light">Posicion {{i}}</ion-label>
+      </ion-badge>
+      <ion-grid>
+        <ion-row>
+          <ion-col>
+            <ion-item>
+              <ion-icon slot="start" name="people-outline" color="primary"></ion-icon>
+              <ion-label color="primary" position="stacked">Cliente</ion-label>
+              <ion-input readonly>{{venta.cliente.nombre | titlecase}}</ion-input>
+            </ion-item>
+            <ion-item>
+              <ion-icon slot="start" name="card-outline" color="primary"></ion-icon>
+              <ion-label color="primary" position="stacked">{{venta.cliente.tipoDoc | uppercase}}</ion-label>
+              <ion-input readonly>{{venta.cliente.numDoc}}</ion-input>
+            </ion-item>
+          </ion-col>
+          <ion-col>
+            <ion-item>
+              <ion-icon slot="start" name="reader-outline" color="primary"></ion-icon>
+              <ion-label color="primary" position="stacked">{{venta.tipoComprobante | uppercase}}</ion-label>
+              <ion-input readonly>{{venta.serieComprobante}} {{venta.numeroComprobante}}</ion-input>
+            </ion-item>
+            <ion-item>
+              <ion-icon slot="start" name="person-outline" color="primary"></ion-icon>
+              <ion-label color="primary" position="stacked">Vendedor</ion-label>
+              <ion-input readonly>{{venta.vendedor.nombre | titlecase}} {{venta.vendedor.apellidos | titlecase}}
+              </ion-input>
+            </ion-item>
+          </ion-col>
+          <ion-col>
+            <ion-item>
+              <ion-icon slot="start" name="flag-outline" color="primary"></ion-icon>
+              <ion-label color="primary" position="stacked">Estado</ion-label>
+              <ion-input *ngIf="!venta.cdr" readonly>{{venta.estadoVenta | titlecase}}</ion-input>
+              <ion-input *ngIf="venta.cdr" [color]="venta.cdr.sunatResponse.success ? 'success' : 'danger'" readonly>
+                {{(venta.cdr.sunatResponse.success) ? 'Aceptado' : 'Rechazado' | titlecase}}</ion-input>
+              <ion-badge slot="end" color="danger" *ngIf="venta.estadoVenta==='anulado'">{{venta.estadoVenta | titlecase}}</ion-badge>
+            </ion-item>
+            <ion-item *ngIf="venta.tipoComprobante !== 'n. venta'">
+              <ion-icon slot="start" name="extension-puzzle-outline" color="primary"></ion-icon>
+              <ion-label color="primary" position="stacked">Acciones</ion-label>
+              <ion-input readonly>
+                <!-- <ion-button *ngIf="!venta.cdr && venta.estadoVenta !== 'anulado'" color="danger">
+                  Anular
                 </ion-button>
                 <ion-button (click)="enviarNotaCredito(venta)" *ngIf="venta.cdr && venta.estadoVenta==='anulado' && !venta.cdrAnulado" color="danger">
-                  <ion-label>Enviar N.Credito</ion-label>
+                  Enviar N.Credito
                 </ion-button>
                 <ion-button *ngIf="venta.cdr && !venta.cdr.sunatResponse.success" (click)="enviarUnComprobante(venta)" color="warning">
-                  <ion-label>Reenviar</ion-label>
+                  Reenviar
                 </ion-button>
                 <ion-button *ngIf="!venta.cdr" color="success" (click)="enviarUnComprobante(venta)">
-                  <ion-label>Enviar</ion-label>
-                </ion-button>
+                  Enviar
+                </ion-button> -->
                 <ion-button *ngIf="venta.cdr" color="tertiary" (click)="descargarZIP(venta)">
-                  <ion-label>ZIP</ion-label>
+                  ZIP
                 </ion-button><ion-button *ngIf="venta.cdr" color="warning" (click)="descargarXML(venta)">
-                  <ion-label>XML</ion-label>
+                  XML
                 </ion-button>
-              </ion-item>
-            </ion-col>
-          </ion-row>
-        </ion-grid>
-      </ion-card>
-    </ion-list>
+              </ion-input>
+            </ion-item>
+          </ion-col>
+        </ion-row>
+      </ion-grid>
+    </ion-card>
   </div>
 
   <!-- Boton crear resumen diario -->

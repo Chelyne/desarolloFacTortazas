@@ -9,7 +9,75 @@
 </ion-header>
 
 <ion-content class="ion-padding">
-  <ion-grid fixed>
+
+  <div class="sinDatos" *ngIf="sinDatos===true">
+    <div class="textoSindatos">
+      <ion-icon class="icono" name="people-outline" color="medium"></ion-icon> <br><br>
+      <ion-label color="medium">No existe ninguna compra realizada</ion-label> <br> <br>
+
+    </div>
+  </div>
+  <div class="cargando" *ngIf="(sinDatos===null || sinDatos===undefined)">
+    <div class="textoCargando">
+      <ion-spinner name="crescent" color="primary"></ion-spinner>
+    </div>
+  </div>
+
+  <ion-card [color]="compra.anulado?'danger' : ''" mode="ios" class="cardCompras" *ngFor="let compra of listaDeCompras; index as i">
+    <ion-grid>
+      <ion-row class="ion-justify-content-center ion-align-items-center">
+        <ion-col size-lg="0.5" class="ion-text-center numero">
+          <ion-label><strong>{{i}}</strong></ion-label>
+        </ion-col>
+        <ion-col size-lg="3.5">
+          <ion-item lines="none">
+            <ion-label color="primary" position="stacked">Nombre proveedor</ion-label>
+            <ion-input readonly>{{(compra.proveedor ? compra.proveedor.nombre: 'Sin proveedor') | titlecase}}</ion-input>
+          </ion-item>
+        </ion-col>
+        <ion-col size-lg="2">
+          <ion-item lines="none">
+            <ion-label color="primary" position="stacked">Comprobante</ion-label>
+            <ion-input readonly>{{compra.typoComprobante | titlecase}}</ion-input>
+          </ion-item>
+        </ion-col>
+        <ion-col size-lg="1">
+          <ion-item lines="none">
+            <ion-label color="primary" position="stacked">Serie</ion-label>
+            <ion-input readonly>{{compra.serieComprobante | titlecase}}</ion-input>
+          </ion-item>
+        </ion-col>
+        <ion-col size-lg="2">
+          <ion-item lines="none">
+            <ion-label color="primary" position="stacked">Fecha Emision</ion-label>
+            <ion-input readonly>{{compra.fechaDeEmision | date:'dd-MM-yyyy'}}</ion-input>
+          </ion-item>
+        </ion-col>
+        <ion-col size-lg="1">
+          <ion-item lines="none">
+            <ion-label color="primary" position="stacked">Total</ion-label>
+            <ion-input readonly>{{compra.totalxCompra | number: '1.2'}}</ion-input>
+          </ion-item>
+        </ion-col>
+        <ion-col size-lg="2">
+          <ion-item lines="none">
+            <ion-buttons>
+              <ion-button color="primary" (click)="abrirModalMostrarDetalles(compra)">
+                <ion-icon slot="icon-only" name="caret-down-outline"></ion-icon>
+              </ion-button>
+              <ion-button color="success" (click)="EditarCompra(compra)" routerLink="/compras">
+                <ion-icon slot="icon-only" name="create-outline"></ion-icon>
+              </ion-button>
+              <ion-button color="danger" (click)="bloquearCompra(compra)">
+                <ion-icon slot="icon-only" name="ban-outline"></ion-icon>
+              </ion-button>
+            </ion-buttons>
+          </ion-item>
+        </ion-col>
+      </ion-row>
+    </ion-grid>
+  </ion-card>
+  <!-- <ion-grid fixed>
     <ion-row class="headerListaCompra">
       <ion-col size="0.5"> <ion-label color="light">#</ion-label></ion-col>
       <ion-col size="2"><ion-label color="light">Proveedor</ion-label></ion-col>
@@ -49,7 +117,7 @@
         </ion-buttons>
       </ion-col>
     </ion-row>
-  </ion-grid>
+  </ion-grid> -->
 
   <!-- <div>
     <ion-spinner name="crescent"></ion-spinner>

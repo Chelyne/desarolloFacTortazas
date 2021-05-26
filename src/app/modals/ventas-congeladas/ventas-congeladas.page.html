@@ -10,17 +10,17 @@
 </ion-header>
 
 <ion-content class="ion-padding">
-  <div class="sinDatosVenta" *ngIf="!this.storage.listaVenta || this.storage.listaVenta.length === 0">
+  <div class="sinDatosVenta" *ngIf="!listaVentas.length">
     <div class="textoSindatos">
       <ion-icon class="icono" name="cart-outline" color="medium"></ion-icon> <br><br>
       <ion-label color="medium">No hay ventas congeladas</ion-label>
     </div>
   </div>
-  <ion-list *ngIf="this.storage.listaVenta && this.storage.listaVenta.length > 0">
+  <ion-list *ngIf="listaVentas.length">
     <ion-list-header color="primary">
       <ion-label color="light">Ventas congeladas</ion-label>
     </ion-list-header>
-    <ion-item (click)="seleccionarVenta(venta)" class="itemVenta" *ngFor="let venta of this.storage.listaVenta">
+    <ion-item (click)="seleccionarVenta(venta)" class="itemVenta" *ngFor="let venta of listaVentas">
       <ion-icon color="primary" slot="start" name="gift"></ion-icon>
       <ion-label>{{venta.cliente?(venta.cliente.nombre |titlecase):venta.idVenta}}</ion-label>
       <ion-label slot="end" class="ion-text-end">S/. {{venta.montoNeto | number:'1.2'}}</ion-label>
