@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { ModalController } from '@ionic/angular';
 import { StorageService } from '../../services/storage.service';
 import { DataBaseService } from '../../services/data-base.service';
-import { VentaInterface } from '../../../../functions/src/index';
+import { VentaInterface } from 'src/app/models/venta/venta';
 
 @Component({
   selector: 'app-ventas-congeladas',
