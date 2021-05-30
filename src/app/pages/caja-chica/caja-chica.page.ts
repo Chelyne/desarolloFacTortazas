@@ -48,6 +48,9 @@ export class CajaChicaPage implements OnInit {
   sinDatos: boolean;
   totalEnCaja = 0;
 
+  ingresoCaja = 0;
+  egresoCaja = 0;
+
   constructor(
     private dataApi: DataBaseService,
     private globalSrv: GlobalService,
@@ -95,7 +98,8 @@ export class CajaChicaPage implements OnInit {
   async modalAperturaCajaChica(modoCaja: string, datos: any) {
     if (modoCaja === 'cerrar'){
       this.loading.dismiss();
-      await this.ReporteProductosVendedorDia( datos, 'pdf');
+      // await this.ReporteProductosVendedorDia( datos, 'pdf');
+      await this.ReportePuntoVenta(datos);
       datos.saldoFinal = this.totalEnCaja;
     }
     const modal = await this.modalController.create({
@@ -209,32 +213,41 @@ export class CajaChicaPage implements OnInit {
   // ------------FIN REPORTE  GENERAL ------------
   // ------------INICIO REPORTE  VENDEDOR TABLA METODOS PAGO (reporte) ------------
 
-  ReportePuntoVenta(datosCaja: CajaChicaInterface) {
+ async  ReportePuntoVenta(datosCaja: CajaChicaInterface) {
+    this.totalEnCaja = 0;
     console.log('fecha consulta', datosCaja.FechaConsulta , ' dni', datosCaja.dniVendedor);
-    this.ConsultaPuntoVentaVendedor(datosCaja.FechaConsulta, datosCaja.id, 'ventas').then((data: any) => {
+    await this.ConsultaPuntoVentaVendedor(datosCaja.FechaConsulta, datosCaja.id, 'ventas').then((data: any) => {
       const doc = new jsPDF('portrait', 'px', 'a4') as jsPDFWithPlugin;
 
       doc.setFontSize(18);
-      doc.setFont('bold');
-      doc.text('Reporte Punto de Venta', 120, 30);
+      // doc.setFont('bold');
+      doc.text('Reporte Punto de Venta ' + this.convertirMayuscula(datosCaja.nombreVendedor), 120, 30);
       doc.addImage(this.LogoEmpresa, 'JPEG', 370, 20, 30, 15);
       doc.setLineWidth(0.5);
-      doc.line(110, 35, 280, 35);
-      doc.rect(30, 50, 387, 80); // empty square
+      doc.line(110, 35, 320, 35);
+      doc.rect(30, 50, 387, 110); // empty square
       doc.setFontSize(12);
 
       doc.text( 'Empresa: ' + this.nombreEmpresa, 40, 60);
       doc.text( 'RUC: ' + this.RUC, 40, 70);
       doc.text( 'Vendedor: ' + this.convertirMayuscula(datosCaja.nombreVendedor), 40, 80);
-      doc.text( 'Estado de Caja: ' + this.convertirMayuscula(datosCaja.estado), 40, 90);
-      doc.text( 'Montos de operación:', 40, 100);
-      doc.text( 'Apertura Caja:' + 'S./ ' + datosCaja.saldoInicial.toFixed(2), 40, 110);
-      doc.text( 'Cierre Caja:' + 'S./ ' + datosCaja.saldoFinal.toFixed(2), 40, 120);
-      doc.text( 'Fecha reporte: ' + datosCaja.FechaConsulta, 320, 60);
       doc.text( 'Establecimiento: ' + this.convertirMayuscula(datosCaja.sede), 185, 70);
+      doc.text( 'Fecha: ' + datosCaja.FechaConsulta, 320, 60);
+      doc.text( 'Estado de Caja: ' + this.convertirMayuscula(datosCaja.estado), 40, 90);
       doc.text( 'Fecha y hora apertura: ' + datosCaja.FechaApertura, 185, 80);
-      doc.text( 'Fecha y hora cierre: ' + datosCaja.FechaCierre, 185, 90);
-      doc.text( 'TOTAL VENTAS: ' + 'S./ ' + (data.totalGeneral).toFixed(2), 185, 110);
+      doc.text( 'Fecha y hora cierre: ' + (datosCaja.FechaCierre ? datosCaja.FechaCierre : 'Aun no cerrado'), 185, 90);
+      doc.text( 'MONTOS DE OPERACIÓN:', 40, 105);
+      doc.text( 'Apertura Caja: '  + datosCaja.saldoInicial.toFixed(2), 40, 120);
+      doc.text( 'Cierre Caja:   ' + datosCaja.saldoFinal.toFixed(2), 40, 130);
+      doc.text( 'Ingresos: ' + (this.ingresoCaja ).toFixed(2), 185, 120);
+      doc.text( 'Egresos: ' + (this.egresoCaja ).toFixed(2), 185, 130);
+      doc.text( 'Total Ventas: ' + 'S./ ' + (data.totalGeneral).toFixed(2), 300, 130);
+      doc.setFont('bolditalic', 'bold');
+      doc.text( 'TOTAL SIN SALDO INICIAL: ' + 'S./ ' + (data.totalEfectivo + this.ingresoCaja - this.egresoCaja).toFixed(2), 185, 145);
+      // tslint:disable-next-line:max-line-length
+      this.totalEnCaja = datosCaja.saldoInicial + data.totalGeneral - data.totalTargeta + this.ingresoCaja - this.egresoCaja;
+      doc.text( 'TOTAL CAJA: ' + 'S./ ' + (this.totalEnCaja ).toFixed(2), 40, 145);
+
       const metodoPago = [
         ['Efectivo', data.totalEfectivo.toFixed(2)],
         ['Tarjeta de credito o debito', data.totalTargeta.toFixed(2)],
@@ -243,7 +256,7 @@ export class CajaChicaPage implements OnInit {
       doc.autoTable({
         head: [['Descripción', 'suma']],
         body: metodoPago,
-        startY: 150,
+        startY: 180,
         theme: 'grid',
       });
 
@@ -268,6 +281,7 @@ export class CajaChicaPage implements OnInit {
     let totalEfectivo1 = 0;
     let totalTargeta1 = 0;
     let totalGeneral1 = 0;
+    this.consultaIngresoEgresoCajaChica(dia, idVendedor);
     return this.dataApi.obtenerVentaPorDiaCajaChica(this.sede.toLowerCase(), dia, idVendedor).then( (snapshot: any) => {
       if (snapshot.length === 0) {
         const juntos = {
@@ -517,6 +531,7 @@ export class CajaChicaPage implements OnInit {
   }
   async crearArchivoExportar(datosCaja: CajaChicaInterface, formato: string, DatosFormateados: any) {
     console.log('Datos Formateados', DatosFormateados);
+    this.totalEnCaja = 0;
     if (formato === 'pdf') {
       await this.consultaIngresoEgresoCajaChica(datosCaja.FechaConsulta, datosCaja.id).then(datosIngresos => {
       console.log('formato pdf');
@@ -618,11 +633,15 @@ export class CajaChicaPage implements OnInit {
     console.log('INGRESOS EGRESOS', dia);
     let ingreso = 0;
     let egreso = 0;
+    this.ingresoCaja = 0;
+    this.egresoCaja = 0;
     // tslint:disable-next-line:prefer-const
     let formatoEgresosCaja = [];
     return this.dataApi.obtenerIngresoEgresoDiaCaja(this.sede.toLowerCase(), dia, idCaja).then( (snapshot: any) => {
       console.log('datos ingresos', snapshot);
       if (snapshot.length === 0) {
+        this.ingresoCaja = 0;
+        this.egresoCaja = 0;
         const juntos = {
           ingresos: 0,
           egresos: 0,
@@ -647,6 +666,8 @@ export class CajaChicaPage implements OnInit {
           ];
           formatoEgresosCaja.push(formato1);
         });
+        this.ingresoCaja = ingreso;
+        this.egresoCaja = egreso;
         const juntos = {
           ingresos: ingreso,
           egresos: egreso,
