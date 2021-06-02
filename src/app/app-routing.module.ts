@@ -176,7 +176,7 @@ const routes: Routes = [
   },
   // {
   //   path: 'agregar-editar-producto',
-  //   // tslint:disable-next-line: max-line-length
+  // tslint:disable-next-line: max-line-length
   //   loadChildren: () => import('./modals/agregar-editar-producto/agregar-editar-producto.module').then( m => m.AgregarEditarProductoPageModule)
   // },
 ];
