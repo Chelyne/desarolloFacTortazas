@@ -265,7 +265,7 @@ export class ModalAgregarProductoPage implements OnInit {
       categoria: 'petshop',
       subCategoria: refProdForm.subCategoria.toLowerCase(),
       descripcionProducto: refProdForm.descripcionProducto,
-      marca: refProdForm.marca.toLowerCase(),
+      marca: refProdForm.marca ? refProdForm.marca.toLowerCase() : null,
       codigo: refProdForm.codigo,
       codigoBarra: refProdForm.codigoBarra,
       fechaRegistro: new Date(),

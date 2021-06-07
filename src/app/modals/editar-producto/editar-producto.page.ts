@@ -333,7 +333,7 @@ export class EditarProductoPage implements OnInit {
 
     const producto: ProductoInterface = {
       id: this.dataProducto.id,
-      img: this.imagenUrl || this.imagenUrl,
+      img: this.imagenUrl || null,
       nombre: refProdForm.nombre.toLowerCase(),
       cantidad: parseFloat(refProdForm.cantidad),
       precio: parseFloat(refProdForm.precio),
@@ -343,7 +343,7 @@ export class EditarProductoPage implements OnInit {
       // categoria: 'petshop',
       subCategoria: refProdForm.subCategoria.toLowerCase(),
       descripcionProducto: refProdForm.descripcionProducto,
-      marca: refProdForm.marca.toLowerCase(),
+      marca: refProdForm.marca ? refProdForm.marca.toLowerCase() : null,
       codigo: refProdForm.codigo,
       codigoBarra: refProdForm.codigoBarra,
       fechaDeVencimiento: refProdForm.fechaDeVencimiento,
