@@ -5,11 +5,11 @@
       </ion-menu-button>
     </ion-buttons>
     <ion-title color="primary">Lista de Ventas</ion-title>
-    <ion-item slot="end" [color]="(enviroment && enviroment!=='beta') ? 'success' : 'medium'">
+    <!-- <ion-item slot="end" [color]="(enviroment && enviroment!=='beta') ? 'success' : 'medium'">
       <ion-spinner color="light" *ngIf="!enviroment" name="crescent"></ion-spinner>
       <ion-label *ngIf="enviroment">{{enviroment | titlecase}}</ion-label>
       <ion-toggle [disabled]="!enviroment" color="light" (click)="cambiarBetaProduccion()" [(ngModel)]="activo"></ion-toggle>
-    </ion-item>
+    </ion-item> -->
   </ion-toolbar>
 </ion-header>
 
@@ -55,14 +55,14 @@
     <!-- <ion-button color="success" slot="start" (click)="actualizarStockDelDia()">
               <ion-label color="light">Actualizar stock del dia</ion-label>
           </ion-button> -->
-    <ion-item *ngIf="listaDeVentas.length > 0">
+    <!-- <ion-item *ngIf="listaDeVentas.length > 0">
       <ion-button slot="end" (click)="enviarComprobantesDelDia()">
         <ion-label color="light">Enviar todos los comprobantes</ion-label>
       </ion-button>
       <ion-button slot="start" (click)="formatearNotaCredito()">
         <ion-label color="light">Formatear comprobantes</ion-label>
       </ion-button>
-    </ion-item>
+    </ion-item> -->
 
   <form [formGroup]="ventasForm">
     <ion-card mode="ios" *ngIf="listaDeVentas.length > 0">
@@ -256,7 +256,7 @@
               <ion-icon slot="start" name="extension-puzzle-outline" color="primary"></ion-icon>
               <ion-label color="primary" position="stacked">Acciones</ion-label>
               <ion-input readonly>
-                <ion-button *ngIf="!venta.cdr && venta.estadoVenta !== 'anulado'" color="danger">
+                <!-- <ion-button *ngIf="!venta.cdr && venta.estadoVenta !== 'anulado'" color="danger">
                   Anular
                 </ion-button>
                 <ion-button (click)="enviarNotaCredito(venta)" *ngIf="venta.cdr && venta.estadoVenta==='anulado' && !venta.cdrAnulado" color="danger">
@@ -267,7 +267,7 @@
                 </ion-button>
                 <ion-button *ngIf="!venta.cdr" color="success" (click)="enviarUnComprobante(venta)">
                   Enviar
-                </ion-button>
+                </ion-button> -->
                 <ion-button *ngIf="venta.cdr" color="tertiary" (click)="descargarZIP(venta)">
                   ZIP
                 </ion-button><ion-button *ngIf="venta.cdr" color="warning" (click)="descargarXML(venta)">
