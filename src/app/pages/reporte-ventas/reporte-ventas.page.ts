@@ -24,7 +24,7 @@ import { formatearDateTime } from 'src/app/global/funciones-globales';
 })
 export class ReporteVentasPage implements OnInit {
   arrayMes = [];
-  sede = this.storage.datosAdmi.sede;
+  sede = this.storage.datosAdmi.sede.toLocaleLowerCase();
   ventasDiaForm: FormGroup;
 
   contador = 0;
