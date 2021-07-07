@@ -102,7 +102,7 @@ export class HomePage implements OnInit {
   // }
 
   // consultar(nombre) {
-  //   const consulta = this.afs.collection('sedes').doc('abancay').collection('productos', ref => ref.where('nombre', '==', nombre)
+  //   const consulta = this.afs.collection('sedes').doc('talavera').collection('productos', ref => ref.where('nombre', '==', nombre)
   //   .limit(1));
   //   return consulta.snapshotChanges()
   //           .pipe(map(changes => {
@@ -110,7 +110,7 @@ export class HomePage implements OnInit {
   //             // tslint:disable-next-line:no-shadowed-variable
   //             const data = action.payload.doc.data();
   //             data.id = action.payload.doc.id;
-  //             console.log(data);
+  //             // console.log(data);
   //             return data;
   //           });
   //         }));
@@ -143,6 +143,46 @@ export class HomePage implements OnInit {
 
   // exelDatosGenerales() {
   //   this.exportar.exportAsExcelFile(this.todosProductos, 'datosAbancay');
+  // }
+
+  // async subirDatosV2() {
+  //   const data = await this.categorias.getData();
+  //   let contador = 0;
+  //   await data.forEach(async (datos: any) => {
+  //     datos.forEach(async element => {
+  //       element.nombre = element.nombre.toLocaleLowerCase();
+  //       const arrayNombre = element.nombre.toLowerCase().split(' ');
+  //       element.arrayNombre = arrayNombre;
+  //       element.subCategoria = element.subCategoria.toLocaleLowerCase();
+  //       element.codigo = element.codigo.toLocaleLowerCase();
+  //       element.precio = parseFloat(element.precio);
+  //       element.cantStock = parseInt(element.cantStock, 10);
+  //       element.cantidad = parseInt(element.cantidad, 10);
+  //       if (element.codigo) {
+  //         element.codigo = element.codigo.toString();
+  //       }
+  //       if (element.precioCompra) {
+  //         element.precioCompra = parseFloat(element.precioCompra);
+  //       }
+  //       // nuevos
+  //       await this.afs.collection('sedes').doc('talavera').collection('productos').add(element).then( resp => {
+  //         console.log(contador, 'Ingresado', resp);
+  //         contador++;
+  //       }).catch(error => {console.error('No se  pudo ingresar los datos', error); });
+
+  //       // actualizar
+  //       // tslint:disable-next-line:no-shadowed-variable
+  //       // const sus = await this.consultar(element.nombre).subscribe(async (data: any) => {
+  //       //   sus.unsubscribe();
+  //       //   console.log(data[0]);
+  //       //   this.afs.collection('sedes').doc('talavera').collection('productos')
+  //       //   .doc(data[0].id).update({fechaRegistro: element.fechaRegistro}).then(() => {
+  //       //     contador++;
+  //       //     console.log(contador, ' Actualizado ' + ' : ' + element.fechaRegistro);
+  //       //   });
+  //       // });
+  //     });
+  //   });
   // }
 
   // subirDatos() {

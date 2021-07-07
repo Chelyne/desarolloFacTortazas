@@ -65,7 +65,7 @@ export class EditarProductoPage implements OnInit {
   ngOnInit() {
     this.updateForm = this.createFormGroup();
     // this.updateForm = this.createFormGroup();
-    // console.log(this.dataProducto);
+    console.log(this.dataProducto);
     if (this.dataProducto.variantes && this.dataProducto.variantes.length) {
       this.listaDeVariantes = [...this.dataProducto.variantes];
     } else {
@@ -426,6 +426,7 @@ export class EditarProductoPage implements OnInit {
       medida.setFocus();
       console.log(item);
       this.listaDeVariantes.push(item);
+      console.log(this.listaDeVariantes);
     }
   }
 

@@ -261,7 +261,7 @@ export class ModalAgregarProductoPage implements OnInit {
       precio: parseFloat(refProdForm.precio),
       sede: this.sede,
       medida: refProdForm.medida.toLowerCase(),
-      cantStock: parseFloat(refProdForm.cantidadStock) || 0,
+      cantStock: parseFloat(refProdForm.cantStock) || 0,
       categoria: 'petshop',
       subCategoria: refProdForm.subCategoria.toLowerCase(),
       descripcionProducto: refProdForm.descripcionProducto,
