@@ -26,7 +26,7 @@
             </div>
             <ion-item color="light">
               <ion-icon slot="start" color="primary" name="key-outline"></ion-icon>
-              <ion-input maxlength="16" formControlName="password" type="password" placeholder="Ingrese su contraseña"></ion-input>
+              <ion-input maxlength="24" formControlName="password" type="password" placeholder="Ingrese su contraseña"></ion-input>
             </ion-item>
             <div class="alertDanger" *ngIf="password.invalid && (password.dirty || password.touched)">
               <div class="mensajeError" *ngIf="password.errors.minlength">

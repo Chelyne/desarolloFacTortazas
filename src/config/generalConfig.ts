@@ -33,7 +33,7 @@ export const GENERAL_CONFIG = {
         abancay: {
             direccion: {
                 ubigueo: '030101',
-                direccion : 'AV.SEOANE NRO. 100 (PARQUE EL OLIVO) APURIMAC - ABANCAY - ABANCAY',
+                direccion : 'AV. SEOANE NRO. 100 (PARQUE EL OLIVO) APURIMAC - ABANCAY - ABANCAY',
                 direccionCorta: 'Av. Seoane 100 Abancay Apurimac',
                 referencia: 'Parque el Olivo',
                 codigoPais: 'PE',

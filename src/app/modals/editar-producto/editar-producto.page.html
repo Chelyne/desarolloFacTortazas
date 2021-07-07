@@ -258,7 +258,7 @@
                 </ion-button>
               </ion-col>
             </ion-row>
-            <ion-row *ngIf="dataProducto.variantes && dataProducto.variantes.length">
+            <ion-row *ngIf="dataProducto.variantes && dataProducto.variantes.length || listaDeVariantes.length">
               <ion-col>
                 <ion-row class="ion-justify-content-center ion-align-items-center cabecera">
                   <ion-col class="ion-text-center" size="4">Medida</ion-col>

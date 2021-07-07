@@ -41,7 +41,7 @@ export class LoginPage implements OnInit {
   createFormGroup() {
     return new FormGroup({
       email: new FormControl('', [Validators.required, Validators.minLength(8), Validators.pattern(this.emailPattern)]),
-      password: new FormControl('', [Validators.required, Validators.minLength(6), Validators.maxLength(16)])
+      password: new FormControl('', [Validators.required, Validators.minLength(6), Validators.maxLength(24)])
     });
   }
 
@@ -87,7 +87,7 @@ export class LoginPage implements OnInit {
               this.presentToast('Usuario no encontrado');
               this.loading.dismiss();
             } else {
-              console.log(user);
+              console.log(user, this.LoginForm.value.password, '===',  user.password);
               if (this.LoginForm.value.password === user.password) {
                 // this.authService.
                 console.log('crear usuario');

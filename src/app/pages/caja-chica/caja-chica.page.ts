@@ -94,13 +94,19 @@ export class CajaChicaPage implements OnInit {
       }
     });
   }
+
+  async reporteCajaImagen(datos: any) {
+    await this.presentLoading('Generando reporte...');
+    await this.ReportePuntoVenta(datos);
+    this.loading.dismiss();
+  }
   // ------------INICIO APERTURAR CERRAR CAJA CHICA------------
   async modalAperturaCajaChica(modoCaja: string, datos: any) {
     if (modoCaja === 'cerrar'){
-      this.loading.dismiss();
       // await this.ReporteProductosVendedorDia( datos, 'pdf');
       await this.ReportePuntoVenta(datos);
       datos.saldoFinal = this.totalEnCaja;
+      this.loading.dismiss();
     }
     const modal = await this.modalController.create({
       component: AbrirCerrarCajaPage,
@@ -151,7 +157,7 @@ export class CajaChicaPage implements OnInit {
   // ------------FIN BORRAR CAJA------------
   // ------------INICIO CERRAR CAJA------------
 
-  async confirmarCerrarCaja(id) {
+  async confirmarCerrarCaja(datos: any) {
     const alert = await this.alertCtrl.create({
       cssClass: 'my-custom-class',
       header: 'Cerrar Caja Chica POS',
@@ -169,7 +175,7 @@ export class CajaChicaPage implements OnInit {
           text: 'Aceptar',
           handler: async () => {
             await this.presentLoading('Consultando... Por Favor espere');
-            this.modalAperturaCajaChica('cerrar', id);
+            this.modalAperturaCajaChica('cerrar', datos);
           }
         }
       ]
