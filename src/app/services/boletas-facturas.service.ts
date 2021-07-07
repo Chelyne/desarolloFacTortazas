@@ -36,7 +36,7 @@ export class BoletasFacturasService {
     venta.fechaEmision = new Date(moment.unix(venta.fechaEmision.seconds).format('D MMM YYYY H:mm'));
     venta.fechaEmision = formatDate(venta.fechaEmision, 'dd/MM/yyyy', 'en');
     venta.horaEmision = formatDate(venta.horaEmision, 'HH:mm aa', 'en');
-    this.sede = sede;
+    this.sede = sede.toLocaleLowerCase();
 
     // const qr = this.getImage();
     // console.log(qr);

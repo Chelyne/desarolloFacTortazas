@@ -247,6 +247,7 @@ export class CajaChicaPage implements OnInit {
       doc.text( 'Cierre Caja:   ' + datosCaja.saldoFinal.toFixed(2), 40, 130);
       doc.text( 'Ingresos: ' + (this.ingresoCaja ).toFixed(2), 185, 120);
       doc.text( 'Egresos: ' + (this.egresoCaja ).toFixed(2), 185, 130);
+      doc.text( 'Anulados: ' + (data.totalAnulado ).toFixed(2), 300, 120);
       doc.text( 'Total Ventas: ' + 'S./ ' + (data.totalGeneral).toFixed(2), 300, 130);
       doc.setFont('bolditalic', 'bold');
       doc.text( 'TOTAL SIN SALDO INICIAL: ' + 'S./ ' + (data.totalEfectivo + this.ingresoCaja - this.egresoCaja).toFixed(2), 185, 145);
@@ -270,7 +271,7 @@ export class CajaChicaPage implements OnInit {
       doc.text( 'No se encontraron registros.', 35, 150);
       } else {
         doc.autoTable({
-          head: [['#', 'Tipo transacción', 'Tipo documento', 'Documento', 'Fecha emisión', 'Cliente' , 'N. Documento', 'Moneda', 'Total']],
+          head: [['#', 'Tipo documento', 'Documento', 'Fecha emisión', 'Cliente' , 'N. Documento', 'Estado', 'M. Pago', 'Total']],
           body: data.FormatoVentas,
           startY: false,
           theme: 'grid',
@@ -287,6 +288,7 @@ export class CajaChicaPage implements OnInit {
     let totalEfectivo1 = 0;
     let totalTargeta1 = 0;
     let totalGeneral1 = 0;
+    let totalAnulado1 = 0;
     this.consultaIngresoEgresoCajaChica(dia, idVendedor);
     return this.dataApi.obtenerVentaPorDiaCajaChica(this.sede.toLowerCase(), dia, idVendedor).then( (snapshot: any) => {
       if (snapshot.length === 0) {
@@ -295,46 +297,54 @@ export class CajaChicaPage implements OnInit {
           totalEfectivo: totalEfectivo1,
           totalTargeta: totalTargeta1,
           totalGeneral: totalGeneral1,
+          totalAnulado: totalAnulado1
         };
         return (juntos);
       } else {
+        console.log('datos', snapshot);
         let contador = 0;
         snapshot.forEach(doc => {
           contador++;
-          totalGeneral1 =  totalGeneral1 + doc.totalPagarVenta  ;
+          if (doc.estadoVenta === 'anulado'){
+            totalAnulado1 = totalAnulado1 + doc.totalPagarVenta;
 
-          if (doc.tipoPago === 'efectivo') {
-          totalEfectivo1 =  totalEfectivo1 + doc.totalPagarVenta;
-          }
-          if (doc.tipoPago === 'tarjeta') {
-          totalTargeta1 =  totalTargeta1 + doc.totalPagarVenta;
+          }else {
+            totalGeneral1 =  totalGeneral1 + doc.totalPagarVenta  ;
+
+            if (doc.tipoPago === 'efectivo') {
+              totalEfectivo1 =  totalEfectivo1 + doc.totalPagarVenta;
+            }
+            if (doc.tipoPago === 'tarjeta') {
+              totalTargeta1 =  totalTargeta1 + doc.totalPagarVenta;
+            }
+
           }
           let formato: any;
 
           if (tipo === 'ventas'){
             formato = [
               contador,
-              'Venta',
-              doc.tipoComprobante.toUpperCase() || null,
+              this.convertirMayuscula(doc.tipoComprobante) || null,
               doc.serieComprobante + '-' + doc.numeroComprobante,
               doc.fechaEmision ? this.datePipe.transform(new Date(moment.unix(doc.fechaEmision.seconds)
                                                                   .format('D MMM YYYY H:mm')), 'short') : null,
-              doc.cliente.nombre.toUpperCase() || null,
+              this.convertirMayuscula(doc.cliente.nombre) || null,
               doc.cliente.numDoc || null,
-             'PEN',
+              this.convertirMayuscula(doc.estadoVenta) || null,
+              this.convertirMayuscula(doc.tipoPago) || null,
              redondeoDecimal( doc.totalPagarVenta, 2).toFixed(2)
             ];
           }else if ( tipo === 'ventasMetodoPago'){
             formato = [
               contador,
+              doc.vendedor.nombre ? this.convertirMayuscula(doc.vendedor.nombre) : null,
               doc.fechaEmision ? this.datePipe.transform(new Date(moment.unix(doc.fechaEmision.seconds)
                                                                   .format('D MMM YYYY H:mm')), 'short') : null,
-              doc.tipoComprobante.toUpperCase() || null,
+              this.convertirMayuscula(doc.tipoComprobante) || null,
               doc.serieComprobante + '-' + doc.numeroComprobante,
-              doc.tipoPago ? doc.tipoPago.toUpperCase() : null,
+              doc.tipoPago ? this.convertirMayuscula(doc.tipoPago ) : null,
+              this.convertirMayuscula(doc.estadoVenta) || null,
               'PEN',
-              1,
-              0.00,
               redondeoDecimal( doc.totalPagarVenta, 2).toFixed(2)
 
             ];
@@ -347,6 +357,7 @@ export class CajaChicaPage implements OnInit {
           totalEfectivo: totalEfectivo1,
           totalTargeta: totalTargeta1,
           totalGeneral: totalGeneral1,
+          totalAnulado: totalAnulado1
         };
         return juntos;
       }
@@ -375,10 +386,17 @@ export class CajaChicaPage implements OnInit {
       doc.text( 'Establecimiento: ' + this.convertirMayuscula(datosCaja.sede) , 185, 70);
       doc.text( 'Fecha y hora apertura: ' + datosCaja.FechaApertura, 185, 80);
       doc.text( 'Fecha y hora cierre: ' + datosCaja.FechaCierre , 185, 90);
+      doc.setFont('bolditalic', 'bold');
+      // tslint:disable-next-line:max-line-length
+      doc.text( 'Total Caja: ' + (data.totalGeneral + datosCaja.saldoInicial + this.ingresoCaja - this.egresoCaja - data.totalTargeta).toFixed(2), 320, 90);
       const metodoPago = [
         [1, 'Efectivo', data.totalEfectivo.toFixed(2)],
         [2, 'Tarjeta de credito o debito', data.totalTargeta.toFixed(2)],
-        [3, 'TOTAL VENTAS', data.totalGeneral.toFixed(2)],
+        [3, 'Total Anulados', data.totalAnulado.toFixed(2)],
+        [4, 'Ingresos', this.ingresoCaja.toFixed(2)],
+        [5, 'Egresos', this.egresoCaja.toFixed(2)],
+        [6, 'Saldo Inicial Caja', datosCaja.saldoInicial.toFixed(2)],
+        [7, 'TOTAL CAJA', (data.totalGeneral + datosCaja.saldoInicial + this.ingresoCaja - this.egresoCaja - data.totalTargeta).toFixed(2)],
       ];
       doc.autoTable({
         head: [['#', 'Descripción', 'suma']],
@@ -390,7 +408,7 @@ export class CajaChicaPage implements OnInit {
         doc.text( 'No se encontraron registros.', 35, 150);
       } else {
         doc.autoTable({
-          head: [['#', 'Fecha y hora emisión', 'Tipo documento', 'Documento', 'Método de pago', 'Moneda', 'Importe', 'Vuelto', 'Monto']],
+          head: [['#', 'Vendedor', 'Fecha y hora emisión' , 'Tipo documento', 'Documento', 'Método de pago', 'Estado', 'Moneda', 'Monto']],
           body: data.FormatoVentas,
           startY: false,
           theme: 'grid',
