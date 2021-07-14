@@ -258,6 +258,7 @@ export class ReporteVentasPage implements OnInit {
           'Sede: ': datos.vendedor.sede,
           'Estado Comprobante': datos.estadoVenta,
           'Descuento ': datos.descuentoVenta ? datos.descuentoVenta : null ,
+          'Nota de Crédito ': datos.cdrAnulado ? datos.cdrAnulado.serie + '-' + datos.cdrAnulado.correlacion : null ,
           'Servicio / Producto ': datos.productos ,
         };
         dataExcel.push(formato);
