@@ -54,10 +54,11 @@ export function assertString(testName: string, valor1: string, valor2: string) {
 }
 
 // tslint:disable-next-line: max-line-length
-export const activarToProduction = functions.runWith(runtimeOpts).pubsub.schedule('30 19 * * *').timeZone('America/Lima').onRun( async (context) => {
+export const activarToProduction = functions.runWith(runtimeOpts).pubsub.schedule('30 22 * * *').timeZone('America/Lima').onRun( async (context) => {
   const apiPeruService = new ApiPeruService();
+  apiPeruService.setSede('andahuaylas');
 
-  /** obtener enviroment de empresa */
+  /* obtener enviroment de empresa */
   const enviroment = await apiPeruService.obtenerEnviromentFromApisPeru();
 
   if (enviroment === 'beta'){
@@ -71,16 +72,17 @@ export const activarToProduction = functions.runWith(runtimeOpts).pubsub.schedul
     }
   }
 
-  /** si el enviroment es beta, cambiar a proguccion */
+  /* si el enviroment es beta, cambiar a proguccion */
 
   return true;
 });
 
 // tslint:disable-next-line: max-line-length
-export const dectiveToProduction = functions.runWith(runtimeOpts).pubsub.schedule('30 19 * * *').timeZone('America/Lima').onRun( async (context) => {
+export const dectiveToProduction = functions.runWith(runtimeOpts).pubsub.schedule('45 22 * * *').timeZone('America/Lima').onRun( async (context) => {
   const apiPeruService = new ApiPeruService();
+  apiPeruService.setSede('andahuaylas');
 
-  /** obtener enviroment de empresa */
+  /* obtener enviroment de empresa */
   const enviroment = await apiPeruService.obtenerEnviromentFromApisPeru();
 
   if (enviroment === 'produccion'){
@@ -94,7 +96,7 @@ export const dectiveToProduction = functions.runWith(runtimeOpts).pubsub.schedul
     }
   }
 
-  /** si el enviroment es beta, cambiar a proguccion */
+  /* si el enviroment es beta, cambiar a proguccion */
 
   return true;
 });
@@ -104,13 +106,22 @@ export const dectiveToProduction = functions.runWith(runtimeOpts).pubsub.schedul
 
 
 
-export const sender =  functions.runWith(runtimeOpts).pubsub.schedule('30 19 * * *').timeZone('America/Lima').onRun( async (context) => {
+export const sender =  functions.runWith(runtimeOpts).pubsub.schedule('31 22 * * *').timeZone('America/Lima').onRun( async (context) => {
 
 // export const sender = functions.runWith(runtimeOpts).https.onRequest(async (request, response) => {
 
   console.log('===================================START SEND TO SUNAT==========================================');
 
   const apiPeruService = new ApiPeruService();
+  apiPeruService.setSede('andahuaylas');
+
+  /* obtener enviroment de empresa */
+  const enviroment = await apiPeruService.obtenerEnviromentFromApisPeru();
+
+  if (enviroment === 'beta') {
+    console.log('NO ESTA EN PRODUCCION');
+    return;
+  }
 
   for (const sede of LISTA_SEDE) {
     console.log(`=================================== ENVIAR SUNAT SEDE: ${sede}======================================`);
@@ -224,98 +235,118 @@ export function ConstruirMensaje(input: any, venta: VentaInterface, sede: string
 /* -------------------------------------------------------------------------- */
 /*                            CONFIGURACION GENERAL                           */
 /* -------------------------------------------------------------------------- */
-// export const GENERAL_CONFIG = {
-//     datosApiPeru: {
-//         usuario: 'friendscode',
-//         password: 'friends2019peru'
-//     },
-//     datosEmpresa: {
-//         logo: '../../../assets/img/logo_app.png',
-//         ruc: '20601831032',
-//         razon_social: 'CLÍNICA VETERINARIA TOOBY E.I.R.L',
-//         nombreComercial: 'VETERINARIAS TOBBY',
-//         token: 'eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJpYXQiOjE2MDk2MTUzMDAsInVzZXJuYW1lIjoiZnJpZW5kc2NvZGUiLCJjb21wYW55IjoiMjA2MDE4MzEwMzIiLCJleHAiOjQ3NjMyMTUzMDB9.JIikuy-l6I74EB5-DNMlFjdqtIhIwR4CDDc10LLuiUuwt3AdxSbpQlgZbIHsGA7cMFAGkhP0trdZVFp40Z35Ayr9fL-JA4NX6Scd6VdnlIBkf2FT32irpGwkY71bEUnjDxGARWGtFnZwhK3MMLWAdjemGrTP25AqtGK8IjkiFZSKQ90toFxpd1Ije6zigRxrkFl0vS6WsFWwHXG-vmCyBqw_i_qE8MVT1zVemas1RZxaDH3UIhCB7mXxZqEUO8QqcmUB8L9OY6tCFOYm_whDjOdkz4GrxdfWMoAQHwDhEhI85k4fwrdynbGyonH1Invcv5xejz0u99geEJmTns9TdqV0dDjhvE4Prqtb53PwRSpJ6Bpo9lIq_YFoMcJk9duXqS2iVNgFDEc3oa35OeM75x0xfrv5i7uIr_JajjQ1-LLz36hJpc1lt9dwAEPrtGoEoSwImGByBZA7yU19cw_3r429-bHMAjnvdF9tPBPJCfVFfW0SYsLfR_UVXoZNzWk1gYDLUvvQw5PtLh6GVGtphy4sSTElZ1-fZ1Q2lmf8Jh8XSdeE4qDfXhW9YHIBUwn99K_9H80Hd8mi2rqJzig4ftudNZtAU0YqLHq6WohTXWNwf9Fob7b66vlwXHawQ6HGoN046kAebuWKBQeYwJFYzfQJOznEtkw5aiJ2wo9hcaU',
-//         apisPeruId: 401,
-//     },
-//     sedes: {
-//         andahuaylas: {
-//             direccion: {
-//                 ubigueo: '030201',
-//                 direccion : 'AV. PERU NRO. 236 (FRENTE Al PARQUE LAMPA DE ORO) APURIMAC - ANDAHUAYLAS - ANDAHUAYLAS',
-//                 direccionCorta: 'Av. Peru 236 Andahuaylas Apurimac',
-//                 referencia: 'Parque Lampa de Oro',
-//                 codigoPais: 'PE',
-//                 departamento: 'APURIMAC',
-//                 provincia: 'ANDAHUAYLAS',
-//                 distrito: 'ANDAHUAYLAS'
-//             },
-//             telefono: '983905066',
-//             caja1: {
-//                 boleta: 'B001',
-//                 factura: 'F001',
-//                 notaVenta: 'NV01'
-//             }
-//         },
-//         abancay: {
-//             direccion: {
-//                 ubigueo: '030101',
-//                 direccion : 'AV.SEOANE NRO. 100 (PARQUE EL OLIVO) APURIMAC - ABANCAY - ABANCAY',
-//                 direccionCorta: 'Av. Seoane 100 Abancay Apurimac',
-//                 referencia: 'Parque el Olivo',
-//                 codigoPais: 'PE',
-//                 departamento: 'APURIMAC',
-//                 provincia: 'ABANCAY',
-//                 distrito: 'ABANCAY'
-//             },
-//             telefono: '988907777',
-//             caja1: {
-//                 boleta: 'B002',
-//                 factura: 'F002',
-//                 notaVenta: 'NV02'
-//             }
-//         }
-//     }
-// };
-
 export const GENERAL_CONFIG = {
   datosApiPeru: {
-    usuario: 'hz',
-    password: '123456'
+      usuario: 'friendscode',
+      password: 'friends2019peru'
   },
   datosEmpresa: {
-    ruc: '20722440881',
-    razon_social: 'EMPRESA DE EJEMPLO E.I.R.L',
-    nombreComercial: 'EMPRESA DE EJEMPLO',
-    token: 'eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJpYXQiOjE2MDkxNzE3NDQsInVzZXJuYW1lIjoiaHoiLCJjb21wYW55IjoiMjA3MjI0NDA4ODEiLCJleHAiOjQ3NjI3NzE3NDR9.DfrmovRyJGC0UR3FZblxmeUMKDGA5M9_FfFm9SIqCj-JvjTkIz8IqIWNmTnC7nZN2WiXg_yik4rv3vDi29g5d9b-YdKGL05QeSLDLgenD-W9AL3YiE_U0uSrGtPv9PvETwCcn3RoaGG3R9atB28geSPFzkcEccjyJRckyMNYRgZHuq9KLdu6mhKHdCOMhmxcMIt9OIO577QQpQkYljFiY0WC7cSlRjJyTSH2QxDAOfbz-PKOrs2fBJBi2X5cE4JmH0JeHhDikUY1cUcmo3_HOrV-IZk2hn9lcAZ-tfzvIvLeReTpA_quh9UiOs4Xy5Fwo93dj4fbSvRetN5RqylfHpnETzAKSZrj_AhdTmdTPWFZkNkoIB6eazqE7CKmh8URc_xQM3N3WEB-myZPyX8LRQ25xkE1DJKV9zxzuLDiUgi7ggGTQW_pC67uHi0ykeWD2D0KrY4eQanRdecBYfJyZ7LktOe1fUy-vMeBeYsniigVOY2u2s5e1ZG37gOmdDJJX_TC6GCRRfolor1M3z6B1a4UAiSpwGUcYxvKIMl9OgbmO1slCKnyx-S9KccF6PlapEPRkee_blEc4Gq39_sx2Eo6HxSyo27BQ80DpSTj2AsRTFtKVWc5mDvt7CnQLPc8rMJvtqwtrhdNxrVC-FHgItRHsWQ7mTUUYOWo2AcBH3c',
-    apisPeruId: 354
+      logo: '../../../assets/img/logo_app.png',
+      ruc: '20601831032',
+      razon_social: 'CLÍNICA VETERINARIA TOOBY E.I.R.L',
+      nombreComercial: 'VETERINARIAS TOBBY',
+      token: 'eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJpYXQiOjE2MDk2MTUzMDAsInVzZXJuYW1lIjoiZnJpZW5kc2NvZGUiLCJjb21wYW55IjoiMjA2MDE4MzEwMzIiLCJleHAiOjQ3NjMyMTUzMDB9.JIikuy-l6I74EB5-DNMlFjdqtIhIwR4CDDc10LLuiUuwt3AdxSbpQlgZbIHsGA7cMFAGkhP0trdZVFp40Z35Ayr9fL-JA4NX6Scd6VdnlIBkf2FT32irpGwkY71bEUnjDxGARWGtFnZwhK3MMLWAdjemGrTP25AqtGK8IjkiFZSKQ90toFxpd1Ije6zigRxrkFl0vS6WsFWwHXG-vmCyBqw_i_qE8MVT1zVemas1RZxaDH3UIhCB7mXxZqEUO8QqcmUB8L9OY6tCFOYm_whDjOdkz4GrxdfWMoAQHwDhEhI85k4fwrdynbGyonH1Invcv5xejz0u99geEJmTns9TdqV0dDjhvE4Prqtb53PwRSpJ6Bpo9lIq_YFoMcJk9duXqS2iVNgFDEc3oa35OeM75x0xfrv5i7uIr_JajjQ1-LLz36hJpc1lt9dwAEPrtGoEoSwImGByBZA7yU19cw_3r429-bHMAjnvdF9tPBPJCfVFfW0SYsLfR_UVXoZNzWk1gYDLUvvQw5PtLh6GVGtphy4sSTElZ1-fZ1Q2lmf8Jh8XSdeE4qDfXhW9YHIBUwn99K_9H80Hd8mi2rqJzig4ftudNZtAU0YqLHq6WohTXWNwf9Fob7b66vlwXHawQ6HGoN046kAebuWKBQeYwJFYzfQJOznEtkw5aiJ2wo9hcaU',
+      apisPeruId: 401,
   },
   sedes: {
-    andahuaylas: {
-      direccion: {
-        ubigueo: '030201',
-        direccion: 'AV. PERU NRO. 236 (FRENTE Al PARQUE LAMPA DE ORO) APURIMAC - ANDAHUAYLAS - ANDAHUAYLAS',
-        codigoPais: 'PE',
-        departamento: 'APURIMAC',
-        provincia: 'ANDAHUAYLAS',
-        distrito: 'ANDAHUAYLAS'
+      andahuaylas: {
+          direccion: {
+              ubigueo: '030201',
+              direccion : 'AV. PERU NRO. 236 (FRENTE Al PARQUE LAMPA DE ORO) APURIMAC - ANDAHUAYLAS - ANDAHUAYLAS',
+              direccionCorta: 'Av. Peru 236 Andahuaylas Apurimac',
+              referencia: 'Parque Lampa de Oro',
+              codigoPais: 'PE',
+              departamento: 'APURIMAC',
+              provincia: 'ANDAHUAYLAS',
+              distrito: 'ANDAHUAYLAS'
+          },
+          telefono: '983905066',
+          caja1: {
+              boleta: 'B001',
+              factura: 'F001',
+              notaVenta: 'NV01'
+          }
+      },
+      abancay: {
+          direccion: {
+              ubigueo: '030101',
+              direccion : 'AV. SEOANE NRO. 100 (PARQUE EL OLIVO) APURIMAC - ABANCAY - ABANCAY',
+              direccionCorta: 'Av. Seoane 100 Abancay Apurimac',
+              referencia: 'Parque el Olivo',
+              codigoPais: 'PE',
+              departamento: 'APURIMAC',
+              provincia: 'ABANCAY',
+              distrito: 'ABANCAY'
+          },
+          telefono: '988907777',
+          caja1: {
+              boleta: 'B002',
+              factura: 'F002',
+              notaVenta: 'NV02'
+          }
+      },
+      talavera: {
+          direccion: {
+              ubigueo: '030101',
+              direccion : 'AV. MANCO CAPAC NRO. 305 APURIMAC - ANDAHUAYLAS - TALAVERA',
+              direccionCorta: 'Av. Manco Capac 305 Talavera Apurimac',
+              referencia: 'A 1 cuadra de la plaza de Talavera',
+              codigoPais: 'PE',
+              departamento: 'APURIMAC',
+              provincia: 'ANDAHUAYLAS',
+              distrito: 'TALAVERA'
+          },
+          telefono: '970066627',
+          caja1: {
+              boleta: 'B003',
+              factura: 'F003',
+              notaVenta: 'NV03'
+          }
       }
-    },
-    abancay: {
-      direccion: {
-        ubigueo: '030101',
-        direccion: 'AV.SEOANE NRO. 100 (PARQUE EL OLIVO) APURIMAC - ABANCAY - ABANCAY',
-        codigoPais: 'PE',
-        departamento: 'APURIMAC',
-        provincia: 'ABANCAY',
-        distrito: 'ABANCAY'
-      }
-    }
   }
 };
 
 
+// export const GENERAL_CONFIG = {
+//   datosApiPeru: {
+//     usuario: 'hz',
+//     password: '123456'
+//   },
+//   datosEmpresa: {
+//     ruc: '20722440881',
+//     razon_social: 'EMPRESA DE EJEMPLO E.I.R.L',
+//     nombreComercial: 'EMPRESA DE EJEMPLO',
+// tslint:disable-next-line:max-line-length
+//     token: 'eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJpYXQiOjE2MDkxNzE3NDQsInVzZXJuYW1lIjoiaHoiLCJjb21wYW55IjoiMjA3MjI0NDA4ODEiLCJleHAiOjQ3NjI3NzE3NDR9.DfrmovRyJGC0UR3FZblxmeUMKDGA5M9_FfFm9SIqCj-JvjTkIz8IqIWNmTnC7nZN2WiXg_yik4rv3vDi29g5d9b-YdKGL05QeSLDLgenD-W9AL3YiE_U0uSrGtPv9PvETwCcn3RoaGG3R9atB28geSPFzkcEccjyJRckyMNYRgZHuq9KLdu6mhKHdCOMhmxcMIt9OIO577QQpQkYljFiY0WC7cSlRjJyTSH2QxDAOfbz-PKOrs2fBJBi2X5cE4JmH0JeHhDikUY1cUcmo3_HOrV-IZk2hn9lcAZ-tfzvIvLeReTpA_quh9UiOs4Xy5Fwo93dj4fbSvRetN5RqylfHpnETzAKSZrj_AhdTmdTPWFZkNkoIB6eazqE7CKmh8URc_xQM3N3WEB-myZPyX8LRQ25xkE1DJKV9zxzuLDiUgi7ggGTQW_pC67uHi0ykeWD2D0KrY4eQanRdecBYfJyZ7LktOe1fUy-vMeBeYsniigVOY2u2s5e1ZG37gOmdDJJX_TC6GCRRfolor1M3z6B1a4UAiSpwGUcYxvKIMl9OgbmO1slCKnyx-S9KccF6PlapEPRkee_blEc4Gq39_sx2Eo6HxSyo27BQ80DpSTj2AsRTFtKVWc5mDvt7CnQLPc8rMJvtqwtrhdNxrVC-FHgItRHsWQ7mTUUYOWo2AcBH3c',
+//     apisPeruId: 354
+//   },
+//   sedes: {
+//     andahuaylas: {
+//       direccion: {
+//         ubigueo: '030201',
+//         direccion: 'AV. PERU NRO. 236 (FRENTE Al PARQUE LAMPA DE ORO) APURIMAC - ANDAHUAYLAS - ANDAHUAYLAS',
+//         codigoPais: 'PE',
+//         departamento: 'APURIMAC',
+//         provincia: 'ANDAHUAYLAS',
+//         distrito: 'ANDAHUAYLAS'
+//       }
+//     },
+//     abancay: {
+//       direccion: {
+//         ubigueo: '030101',
+//         direccion: 'AV.SEOANE NRO. 100 (PARQUE EL OLIVO) APURIMAC - ABANCAY - ABANCAY',
+//         codigoPais: 'PE',
+//         departamento: 'APURIMAC',
+//         provincia: 'ABANCAY',
+//         distrito: 'ABANCAY'
+//       }
+//     }
+//   }
+// };
 
-const LISTA_SEDE = ['andahuaylas', 'abancay'];
+
+
+const LISTA_SEDE = ['talavera'];
 // const LISTA_SEDE = ['andahuaylas'];
 /* -------------------------------------------------------------------------- */
 /* -------------------------------------------------------------------------- */
@@ -834,6 +865,10 @@ class ApiPeruService {
     this.setApiPeruConfig(GENERAL_CONFIG);
   }
 
+  setDatosEmpresa(config: ApiPeruConfigInterface) {
+    this.datosEmpresa = config.datosEmpresa ?? {};
+  }
+
   setApiPeruConfig(config: ApiPeruConfigInterface) {
 
     this.datosApiPeru = config.datosApiPeru ?? {};
@@ -924,8 +959,12 @@ class ApiPeruService {
   }
 
   async obtenerEmpresaPorId(){
-    const myHeaders = new Headers();
-    myHeaders.append('Authorization', 'Bearer '.concat(await this.obtenerUserApiperuToken()));
+    // const myHeaders = new Headers();
+    // myHeaders.append('Authorization', 'Bearer '.concat(await this.obtenerUserApiperuToken()));
+
+    const myHeaders = {
+      Authorization: 'Bearer '.concat(await this.obtenerUserApiperuToken())
+    };
 
     const requestOptions: RequestInit = {
       method: 'GET',
@@ -942,9 +981,14 @@ class ApiPeruService {
   }
 
   async modificarEmpresa(NewEmpresaValues: EmpresaInterface){
-    const myHeaders = new Headers();
-    myHeaders.append('Authorization', 'Bearer '.concat(await this.obtenerUserApiperuToken()));
-    myHeaders.append('Content-Type', 'application/json');
+    // const myHeaders = new Headers();
+    // myHeaders.append('Authorization', 'Bearer '.concat(await this.obtenerUserApiperuToken()));
+    // myHeaders.append('Content-Type', 'application/json');
+
+    const myHeaders = {
+      Authorization: 'Bearer '.concat(await this.obtenerUserApiperuToken()),
+      'Content-Type': 'application/json'
+    };
 
     const raw = JSON.stringify(NewEmpresaValues);
 
@@ -1188,6 +1232,7 @@ class ApiPeruService {
     }
 
     const totalaPagar = venta.totalPagarVenta - icb;
+    // CLEAN - LINEA INNECESARIO
     // const totalaPagar = venta.montoNeto - icbr;
     const MontoBase = totalaPagar / 1.18;
     const igv = totalaPagar - MontoBase;
@@ -1285,12 +1330,13 @@ class ApiPeruService {
     const listaFormateda: SaleDetailInterface[] = [];
 
     for (const itemDeVenta of itemsDeVenta) {
-      listaFormateda.push(this.formatearDetalleVenta(itemDeVenta));
+      // NOTE - MODIFICAR DEACUERDO A LA VERSION
+      listaFormateda.push(this.formatearDetalleVentaV2(itemDeVenta));
     }
     return listaFormateda;
   }
 
-  formatearDetalleVenta(itemDeVenta: ItemDeVentaInterface): SaleDetailInterface {
+  formatearDetalleVentaV2(itemDeVenta: ItemDeVentaInterface): SaleDetailInterface {
     if (!itemDeVenta.cantidad || !itemDeVenta.precio) {
       throw String('ITEM DE VENTA INCONSISTENTE, CANTIDA O PU_VENTA NO DEFINIDO');
     }
@@ -1300,6 +1346,41 @@ class ApiPeruService {
     const cantidadItems = itemDeVenta.cantidad;
 
     const precioUnit = itemDeVenta.precio; /** montoBase + IGV */
+
+    const precioUnitarioBase = precioUnit / 1.18;
+    const igvUnitario = precioUnit - precioUnitarioBase;
+
+    const montoBase = cantidadItems * precioUnitarioBase;
+    const igvTotal = cantidadItems * igvUnitario;
+
+    return {
+      // codProducto : 'P001',
+      unidad: this.ObtenerCodigoMedida(itemDeVenta.producto?.medida ?? ''),
+      descripcion: itemDeVenta.producto?.nombre ?? '',
+      cantidad: itemDeVenta.cantidad,
+      mtoBaseIgv: redondeoDecimal(montoBase, 2),
+      porcentajeIgv: 18,
+      igv: redondeoDecimal(igvTotal, 2),
+      tipAfeIgv: '10', // OperacionOnerosa: 10
+      totalImpuestos: redondeoDecimal(igvTotal, 2), // suma de todos los impuestos que hubiesen
+      mtoValorVenta: redondeoDecimal(montoBase, 2),
+      mtoValorUnitario: redondeoDecimal(precioUnitarioBase, 2),
+      mtoPrecioUnitario: redondeoDecimal(precioUnit, 2)
+    };
+  }
+
+  formatearDetalleVentaV1(itemDeVenta: ItemDeVentaInterface): SaleDetailInterface {
+
+    if (!itemDeVenta.cantidad || !itemDeVenta.producto?.precio) {
+      throw String('ITEM DE VENTA INCONSISTENTE, CANTIDA O PU_VENTA NO DEFINIDO');
+    }
+
+    const cantidadItems = itemDeVenta.cantidad;
+    const precioUnit = itemDeVenta.producto.precio; /** montoBase + IGV */
+
+    // const cantidadItems = itemDeVenta.cantidad;
+
+    // const precioUnit = itemDeVenta.precio; /** montoBase + IGV */
 
     const precioUnitarioBase = precioUnit / 1.18;
     const igvUnitario = precioUnit - precioUnitarioBase;
