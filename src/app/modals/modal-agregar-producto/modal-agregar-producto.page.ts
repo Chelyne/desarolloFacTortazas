@@ -332,7 +332,7 @@ export class ModalAgregarProductoPage implements OnInit {
       const item = {
         medida: medida.value,
         factor: factor.value,
-        precio: precio.value
+        precio: parseFloat(precio.value) // convertido a float de string
       };
       medida.value = '';
       factor.value = '';
