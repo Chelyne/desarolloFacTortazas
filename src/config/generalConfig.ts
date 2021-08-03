@@ -15,7 +15,7 @@ export const GENERAL_CONFIG = {
         sanjeronimo: {
             direccion: {
                 ubigueo: '030213',
-                direccion : 'AVENIDA ALFONSO UGARTE 108  (COSTADO DE LA COMISARIA) SAN JERONIMO ANDAHUAYLAS APURIMAC',
+                direccion : 'AV. ALFONSO UGARTE NRO. 108 URB. SAN JERONIMO APURIMAC ANDAHUAYLAS SAN JERONIMO',
                 direccionCorta: 'Av. Alfonso Ugarte 108 San Jerónimo Andahuaylas',
                 referencia: 'Costado de la Comisaria (San Jerónimo)',
                 codigoPais: 'PE',
