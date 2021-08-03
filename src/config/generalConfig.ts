@@ -12,7 +12,7 @@ export const GENERAL_CONFIG = {
         apisPeruId: 401,
     },
     sedes: {
-        andahuaylas: {
+        sanjeronimo: {
             direccion: {
                 ubigueo: '030201',
                 direccion : 'AV. PERU NRO. 236 (FRENTE Al PARQUE LAMPA DE ORO) APURIMAC - ANDAHUAYLAS - ANDAHUAYLAS',
@@ -28,42 +28,6 @@ export const GENERAL_CONFIG = {
                 boleta: 'B001',
                 factura: 'F001',
                 notaVenta: 'NV01'
-            }
-        },
-        abancay: {
-            direccion: {
-                ubigueo: '030101',
-                direccion : 'AV. SEOANE NRO. 100 (PARQUE EL OLIVO) APURIMAC - ABANCAY - ABANCAY',
-                direccionCorta: 'Av. Seoane 100 Abancay Apurimac',
-                referencia: 'Parque el Olivo',
-                codigoPais: 'PE',
-                departamento: 'APURIMAC',
-                provincia: 'ABANCAY',
-                distrito: 'ABANCAY'
-            },
-            telefono: '988907777',
-            caja1: {
-                boleta: 'B002',
-                factura: 'F002',
-                notaVenta: 'NV02'
-            }
-        },
-        talavera: {
-            direccion: {
-                ubigueo: '030101',
-                direccion : 'AV. MANCO CAPAC NRO. 305 APURIMAC - ANDAHUAYLAS - TALAVERA',
-                direccionCorta: 'Av. Manco Capac 305 Talavera Apurimac',
-                referencia: 'A 1 cuadra de la plaza de Talavera',
-                codigoPais: 'PE',
-                departamento: 'APURIMAC',
-                provincia: 'ANDAHUAYLAS',
-                distrito: 'TALAVERA'
-            },
-            telefono: '970066627',
-            caja1: {
-                boleta: 'B003',
-                factura: 'F003',
-                notaVenta: 'NV03'
             }
         }
     }
