@@ -33,7 +33,7 @@
 }
 
 .action-sheet-icon.sc-ion-action-sheet-md {
-    color: #00AFEF;
+    color: var(--ion-color-primary);
   }
 
   .popoverVariantes .popover-content{
@@ -57,7 +57,7 @@
 
   /* Handle */
   .poppoverCliente .popover-content::-webkit-scrollbar-thumb {
-    background: rgb(89, 202, 255);
+    background: var(--ion-color-primary);
     border-radius: 10px;
   }
 
@@ -82,7 +82,7 @@
   }
 
   .ionSelects  .popover-content::-webkit-scrollbar-thumb {
-    background: rgb(89, 202, 255);
+    background: var(--ion-color-primary);
     border-radius: 10px;
   }
 

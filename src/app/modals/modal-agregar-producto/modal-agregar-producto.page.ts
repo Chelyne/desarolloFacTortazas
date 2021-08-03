@@ -26,7 +26,7 @@ export class ModalAgregarProductoPage implements OnInit {
 
   sede = this.storage.datosAdmi.sede;
 
-  listaDeCategorias: CategoriaInterface[] = [{ categoria: 'accesorios' }];
+  listaDeCategorias: CategoriaInterface[] = [{ categoria: 'bebidas' }];
   listaDeVariantes: VariantesInterface[] = [];
 
   // processing: boolean;
@@ -51,7 +51,7 @@ export class ModalAgregarProductoPage implements OnInit {
     private datePipe: DatePipe,
     private storage: StorageService,
   ) {
-    this.ObtenerCorrelacionProducto();
+    // this.ObtenerCorrelacionProducto();
     this.productoForm = this.createFormAgregarProducto();
     this.ObtenerCategorias();
   }

@@ -6,13 +6,13 @@
 export const environment = {
   production: false,
   firebaseConfig : {
-    apiKey: 'AIzaSyD3xZbb6RH3UwjdddEu3oR0Xjhvvryem2M',
-    authDomain: 'toobyfe.firebaseapp.com',
-    databaseURL: 'https://toobyfe.firebaseio.com',
-    projectId: 'toobyfe',
-    storageBucket: 'toobyfe.appspot.com',
-    messagingSenderId: '314812147164',
-    appId: '1:314812147164:web:85b5eb57955e79b195db19'
+    apiKey: 'AIzaSyBAdz26YWRhpH_SExhoBIRal_zcm6FE1JU',
+    authDomain: 'facturacionpollerialaplaza.firebaseapp.com',
+    projectId: 'facturacionpollerialaplaza',
+    storageBucket: 'facturacionpollerialaplaza.appspot.com',
+    messagingSenderId: '392852766673',
+    appId: '1:392852766673:web:aa594a276fd3121f912af0',
+    measurementId: 'G-WPP2FBPXCC'
   }
 };
 
