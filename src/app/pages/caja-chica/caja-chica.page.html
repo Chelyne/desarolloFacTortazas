@@ -146,7 +146,7 @@
                           (click)="ReporteIngresoMetPagoVendedor(item)">
                           R. Ingreso
                         </ion-button>
-                        <ion-button *ngIf="rolDatosAdmi === 'administrador' && item.estado==='Aperturado'" size="small"
+                        <ion-button *ngIf="rolDatosAdmi === 'Administrador' && item.estado==='Aperturado'" size="small"
                           class="botones" color="danger" (click)="confirmarBorrarCaja(item.id)">
                           Eliminar
                         </ion-button>
@@ -154,7 +154,7 @@
                           (click)="confirmarCerrarCaja(item)">
                           Cerrar Caja
                         </ion-button>
-                        <ion-button *ngIf=" rolDatosAdmi === 'administrador' && item.estado==='Aperturado'" size="small"
+                        <ion-button *ngIf=" rolDatosAdmi === 'Administrador' && item.estado==='Aperturado'" size="small"
                           class="botones" color="primary" (click)="modalAperturaCajaChica('editar',item)">
                           Editar
                         </ion-button>

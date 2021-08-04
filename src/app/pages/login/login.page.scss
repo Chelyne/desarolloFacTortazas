@@ -10,13 +10,11 @@
     text-align: center;
     img {
         height: 100%;
-        width: 100%;
-        object-fit: cover;
+        object-fit: contain;
     }
 }
 form {
     margin: 5%;
-    width: 100%;
     .logo {
         margin-right: 10%;
         margin-left: 10%;

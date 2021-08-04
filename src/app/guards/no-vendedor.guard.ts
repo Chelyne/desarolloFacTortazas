@@ -14,10 +14,10 @@ export class NoVendedorGuard implements CanActivate {
   canActivate(
     next: ActivatedRouteSnapshot,
     state: RouterStateSnapshot): Observable<boolean | UrlTree> | Promise<boolean | UrlTree> | boolean | UrlTree {
-      if (this.storage.datosAdmi.rol === 'administrador') {
+      if (this.storage.datosAdmi.rol === 'Administrador') {
           console.log('ADELANTE');
           return true;
-      } else if (this.storage.datosAdmi.rol === 'vendedor') {
+      } else if (this.storage.datosAdmi.rol === 'Vendedor') {
         console.log('NO TIENES PERMISO');
         this.presentToast();
         return false;

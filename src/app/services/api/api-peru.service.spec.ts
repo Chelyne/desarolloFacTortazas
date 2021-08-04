@@ -580,7 +580,7 @@ describe('description', () => {
         token: 'token laptop',
         celular: '910426974',
         id: 'nerio@gmail.com',
-        rol: 'administrador',
+        rol: 'Administrador',
         sede: 'Andahuaylas',
         nombre: 'Nerio',
         dni: '70148737',

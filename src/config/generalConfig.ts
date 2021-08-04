@@ -5,29 +5,65 @@ export const GENERAL_CONFIG = {
     },
     datosEmpresa: {
         logo: '../../../assets/img/logo_app.png',
-        ruc: '20608235702',
-        razon_social: 'LA PLAZA POLLOS Y PARRILLAS E.I.R.L.',
-        nombreComercial: 'POLLERIA LA PLAZA',
-        token: 'eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJpYXQiOjE2MjgwMDQ3NzEsImV4cCI6NDc4MTYwNDc3MSwidXNlcm5hbWUiOiJmcmllbmRzY29kZSIsImNvbXBhbnkiOiIyMDYwODIzNTcwMiJ9.hzWQyS_g7bDxWCnYY45C5uYiWczAjZoCoUIA7No5CsJCqXD2hLhOvOtN5YLLxxc81e4JFGbY9blvb-OD-DhaeU_qMD_AxPHb5UagccEoYRlhviq3ak008LDGg8UmmvOOeeX7d7NsTmDqI-vsaIQ-UOMxSbIvncaf2O2ODwe18oGx9GKoJks5K7BodIknYL-JBlhsO-83cEzDr0Moa3tIneVMuNb3s4ztst-bPgMZg2GNQXUee9Vl0X80Anqk9CQqB0RMtvHzyaG5CRKQooJP1EVjqNyVa38VGRAwI6gLzeBzrjJ7YyqrGo-Faf_FStpcUme6R4Nq1wNw8C5VkV0__lvvS7o_XOcF_lKngZErEpQqRKUAy1Xb5Qo4CCQBV8fuVHhO9FypHYxd-FJsN6wF42eUFei5szCGNsesS8bpqHxkXh4fkTaYxR-KaEypVRoA71lPz82dGGhK2PlW1cV7ll0GrNoeU3bvUZQWTJKTLF4ToJ6Qib7Xe34OE_fYiu6VA0wHjEAqJToZKB7eyiZ1ivjhSkcM22Qnfhe9Uvrv-yr8RUGZhlMTQV_5uMqQ0yl-BtqKJ3ELJPZh0OEXvb931yCgnD0VTJrNlftPcSN3DEnjxismiTd3bNNGfocN-osHtKzxOl_mIdpAHxcp9QWGtFd4EqgWEJKAadrA15sKZqc',
-        apisPeruId: 946,
+        ruc: '20601831032',
+        razon_social: 'CLÍNICA VETERINARIA TOOBY E.I.R.L',
+        nombreComercial: 'VETERINARIAS TOBBY',
+        token: 'eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJpYXQiOjE2MDk2MTUzMDAsInVzZXJuYW1lIjoiZnJpZW5kc2NvZGUiLCJjb21wYW55IjoiMjA2MDE4MzEwMzIiLCJleHAiOjQ3NjMyMTUzMDB9.JIikuy-l6I74EB5-DNMlFjdqtIhIwR4CDDc10LLuiUuwt3AdxSbpQlgZbIHsGA7cMFAGkhP0trdZVFp40Z35Ayr9fL-JA4NX6Scd6VdnlIBkf2FT32irpGwkY71bEUnjDxGARWGtFnZwhK3MMLWAdjemGrTP25AqtGK8IjkiFZSKQ90toFxpd1Ije6zigRxrkFl0vS6WsFWwHXG-vmCyBqw_i_qE8MVT1zVemas1RZxaDH3UIhCB7mXxZqEUO8QqcmUB8L9OY6tCFOYm_whDjOdkz4GrxdfWMoAQHwDhEhI85k4fwrdynbGyonH1Invcv5xejz0u99geEJmTns9TdqV0dDjhvE4Prqtb53PwRSpJ6Bpo9lIq_YFoMcJk9duXqS2iVNgFDEc3oa35OeM75x0xfrv5i7uIr_JajjQ1-LLz36hJpc1lt9dwAEPrtGoEoSwImGByBZA7yU19cw_3r429-bHMAjnvdF9tPBPJCfVFfW0SYsLfR_UVXoZNzWk1gYDLUvvQw5PtLh6GVGtphy4sSTElZ1-fZ1Q2lmf8Jh8XSdeE4qDfXhW9YHIBUwn99K_9H80Hd8mi2rqJzig4ftudNZtAU0YqLHq6WohTXWNwf9Fob7b66vlwXHawQ6HGoN046kAebuWKBQeYwJFYzfQJOznEtkw5aiJ2wo9hcaU',
+        apisPeruId: 401,
     },
     sedes: {
-        sanjeronimo: {
+        andahuaylas: {
             direccion: {
-                ubigueo: '030213',
-                direccion : 'AV. ALFONSO UGARTE NRO. 108 URB. SAN JERONIMO APURIMAC ANDAHUAYLAS SAN JERONIMO',
-                direccionCorta: 'Av. Alfonso Ugarte 108 San Jerónimo Andahuaylas',
-                referencia: 'Costado de la Comisaria (San Jerónimo)',
+                ubigueo: '030201',
+                direccion : 'AV. PERU NRO. 236 (FRENTE Al PARQUE LAMPA DE ORO) APURIMAC - ANDAHUAYLAS - ANDAHUAYLAS',
+                direccionCorta: 'Av. Peru 236 Andahuaylas Apurimac',
+                referencia: 'Parque Lampa de Oro',
                 codigoPais: 'PE',
                 departamento: 'APURIMAC',
                 provincia: 'ANDAHUAYLAS',
-                distrito: 'SAN JERONIMO'
+                distrito: 'ANDAHUAYLAS'
             },
             telefono: '983905066',
             caja1: {
                 boleta: 'B001',
                 factura: 'F001',
                 notaVenta: 'NV01'
+            }
+        },
+        abancay: {
+            direccion: {
+                ubigueo: '030101',
+                direccion : 'AV. SEOANE NRO. 100 (PARQUE EL OLIVO) APURIMAC - ABANCAY - ABANCAY',
+                direccionCorta: 'Av. Seoane 100 Abancay Apurimac',
+                referencia: 'Parque el Olivo',
+                codigoPais: 'PE',
+                departamento: 'APURIMAC',
+                provincia: 'ABANCAY',
+                distrito: 'ABANCAY'
+            },
+            telefono: '988907777',
+            caja1: {
+                boleta: 'B002',
+                factura: 'F002',
+                notaVenta: 'NV02'
+            }
+        },
+        talavera: {
+            direccion: {
+                ubigueo: '030101',
+                direccion : 'AV. MANCO CAPAC NRO. 305 APURIMAC - ANDAHUAYLAS - TALAVERA',
+                direccionCorta: 'Av. Manco Capac 305 Talavera Apurimac',
+                referencia: 'A 1 cuadra de la plaza de Talavera',
+                codigoPais: 'PE',
+                departamento: 'APURIMAC',
+                provincia: 'ANDAHUAYLAS',
+                distrito: 'TALAVERA'
+            },
+            telefono: '970066627',
+            caja1: {
+                boleta: 'B003',
+                factura: 'F003',
+                notaVenta: 'NV03'
             }
         }
     }

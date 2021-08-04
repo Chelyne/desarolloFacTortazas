@@ -80,7 +80,7 @@
             <ion-col>
               <ion-item lines="none">
                 <ion-label color="primary" position="stacked">Unidad de medida (*)</ion-label>
-                <ion-select [interfaceOptions]="{cssClass: 'ionSelects'}" class="custom-options" interface="popover" formControlName="medida" placeholder="medida"
+                <ion-select class="custom-options" interface="popover" formControlName="medida" placeholder="medida"
                   cancelText="Cancelar" okText="Aceptar" mode="ios">
                   <ion-select-option *ngFor="let med of medidas" [value]="med.nombre">{{med.tag | titlecase}}</ion-select-option>
                 </ion-select>
@@ -94,7 +94,7 @@
             <ion-col>
               <ion-item lines="none">
                 <ion-label color="primary" position="stacked">Categoria (*)</ion-label>
-                <ion-select [interfaceOptions]="{cssClass: 'ionSelects'}" class="custom-options" [value]="listaDeCategorias.length ? listaDeCategorias[0].categoria : 'no hay categorias'" interface="popover"
+                <ion-select class="custom-options" [value]="listaDeCategorias.length ? listaDeCategorias[0].categoria : 'no hay categorias'" interface="popover"
                   formControlName="subCategoria" placeholder="categorias" cancelText="Cancelar" okText="Aceptar"
                   mode="ios">
                   <ion-select-option *ngFor="let item of listaDeCategorias" [value]="item.categoria">

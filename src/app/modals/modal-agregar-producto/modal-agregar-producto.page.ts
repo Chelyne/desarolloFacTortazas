@@ -26,7 +26,7 @@ export class ModalAgregarProductoPage implements OnInit {
 
   sede = this.storage.datosAdmi.sede;
 
-  listaDeCategorias: CategoriaInterface[] = [{ categoria: 'bebidas' }];
+  listaDeCategorias: CategoriaInterface[] = [{ categoria: 'accesorios' }];
   listaDeVariantes: VariantesInterface[] = [];
 
   // processing: boolean;
@@ -51,7 +51,7 @@ export class ModalAgregarProductoPage implements OnInit {
     private datePipe: DatePipe,
     private storage: StorageService,
   ) {
-    // this.ObtenerCorrelacionProducto();
+    this.ObtenerCorrelacionProducto();
     this.productoForm = this.createFormAgregarProducto();
     this.ObtenerCategorias();
   }
@@ -332,7 +332,7 @@ export class ModalAgregarProductoPage implements OnInit {
       const item = {
         medida: medida.value,
         factor: factor.value,
-        precio: parseFloat(precio.value) // convertido a float de string
+        precio: precio.value
       };
       medida.value = '';
       factor.value = '';

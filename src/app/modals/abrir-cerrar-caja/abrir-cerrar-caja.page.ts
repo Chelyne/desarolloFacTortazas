@@ -38,7 +38,7 @@ export class AbrirCerrarCajaPage implements OnInit {
     console.log('datos caja:', this.datosCaja);
 
     if ( this.modo === 'abrir' ) {
-      if (this.storage.datosAdmi.rol === 'administrador') {
+      if (this.storage.datosAdmi.rol === 'Administrador') {
         this.ObtenerUsuarios(this.sede);
         console.log('datos devuetos:', [this.storage.datosAdmi] );
       }else {

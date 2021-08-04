@@ -8,8 +8,8 @@
             <img src="../assets/img/logo_menu.jpg" alt=""><br>
             <ion-label class="tienda"  *ngIf="this.storage.datosAdmi">{{this.storage.datosAdmi.nombre | titlecase}} {{this.storage.datosAdmi.apellidos | titlecase}}</ion-label>
         <hr>
-        <ion-label class="ubicacion" color="light" *ngIf="this.storage.datosAdmi && this.storage.datosAdmi.rol === 'administrador'"><ion-icon name="location" color="light"></ion-icon>&nbsp;{{this.storage.datosAdmi.sede | titlecase}}</ion-label>
-        <ion-label class="ubicacion" color="light" *ngIf="this.storage.datosAdmi && this.storage.datosAdmi.rol === 'vendedor'"><ion-icon name="storefront" color="light"></ion-icon>&nbsp;{{this.storage.datosAdmi.rol}}</ion-label>
+        <ion-label class="ubicacion" color="light" *ngIf="this.storage.datosAdmi && this.storage.datosAdmi.rol === 'Administrador'"><ion-icon name="location" color="light"></ion-icon>&nbsp;{{this.storage.datosAdmi.sede | titlecase}}</ion-label>
+        <ion-label class="ubicacion" color="light" *ngIf="this.storage.datosAdmi && this.storage.datosAdmi.rol === 'Vendedor'"><ion-icon name="storefront" color="light"></ion-icon>&nbsp;{{this.storage.datosAdmi.rol}}</ion-label>
           </div>
         </div>
       </ion-header>

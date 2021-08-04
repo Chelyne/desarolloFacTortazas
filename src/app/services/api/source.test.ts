@@ -22,7 +22,7 @@ ventaPorDefecto = {
         password: 'nerio123',
         sede: 'Andahuaylas',
         foto: null,
-        rol: 'administrador',
+        rol: 'Administrador',
         apellidos: 'Cañari Huarcaya'
     },
     igv: 11.288135593220339,
@@ -197,7 +197,7 @@ ventaPorDefectoConBolsa = {
         nombre: 'Nerio',
         id: 'nerio@gmail.com',
         token: 'token laptop',
-        rol: 'administrador',
+        rol: 'Administrador',
         celular: '910426974',
         dni: '70148737',
         foto: null,
