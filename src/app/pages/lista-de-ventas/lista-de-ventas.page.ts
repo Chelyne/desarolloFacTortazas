@@ -9,6 +9,7 @@ import { GlobalService } from '../../global/global.service';
 import { ProductoInterface } from '../../models/ProductoInterface';
 import * as FileSaver from 'file-saver';
 import { MostrarPorcentaje, formatearDateTime } from 'src/app/global/funciones-globales';
+import { BoletasFacturasService } from '../../services/boletas-facturas.service';
 
 @Component({
   selector: 'app-lista-de-ventas',
@@ -53,7 +54,8 @@ export class ListaDeVentasPage implements OnInit {
     private menuCtrl: MenuController,
     private toastController: ToastController,
     private loadingController: LoadingController,
-    private servGlobal: GlobalService
+    private servGlobal: GlobalService,
+    private comprobanteSrv: BoletasFacturasService
   ) {
     this.ventasForm = this.createFormGroup();
     this.setEnviroment();
@@ -428,6 +430,10 @@ export class ListaDeVentasPage implements OnInit {
 
   DarformatoALasVentas(){
     this.apiPeru.formatearVentas(this.listaDeVentas);
+  }
+  // GENERAR COMPROBANTE SERVICE
+  comprobante(venta){
+    this.comprobanteSrv.generarComprobante(venta, this.sede);
   }
 
 }
