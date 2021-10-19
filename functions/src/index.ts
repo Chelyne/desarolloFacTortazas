@@ -31,7 +31,7 @@ const runtimeOpts: RuntimeOptions = {
   memory: '128MB'
 };
 
-export const testFecha = functions.https.onRequest((request, response) => {
+export const testFecha = functions.https.onRequest((request: any, response: any) => {
   console.log('================================== TEST FECHAS =======================================');
   console.log('FechaActual usando diaLimaPeru: ', diaLimaPeru());
   console.log('FechaActual formatearDateTime sin parametro', formatearDateTime());
@@ -54,7 +54,7 @@ export function assertString(testName: string, valor1: string, valor2: string) {
 }
 
 // tslint:disable-next-line: max-line-length
-export const activarToProduction = functions.runWith(runtimeOpts).pubsub.schedule('30 22 * * *').timeZone('America/Lima').onRun( async (context) => {
+export const activarToProduction = functions.runWith(runtimeOpts).pubsub.schedule('30 22 * * *').timeZone('America/Lima').onRun( async (context: any) => {
   const apiPeruService = new ApiPeruService();
   apiPeruService.setSede('andahuaylas');
 
@@ -78,7 +78,7 @@ export const activarToProduction = functions.runWith(runtimeOpts).pubsub.schedul
 });
 
 // tslint:disable-next-line: max-line-length
-export const dectiveToProduction = functions.runWith(runtimeOpts).pubsub.schedule('45 22 * * *').timeZone('America/Lima').onRun( async (context) => {
+export const dectiveToProduction = functions.runWith(runtimeOpts).pubsub.schedule('10 23 * * *').timeZone('America/Lima').onRun( async (context: any) => {
   const apiPeruService = new ApiPeruService();
   apiPeruService.setSede('andahuaylas');
 
@@ -106,7 +106,8 @@ export const dectiveToProduction = functions.runWith(runtimeOpts).pubsub.schedul
 
 
 
-export const sender =  functions.runWith(runtimeOpts).pubsub.schedule('31 22 * * *').timeZone('America/Lima').onRun( async (context) => {
+// tslint:disable-next-line:max-line-length
+export const sender =  functions.runWith(runtimeOpts).pubsub.schedule('31 22 * * *').timeZone('America/Lima').onRun( async (context: any) => {
 
 // export const sender = functions.runWith(runtimeOpts).https.onRequest(async (request, response) => {
 
@@ -346,7 +347,7 @@ export const GENERAL_CONFIG = {
 
 
 
-const LISTA_SEDE = ['talavera'];
+const LISTA_SEDE = ['talavera', 'abancay', 'andahuaylas'];
 // const LISTA_SEDE = ['andahuaylas'];
 /* -------------------------------------------------------------------------- */
 /* -------------------------------------------------------------------------- */
@@ -713,7 +714,7 @@ export async function obtenerProductosDeVenta(idProductoVenta: string, sede: str
         // console.log('No such document!');
         return [];
       }
-    }).catch(err => {
+    }).catch((err: any) => {
       console.log('Error al obtener items de Venta: ', err);
       throw String('fail');
     });
@@ -722,14 +723,14 @@ export async function obtenerProductosDeVenta(idProductoVenta: string, sede: str
 export async function obtenerCorrelacionPorTypoComprobante(typoDocumento: string, sede: string) {
   return afs.collection('sedes').doc(sede.toLocaleLowerCase())
     .collection('serie').where('tipoComprobante', '==', typoDocumento).limit(1).get()
-    .then((querySnapshot) => {
+    .then((querySnapshot: any) => {
       let serie: ContadorDeSerieInterface = {};
-      querySnapshot.forEach((doc) => {
+      querySnapshot.forEach((doc: any) => {
         serie = { ...doc.data() };
         serie.id = doc.id;
       });
       return serie;
-    }).catch(err => {
+    }).catch((err: any) => {
       console.log('no se pudo obtener serie', err);
       throw String('fail');
     });
@@ -740,7 +741,7 @@ export async function incrementarCorrelacionTypoDocumento(idSerie: string, sede:
   return afs.collection('sedes').doc(sede.toLocaleLowerCase()).collection('serie')
     .doc(idSerie).update({ correlacion: correlacionActual })
     .then(() => 'exito')
-    .catch(err => {
+    .catch((err: any) => {
       throw String('fail');
     });
 
@@ -756,7 +757,7 @@ export async function guardarCDR(idVenta: string, fechaEmision: any, sede: strin
 
   return afs.collection('sedes').doc(sede.toLocaleLowerCase()).collection('ventas').doc(fecha)
     .collection('ventasDia').doc(idVenta).update({ cdr: cdrVenta })
-    .then(() => 'exito').catch(err => {
+    .then(() => 'exito').catch((err: any) => {
       console.log('Error al guardar CDR', err);
       throw String('fail');
     });
@@ -787,22 +788,22 @@ export async function guardarCDRAnulado(
 
   return afs.collection('sedes').doc(sede.toLocaleLowerCase()).collection('ventas').doc(fecha)
     .collection('ventasDia').doc(idVenta).update({ cdrAnulado: obj })
-    .then(() => 'exito').catch(err => {
-      throw String('fail');
+    .then(() => 'exito').catch((err: any) => {
+      throw String('fail: ' + err);
     });
 }
 
 export async function obtenerVentasPorDia(sede: string, fecha: string) {
   return afs.collection('sedes').doc(sede.toLocaleLowerCase()).collection('ventas').doc(fecha)
     .collection('ventasDia').get()
-    .then((querySnapshot) => {
+    .then((querySnapshot: any) => {
       const datos: any[] = [];
-      querySnapshot.forEach((doc) => {
+      querySnapshot.forEach((doc: any) => {
         // console.log(doc.id, ' => ', doc.data());
         datos.push({ ...doc.data(), idVenta: doc.id });
       });
       return datos;
-    }).catch(err => {
+    }).catch((err: any) => {
       console.log('no se pudo obtener las ventas', err);
       throw String('fail');
     });
@@ -813,7 +814,7 @@ export async function obtenerVentasPorDia(sede: string, fecha: string) {
 export function guardarErroresEnVentaPorDia(sede: string, fecha: string, ArrayDeErrores: any[]) {
   return afs.collection('sedes').doc(sede.toLocaleLowerCase()).collection('ventas')
     .doc(fecha).set({ ErroresEnVenta: ArrayDeErrores })
-    .then(() => 'exito').catch(err => {
+    .then(() => 'exito').catch((err: any) => {
       throw String('fail');
     });
 }
