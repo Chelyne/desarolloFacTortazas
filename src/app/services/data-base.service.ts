@@ -530,7 +530,23 @@ export class DataBaseService {
     });
   }
   // -----------------------CELINE------------------------------------ */
+  obtenerListaProductosCategoriaSinLIMITE(sede: string, categoria) {
+    const sede1 = sede.toLocaleLowerCase();
+    return this.afs.collection('sedes').doc(sede1)
+    .collection('productos', ref => ref.where('subCategoria', '==', categoria ).orderBy('fechaRegistro', 'desc'))
+    .snapshotChanges().pipe(map(changes => {
+      const datos: ProductoInterface[] = [];
 
+      changes.map(action => {
+        datos.push({
+          id: action.payload.doc.id,
+          ...action.payload.doc.data()
+        });
+      });
+
+      return datos;
+    }));
+  }
   obtenerListaProductosSinLIMITE(sede: string) {
     const sede1 = sede.toLocaleLowerCase();
     return this.afs.collection('sedes').doc(sede1).collection('productos', ref => ref.orderBy('fechaRegistro', 'desc'))
@@ -681,7 +697,7 @@ export class DataBaseService {
   }
   obtenerVentaPorDiaCajaChica(sede: string, dia: string, idCaja: string) {
     return this.afs.collection('sedes').doc(sede.toLocaleLowerCase()).collection('ventas').doc(dia).collection('ventasDia')
-    .ref.where('idCajaChica', '==', idCaja).get().then((querySnapshot) => {
+    .ref.where('idCajaChica', '==', idCaja).orderBy('fechaEmision', 'desc').get().then((querySnapshot) => {
       const datos: VentaInterface [] = [];
       querySnapshot.forEach((doc) => {
         datos.push( {...doc.data(), idVenta: doc.id});

@@ -16,6 +16,7 @@ import { DataBaseService } from '../../services/data-base.service';
 import { GlobalService } from 'src/app/global/global.service';
 import { BoletasFacturasService } from '../../services/boletas-facturas.service';
 import { formatearDateTime } from 'src/app/global/funciones-globales';
+import { CategoriaInterface } from '../../models/CategoriaInterface';
 
 @Component({
   selector: 'app-reporte-ventas',
@@ -33,6 +34,11 @@ export class ReporteVentasPage implements OnInit {
   loading;
   meses = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'];
   fechaActual;
+  fechaLimite;
+  fechaInicio;
+  fechaFinal;
+  listaDeCategorias: CategoriaInterface[] = [{ categoria: 'accesorios' }];
+
   constructor(
                private dataApi: DataBaseService,
                private globalSrv: GlobalService,
@@ -52,6 +58,9 @@ export class ReporteVentasPage implements OnInit {
     // this.ObtenerVentas();
     this.mesActual = this.meses[moment().month()];
     this.fechaActual = formatearDateTime('YYYY-MM-DD');
+    this.fechaLimite = this.fechaActual;
+    this.ObtenerCategorias();
+
     // this.ObtenerVentas();
   }
 
@@ -226,7 +235,7 @@ export class ReporteVentasPage implements OnInit {
 
   }
 
-  async exelVentas(data, mes: number, anio: number) {
+  async exelVentas(data, mes: number, anio: number, fechas?: string) {
     console.log('PRODUCTOS', data);
     // tslint:disable-next-line:prefer-const
     let dataExcel = [];
@@ -259,11 +268,11 @@ export class ReporteVentasPage implements OnInit {
           'Estado Comprobante': datos.estadoVenta,
           'Descuento ': datos.descuentoVenta ? datos.descuentoVenta : null ,
           'Nota de Crédito ': datos.cdrAnulado ? datos.cdrAnulado.serie + '-' + datos.cdrAnulado.correlacion : null ,
-          'Servicio / Producto ': datos.productos ,
+          'Servicio / Producto ': datos.productos ? datos.productos : null ,
         };
         dataExcel.push(formato);
         if (contador === data.length){
-          this.excelService.exportAsExcelFile(dataExcel, 'ReporteVentas ' + this.sede + mes + '-' + anio);
+          this.excelService.exportAsExcelFile(dataExcel, 'ReporteVentas ' + this.sede + mes + '-' + anio + (fechas ? fechas : '' ));
         }
       }
     }
@@ -429,6 +438,147 @@ export class ReporteVentasPage implements OnInit {
         return promesa;
       }
     });
+  }
+  // REPORTE POR CATEGORIAS
+  ObtenerCategorias() {
+    this.dataApi.obtenerListaCategorias(this.sede).subscribe(data => {
+      if (data.length) {
+        this.listaDeCategorias = data;
+      } else {
+        this.globalSrv.presentToast('Por favor agregue un categoria para agregar productos');
+      }
+    });
+  }
+
+  BuscarProductosCategoria(ev: any){
+    console.log('cambiando', ev.target.value);
+    const categoria = ev.target.value;
+    this.presentLoading('Consultando Productos... Por Favor Espere...');
+    const dataExcel = [];
+    const sus = this.dataApi.obtenerListaProductosCategoriaSinLIMITE(this.storage.datosAdmi.sede, categoria).subscribe((data: any) => {
+      sus.unsubscribe();
+      console.log(data);
+      if (data.length === 0){
+        this.loading.dismiss();
+        this.globalSrv.presentToast('No hay productos de ' + categoria + ' en la sede ' + this.sede, {color: 'danger', position: 'top'});
+      }else{
+        for (const datos of data) {
+          if (datos.medida !== 'servicios'){
+            const formato: any = {
+              // UID: datos.id,
+              'Nombre Producto': datos.nombre.toUpperCase(),
+              Codigo: datos.codigo ? datos.codigo : null,
+              'Codigo Barra': datos.codigoBarra ? datos.codigoBarra : null,
+              Stock: datos.cantStock ? datos.cantStock  : null,
+              Categoria: datos.subCategoria ? datos.subCategoria : null,
+              Estado: null
+            };
+            this.loading.dismiss();
+            dataExcel.push(formato);
+          }
+        }
+        this.excelService.exportAsExcelFile(dataExcel, 'ReporteCategoria' + '_' + categoria + '_' + this.sede);
+
+      }
+    });
+
+  }
+  // REPORTE ENTRE FECHAS
+  actualizarFechaLimite(event){
+    const dateObj1 = new Date(this.fechaInicio);
+    if (!isNullOrUndefined(this.fechaInicio) ){
+      if (this.fechaActual.split('-')[1] === this.fechaInicio.split('-')[1]){
+        console.log('es igual');
+        this.fechaLimite = this.fechaActual;
+      }else {
+        const anio = moment(dateObj1).year();
+        const mes = moment(dateObj1).month();
+        const diasMes = new Date(anio, mes + 1, 0).getDate();
+        console.log('el mes: ', mes + 1 , ' tiene ' + diasMes + ' dias.'  );
+        this.fechaLimite = anio.toString() + '-' +  this.fechaInicio.split('-')[1] + '-' + diasMes;
+        console.log('fecha limite', this.fechaLimite );
+      }
+    }
+    this.fechaFinal = null;
+  }
+  ObtenerVentasEntreFechas(){
+    this.presentLoading('Por favor espere...');
+    const d = new Date();
+    const mes = d.getMonth() + 1;
+    const anio = d.getFullYear();
+    this.ObtenerReporteEntreFechas().then(() => {
+      this.loading.dismiss();
+    });
+  }
+  async ObtenerReporteEntreFechas(){
+    const diaInicio = this.fechaInicio.split('-')[2];
+    const diaFin = this.fechaFinal.split('-')[2];
+    const mes = this.fechaFinal.split('-')[1];
+    const anio = this.fechaInicio.split('-')[0];
+    let formato: string;
+    this.arrayMes = [];
+    console.log('reporte entre fechas', diaInicio, diaFin, mes);
+
+    for (let contador = parseInt( diaInicio, 10 ) ; contador <= parseInt( diaFin, 10 ); contador++) {
+      formato = ((contador <= 9 ) ? '0' + contador : contador) + '-' + mes  + '-' + anio;
+      console.log(formato);
+      await this.dataApi.obtenerVentasPorDia(this.sede.toLocaleLowerCase(), formato).then(async (res: any) => {
+        if (res.length === 0) {
+          console.log('no hay datos de dia', contador );
+        }else {
+          console.log('datos de dia', contador );
+          console.log('datos ', res );
+          for (const venta of res) {
+            // if (venta.tipoComprobante === 'boleta' || venta.tipoComprobante === 'factura'){
+              // this.arrayMes = [...this.arrayMes, ...res];
+              this.arrayMes = [...this.arrayMes, venta];
+
+              // }
+          }
+        }
+        if (contador === parseInt( diaFin, 10 )) {
+        console.log('boletas y facturas ', this.arrayMes);
+        if (!this.arrayMes.length) {
+          this.globalSrv.presentToast('No hay productos de sede: ' + this.sede, {color: 'danger', position: 'top'});
+          this.fechaInicio = null;
+          this.fechaFinal = null;
+
+        } else {
+          this.exelVentas(this.arrayMes, mes, anio, '(' + this.fechaInicio + 'hasta' + this.fechaFinal + ')');
+          this.fechaInicio = null;
+          this.fechaFinal = null;
+
+          // tslint:disable-next-line:no-shadowed-variable
+          // let contador = 0;
+          console.log('total ', this.arrayMes);
+
+
+          // for (const venta of this.arrayMes) {
+          //   contador++;
+          //   await this.dataApi.obtenerProductosDeVenta(venta.idListaProductos, this.sede ).then( productoVenta => {
+          //     let  nombres = '';
+          //     console.log('producto venta', productoVenta);
+          //     for (const item2 of productoVenta) {
+          //       // if (item2.subCategoria === 'cortes' || item2.subCategoria === 'servicio') {
+          //         nombres = nombres + item2.producto.nombre.toUpperCase()  + '( s/. ' + (item2.totalxprod ) + ')' + ', ';
+          //         venta.productos = nombres;
+          //         console.log('item:' ,  item2.producto.nombre + '(' + item2.producto.precio  + ')');
+
+          //       // }
+          //     }
+          //     if (contador === this.arrayMes.length) {
+          //     console.log(this.arrayMes);
+          //     this.exelVentas(this.arrayMes, mes, anio);
+
+          //     }
+          //   });
+          // }
+        }
+        }
+      });
+
+    }
+
   }
 
 }
