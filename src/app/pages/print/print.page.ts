@@ -3,7 +3,7 @@ import { ActivatedRoute } from '@angular/router';
 import { BoletasFacturasService } from '../../services/boletas-facturas.service';
 import { DataBaseService } from '../../services/data-base.service';
 import { VentaInterface } from '../../models/venta/venta';
-import { LoadingController, MenuController } from '@ionic/angular';
+import { LoadingController, MenuController, AlertController } from '@ionic/angular';
 import { GlobalService } from '../../global/global.service';
 
 @Component({
@@ -22,7 +22,8 @@ export class PrintPage implements OnInit {
               private dataApi: DataBaseService,
               private loadingController: LoadingController,
               private servGlobal: GlobalService,
-              private menuCtrrl: MenuController) {
+              private menuCtrrl: MenuController,
+              private alertController: AlertController) {
                 this.menuCtrrl.enable(false);
                }
 
@@ -37,14 +38,16 @@ export class PrintPage implements OnInit {
   async consultaVenta() {
     await this.presentLoading();
     if (this.sede && this.fecha && this.idVenta) {
-      this.dataApi.obtenerUnaVentaPorId(this.sede, this.fecha, this.idVenta).subscribe((venta: VentaInterface) => {
+      this.dataApi.obtenerUnaVentaPorId(this.sede, this.fecha, this.idVenta).subscribe(async (venta: VentaInterface) => {
         console.log(venta);
         if (venta) {
-          this.comprobante.generarComprobante(venta, this.sede);
+          await this.comprobante.generarComprobante(venta, this.sede);
           this.loading.dismiss();
+          this.presentAlert('Descargado', 'Comprobante descargado');
         } else {
           this.servGlobal.presentToast('No se encontró el comprobante', {color: 'danger'});
           this.loading.dismiss();
+          this.presentAlert('Error', 'No se encontró el comprobante');
         }
       });
     } else {
@@ -60,6 +63,27 @@ export class PrintPage implements OnInit {
       duration: 10000
     });
     await this.loading.present();
+  }
+
+  async presentAlert(titulo: string, subtitulo: string) {
+    const alert = await this.alertController.create({
+      cssClass: 'my-custom-class',
+      header: titulo,
+      subHeader: subtitulo,
+      backdropDismiss: false,
+      mode: 'ios',
+      // message: 'This is an alert message.',
+      buttons: [{
+        text: 'Salir',
+        handler: () => {
+          console.log('Confirm Cancel: blah');
+          window.open('about:blank', '_self');
+          setTimeout (() => {window.top.close(); }, 1000);
+        }
+      }]
+    });
+
+    await alert.present();
   }
 
 }

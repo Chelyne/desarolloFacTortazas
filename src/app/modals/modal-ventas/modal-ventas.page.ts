@@ -12,6 +12,7 @@ import { ItemDeVentaInterface } from '../../models/venta/item-de-venta';
 import { GENERAL_CONFIG } from '../../../config/generalConfig';
 import { DataBaseService } from '../../services/data-base.service';
 import { formatearDateTime } from '../../global/funciones-globales';
+import { ClienteInterface } from '../../../../functions/src/index';
 
 @Component({
   selector: 'app-modal-ventas',
@@ -46,6 +47,17 @@ export class ModalVentasPage implements OnInit {
 
   ionViewWillEnter() {
     this.generarQR('20331066703' +  '|'  + '03' + 'B001' + '000626' + '40.00' + '2-01-21' + '987654321');
+  }
+
+  enviarWhatsapp(venta: any) {
+    let numero;
+    if (venta && venta.cliente && venta.cliente.celular) {
+      numero = venta.cliente.celular;
+    }
+    // tslint:disable-next-line:max-line-length
+    const url = GENERAL_CONFIG.datosEmpresa.url + 'print/' + venta.vendedor.sede.toLocaleLowerCase() + '/'
+    + venta.fechaEmision.split(' ', 1) + '/' + venta.idVenta;
+    window.open('https://api.whatsapp.com/send/?phone=51' + numero + '&text=%20Hola,%20puedes%20visualizar%20tu%20comprobante%20electronico%20aqui:%20' + url  + '&app_absent=0', '_blank');
   }
 
   generarQR(value: string) {
