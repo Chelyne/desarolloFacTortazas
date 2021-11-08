@@ -12,7 +12,6 @@ import { ItemDeVentaInterface } from '../../models/venta/item-de-venta';
 import { GENERAL_CONFIG } from '../../../config/generalConfig';
 import { DataBaseService } from '../../services/data-base.service';
 import { formatearDateTime } from '../../global/funciones-globales';
-import { ClienteInterface } from '../../../../functions/src/index';
 
 @Component({
   selector: 'app-modal-ventas',
