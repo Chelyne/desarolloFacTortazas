@@ -593,6 +593,10 @@ export class PuntoVentaPage implements OnInit {
 
   // MODAL INGRESOS EGRESOS
   modalIngresoEgreso(accion: string){
+    if (!this.datosCaja) {
+      this.servGlobal.presentToast('Por favor aperture su caja chica', {color: 'danger', position: 'top'});
+      return;
+    }
     console.log(accion);
     if (accion === 'Ingreso') {
       this.dataModal.evento = 'ingreso';

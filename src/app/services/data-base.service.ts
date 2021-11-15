@@ -120,7 +120,6 @@ export class DataBaseService {
           montoBase: venta.montoBase,
           montoPagado: venta.montoPagado,
           idCajaChica: venta.idCajaChica
-
         };
         // tslint:disable-next-line:max-line-length
         this.afs.collection('sedes').doc(sede.toLocaleLowerCase()).collection('ventas').doc(id).collection('ventasDia').add(dataVenta).then(ventas => {
