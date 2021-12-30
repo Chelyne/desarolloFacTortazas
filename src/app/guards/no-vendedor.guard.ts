@@ -14,7 +14,7 @@ export class NoVendedorGuard implements CanActivate {
   canActivate(
     next: ActivatedRouteSnapshot,
     state: RouterStateSnapshot): Observable<boolean | UrlTree> | Promise<boolean | UrlTree> | boolean | UrlTree {
-      if (this.storage.datosAdmi.rol === 'Administrador') {
+      if (this.storage.datosAdmi.rol === 'administrador') {
           console.log('ADELANTE');
           return true;
       } else if (this.storage.datosAdmi.rol === 'Vendedor') {
