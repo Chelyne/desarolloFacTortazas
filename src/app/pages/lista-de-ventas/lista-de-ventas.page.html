@@ -262,6 +262,9 @@
                 <ion-button (click)="enviarNotaCredito(venta)" *ngIf="venta.cdr && venta.estadoVenta==='anulado' && !venta.cdrAnulado" color="danger">
                   Enviar N.Credito
                 </ion-button>
+                <ion-button (click)="enviarNotaCredito(venta)" *ngIf="venta.cdrAnulado  && !venta.cdrAnulado.cdr.sunatResponse.success" color="danger">
+                  Reenviar Enviar N.Credito
+                </ion-button>
                 <ion-button *ngIf="venta.cdr && !venta.cdr.sunatResponse.success" (click)="enviarUnComprobante(venta)" color="warning">
                   Reenviar
                 </ion-button>
@@ -274,6 +277,11 @@
                   XML
                 </ion-button>
               </ion-input>
+            </ion-item>
+            <ion-item>
+            <ion-button olor="warning" (click)="comprobante(venta)">
+              Descargar comprobante
+            </ion-button>
             </ion-item>
           </ion-col>
         </ion-row>

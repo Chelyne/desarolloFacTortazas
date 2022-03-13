@@ -88,7 +88,10 @@ export class BuscarPage implements OnInit {
         this.sede = 'andahuaylas';
       }else if (this.serie === 'F002' || this.serie === 'B002' ){
         this.sede = 'abancay';
-      }else{
+      }else if (this.serie === 'F003' || this.serie === 'B003' ){
+        this.sede = 'talavera';
+      }
+      else{
         this.sede = ' ';
         console.log('no existe sede');
       }
