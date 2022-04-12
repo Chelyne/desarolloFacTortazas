@@ -689,7 +689,7 @@ ventaDefaultFormateadaBolsa = {
             porcentajeIgv: 18,
             igv: 0.03,
             tipAfeIgv: '13',
-            factorIcbper: 0.3,
+            factorIcbper: 0.4,
             icbper: 0.9,
             totalImpuestos: 0.93
         }
@@ -949,7 +949,7 @@ notaCreditoDftlBolssaFormateada = {
           porcentajeIgv: 18,
           igv: 0.03,
           tipAfeIgv: '13',
-          factorIcbper: 0.3,
+          factorIcbper: 0.4,
           icbper: 0.9,
           totalImpuestos: 0.93
         }

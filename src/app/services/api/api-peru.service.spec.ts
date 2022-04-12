@@ -237,7 +237,7 @@ describe('description', () => {
         porcentajeIgv: 18,
         igv: 0.02,
         tipAfeIgv: '13',
-        factorIcbper: 0.3,
+        factorIcbper: 0.4,
         icbper: 0.6,
         totalImpuestos: 0.62
       };

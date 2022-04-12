@@ -288,7 +288,7 @@ export const GENERAL_CONFIG = {
       },
       talavera: {
           direccion: {
-              ubigueo: '030101',
+              ubigueo: '030216',
               direccion : 'AV. MANCO CAPAC NRO. 305 APURIMAC - ANDAHUAYLAS - TALAVERA',
               direccionCorta: 'Av. Manco Capac 305 Talavera Apurimac',
               referencia: 'A 1 cuadra de la plaza de Talavera',
@@ -839,7 +839,7 @@ class ApiPeruService {
   datosEmpresa: DatosEmpresaInterface = {};
   sedeDireccion: AddressInterface = {};
 
-  FACTOR_ICBPER = 0.3;
+  FACTOR_ICBPER = 0.4;
 
   enviroment = '';
 

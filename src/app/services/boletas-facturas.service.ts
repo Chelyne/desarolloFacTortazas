@@ -8,6 +8,7 @@ import * as moment from 'moment';
 import { StorageService } from 'src/app/services/storage.service';
 import { GENERAL_CONFIG } from '../../config/generalConfig';
 import { formatearDateTime } from 'src/app/global/funciones-globales';
+import { GLOBAL_FACTOR_ICBPER } from 'src/config/otherConfig';
 
 
 
@@ -119,8 +120,8 @@ export class BoletasFacturasService {
           doc.text('Descuento: S/ ', 35, index + 5, {align: 'right'});
           doc.text(venta.descuentoVenta.toFixed(2), 43, index + 5, {align: 'right'});
           index = index + 4;
-          doc.text('ICBP(0.30): S/ ', 35, index + 3, {align: 'right'});
-          doc.text((venta.cantidadBolsa * 0.3).toFixed(2), 43, index + 3, {align: 'right'});
+          doc.text('ICBP(' + (GLOBAL_FACTOR_ICBPER).toFixed(2) + '): S/ ', 35, index + 3, {align: 'right'});
+          doc.text((venta.cantidadBolsa * GLOBAL_FACTOR_ICBPER).toFixed(2), 43, index + 3, {align: 'right'});
           doc.text('Importe Total: S/ ', 35, index + 5, {align: 'right'});
           doc.text(venta.totalPagarVenta.toFixed(2), 43, index + 5, {align: 'right'});
           // doc.text('Vuelto: S/ ', 35, index + 7, {align: 'right'});
@@ -235,8 +236,8 @@ export class BoletasFacturasService {
             doc.text( (venta.descuentoVenta).toFixed(2), 43, index + 13, {align: 'right'});
             doc.text('I.G.V. (18%)', 2, index + 15, {align: 'left'});
             doc.text( (this.calcularIGVincluido(venta.totalPagarVenta)).toFixed(2), 43, index + 15, {align: 'right'});
-            doc.text('ICBP(0.30)', 2, index + 17, {align: 'left'});
-            doc.text( (venta.cantidadBolsa * 0.30).toFixed(2), 43, index + 17, {align: 'right'});
+            doc.text('ICBP(' + (GLOBAL_FACTOR_ICBPER).toFixed(2) + ')', 2, index + 17, {align: 'left'});
+            doc.text( (venta.cantidadBolsa * GLOBAL_FACTOR_ICBPER).toFixed(2), 43, index + 17, {align: 'right'});
             doc.text('I.S.C.', 2, index + 19, {align: 'left'});
             doc.text( (0).toFixed(2), 43, index + 19, {align: 'right'});
             doc.text( '__________________________________________', 22.5, index + 19, {align: 'center'});
@@ -312,15 +313,15 @@ export class BoletasFacturasService {
               console.log(venta.bolsa, venta.cantidadBolsa);
               doc.text('BOLSA PLASTICA ', 2, index + 3);
               // tslint:disable-next-line:max-line-length
-              doc.text( venta.cantidadBolsa.toFixed(2) + '    ' + 'Unidad' + '      ' + (0.3).toFixed(2), 2, index + 5, {align: 'justify'});
-              doc.text((venta.cantidadBolsa * 0.30).toFixed(2), 43, index + 5, {align: 'right'} );
+              doc.text( venta.cantidadBolsa.toFixed(2) + '    ' + 'Unidad' + '      ' + (GLOBAL_FACTOR_ICBPER).toFixed(2), 2, index + 5, {align: 'justify'});
+              doc.text((venta.cantidadBolsa * GLOBAL_FACTOR_ICBPER).toFixed(2), 43, index + 5, {align: 'right'} );
               // doc.text((this.cantidadBolsa * 0.3).toFixed(2), 43, index + 3, {align: 'right'});
               doc.text( '__________________________________________', 22.5, index +  5, {align: 'center'});
               index = index + 5;
             }
             if (venta.descuentoVenta > 0) {
               doc.text('SubTotal: S/ ', 35, index + 3, {align: 'right'});
-              doc.text((venta.montoNeto + (venta.cantidadBolsa * 0.30)).toFixed(2), 43, index + 3, {align: 'right'});
+              doc.text((venta.montoNeto + (venta.cantidadBolsa * GLOBAL_FACTOR_ICBPER)).toFixed(2), 43, index + 3, {align: 'right'});
               doc.text('Descuento: S/ ', 35, index + 5, {align: 'right'});
               doc.text(venta.descuentoVenta.toFixed(2), 43, index + 5, {align: 'right'});
               index = index + 4;

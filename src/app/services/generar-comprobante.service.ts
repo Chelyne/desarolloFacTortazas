@@ -7,6 +7,7 @@ import { ItemDeVentaInterface } from 'src/app/models/venta/item-de-venta';
 import { GENERAL_CONFIG } from '../../config/generalConfig';
 import { DataBaseService } from './data-base.service';
 import * as moment from 'moment';
+import { GLOBAL_FACTOR_ICBPER } from 'src/config/otherConfig';
 
 
 
@@ -121,8 +122,8 @@ export class GenerarComprobanteService {
           doc.text('Descuento: S/ ', 35, index + 5, {align: 'right'});
           doc.text(venta.descuentoVenta.toFixed(2), 43, index + 5, {align: 'right'});
           index = index + 4;
-          doc.text('ICBP(0.30): S/ ', 35, index + 3, {align: 'right'});
-          doc.text((venta.cantidadBolsa * 0.3).toFixed(2), 43, index + 3, {align: 'right'});
+          doc.text('ICBP(' + (GLOBAL_FACTOR_ICBPER).toFixed(2) + '): S/ ', 35, index + 3, {align: 'right'});
+          doc.text((venta.cantidadBolsa * GLOBAL_FACTOR_ICBPER).toFixed(2), 43, index + 3, {align: 'right'});
           doc.text('Importe Total: S/ ', 35, index + 5, {align: 'right'});
           doc.text(venta.totalPagarVenta.toFixed(2), 43, index + 5, {align: 'right'});
           // doc.text('Vuelto: S/ ', 35, index + 7, {align: 'right'});
@@ -246,8 +247,8 @@ export class GenerarComprobanteService {
             doc.text( (venta.descuentoVenta).toFixed(2), 43, index + 13, {align: 'right'});
             doc.text('I.G.V. (18%)', 2, index + 15, {align: 'left'});
             doc.text( (this.calcularIGVincluido(venta.totalPagarVenta)).toFixed(2), 43, index + 15, {align: 'right'});
-            doc.text('ICBP(0.30)', 2, index + 17, {align: 'left'});
-            doc.text( (venta.cantidadBolsa * 0.30).toFixed(2), 43, index + 17, {align: 'right'});
+            doc.text('ICBP(' + (GLOBAL_FACTOR_ICBPER).toFixed(2) + ')', 2, index + 17, {align: 'left'});
+            doc.text( (venta.cantidadBolsa * GLOBAL_FACTOR_ICBPER).toFixed(2), 43, index + 17, {align: 'right'});
             doc.text('I.S.C.', 2, index + 19, {align: 'left'});
             doc.text( (0).toFixed(2), 43, index + 19, {align: 'right'});
             doc.text( '__________________________________________', 22.5, index + 19, {align: 'center'});
