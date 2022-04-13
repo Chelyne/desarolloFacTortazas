@@ -24,7 +24,10 @@ module.exports = {
     "@typescript-eslint",
     "import",
   ],
-  "rules": {
+  rules: {
+    'linebreak-style':0,
+    "quotes": ["error", "double"],
+    "import/no-unresolved": 0,
     // //////// Possible Errors //////////
 
     "no-comma-dangle": 0,         // disallow trailing commas in object literals
