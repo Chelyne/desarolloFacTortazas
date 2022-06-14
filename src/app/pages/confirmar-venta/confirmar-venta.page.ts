@@ -19,6 +19,7 @@ import { DataBaseService } from '../../services/data-base.service';
 import { GLOBAL_FACTOR_ICBPER } from 'src/config/otherConfig';
 import { DECIMAL_REGEXP_PATTERN } from 'src/app/global/validadores';
 
+
 @Component({
   selector: 'app-confirmar-venta',
   templateUrl: './confirmar-venta.page.html',
@@ -67,6 +68,9 @@ export class ConfirmarVentaPage implements OnInit {
   @ViewChild('qr') qr: QrcodeComponent;
 
   generandoPago: boolean;
+
+  numeroWhatsapp: string;
+  imprimir = true;
   constructor(
     private confirmarVentaServ: ConfirmarVentaService,
     private menuCtrl: MenuController,
@@ -284,7 +288,14 @@ export class ConfirmarVentaPage implements OnInit {
             this.tipoPago = 'efectivo';
             this.confirmarVentaServ.resetService();
             this.router.navigate(['/punto-venta']);
-            this.generarComprobante();
+            if (this.imprimir) {
+              this.generarComprobante();
+            }
+            if (this.numeroWhatsapp) {
+              const url = GENERAL_CONFIG.datosEmpresa.url + 'print/' + this.sede.toLocaleLowerCase() + '/'
+              + fecha.split(' ', 1) + '/' + data;
+              window.open('https://api.whatsapp.com/send/?phone=51' + this.numeroWhatsapp + '&text=%20Hola,%20puedes%20visualizar%20tu%20comprobante%20electronico%20aqui:%20' + url  + '&app_absent=0', '_blank');
+            }
             console.log('guardado', data);
             this.loading.dismiss();
             this.servGlobal.presentToast('Venta exitosa', {color: 'success'});
