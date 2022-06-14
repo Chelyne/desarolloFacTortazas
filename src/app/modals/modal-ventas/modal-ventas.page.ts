@@ -1,5 +1,5 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
-import { ModalController } from '@ionic/angular';
+import { ModalController, PopoverController } from '@ionic/angular';
 import { DbDataService } from '../../services/db-data.service';
 import { StorageService } from '../../services/storage.service';
 import { formatDate, DatePipe } from '@angular/common';
@@ -13,6 +13,8 @@ import { GENERAL_CONFIG } from '../../../config/generalConfig';
 import { DataBaseService } from '../../services/data-base.service';
 import { formatearDateTime } from '../../global/funciones-globales';
 import { GLOBAL_FACTOR_ICBPER } from '../../../config/otherConfig';
+import { PopoverWhatsappComponent } from '../../components/popover-whatsapp/popover-whatsapp.component';
+import { GlobalService } from 'src/app/global/global.service';
 
 @Component({
   selector: 'app-modal-ventas',
@@ -39,6 +41,8 @@ export class ModalVentasPage implements OnInit {
     private modalCtrl: ModalController,
     private dataApi: DataBaseService,
     private storage: StorageService,
+    private popoverController: PopoverController,
+    private servGlobal: GlobalService
   ) {}
 
   ngOnInit() {
@@ -49,15 +53,32 @@ export class ModalVentasPage implements OnInit {
     this.generarQR('20331066703' +  '|'  + '03' + 'B001' + '000626' + '40.00' + '2-01-21' + '987654321');
   }
 
-  enviarWhatsapp(venta: any) {
-    let numero;
-    if (venta && venta.cliente && venta.cliente.celular) {
-      numero = venta.cliente.celular;
-    }
+  enviarWhatsapp(venta: any, numero: string) {
+    // let numero;
+    // if (venta && venta.cliente && venta.cliente.celular) {
+    //   numero = venta.cliente.celular;
+    // }
     // tslint:disable-next-line:max-line-length
     const url = GENERAL_CONFIG.datosEmpresa.url + 'print/' + venta.vendedor.sede.toLocaleLowerCase() + '/'
     + venta.fechaEmision.split(' ', 1) + '/' + venta.idVenta;
     window.open('https://api.whatsapp.com/send/?phone=51' + numero + '&text=%20Hola,%20puedes%20visualizar%20tu%20comprobante%20electronico%20aqui:%20' + url  + '&app_absent=0', '_blank');
+  }
+
+  async presentPopoverWhatsapp(ev: any, venta: any) {
+    const popover = await this.popoverController.create({
+      component: PopoverWhatsappComponent,
+      cssClass: 'popover-whatsapp',
+      event: ev,
+      translucent: true
+    });
+    await popover.present();
+    const { data } = await popover.onWillDismiss();
+    console.log(data);
+    if (data && data.data.numero) {
+      this.enviarWhatsapp(venta, data.numero);
+    } else {
+      this.servGlobal.presentToast('Complete el numero de whatsapp', {color: 'danger'});
+    }
   }
 
   generarQR(value: string) {

@@ -40,7 +40,7 @@
             <ion-label>Copiar</ion-label>
           </ion-button>
           <ion-buttons *ngIf="venta.tipoComprobante !== 'n. venta'">
-            <ion-button (click)="enviarWhatsapp(venta)" color="success">
+            <ion-button (click)="presentPopoverWhatsapp($event, venta)" color="success">
               <ion-icon slot="icon-only" name="logo-whatsapp"></ion-icon>
             </ion-button>
           </ion-buttons>

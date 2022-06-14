@@ -1,0 +1,12 @@
+<form action="">
+  <ion-card>
+    <ion-item lines="none">
+      <ion-input [(ngModel)]="numero" name="numero" type="number" placeholder="Numero de Whatsapp"></ion-input>
+    </ion-item>
+    <ion-item>
+      <ion-button slot="end" (click)="cerrarPopover()" expand="block" color="success">
+        Enviar
+      </ion-button>
+    </ion-item>
+  </ion-card>
+</form>
