@@ -47,7 +47,15 @@ export class PuntoVentaPage implements OnInit {
   sinDatos;
   sinCategorias;
 
-  cliente;
+  cliente: any = {
+    celular: '999999999',
+    direccion: 'jr. prueba',
+    email: 'cliente@gmail.com',
+    id: '5FwjPZ7ClHegWoQqOQzN',
+    nombre: 'cliente varios',
+    numDoc: '00000000',
+    tipoDoc: 'dni'
+  };
 
   buscarNombre = true;
 
