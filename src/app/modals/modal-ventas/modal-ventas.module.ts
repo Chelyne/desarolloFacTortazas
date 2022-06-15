@@ -8,6 +8,7 @@ import { ModalVentasPageRoutingModule } from './modal-ventas-routing.module';
 
 import { ModalVentasPage } from './modal-ventas.page';
 import { NgxQRCodeModule } from '@techiediaries/ngx-qrcode';
+import { PopoverWhatsappComponent } from '../../components/popover-whatsapp/popover-whatsapp.component';
 
 @NgModule({
   imports: [
@@ -17,6 +18,6 @@ import { NgxQRCodeModule } from '@techiediaries/ngx-qrcode';
     ModalVentasPageRoutingModule,
     NgxQRCodeModule
   ],
-  declarations: [ModalVentasPage]
+  declarations: [ModalVentasPage, PopoverWhatsappComponent]
 })
 export class ModalVentasPageModule {}

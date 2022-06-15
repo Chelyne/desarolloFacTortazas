@@ -20,6 +20,7 @@ export class BoletasFacturasService {
   LogoEmpresa = GENERAL_CONFIG.datosEmpresa.logo;
   RUC = GENERAL_CONFIG.datosEmpresa.ruc;
   nombreEmpresa = GENERAL_CONFIG.datosEmpresa.razon_social;
+  dominioFac = GENERAL_CONFIG.datosEmpresa.url;
   valueQR;
   sede;
 
@@ -144,7 +145,8 @@ export class BoletasFacturasService {
             index = index + 2;
           }
           doc.setFontSize(4);
-          doc.text('Representación impresa del comprobante de pago\r de Venta Electrónica, esta puede ser consultada en\r www.facturaciontooby.web.app/buscar\rNO ACEPTAMOS DEVOLUCIONES', 22.5, index + 3, {align: 'center'});
+          // tslint:disable-next-line:max-line-length
+          doc.text('Representación impresa del comprobante de pago\r de Venta Electrónica, esta puede ser consultada en\r ' + this.dominioFac + '/buscar\rNO ACEPTAMOS DEVOLUCIONES', 22.5, index + 3, {align: 'center'});
           doc.text('GRACIAS POR SU COMPRA', 22.5, index + 10, {align: 'center'});
           doc.save(venta.serieComprobante + '-' + venta.numeroComprobante + '.pdf');
           // doc.autoPrint();
@@ -259,7 +261,8 @@ export class BoletasFacturasService {
               index = index + 2;
             }
             doc.setFontSize(4);
-            doc.text('Representación impresa del comprobante de pago\r de Factura Electrónica, esta puede ser consultada en\r www.facturaciontooby.web.app/buscar\rNO ACEPTAMOS DEVOLUCIONES', 22.5, index + 3, {align: 'center'});
+            // tslint:disable-next-line:max-line-length
+            doc.text('Representación impresa del comprobante de pago\r de Factura Electrónica, esta puede ser consultada en\r' + this.dominioFac + '/buscar\rNO ACEPTAMOS DEVOLUCIONES', 22.5, index + 3, {align: 'center'});
             doc.text('GRACIAS POR SU COMPRA', 22.5, index + 10, {align: 'center'});
             // doc.save('tiket' + '.pdf');
             doc.save(venta.serieComprobante + '-' + venta.numeroComprobante + '.pdf');
