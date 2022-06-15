@@ -28,6 +28,7 @@ export class ModalVentasPage implements OnInit {
   RUC = GENERAL_CONFIG.datosEmpresa.ruc;
   LogoEmpresa = GENERAL_CONFIG.datosEmpresa.logo;
   nombreEmpresa = GENERAL_CONFIG.datosEmpresa.razon_social;
+  dominioFac = GENERAL_CONFIG.datosEmpresa.url;
 
   listaVentas: VentaInterface[];
   sede = this.storage.datosAdmi.sede.toLowerCase();
@@ -274,7 +275,8 @@ export class ModalVentasPage implements OnInit {
           doc.text(this.generarmensaje(typoAccion, venta.estadoVenta), 22.5, index + 2, {align: 'center'});
           index = index + 2;
           doc.setFontSize(4);
-          doc.text('Representación impresa del comprobante de pago\r de Venta Electrónica, esta puede ser consultada en\r www.tooby.com\rNO ACEPTAMOS DEVOLUCIONES', 22.5, index + 3, {align: 'center'});
+          // tslint:disable-next-line:max-line-length
+          doc.text('Representación impresa del comprobante de pago\r de Venta Electrónica, esta puede ser consultada en\r' + this.dominioFac + '/buscar \rNO ACEPTAMOS DEVOLUCIONES', 22.5, index + 3, {align: 'center'});
           doc.text('GRACIAS POR SU COMPRA', 22.5, index + 10, {align: 'center'});
           // doc.save('tiket' + '.pdf');
           doc.autoPrint();
@@ -378,7 +380,8 @@ export class ModalVentasPage implements OnInit {
           doc.text(this.generarmensaje(typoAccion, venta.estadoVenta), 22.5, index + 2, {align: 'center'});
           index = index + 2;
           doc.setFontSize(4);
-          doc.text('Representación impresa del comprobante de pago\r de Factura Electrónica, esta puede ser consultada en\r www.tooby.com\rNO ACEPTAMOS DEVOLUCIONES', 22.5, index + 3, {align: 'center'});
+          // tslint:disable-next-line:max-line-length
+          doc.text('Representación impresa del comprobante de pago\r de Factura Electrónica, esta puede ser consultada en\r ' + this.dominioFac + '/buscar \rNO ACEPTAMOS DEVOLUCIONES', 22.5, index + 3, {align: 'center'});
           doc.text('GRACIAS POR SU COMPRA', 22.5, index + 10, {align: 'center'});
           // doc.save('tiket' + '.pdf');
           doc.autoPrint();
@@ -488,10 +491,10 @@ export class ModalVentasPage implements OnInit {
           doc.text('RECLAME SU COMPROBANTE', 22.5, index + 23, {align: 'center'});
           doc.text( '__________________________________________', 22.5, index + 24, {align: 'center'});
           index = index + 24;
-          doc.text('EL VETERINARIO TE RECUERDA:', 2, index + 3, {align: 'left'});
-          doc.text('-Desparasitar a tu mascota cada 2 meses', 2, index + 6, {align: 'left'});
-          doc.text('-Completar todas sus vacunas', 2, index + 8, {align: 'left'});
-          doc.text('-Cuida el aseo e higiene de tu engreido', 2, index + 10, {align: 'left'});
+          // doc.text('EL VETERINARIO TE RECUERDA:', 2, index + 3, {align: 'left'});
+          // doc.text('-Desparasitar a tu mascota cada 2 meses', 2, index + 6, {align: 'left'});
+          // doc.text('-Completar todas sus vacunas', 2, index + 8, {align: 'left'});
+          // doc.text('-Cuida el aseo e higiene de tu engreido', 2, index + 10, {align: 'left'});
 
           doc.autoPrint();
           // doc.output('datauristring');
