@@ -21,19 +21,22 @@ export class GenerarComprobanteService {
   nombreEmpresa = GENERAL_CONFIG.datosEmpresa.razon_social;
   dominioFac = GENERAL_CONFIG.datosEmpresa.url;
   valueQR;
+  sede;
 
 
-  constructor(  private dataApi: DataBaseService) { }
+  constructor(  private dataApi: DataBaseService) {
+   }
   // getImage() {
   //   const canvas = document.querySelector('canvas') as HTMLCanvasElement;
   //   const imageData = canvas.toDataURL('image/jpeg').toString();
   //   return imageData;
   //   }
-    async generarComprobante(venta) {
+    async generarComprobante(venta, sede) {
     venta.horaEmision = new Date(moment.unix(venta.fechaEmision.seconds).format('D MMM YYYY H:mm'));
     venta.fechaEmision = new Date(moment.unix(venta.fechaEmision.seconds).format('D MMM YYYY H:mm'));
     venta.fechaEmision = formatDate(venta.fechaEmision, 'dd/MM/yyyy', 'en');
     venta.horaEmision = formatDate(venta.horaEmision, 'HH:mm aa', 'en');
+    this.sede = sede.toLocaleLowerCase();
     // const qr = this.getImage();
     // console.log(qr);
 
@@ -46,25 +49,25 @@ export class GenerarComprobanteService {
           let index = 41;
           const doc = new jsPDF( 'p', 'mm', [45, index  + (venta.listaItemsDeVenta.length * 7) + 7 + 30 + 12]);
           doc.addImage(this.LogoEmpresa, 'JPEG', 11, 1, 22, 8);
+          doc.setFontSize(5.5);
+          doc.setFont('helvetica');
+          // doc.text(this.nombreEmpresa, 22.5, 12, {align: 'center'});
+          if (this.nombreEmpresa.length > 28) {
+            doc.text(this.nombreEmpresa.toUpperCase().slice(0, 27), 22.5, 12, {align: 'center'});
+            doc.text(this.nombreEmpresa.toUpperCase().slice(27, -1), 22.5, 14, {align: 'center'});
+          } else {
+            doc.text(this.nombreEmpresa.toUpperCase(), 2, 12);
+          }
           doc.setFontSize(6);
           doc.setFont('helvetica');
-          doc.text(this.nombreEmpresa, 22.5, 12, {align: 'center'});
-          if (venta.vendedor.sede === 'Andahuaylas') {
-          doc.text('Av. Peru 236 Andahuaylas Apurimac ', 22.5, 14, {align: 'center'});
-          doc.text('Parque Lampa de Oro ', 22.5, 16, {align: 'center'});
-
-          doc.text('Telefono: 983905066', 22.5, 19, {align: 'center'});
-          }
-          if (venta.vendedor.sede === 'Abancay') {
-            doc.text('Av. Seoane 100 Abancay Apurimac', 22.5, 14, {align: 'center'});
-            doc.text('Parque el Olivo', 22.5, 16, {align: 'center'});
-
-            doc.text('Telefono: 988907777', 22.5, 19, {align: 'center'});
-            }
-          doc.text('Ruc: ' + this.RUC, 22.5, 21, {align: 'center'});
-          doc.text('Boleta de Venta electrónica', 22.5, 25, {align: 'center'});
+          // doc.text(this.nombreEmpresa, 22.5, 12, {align: 'center'});
+          doc.text(GENERAL_CONFIG.sedes[this.sede].direccion.direccionCorta, 22.5, 17, {align: 'center'});
+          doc.text(GENERAL_CONFIG.sedes[this.sede].direccion.referencia, 22.5, 19, {align: 'center'});
+          doc.text('Telefono: ' + GENERAL_CONFIG.sedes[this.sede].telefono, 22.5, 22, {align: 'center'});
+          doc.text('Ruc: ' + this.RUC, 22.5, 24, {align: 'center'});
+          doc.text('Boleta de Venta electrónica', 22.5, 27, {align: 'center'});
           // tslint:disable-next-line:max-line-length
-          doc.text(venta.serieComprobante + '-' + this.digitosFaltantes('0', (8 - venta.numeroComprobante.length)) + venta.numeroComprobante, 22.5, 27, {align: 'center'});
+          doc.text(venta.serieComprobante + '-' + this.digitosFaltantes('0', (8 - venta.numeroComprobante.length)) + venta.numeroComprobante, 22.5, 29, {align: 'center'});
           doc.text(venta.cliente.tipoDoc.toUpperCase() + ': ' + venta.cliente.numDoc , 22.5, 31, {align: 'center'});
           doc.text( 'Cliente: ', 22.5, 33, {align: 'center'});
           if (venta.cliente.nombre.length  >= 40){
@@ -164,26 +167,25 @@ export class GenerarComprobanteService {
             // tslint:disable-next-line:no-shadowed-variable
             const doc = new jsPDF( 'p', 'mm', [45, index  + (venta.listaItemsDeVenta.length * 7) + 19 + 25 + 12]);
             doc.addImage(this.LogoEmpresa, 'JPEG', 11, 1, 22, 8);
+            doc.setFontSize(5.5);
+            doc.setFont('helvetica');
+            // doc.text(this.nombreEmpresa, 22.5, 12, {align: 'center'});
+            if (this.nombreEmpresa.length > 28) {
+              doc.text(this.nombreEmpresa.toUpperCase().slice(0, 27), 22.5, 12, {align: 'center'});
+              doc.text(this.nombreEmpresa.toUpperCase().slice(27, -1), 22.5, 14, {align: 'center'});
+            } else {
+              doc.text(this.nombreEmpresa.toUpperCase(), 2, 12);
+            }
             doc.setFontSize(6);
             doc.setFont('helvetica');
-            doc.text(this.nombreEmpresa, 22.5, 12, {align: 'center'});
-            if (venta.vendedor.sede === 'Andahuaylas') {
-            doc.text('Av. Peru 236 Andahuaylas Apurimac ', 22.5, 14, {align: 'center'});
-            doc.text('Parque Lampa de Oro ', 22.5, 16, {align: 'center'});
-
-            doc.text('Telefono: 983905066', 22.5, 19, {align: 'center'});
-            }
-            if (venta.vendedor.sede  === 'Abancay') {
-              doc.text('Av. Seoane 100 Abancay Apurimac', 22.5, 14, {align: 'center'});
-              doc.text('Parque el Olivo', 22.5, 16, {align: 'center'});
-
-              doc.text('Telefono: 988907777', 22.5, 19, {align: 'center'});
-              }
-            doc.text('Ruc: ' + this.RUC, 22.5, 21, {align: 'center'});
-            doc.text('Factura de Venta electrónica', 22.5, 25, {align: 'center'});
+            doc.text(GENERAL_CONFIG.sedes[this.sede].direccion.direccionCorta, 22.5, 17, {align: 'center'});
+            doc.text(GENERAL_CONFIG.sedes[this.sede].direccion.referencia, 22.5, 19, {align: 'center'});
+            doc.text('Telefono: ' + GENERAL_CONFIG.sedes[this.sede].telefono, 22.5, 22, {align: 'center'});
+            doc.text('Ruc: ' + this.RUC, 22.5, 24, {align: 'center'});
+            doc.text('Factura de Venta electrónica', 22.5, 27, {align: 'center'});
             // tslint:disable-next-line:max-line-length
-            doc.text(venta.serieComprobante + '-' + this.digitosFaltantes('0', (8 - venta.numeroComprobante.length)) + venta.numeroComprobante, 22.5, 27, {align: 'center'});
-            doc.text(venta.cliente.tipoDoc.toUpperCase() + ': ' + venta.cliente.numDoc , 22.5, 31, {align: 'center'});
+            doc.text(venta.serieComprobante + '-' + this.digitosFaltantes('0', (8 - venta.numeroComprobante.length)) + venta.numeroComprobante, 22.5, 29, {align: 'center'});
+            doc.text(venta.cliente.tipoDoc.toUpperCase() + ': ' + + venta.cliente.numDoc , 22.5, 31, {align: 'center'});
             doc.text( 'Cliente:', 22.5, 33, {align: 'center'});
             // doc.text( this.convertirMayuscula(this.venta.cliente.nombre), 22.5, 35, {align: 'center'});
             if (venta.cliente.nombre.length  >= 40){

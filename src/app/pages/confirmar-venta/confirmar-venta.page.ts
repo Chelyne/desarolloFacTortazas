@@ -362,18 +362,25 @@ export class ConfirmarVentaPage implements OnInit {
         let index = 41;
         const doc = new jsPDF( 'p', 'mm', [45, index  + (this.venta.listaItemsDeVenta.length * 7) + 7 + 30 + 12]);
         doc.addImage(this.LogoEmpresa, 'JPEG', 11, 1, 22, 8);
+        doc.setFontSize(5.5);
+        doc.setFont('helvetica');
+        // doc.text(this.nombreEmpresa, 22.5, 12, {align: 'center'});
+        if (this.nombreEmpresa.length > 28) {
+          doc.text(this.nombreEmpresa.toUpperCase().slice(0, 27), 22.5, 12, {align: 'center'});
+          doc.text(this.nombreEmpresa.toUpperCase().slice(27, -1), 22.5, 14, {align: 'center'});
+        } else {
+          doc.text(this.nombreEmpresa.toUpperCase(), 2, 12);
+        }
         doc.setFontSize(6);
         doc.setFont('helvetica');
-        doc.text(this.nombreEmpresa, 22.5, 12, {align: 'center'});
-
-        doc.text(GENERAL_CONFIG.sedes[this.sede].direccion.direccionCorta, 22.5, 14, {align: 'center'});
-        doc.text(GENERAL_CONFIG.sedes[this.sede].direccion.referencia, 22.5, 16, {align: 'center'});
-        doc.text('Telefono: ' + GENERAL_CONFIG.sedes[this.sede].telefono, 22.5, 19, {align: 'center'});
-
-        doc.text('Ruc: ' + this.RUC, 22.5, 21, {align: 'center'});
-        doc.text('Boleta de Venta electrónica', 22.5, 25, {align: 'center'});
+        // doc.text(this.nombreEmpresa, 22.5, 12, {align: 'center'});
+        doc.text(GENERAL_CONFIG.sedes[this.sede].direccion.direccionCorta, 22.5, 17, {align: 'center'});
+        doc.text(GENERAL_CONFIG.sedes[this.sede].direccion.referencia, 22.5, 19, {align: 'center'});
+        doc.text('Telefono: ' + GENERAL_CONFIG.sedes[this.sede].telefono, 22.5, 22, {align: 'center'});
+        doc.text('Ruc: ' + this.RUC, 22.5, 24, {align: 'center'});
+        doc.text('Boleta de Venta electrónica', 22.5, 27, {align: 'center'});
         // tslint:disable-next-line:max-line-length
-        doc.text(this.venta.serieComprobante + '-' + this.digitosFaltantes('0', (8 - this.venta.numeroComprobante.length)) + this.venta.numeroComprobante, 22.5, 27, {align: 'center'});
+        doc.text(this.venta.serieComprobante + '-' + this.digitosFaltantes('0', (8 - this.venta.numeroComprobante.length)) + this.venta.numeroComprobante, 22.5, 29, {align: 'center'});
         doc.text(this.venta.cliente.tipoDoc.toUpperCase() + ': ' + this.venta.cliente.numDoc , 22.5, 31, {align: 'center'});
         doc.text( 'Cliente: ', 22.5, 33, {align: 'center'});
         if (this.venta.cliente.nombre.length  >= 40){
@@ -476,18 +483,25 @@ export class ConfirmarVentaPage implements OnInit {
         // tslint:disable-next-line:no-shadowed-variable
         const doc = new jsPDF( 'p', 'mm', [45, index  + (this.venta.listaItemsDeVenta.length * 7) + 19 + 25 + 12]);
         doc.addImage(this.LogoEmpresa, 'JPEG', 11, 1, 22, 8);
+        doc.setFontSize(5.5);
+        doc.setFont('helvetica');
+        // doc.text(this.nombreEmpresa, 22.5, 12, {align: 'center'});
+        if (this.nombreEmpresa.length > 28) {
+          doc.text(this.nombreEmpresa.toUpperCase().slice(0, 27), 22.5, 12, {align: 'center'});
+          doc.text(this.nombreEmpresa.toUpperCase().slice(27, -1), 22.5, 14, {align: 'center'});
+        } else {
+          doc.text(this.nombreEmpresa.toUpperCase(), 2, 12);
+        }
         doc.setFontSize(6);
         doc.setFont('helvetica');
-        doc.text(this.nombreEmpresa, 22.5, 12, {align: 'center'});
-        // COMPROBAR DATOS DE LA EMPRESA POR SEDE
-        doc.text(GENERAL_CONFIG.sedes[this.sede].direccion.direccionCorta, 22.5, 14, {align: 'center'});
-        doc.text(GENERAL_CONFIG.sedes[this.sede].direccion.referencia, 22.5, 16, {align: 'center'});
-        doc.text('Telefono: ' + GENERAL_CONFIG.sedes[this.sede].telefono, 22.5, 19, {align: 'center'});
-        doc.text('Ruc: ' + this.RUC, 22.5, 21, {align: 'center'});
-        doc.text('Factura de Venta electrónica', 22.5, 25, {align: 'center'});
+        doc.text(GENERAL_CONFIG.sedes[this.sede].direccion.direccionCorta, 22.5, 17, {align: 'center'});
+        doc.text(GENERAL_CONFIG.sedes[this.sede].direccion.referencia, 22.5, 19, {align: 'center'});
+        doc.text('Telefono: ' + GENERAL_CONFIG.sedes[this.sede].telefono, 22.5, 22, {align: 'center'});
+        doc.text('Ruc: ' + this.RUC, 22.5, 24, {align: 'center'});
+        doc.text('Factura de Venta electrónica', 22.5, 27, {align: 'center'});
         // tslint:disable-next-line:max-line-length
-        doc.text(this.venta.serieComprobante + '-' + this.digitosFaltantes('0', (8 - this.venta.numeroComprobante.length)) + this.venta.numeroComprobante, 22.5, 27, {align: 'center'});
-        doc.text(this.venta.cliente.tipoDoc.toUpperCase() + ': ' + this.venta.cliente.numDoc , 22.5, 31, {align: 'center'});
+        doc.text(this.venta.serieComprobante + '-' + this.digitosFaltantes('0', (8 - this.venta.numeroComprobante.length)) + this.venta.numeroComprobante, 22.5, 29, {align: 'center'});
+        doc.text(this.venta.cliente.tipoDoc.toUpperCase() + ': ' + + this.venta.cliente.numDoc , 22.5, 31, {align: 'center'});
         doc.text( 'Cliente:', 22.5, 33, {align: 'center'});
         if (this.venta.cliente.nombre.length  >= 40){
           const prue = this.venta.cliente.nombre.split(' ');
@@ -605,16 +619,25 @@ export class ConfirmarVentaPage implements OnInit {
         // tslint:disable-next-line:no-shadowed-variable
         const doc = new jsPDF( 'p', 'mm', [45, index  + (this.venta.listaItemsDeVenta.length * 7) + 9 + 20 + 12]);
         doc.addImage(this.LogoEmpresa, 'JPEG', 11, 1, 22, 8);
+        doc.setFontSize(5.5);
+        doc.setFont('helvetica');
+        // doc.text(this.nombreEmpresa, 22.5, 12, {align: 'center'});
+        if (this.nombreEmpresa.length > 28) {
+          doc.text(this.nombreEmpresa.toUpperCase().slice(0, 27), 22.5, 12, {align: 'center'});
+          doc.text(this.nombreEmpresa.toUpperCase().slice(27, -1), 22.5, 14, {align: 'center'});
+        } else {
+          doc.text(this.nombreEmpresa.toUpperCase(), 2, 12);
+        }
         doc.setFontSize(6);
         doc.setFont('helvetica');
-        doc.text(this.nombreEmpresa, 22.5, 12, {align: 'center'});
-        doc.text(GENERAL_CONFIG.sedes[this.sede].direccion.direccionCorta, 22.5, 14, {align: 'center'});
-        doc.text(GENERAL_CONFIG.sedes[this.sede].direccion.referencia, 22.5, 16, {align: 'center'});
-        doc.text('Telefono: ' + GENERAL_CONFIG.sedes[this.sede].telefono, 22.5, 19, {align: 'center'});
-        doc.text('Ruc: ' + this.RUC, 22.5, 21, {align: 'center'});
-        doc.text('Nota de Venta electrónica', 22.5, 25, {align: 'center'});
+        // doc.text(this.nombreEmpresa, 22.5, 12, {align: 'center'});
+        doc.text(GENERAL_CONFIG.sedes[this.sede].direccion.direccionCorta, 22.5, 17, {align: 'center'});
+        doc.text(GENERAL_CONFIG.sedes[this.sede].direccion.referencia, 22.5, 19, {align: 'center'});
+        doc.text('Telefono: ' + GENERAL_CONFIG.sedes[this.sede].telefono, 22.5, 22, {align: 'center'});
+        doc.text('Ruc: ' + this.RUC, 22.5, 24, {align: 'center'});
+        doc.text('Nota de Venta electrónica', 22.5, 27, {align: 'center'});
         // tslint:disable-next-line:max-line-length
-        doc.text(this.venta.serieComprobante + '-' + this.digitosFaltantes('0', (8 - this.venta.numeroComprobante.length)) + this.venta.numeroComprobante, 22.5, 27, {align: 'center'});
+        doc.text(this.venta.serieComprobante + '-' + this.digitosFaltantes('0', (8 - this.venta.numeroComprobante.length)) + this.venta.numeroComprobante, 22.5, 29, {align: 'center'});
         doc.text(this.venta.cliente.tipoDoc.toUpperCase() + ': ' + this.venta.cliente.numDoc , 22.5, 31, {align: 'center'});
         doc.text( 'Cliente:', 22.5, 33, {align: 'center'});
         if (this.venta.cliente.nombre.length  >= 40){
