@@ -5,6 +5,11 @@
       </ion-menu-button>
     </ion-buttons>
     <ion-title color="primary">Lista de Ventas</ion-title>
+    <ion-item slot="end" [color]="(activoNotas && activoNotas=== true ) ? 'success' : 'medium'">
+      <ion-label >Agregar Notas de venta</ion-label>
+      <ion-toggle color="light" (ionChange)="cambiarNotas($event)" [(ngModel)]="activoNotas"></ion-toggle>
+    </ion-item>
+
     <ion-item slot="end" [color]="(enviroment && enviroment!=='beta') ? 'success' : 'medium'">
       <ion-spinner color="light" *ngIf="!enviroment" name="crescent"></ion-spinner>
       <ion-label *ngIf="enviroment">{{enviroment | titlecase}}</ion-label>
@@ -80,6 +85,13 @@
               <ion-icon color="secondary" name="checkmark-circle-sharp"></ion-icon> &nbsp;&nbsp;
               <ion-label>Total Facturas</ion-label>
               <ion-badge color="secondary">{{totalFacturas}}</ion-badge>
+            </ion-item>
+          </ion-col>
+          <ion-col  *ngIf="activoNotas && activoNotas=== true ">
+            <ion-item lines="none" color="light">
+              <ion-icon color="secondary" name="checkmark-circle-sharp"></ion-icon> &nbsp;&nbsp;
+              <ion-label>Total Notas</ion-label>
+              <ion-badge color="secondary">{{totalNotas}}</ion-badge>
             </ion-item>
           </ion-col>
           <ion-col>

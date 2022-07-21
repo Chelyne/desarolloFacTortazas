@@ -17,6 +17,7 @@ export class AppComponent implements OnInit{
   menuSeleccionado = 'Dashboard';
   datosAdmi;
   componentes: Observable<any[]>;
+  menuContador: Observable<any[]>;
   constructor(
     private menu: MenuService,
     private authService: AuthServiceService,
@@ -38,6 +39,7 @@ export class AppComponent implements OnInit{
 
   ngOnInit() {
     this.componentes = this.menu.getMenu();
+    this.menuContador = this.menu.getMenuContador();
     console.log('menu', this.componentes);
   }
 
@@ -73,6 +75,9 @@ export class AppComponent implements OnInit{
   //   }
   menuSelected(page) {
     this.menuSeleccionado = page.name;
+  }
+  seleccionarReporteMensual(){
+    console.log('menu de contadora');
   }
 
 

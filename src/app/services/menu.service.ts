@@ -12,4 +12,7 @@ export class MenuService {
   getMenu() {
     return this.http.get<any[]>('../../assets/data/menu.json');
   }
+  getMenuContador() {
+    return this.http.get<any[]>('../../assets/data/menuContador.json');
+  }
 }

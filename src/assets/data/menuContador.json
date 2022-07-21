@@ -1,0 +1,24 @@
+[
+    {
+        "icon": "cash-outline",
+        "name": "Ventas por dia",
+        "sub": [
+            {
+                "icon": "document-text-outline",
+                "name": "Lista de ventas",
+                "redirecTo": "/lista-de-ventas"
+            }
+        ]
+    },
+    {
+        "icon": "stats-chart-outline",
+        "name": "Reportes",
+        "sub": [
+            {
+                "icon": "receipt-outline",
+                "name": "Ventas",
+                "redirecTo": "reporte-ventas"
+            }
+        ]
+    }
+]

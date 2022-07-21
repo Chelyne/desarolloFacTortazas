@@ -436,8 +436,10 @@ export class ConfirmarVentaPage implements OnInit {
         doc.text('Descuento: S/ ', 35, index + 5, {align: 'right'});
         doc.text(this.venta.descuentoVenta.toFixed(2), 43, index + 5, {align: 'right'});
         index = index + 4;
-        doc.text(`ICBP(${this.ICBP_PER.toFixed(2)}): S/`, 35, index + 3, {align: 'right'});
-        doc.text((this.venta.cantidadBolsa * this.ICBP_PER).toFixed(2), 43, index + 3, {align: 'right'});
+        if ( this.venta.cantidadBolsa > 0){
+          doc.text(`ICBP(${this.ICBP_PER.toFixed(2)}): S/`, 35, index + 3, {align: 'right'});
+          doc.text((this.venta.cantidadBolsa * this.ICBP_PER).toFixed(2), 43, index + 3, {align: 'right'});
+        }
         doc.text('Importe Total: S/ ', 35, index + 5, {align: 'right'});
         doc.text(this.venta.totalPagarVenta.toFixed(2), 43, index + 5, {align: 'right'});
         doc.text('Vuelto: S/ ', 35, index + 7, {align: 'right'});
@@ -565,10 +567,12 @@ export class ConfirmarVentaPage implements OnInit {
         doc.text( (this.venta.descuentoVenta).toFixed(2), 43, index + 13, {align: 'right'});
         doc.text('I.G.V. (18%)', 2, index + 15, {align: 'left'});
         doc.text( (this.calcularIGVincluido(this.venta.totalPagarVenta)).toFixed(2), 43, index + 15, {align: 'right'});
-        doc.text(`ICBP(${this.ICBP_PER.toFixed(2)}): S/`, 2, index + 17, {align: 'left'});
-        doc.text( (this.venta.cantidadBolsa * this.ICBP_PER).toFixed(2), 43, index + 17, {align: 'right'});
-        doc.text('I.S.C.', 2, index + 19, {align: 'left'});
-        doc.text( (0).toFixed(2), 43, index + 19, {align: 'right'});
+        doc.text('I.S.C.', 2, index + 17, {align: 'left'});
+        doc.text( (0).toFixed(2), 43, index + 17, {align: 'right'});
+        if (this.venta.cantidadBolsa > 0){
+          doc.text(`ICBP(${this.ICBP_PER.toFixed(2)}): S/`, 2, index + 19, {align: 'left'});
+          doc.text( (this.venta.cantidadBolsa * this.ICBP_PER).toFixed(2), 43, index + 19, {align: 'right'});
+        }
         doc.text( '__________________________________________', 22.5, index + 19, {align: 'center'});
 
         index = index + 19;
@@ -617,7 +621,7 @@ export class ConfirmarVentaPage implements OnInit {
         // tslint:disable-next-line:no-shadowed-variable
         let index = 41;
         // tslint:disable-next-line:no-shadowed-variable
-        const doc = new jsPDF( 'p', 'mm', [45, index  + (this.venta.listaItemsDeVenta.length * 7) + 9 + 20 + 12]);
+        const doc = new jsPDF( 'p', 'mm', [45, index  + (this.venta.listaItemsDeVenta.length * 7) + 9 + 22]);
         doc.addImage(this.LogoEmpresa, 'JPEG', 11, 1, 22, 8);
         doc.setFontSize(5.5);
         doc.setFont('helvetica');
@@ -723,10 +727,10 @@ export class ConfirmarVentaPage implements OnInit {
         doc.text('RECLAME SU COMPROBANTE', 22.5, index + 19, {align: 'center'});
         doc.text( '__________________________________________', 22.5, index + 20, {align: 'center'});
         index = index + 20;
-        doc.text('EL VETERINARIO TE RECUERDA:', 2, index + 3, {align: 'left'});
-        doc.text('-Desparasitar a tu mascota cada 2 meses', 2, index + 6, {align: 'left'});
-        doc.text('-Completar todas sus vacunas', 2, index + 8, {align: 'left'});
-        doc.text('-Cuida el aseo e higiene de tu engreido', 2, index + 10, {align: 'left'});
+        // doc.text('EL VETERINARIO TE RECUERDA:', 2, index + 3, {align: 'left'});
+        // doc.text('-Desparasitar a tu mascota cada 2 meses', 2, index + 6, {align: 'left'});
+        // doc.text('-Completar todas sus vacunas', 2, index + 8, {align: 'left'});
+        // doc.text('-Cuida el aseo e higiene de tu engreido', 2, index + 10, {align: 'left'});
 
         doc.autoPrint();
         // window.open(doc.output('bloburl').toString(), '_blank');
