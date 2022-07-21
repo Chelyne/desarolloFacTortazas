@@ -1,0 +1,53 @@
+<ion-header>
+  <ion-toolbar>  <ion-buttons slot="start">
+    <ion-menu-button color="primary" menu="primerMenu">
+    </ion-menu-button>
+  </ion-buttons>
+    <ion-title color="primary">Reporte Intentos de Venta</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <ion-card mode="ios">
+    <ion-card-content>
+      <ion-item lines="none">
+        <ion-label color="primary" class="ion-text-wrap">Reporte de intentos de venta</ion-label>
+        <ion-item slot="end" lines="none">
+          <ion-label>Selecciona la fecha</ion-label>
+          <ion-input class="inputFecha" (ionChange)="consultarReporte($event)" slot="end" type="date" [(ngModel)]="fechaActual" formatDate="dd-mm-yyyy" value="{{fechaConsulta}}"></ion-input>
+        </ion-item>
+      </ion-item>
+    </ion-card-content>
+  </ion-card>
+
+  <ion-card mode="ios">
+    <div class="sinDatos" *ngIf="sinDatos===true">
+      <div class="textoSindatos">
+        <ion-icon class="icono" name="book-outline" color="medium"></ion-icon> <br><br>
+        <ion-label color="medium">No existen datos</ion-label>
+      </div>
+    </div>
+    <div class="cargando" *ngIf="buscando">
+      <div class="textoCargando">
+        <ion-spinner name="crescent" color="primary"></ion-spinner>
+      </div>
+    </div>
+    <ion-grid *ngIf="listaRegistro.length" mode="ios">
+      <ion-row class="titulos">
+        <ion-col size-lg="3" size-md="3" >Producto</ion-col>
+        <ion-col size-lg="2" size-md="2" >Precio</ion-col>
+        <ion-col size-lg="2" size-md="2" >Vendedor</ion-col>
+        <ion-col size-lg="3" size-md="3" >Fecha</ion-col>
+        <ion-col size-lg="2" size-md="2" >Estado</ion-col>
+      </ion-row>
+      <ion-row class="contenido" *ngFor="let item of listaRegistro">
+        <ion-col size-lg="3" size-md="3" >{{item.producto.nombre | titlecase}} - {{item.medida | titlecase}}</ion-col>
+        <ion-col size-lg="2" size-md="2" >S/. {{item.precio.toFixed(2)}}</ion-col>
+        <ion-col size-lg="2" size-md="2" >{{item.vendedor.nombre | titlecase}}</ion-col>
+        <ion-col size-lg="3" size-md="3" >{{item.fecha.seconds * 1000 | date: 'medium'}}</ion-col>
+        <ion-col size-lg="2" size-md="2" ><ion-badge [color]="item.tipo==='agregado'?'success':'danger'">{{item.tipo | titlecase}}</ion-badge></ion-col>
+      </ion-row>
+    </ion-grid>
+  </ion-card>
+
+</ion-content>

@@ -217,6 +217,7 @@ export class PuntoVentaPage implements OnInit {
         const productoCreado = this.CrearItemDeVenta(productoSelect, varianteSelected);
         if (productoCreado){
           this.listaItemsDeVenta.unshift(productoCreado);
+          this.guardarRegistroAgregarQuitaritemsDeVenta(productoCreado, 'agregado');// guardar registro de agregar a lista de venta
         }
       }
 
@@ -228,6 +229,26 @@ export class PuntoVentaPage implements OnInit {
       console.log('%cOCURRIO UN ERROR', 'color:white;background-color:red' , error);
       this.servGlobal.presentToast(error, {color: 'danger'});
     }
+  }
+
+
+ // LOG DE LOS PRODUCTOS AGREGADOS Y QUITADOS DE LA LISTA DE VENTA
+  guardarRegistroAgregarQuitaritemsDeVenta (item: any, tipo: string) {
+    item.vendedor = {
+      nombre: this.storage.datosAdmi.nombre,
+      dni: this.storage.datosAdmi.dni,
+      id: this.storage.datosAdmi.id,
+      rol: this.storage.datosAdmi.rol,
+      sede: this.storage.datosAdmi.sede,
+    };
+    item.tipo = tipo;
+    this.dataApi.guardarLOGListaVentas(item, this.sede).then(res => {
+      if (res === 'exito') {
+        console.log('Guardado el registro...');
+      } else {
+        this.servGlobal.presentToast('Ocurrio un error al guardar registro.')
+      }
+    })
   }
 
   async presentPopoverVariantes(productoSelect: ProductoInterface) {
@@ -325,6 +346,7 @@ export class PuntoVentaPage implements OnInit {
 
       for (const itemDeVenta of this.listaItemsDeVenta) {
         if (idProdItem === itemDeVenta.idProducto){
+          this.guardarRegistroAgregarQuitaritemsDeVenta(itemDeVenta, 'quitado'); // guardar registro de agregar a lista de venta
             // console.log('quitar producto', index);
             this.listaItemsDeVenta.splice(index, 1);
             break;
@@ -411,6 +433,9 @@ export class PuntoVentaPage implements OnInit {
   }
 
   QuitarListaDeVenta(){
+    for (const venta of this.listaItemsDeVenta) {
+      this.guardarRegistroAgregarQuitaritemsDeVenta(venta, 'quitado'); // guardar registro de agregar a lista de venta
+    }
     this.listaItemsDeVenta = [];
     this.importeTotalPagar = 0;
   }

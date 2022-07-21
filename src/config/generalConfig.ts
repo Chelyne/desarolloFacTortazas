@@ -12,6 +12,7 @@ export const GENERAL_CONFIG = {
         apisPeruId: 401,
         url: 'https://facturacionmimarket.web.app'
     },
+    listaSedes: ['andahuaylas', 'lampa'],
     sedes: {
         andahuaylas: {
             direccion: {
