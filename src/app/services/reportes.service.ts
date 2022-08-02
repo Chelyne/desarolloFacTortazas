@@ -21,7 +21,7 @@ interface jsPDFWithPlugin extends jsPDF {
 export class ReportesService {
   LogoEmpresa = GENERAL_CONFIG.datosEmpresa.logo;
   RUC = GENERAL_CONFIG.datosEmpresa.ruc;
-  nombreEmpresa = GENERAL_CONFIG.datosEmpresa.razon_social;
+  nombreEmpresa = GENERAL_CONFIG.datosEmpresa.nombreComercial;
 
   sede = this.storage.datosAdmi.sede;
   Ingresos = 0;

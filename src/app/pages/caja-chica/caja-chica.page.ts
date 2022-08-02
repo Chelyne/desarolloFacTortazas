@@ -39,7 +39,7 @@ export class CajaChicaPage implements OnInit {
   nombreVendedor: string;
   LogoEmpresa = GENERAL_CONFIG.datosEmpresa.logo;
   RUC = GENERAL_CONFIG.datosEmpresa.ruc;
-  nombreEmpresa = GENERAL_CONFIG.datosEmpresa.razon_social;
+  nombreEmpresa = GENERAL_CONFIG.datosEmpresa.nombreComercial;
   fechaActualFormateado = formatDate(new Date(), 'dd-MM-yyyy', 'en');
 
   listaCajaChica;

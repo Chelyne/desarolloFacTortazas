@@ -36,6 +36,7 @@ export class ListaDeVentasPage implements OnInit {
 
   totalBoletas = 0;
   totalFacturas = 0;
+  totalNotas = 0;
   totalAnulados = 0;
 
   totalAceptados = 0;
@@ -45,6 +46,7 @@ export class ListaDeVentasPage implements OnInit {
 
   // beta o produccion
   activo = false;
+  activoNotas = false;
 
   fechaConsulta = formatearDateTime('YYYY-MM-DD');
   constructor(
@@ -117,6 +119,7 @@ export class ListaDeVentasPage implements OnInit {
 
         this.totalBoletas = 0;
         this.totalFacturas = 0;
+        this.totalNotas = 0;
         this.totalAnulados = 0;
 
         this.totalAceptados = 0;
@@ -130,10 +133,45 @@ export class ListaDeVentasPage implements OnInit {
     // console.log('ventas', this.fechaventas);
     // console.log('listaventas', this.listaDeVentas);
   }
+  ObtenerVentasConNotasIncluidas(event: any){
+    console.log(event);
+    this.buscando = true;
+
+    const fecha = event.detail.value.split('-').reverse().join('-');
+    this.dataApi.obtenerVentasPorDiaObs(this.sede, fecha).subscribe(data => {
+      if (data.length > 0) {
+        console.log('hay datos');
+        this.listaDeVentas = data;
+        console.log(this.listaDeVentas);
+        // this.obtenerListaProductosDeVenta(this.listaDeVentas).then( data => console.log(data))
+
+        this.sinDatos = false;
+        this.buscando = false;
+
+        this.generarTotales(this.listaDeVentas);
+      } else {
+        this.listaDeVentas = [];
+        this.sinDatos = true;
+        this.buscando = false;
+
+        this.totalBoletas = 0;
+        this.totalFacturas = 0;
+        this.totalNotas = 0;
+        this.totalAnulados = 0;
+
+        this.totalAceptados = 0;
+        this.totalRechazados = 0;
+        this.notasCDR = [];
+        this.notasCDRAnulado = [];
+      }
+    });
+
+  }
 
   generarTotales(ventas: VentaInterface[]) {
     this.totalBoletas = 0;
     this.totalFacturas = 0;
+    this.totalNotas = 0;
     this.totalAnulados = 0;
 
     this.totalAceptados = 0;
@@ -147,6 +185,9 @@ export class ListaDeVentasPage implements OnInit {
         }
         if (venta.tipoComprobante === 'factura') {
           this.totalFacturas++;
+        }
+        if (venta.tipoComprobante === 'n. venta') {
+          this.totalNotas++;
         }
         if (venta.estadoVenta === 'anulado') {
           this.totalAnulados++;
@@ -434,6 +475,21 @@ export class ListaDeVentasPage implements OnInit {
   // GENERAR COMPROBANTE SERVICE
   comprobante(venta){
     this.comprobanteSrv.generarComprobante(venta, this.sede);
+  }
+  async cambiarNotas(event){
+    console.log(event, this.activoNotas);
+    const diaFormato = {
+      detail: {
+        value:  this.fechaConsulta
+      }
+    };
+    if (event.detail.checked === true) {
+      console.log('mostrar todos');
+      this.ObtenerVentasConNotasIncluidas(diaFormato);
+    } else{
+      console.log('mostrar solo boletas y facturas');
+      this.ObtenerVentas(diaFormato);
+    }
   }
 
 }

@@ -53,16 +53,25 @@ export class BoletasFacturasService {
           let index = 41;
           const doc = new jsPDF( 'p', 'mm', [45, index  + (venta.listaItemsDeVenta.length * 7) + 7 + 30 + 12]);
           doc.addImage(this.LogoEmpresa, 'JPEG', 11, 1, 22, 8);
+          doc.setFontSize(5.5);
+          doc.setFont('helvetica');
+          // doc.text(this.nombreEmpresa, 22.5, 12, {align: 'center'});
+          if (this.nombreEmpresa.length > 28) {
+            doc.text(this.nombreEmpresa.toUpperCase().slice(0, 27), 22.5, 12, {align: 'center'});
+            doc.text(this.nombreEmpresa.toUpperCase().slice(27, -1), 22.5, 14, {align: 'center'});
+          } else {
+            doc.text(this.nombreEmpresa.toUpperCase(), 2, 12);
+          }
           doc.setFontSize(6);
           doc.setFont('helvetica');
-          doc.text(this.nombreEmpresa, 22.5, 12, {align: 'center'});
-          doc.text(GENERAL_CONFIG.sedes[this.sede].direccion.direccionCorta, 22.5, 14, {align: 'center'});
-          doc.text(GENERAL_CONFIG.sedes[this.sede].direccion.referencia, 22.5, 16, {align: 'center'});
-          doc.text('Telefono: ' + GENERAL_CONFIG.sedes[this.sede].telefono, 22.5, 19, {align: 'center'});
-          doc.text('Ruc: ' + this.RUC, 22.5, 21, {align: 'center'});
-          doc.text('Boleta de Venta electrónica', 22.5, 25, {align: 'center'});
+          // doc.text(this.nombreEmpresa, 22.5, 12, {align: 'center'});
+          doc.text(GENERAL_CONFIG.sedes[this.sede].direccion.direccionCorta, 22.5, 17, {align: 'center'});
+          doc.text(GENERAL_CONFIG.sedes[this.sede].direccion.referencia, 22.5, 19, {align: 'center'});
+          doc.text('Telefono: ' + GENERAL_CONFIG.sedes[this.sede].telefono, 22.5, 22, {align: 'center'});
+          doc.text('Ruc: ' + this.RUC, 22.5, 24, {align: 'center'});
+          doc.text('Boleta de Venta electrónica', 22.5, 27, {align: 'center'});
           // tslint:disable-next-line:max-line-length
-          doc.text(venta.serieComprobante + '-' + this.digitosFaltantes('0', (8 - venta.numeroComprobante.length)) + venta.numeroComprobante, 22.5, 27, {align: 'center'});
+          doc.text(venta.serieComprobante + '-' + this.digitosFaltantes('0', (8 - venta.numeroComprobante.length)) + venta.numeroComprobante, 22.5, 29, {align: 'center'});
           doc.text(venta.cliente.tipoDoc.toUpperCase() + ': ' + venta.cliente.numDoc , 22.5, 31, {align: 'center'});
           doc.text( 'Cliente: ', 22.5, 33, {align: 'center'});
           if (venta.cliente.nombre.length  >= 40){
@@ -121,8 +130,10 @@ export class BoletasFacturasService {
           doc.text('Descuento: S/ ', 35, index + 5, {align: 'right'});
           doc.text(venta.descuentoVenta.toFixed(2), 43, index + 5, {align: 'right'});
           index = index + 4;
-          doc.text('ICBP(' + (GLOBAL_FACTOR_ICBPER).toFixed(2) + '): S/ ', 35, index + 3, {align: 'right'});
-          doc.text((venta.cantidadBolsa * GLOBAL_FACTOR_ICBPER).toFixed(2), 43, index + 3, {align: 'right'});
+          if (venta.cantidadBolsa > 0 ){
+            doc.text('ICBP(' + (GLOBAL_FACTOR_ICBPER).toFixed(2) + '): S/ ', 35, index + 3, {align: 'right'});
+            doc.text((venta.cantidadBolsa * GLOBAL_FACTOR_ICBPER).toFixed(2), 43, index + 3, {align: 'right'});
+          }
           doc.text('Importe Total: S/ ', 35, index + 5, {align: 'right'});
           doc.text(venta.totalPagarVenta.toFixed(2), 43, index + 5, {align: 'right'});
           // doc.text('Vuelto: S/ ', 35, index + 7, {align: 'right'});
@@ -162,17 +173,25 @@ export class BoletasFacturasService {
             // tslint:disable-next-line:no-shadowed-variable
             const doc = new jsPDF( 'p', 'mm', [45, index  + (venta.listaItemsDeVenta.length * 7) + 19 + 25 + 12]);
             doc.addImage(this.LogoEmpresa, 'JPEG', 11, 1, 22, 8);
+            doc.setFontSize(5.5);
+            doc.setFont('helvetica');
+            // doc.text(this.nombreEmpresa, 22.5, 12, {align: 'center'});
+            if (this.nombreEmpresa.length > 28) {
+              doc.text(this.nombreEmpresa.toUpperCase().slice(0, 27), 22.5, 12, {align: 'center'});
+              doc.text(this.nombreEmpresa.toUpperCase().slice(27, -1), 22.5, 14, {align: 'center'});
+            } else {
+              doc.text(this.nombreEmpresa.toUpperCase(), 2, 12);
+            }
             doc.setFontSize(6);
             doc.setFont('helvetica');
-            doc.text(this.nombreEmpresa, 22.5, 12, {align: 'center'});
-            doc.text(GENERAL_CONFIG.sedes[this.sede].direccion.direccionCorta, 22.5, 14, {align: 'center'});
-            doc.text(GENERAL_CONFIG.sedes[this.sede].direccion.referencia, 22.5, 16, {align: 'center'});
-            doc.text('Telefono: ' + GENERAL_CONFIG.sedes[this.sede].direccion.telefono, 22.5, 19, {align: 'center'});
-            doc.text('Ruc: ' + this.RUC, 22.5, 21, {align: 'center'});
-            doc.text('Factura de Venta electrónica', 22.5, 25, {align: 'center'});
+            doc.text(GENERAL_CONFIG.sedes[this.sede].direccion.direccionCorta, 22.5, 17, {align: 'center'});
+            doc.text(GENERAL_CONFIG.sedes[this.sede].direccion.referencia, 22.5, 19, {align: 'center'});
+            doc.text('Telefono: ' + GENERAL_CONFIG.sedes[this.sede].telefono, 22.5, 22, {align: 'center'});
+            doc.text('Ruc: ' + this.RUC, 22.5, 24, {align: 'center'});
+            doc.text('Factura de Venta electrónica', 22.5, 27, {align: 'center'});
             // tslint:disable-next-line:max-line-length
-            doc.text(venta.serieComprobante + '-' + this.digitosFaltantes('0', (8 - venta.numeroComprobante.length)) + venta.numeroComprobante, 22.5, 27, {align: 'center'});
-            doc.text(venta.cliente.tipoDoc.toUpperCase() + ': ' + venta.cliente.numDoc , 22.5, 31, {align: 'center'});
+            doc.text(venta.serieComprobante + '-' + this.digitosFaltantes('0', (8 - venta.numeroComprobante.length)) + venta.numeroComprobante, 22.5, 29, {align: 'center'});
+            doc.text(venta.cliente.tipoDoc.toUpperCase() + ': ' + + venta.cliente.numDoc , 22.5, 31, {align: 'center'});
             doc.text( 'Cliente:', 22.5, 33, {align: 'center'});
             // doc.text( this.convertirMayuscula(this.venta.cliente.nombre), 22.5, 35, {align: 'center'});
             if (venta.cliente.nombre.length  >= 40){
@@ -238,10 +257,12 @@ export class BoletasFacturasService {
             doc.text( (venta.descuentoVenta).toFixed(2), 43, index + 13, {align: 'right'});
             doc.text('I.G.V. (18%)', 2, index + 15, {align: 'left'});
             doc.text( (this.calcularIGVincluido(venta.totalPagarVenta)).toFixed(2), 43, index + 15, {align: 'right'});
-            doc.text('ICBP(' + (GLOBAL_FACTOR_ICBPER).toFixed(2) + ')', 2, index + 17, {align: 'left'});
-            doc.text( (venta.cantidadBolsa * GLOBAL_FACTOR_ICBPER).toFixed(2), 43, index + 17, {align: 'right'});
-            doc.text('I.S.C.', 2, index + 19, {align: 'left'});
-            doc.text( (0).toFixed(2), 43, index + 19, {align: 'right'});
+            doc.text('I.S.C.', 2, index + 17, {align: 'left'});
+            doc.text( (0).toFixed(2), 43, index + 17, {align: 'right'});
+            if (venta.cantidadBolsa > 0 ){
+              doc.text('ICBP(' + (GLOBAL_FACTOR_ICBPER).toFixed(2) + ')', 2, index + 19, {align: 'left'});
+              doc.text( (venta.cantidadBolsa * GLOBAL_FACTOR_ICBPER).toFixed(2), 43, index + 19, {align: 'right'});
+            }
             doc.text( '__________________________________________', 22.5, index + 19, {align: 'center'});
 
             index = index + 19;
@@ -278,16 +299,25 @@ export class BoletasFacturasService {
             // tslint:disable-next-line:no-shadowed-variable
             const doc = new jsPDF( 'p', 'mm', [45, index  + (venta.listaItemsDeVenta.length * 7) + 9 + 24 + 12]);
             doc.addImage(this.LogoEmpresa, 'JPEG', 11, 1, 22, 8);
+            doc.setFontSize(5.5);
+            doc.setFont('helvetica');
+            // doc.text(this.nombreEmpresa, 22.5, 12, {align: 'center'});
+            if (this.nombreEmpresa.length > 28) {
+              doc.text(this.nombreEmpresa.toUpperCase().slice(0, 27), 22.5, 12, {align: 'center'});
+              doc.text(this.nombreEmpresa.toUpperCase().slice(27, -1), 22.5, 14, {align: 'center'});
+            } else {
+              doc.text(this.nombreEmpresa.toUpperCase(), 2, 12);
+            }
             doc.setFontSize(6);
             doc.setFont('helvetica');
-            doc.text(this.nombreEmpresa, 22.5, 12, {align: 'center'});
-            doc.text(GENERAL_CONFIG.sedes[this.sede].direccion.direccionCorta, 22.5, 14, {align: 'center'});
-            doc.text(GENERAL_CONFIG.sedes[this.sede].direccion.referencia, 22.5, 16, {align: 'center'});
-            doc.text('Telefono: ' + GENERAL_CONFIG.sedes[this.sede].telefono, 22.5, 19, {align: 'center'});
-            doc.text('Ruc: ' + this.RUC, 22.5, 21, {align: 'center'});
-            doc.text('Nota de Venta electrónica', 22.5, 25, {align: 'center'});
+            // doc.text(this.nombreEmpresa, 22.5, 12, {align: 'center'});
+            doc.text(GENERAL_CONFIG.sedes[this.sede].direccion.direccionCorta, 22.5, 17, {align: 'center'});
+            doc.text(GENERAL_CONFIG.sedes[this.sede].direccion.referencia, 22.5, 19, {align: 'center'});
+            doc.text('Telefono: ' + GENERAL_CONFIG.sedes[this.sede].telefono, 22.5, 22, {align: 'center'});
+            doc.text('Ruc: ' + this.RUC, 22.5, 24, {align: 'center'});
+            doc.text('Nota de Venta electrónica', 22.5, 27, {align: 'center'});
             // tslint:disable-next-line:max-line-length
-            doc.text(venta.serieComprobante + '-' + this.digitosFaltantes('0', (8 - venta.numeroComprobante.length)) + venta.numeroComprobante, 22.5, 27, {align: 'center'});
+            doc.text(venta.serieComprobante + '-' + this.digitosFaltantes('0', (8 - venta.numeroComprobante.length)) + venta.numeroComprobante, 22.5, 29, {align: 'center'});
             doc.text(venta.cliente.tipoDoc.toUpperCase() + ': ' + venta.cliente.numDoc , 22.5, 31, {align: 'center'});
             doc.text( 'Cliente:', 22.5, 33, {align: 'center'});
             doc.text( this.convertirMayuscula(venta.cliente.nombre), 22.5, 35, {align: 'center'});
