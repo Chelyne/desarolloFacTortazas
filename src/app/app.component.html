@@ -1,7 +1,7 @@
 <ion-app>
   <!-- [when]="splitPaneData.getSplitPane()" -->
   <ion-split-pane wen="xl" contentId="principal" style="--side-min-width: 5%; --side-max-width: 18%;">
-    <ion-menu side="start" contentId="principal" menuId="segundoMenu" class="my-custom-menu">
+    <!-- <ion-menu side="start" contentId="principal" menuId="segundoMenu" class="my-custom-menu">
       <ion-header class="ion-no-border">
         <div class="menuHeader">
           <div class="datosNegocio">
@@ -31,7 +31,6 @@
           <ion-list *ngIf="c.open">
             <ion-menu-toggle autoHide="false">
               <ion-item class="subItem" *ngFor="let sub of c.sub" [routerLink]="sub.redirecTo" lines="none" routerDirection="root" routerLinkActive="active">
-                <!-- <ion-icon slot="start" [name]="sub.icon" color="primary"></ion-icon> -->
                 <ion-label>{{sub.name}}</ion-label>
               </ion-item>
             </ion-menu-toggle>
@@ -39,7 +38,6 @@
         </div>
       </ion-content>
       <ion-footer>
-        <!-- <hr style="background-color: rgba(128, 128, 128, 0.548); height: 0.4px"> -->
         <ion-list>
             <ion-item class="cerrarSesion" lines="none">
               <ion-icon  (click)="cerrarSesion()" color="primary" name="log-out-outline"></ion-icon> &nbsp;
@@ -52,7 +50,7 @@
             </ion-item>
         </ion-list>
       </ion-footer>
-    </ion-menu>
+    </ion-menu> -->
     <!-- MENUUUU POR DEFECTO EL GENERAL -->
     <ion-menu side="start" menuId="primerMenu" contentId="principal" class="my-custom-menu">
       <ion-header class="ion-no-border">

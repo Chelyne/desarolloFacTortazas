@@ -31,6 +31,24 @@ export const GENERAL_CONFIG = {
                 notaVenta: 'NV01'
             }
         },
+        lampa: {
+            direccion: {
+                ubigueo: '030216',
+                direccion : 'JR. LIMA NRO. 401 APURIMAC ANDAHUAYLAS TALAVERA',
+                direccionCorta: 'Jr. Lima 401 Talavera Apurimac',
+                referencia: 'Frente a la plaza de Andahuaylas',
+                codigoPais: 'PE',
+                departamento: 'APURIMAC',
+                provincia: 'ANDAHUAYLAS',
+                distrito: 'TALAVERA'
+            },
+            telefono: '983905066',
+            caja1: {
+                boleta: 'B002',
+                factura: 'F002',
+                notaVenta: 'NV02'
+            }
+        },
         // abancay: {
         //     direccion: {
         //         ubigueo: '030101',
