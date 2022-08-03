@@ -22,6 +22,40 @@ export class DataBaseService {
 
   constructor(private afs: AngularFirestore) { }
 
+
+  guardarLOGListaVentas(item: any, sede: string) {
+    // const sede1 =  sede.toLocaleLowerCase();
+    const fecha = formatearDateTime('DD-MM-YYYY');
+    item.fecha = new Date();
+    return this.afs.collection('sedes').doc(sede.toLowerCase()).collection('registroListaVentas').doc(fecha).collection('registro').ref.add(item).then(data => {
+      if (data.id) {
+        return data.id;
+      } else {
+        return '';
+      }
+    }).catch(err => {
+      throw String('fail');
+    });
+  }
+
+  obtenerReporteRegistroListaVentas(fecha: string, sede: string) {
+    return this.afs.collection('sedes').doc(sede).collection('registroListaVentas').doc(fecha).collection('registro', ref => ref.orderBy('fecha', 'desc'))
+    .snapshotChanges().pipe(map(changes => {
+      const datos: ProductoInterface[] = [];
+
+      changes.map(action => {
+        datos.push({
+          id: action.payload.doc.id,
+          ...action.payload.doc.data() as ProductoInterface
+        });
+      });
+
+      return datos;
+
+    }));
+
+  }
+
   // ----------------------------------------------------------- */
   //                          ANCHOR GUARDAR                            */
   // ----------------------------------------------------------- */

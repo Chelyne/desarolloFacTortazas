@@ -88,6 +88,11 @@
         "sub": [
             {
                 "icon": "receipt-outline",
+                "name": "Reporte Intentos de venta",
+                "redirecTo": "reporte-intentos-venta"
+            },
+            {
+                "icon": "receipt-outline",
                 "name": "Ventas",
                 "redirecTo": "reporte-ventas"
             }

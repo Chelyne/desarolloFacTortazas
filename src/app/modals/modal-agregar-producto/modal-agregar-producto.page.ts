@@ -9,6 +9,7 @@ import { GlobalService } from 'src/app/global/global.service';
 import { MEDIDAS } from 'src/config/medidasConfig';
 import { ProductoInterface, VariantesInterface } from 'src/app/models/ProductoInterface';
 import { DecimalOnlyValidation, DECIMAL_REGEXP_PATTERN } from 'src/app/global/validadores';
+import { GENERAL_CONFIG } from 'src/config/generalConfig';
 
 
 
@@ -43,7 +44,8 @@ export class ModalAgregarProductoPage implements OnInit {
   imagenBin64: string | ArrayBuffer = '';
   imagenTargetFile: any = '';
   imagenUrl = '';
-
+  AgregarTodoSedes =  false;
+  listaSedes = GENERAL_CONFIG.listaSedes;
   constructor(
     private dataApi: DataBaseService,
     private globalservice: GlobalService,
@@ -297,8 +299,34 @@ export class ModalAgregarProductoPage implements OnInit {
       /** formatear producto */
       const producto = this.formatearProducto();
 
-      /** guardar producto */
-      this.dataApi.guardarProductoIncrementaCodigo(producto, this.sede, this.correlacionActual)
+      if (this.AgregarTodoSedes) {  // comporbar si esta activos subir producto a todas las sedes
+        for (const sede of GENERAL_CONFIG.listaSedes) {
+          console.log('Agregando en sede ', sede);
+          /** guardar producto */
+        producto.sede = sede.toLocaleLowerCase();
+        this.dataApi.guardarProductoIncrementaCodigo(producto, sede, this.correlacionActual)
+        .then(() => {
+          console.log('%c%s', 'color: #069230', 'que paso aquí', 'se guardo el producto con exito');
+          this.cerrarModal();
+          // this.loading.dismiss();
+          this.globalservice.presentToast('Se agregó correctamente.', { color: 'success', position: 'top' });
+          this.onResetForm();
+          loadController.dismiss();
+        })
+        .catch(err => {
+
+          console.log('%c%s', 'color: #b60d0d', 'hubo un error', err);
+          if (err === 'fail') {
+            this.globalservice.presentToast('No se pudo agregar el producto.', { color: 'danger', position: 'top' });
+          } else {
+            this.globalservice.presentToast('Se agrego el producto, pero no se incremento el codigo del producto.',
+              { color: 'Warning', position: 'top' });
+          }
+        });
+        }
+      } else {
+        /** guardar producto */
+        this.dataApi.guardarProductoIncrementaCodigo(producto, this.sede, this.correlacionActual)
         .then(() => {
           console.log('%c%s', 'color: #069230', 'que paso aquí', 'se guardo el producto con exito');
           this.cerrarModal();
@@ -318,6 +346,7 @@ export class ModalAgregarProductoPage implements OnInit {
           }
           loadController.dismiss();
         });
+      }
 
     } else {
       this.mensaje = 'completa todos los campos';
