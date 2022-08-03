@@ -76,9 +76,10 @@ export class BuscadorService {
       else{
         // flagFullStrOrNum === 'both'
         // pude ser un codigo de barra o un nombre
-
-
+        console.log('buscamos por codigo de barra');
+        
         if (target.length <= 5){
+          console.log('buscamos por codigo EXACTO');
           await this.busquedaPorCodigoProductoExactoP(target).then( data => listaResultante = data);
         }
 
@@ -123,6 +124,8 @@ export class BuscadorService {
   /*                        search pegs usando promesas                         */
   /* -------------------------------------------------------------------------- */
   async busquedaPorCodigoProductoExactoP(target: string){
+    target = target.toLocaleUpperCase(); // ESTADO DE PRUEBA REALIZADO EL 2 DE AGOSTO DEL 2022  FALTA VERIFICAR Y PROBAR
+    console.log('busca> ', target);
     // BUSQUEDA EXACTA POR CODIGO DE PRODUCTO
     return this.afs.collection('sedes').doc(this.sede.toLowerCase())
     .collection('productos').ref.where('codigo', '==', target).limit(this.LIMIT_SEARCH)
