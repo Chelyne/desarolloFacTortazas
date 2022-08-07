@@ -68,6 +68,19 @@
                   </div>
                 </ion-col>
               </ion-row>
+              <ion-row>
+                <ion-col>
+                  <ion-item lines="none" color="light">
+                    <ion-label class="ion-text-wrap">Agregar categoria para todas las sedes</ion-label>
+                    <ion-checkbox slot="end" color="success" [(ngModel)]="AgregarTodoSedes" [ngModelOptions]="{standalone: true}"></ion-checkbox>
+                  </ion-item>
+                </ion-col>
+                <ion-col>
+                  <div class="sedes" *ngIf="AgregarTodoSedes">
+                    <ion-badge *ngFor="let sede of listaSedes">{{sede | titlecase}}</ion-badge> &nbsp;
+                  </div>
+                </ion-col>
+              </ion-row>
             </ion-grid>
           </ion-col>
         </ion-row>
@@ -82,7 +95,7 @@
       {{mensaje}}
     </div>
   </div>
-  <ion-button (click)="guardarCatogiaV2()" expand="block">
+  <ion-button (click)="guadarCategoriaenSedes()" expand="block">
     <ion-label color="light">Agregar Categoria</ion-label>
   </ion-button>
 </ion-footer>

@@ -6,6 +6,7 @@ import { GlobalService } from '../../global/global.service';
 import { DataBaseService } from '../../services/data-base.service';
 import { StorageService } from 'src/app/services/storage.service';
 import { CategoriaInterface } from 'src/app/models/CategoriaInterface';
+import { GENERAL_CONFIG } from 'src/config/generalConfig';
 
 @Component({
   selector: 'app-modal-agregar-categorias',
@@ -34,6 +35,8 @@ export class ModalAgregarCategoriasPage implements OnInit {
   imagenBin64: string | ArrayBuffer = '';
   imagenTargetFile: any = '';
   imagenUrl = '';
+  AgregarTodoSedes =  false;
+  listaSedes = GENERAL_CONFIG.listaSedes;
 
   constructor(
     private dataApi: DataBaseService,
@@ -240,6 +243,18 @@ export class ModalAgregarCategoriasPage implements OnInit {
 
   cerrarModal() {
     this.modalController.dismiss();
+  }
+  guadarCategoriaenSedes(){
+    if (this.AgregarTodoSedes) {
+    for (const sede of GENERAL_CONFIG.listaSedes) {
+      console.log('agregando en sede', sede);
+    }
+    }else {
+      console.log('agregar solo en sede local');
+      this.guardarCatogiaV2().then(res => {
+        console.log('hola', res);
+      });
+    }
   }
 
   async guardarCatogiaV2(){

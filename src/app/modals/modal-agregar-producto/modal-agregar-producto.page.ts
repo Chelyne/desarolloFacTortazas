@@ -303,15 +303,15 @@ export class ModalAgregarProductoPage implements OnInit {
         for (const sede of GENERAL_CONFIG.listaSedes) {
           console.log('Agregando en sede ', sede);
           /** guardar producto */
-        producto.sede = sede.toLocaleLowerCase();
-        this.dataApi.guardarProductoIncrementaCodigo(producto, sede, this.correlacionActual)
-        .then(() => {
-          console.log('%c%s', 'color: #069230', 'que paso aquí', 'se guardo el producto con exito');
-          this.cerrarModal();
-          // this.loading.dismiss();
-          this.globalservice.presentToast('Se agregó correctamente.', { color: 'success', position: 'top' });
-          this.onResetForm();
-          loadController.dismiss();
+          producto.sede = sede.toLocaleLowerCase();
+          this.dataApi.guardarProductoIncrementaCodigo(producto, sede, this.correlacionActual)
+            .then(() => {
+              console.log('%c%s', 'color: #069230', 'que paso aquí', 'se guardo el producto con exito');
+              this.cerrarModal();
+              // this.loading.dismiss();
+              this.globalservice.presentToast('Se agregó correctamente.', { color: 'success', position: 'top' });
+              this.onResetForm();
+              loadController.dismiss();
         })
         .catch(err => {
 
