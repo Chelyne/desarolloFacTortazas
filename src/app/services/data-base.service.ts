@@ -71,6 +71,13 @@ export class DataBaseService {
       throw String('fail');
     });
   }
+  guardarCategoriaconID(newCategoria: CategoriaInterface, sede: string, id: string) {
+    // const sede1 =  sede.toLocaleLowerCase();
+    return this.afs.collection('sedes').doc(sede.toLowerCase()).collection('categorias').doc(id).set(newCategoria)
+    .then(() => 'exito').catch(err => {
+      throw String('fail');
+    });
+  }
 
   // GUARDAR CLIENTE
   guardarCliente(newCliente: ClienteInterface) {
