@@ -53,7 +53,7 @@ export class ModalAgregarProductoPage implements OnInit {
     private datePipe: DatePipe,
     private storage: StorageService,
   ) {
-    this.ObtenerCorrelacionProducto();
+    // this.ObtenerCorrelacionProducto();
     this.productoForm = this.createFormAgregarProducto();
     this.ObtenerCategorias();
   }
@@ -300,12 +300,16 @@ export class ModalAgregarProductoPage implements OnInit {
       const producto = this.formatearProducto();
 
       if (this.AgregarTodoSedes) {  // comporbar si esta activos subir producto a todas las sedes
+        let idProducto: string;
         for (const sede of GENERAL_CONFIG.listaSedes) {
           console.log('Agregando en sede ', sede);
           /** guardar producto */
         producto.sede = sede.toLocaleLowerCase();
-        this.dataApi.guardarProductoIncrementaCodigo(producto, sede, this.correlacionActual)
-        .then(() => {
+        if (idProducto) {producto.id = idProducto};
+        await this.dataApi.guardarProductoIncrementaCodigo(producto, sede) // , this.correlacionActual
+        .then(res => {
+          console.log(res); // dar valor del id a idProducto
+          idProducto = res;
           console.log('%c%s', 'color: #069230', 'que paso aquí', 'se guardo el producto con exito');
           this.cerrarModal();
           // this.loading.dismiss();
@@ -326,7 +330,7 @@ export class ModalAgregarProductoPage implements OnInit {
         }
       } else {
         /** guardar producto */
-        this.dataApi.guardarProductoIncrementaCodigo(producto, this.sede, this.correlacionActual)
+        this.dataApi.guardarProductoIncrementaCodigo(producto, this.sede) // , this.correlacionActual
         .then(() => {
           console.log('%c%s', 'color: #069230', 'que paso aquí', 'se guardo el producto con exito');
           this.cerrarModal();

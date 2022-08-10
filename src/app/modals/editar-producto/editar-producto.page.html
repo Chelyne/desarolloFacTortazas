@@ -181,13 +181,20 @@
 
       <ion-row>
         <ion-col size-lg="6" sz-md="6" size-sm="12" size-xs="12">
-          <ion-item-divider>Datos extra
+          <!-- <ion-item-divider>Datos extra
             <ion-buttons slot="end">
               <ion-button>
                 <ion-icon slot="icon-only" color="medium" name="chevron-down-outline"></ion-icon>
               </ion-button>
             </ion-buttons>
-          </ion-item-divider>
+          </ion-item-divider> -->
+          <ion-item lines="none" color="light">
+            <ion-label class="ion-text-wrap">Editar producto para todas las sedes</ion-label>
+            <ion-checkbox slot="end" color="success" [(ngModel)]="EditarTodoSedes" [ngModelOptions]="{standalone: true}"></ion-checkbox>
+          </ion-item>
+          <div class="sedes" *ngIf="EditarTodoSedes">
+            <ion-badge *ngFor="let sede of listaSedes">{{sede | titlecase}}</ion-badge> &nbsp;
+          </div>
           <ion-col size="12 " size-xs="12" size-sm="12" size-md="12" size-lg="12">
             <ion-item lines="none">
               <ion-label color="primary" position="stacked">Fecha de vencimiento:</ion-label>

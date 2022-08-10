@@ -13,6 +13,7 @@ import { DataBaseService } from 'src/app/services/data-base.service';
 import { CategoriaInterface } from 'src/app/models/CategoriaInterface';
 import { StorageService } from 'src/app/services/storage.service';
 import { finalize } from 'rxjs/operators';
+import { GENERAL_CONFIG } from 'src/config/generalConfig';
 
 
 @Component({
@@ -49,6 +50,8 @@ export class EditarProductoPage implements OnInit {
   imagenUrl: string;
 
   sede = this.storage.datosAdmi.sede;
+  EditarTodoSedes =  false;
+  listaSedes = GENERAL_CONFIG.listaSedes;
 
   constructor(
     private modalCtrl: ModalController,
@@ -278,20 +281,36 @@ export class EditarProductoPage implements OnInit {
       /** formatear producto */
       const producto = this.formatearProducto();
       console.log('ccccccccccccccccccccccccccccc');
+      if (this.EditarTodoSedes) {
+        for (const sede of this.listaSedes) {
+          /** guardar producto */
+          producto.sede = sede.toLocaleLowerCase();
+          await this.dataApi.actualizarProducto(producto).then(() => {
+            this.cerrarModal();
+            this.globalservice.presentToast('Producto se actualizó correctamente', {color: 'success', position: 'top'});
+            this.onResetForm();
+            // this.loading.dismiss();
+            newLoading.dismiss();
+  
+          }).catch(() => {
+            this.globalservice.presentToast('Producto no se actualizó', {color: 'danger', position: 'top'});
+            newLoading.dismiss();
+          });
+        }
+      } else {
+        /** guardar producto */
+        await this.dataApi.actualizarProducto(producto).then(() => {
+          this.cerrarModal();
+          this.globalservice.presentToast('Producto se actualizó correctamente', {color: 'success', position: 'top'});
+          this.onResetForm();
+          // this.loading.dismiss();
+          newLoading.dismiss();
 
-      /** guardar producto */
-      this.dataApi.actualizarProducto(producto).then(() => {
-
-        this.cerrarModal();
-        this.globalservice.presentToast('Producto se actualizó correctamente', {color: 'success', position: 'top'});
-        this.onResetForm();
-        // this.loading.dismiss();
-        newLoading.dismiss();
-
-      }).catch(() => {
-        this.globalservice.presentToast('Producto no se actualizó', {color: 'danger', position: 'top'});
-        newLoading.dismiss();
-      });
+        }).catch(() => {
+          this.globalservice.presentToast('Producto no se actualizó', {color: 'danger', position: 'top'});
+          newLoading.dismiss();
+        });
+      }
 
     } else {
       this.mensaje = 'completa todos los campos';

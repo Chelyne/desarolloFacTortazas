@@ -243,7 +243,7 @@ export class PuntoVentaPage implements OnInit {
     };
     item.tipo = tipo;
     this.dataApi.guardarLOGListaVentas(item, this.sede).then(res => {
-      if (res === 'exito') {
+      if (res) {
         console.log('Guardado el registro...');
       } else {
         this.servGlobal.presentToast('Ocurrio un error al guardar registro.')
@@ -598,14 +598,15 @@ export class PuntoVentaPage implements OnInit {
     });
     await modal.present();
 
-    // const {data} = await modal.onWillDismiss();
-    // console.log(data);
-    // if (data && data.data) {
-    //   if (data.evento === 'agregar') {
-    //     console.log('agregar', data.data);
-    //     this.agregar(data.data);
-    //   }
-    // }
+    const {data} = await modal.onWillDismiss();
+    console.log(data);
+    if (data && data.data) {
+      this.cliente = data.data;
+      // if (data.evento === 'agregar') {
+      //   console.log('agregar', data.data);
+      //   this.agregar(data.data);
+      // }
+    }
   }
 
   // agregar(cliente: ClienteInterface){

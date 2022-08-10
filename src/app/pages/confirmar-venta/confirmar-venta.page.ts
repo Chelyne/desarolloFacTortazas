@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { VentaInterface } from 'src/app/models/venta/venta';
 import { ConfirmarVentaService } from 'src/app/services/confirmar-venta.service';
@@ -18,6 +18,7 @@ import { GlobalService } from '../../global/global.service';
 import { DataBaseService } from '../../services/data-base.service';
 import { GLOBAL_FACTOR_ICBPER } from 'src/config/otherConfig';
 import { DECIMAL_REGEXP_PATTERN } from 'src/app/global/validadores';
+import { Observable, timer } from 'rxjs';
 
 
 @Component({
@@ -72,6 +73,8 @@ export class ConfirmarVentaPage implements OnInit {
 
   numeroWhatsapp: string;
   imprimir = true;
+  @ViewChild('focus', {static: false}) search: any;
+
   constructor(
     private confirmarVentaServ: ConfirmarVentaService,
     private menuCtrl: MenuController,
@@ -82,6 +85,18 @@ export class ConfirmarVentaPage implements OnInit {
     private servGlobal: GlobalService
   ) {
     this.formPago = this.createFormPago();
+  }
+
+  ionViewDidEnter() {
+    timer(500).subscribe(() => {
+      console.log('Set Focus', this.search);
+      this.search.setFocus();
+    });
+  }
+
+  focuss(ev){
+    console.log(ev);
+    ev.target.select();
   }
 
   ionViewWillEnter() {
@@ -334,7 +349,7 @@ export class ConfirmarVentaPage implements OnInit {
 
   seleccionTipoPago(tipo: string) {
     this.tipoPago = tipo;
-    if (this.tipoPago === 'tarjeta') {
+    if (this.tipoPago === 'tarjeta' || this.tipoPago === 'yape') {
       this.ponerMontoExactoYCalularVuelto();
     }
   }
