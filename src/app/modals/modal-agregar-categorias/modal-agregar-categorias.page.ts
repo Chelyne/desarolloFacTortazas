@@ -6,6 +6,7 @@ import { GlobalService } from '../../global/global.service';
 import { DataBaseService } from '../../services/data-base.service';
 import { StorageService } from 'src/app/services/storage.service';
 import { CategoriaInterface } from 'src/app/models/CategoriaInterface';
+import { GENERAL_CONFIG } from 'src/config/generalConfig';
 
 @Component({
   selector: 'app-modal-agregar-categorias',
@@ -34,6 +35,9 @@ export class ModalAgregarCategoriasPage implements OnInit {
   imagenBin64: string | ArrayBuffer = '';
   imagenTargetFile: any = '';
   imagenUrl = '';
+  AgregarTodoSedes =  false;
+  listaSedes = GENERAL_CONFIG.listaSedes;
+  categoriaFormateada;
 
   constructor(
     private dataApi: DataBaseService,
@@ -241,8 +245,36 @@ export class ModalAgregarCategoriasPage implements OnInit {
   cerrarModal() {
     this.modalController.dismiss();
   }
+  async guadarCategoriaenSedes(){
+    if (this.AgregarTodoSedes) {
+    let contador = 0;
+    let id;
+    for (const sede of GENERAL_CONFIG.listaSedes) {
+      console.log(contador, 'agregando en sede', sede, this.categoriaForm.value);
+      if (contador === 0) {
+        await this.guardarCatogiaV2(this.sede).then(res => {
+          console.log('agregado en sede local', res);
+          id = res;
+        });
+      }else {
+        console.log('siguientes', sede, 'con id ', id);
+        await this.guardarCatogiaConId(sede, this.categoriaFormateada , id).then(() => 'exitaso').catch(() => 'error');
+      }
+      contador ++;
+    }
+    this.onResetForm();
+    this.cerrarModal();
+    }else {
+      console.log('agregar solo en sede local');
+      this.guardarCatogiaV2(this.sede).then(res => {
+        console.log('exito', res);
+        this.onResetForm();
+        this.cerrarModal();
+      });
+    }
+  }
 
-  async guardarCatogiaV2(){
+  async guardarCatogiaV2(sede: string){
     if (this.categoriaForm.valid){
 
       // await this.presentLoading();
@@ -270,14 +302,17 @@ export class ModalAgregarCategoriasPage implements OnInit {
 
       /** formatear producto */
       const categoria = this.formatearCategoria();
+      this.categoriaFormateada = categoria;
 
       /** guardar Categoria */
 
-      this.dataApi.guardarCategoria(categoria, this.sede).then( () => {
-        this.cerrarModal();
+      return this.dataApi.guardarCategoria(categoria, sede).then( (res) => {
+        console.log('respuestass', res);
+
         this.servGlobal.presentToast('Se agregó correctamente.', {color: 'success'});
-        this.onResetForm();
+
         loadingControler.dismiss();
+        return res;
       }).catch( () => {
         this.servGlobal.presentToast('No se pudo agregar la categoria.', {color: 'danger'});
         loadingControler.dismiss();
@@ -286,6 +321,24 @@ export class ModalAgregarCategoriasPage implements OnInit {
     } else {
       this.mensaje = 'completa todos los campos';
     }
+  }
+  async guardarCatogiaConId(sede: string, formatoCategoria, idCategoria){
+
+      // await this.presentLoading();
+      const loadingControler =  await this.servGlobal.presentLoading('Agregando Categoría en sede ...' + sede, {duracion: 10000});
+      /** guardar Categoria */
+      return this.dataApi.guardarCategoriaconID(formatoCategoria, sede, idCategoria).then( (res) => {
+        console.log('respuestass', res);
+        this.cerrarModal();
+        this.servGlobal.presentToast('Se agregó correctamente en sede: ' + sede, {color: 'success'});
+        loadingControler.dismiss();
+        return res;
+      }).catch( () => {
+        this.servGlobal.presentToast('No se pudo agregar la categoriaen sede: ' + sede, {color: 'danger'});
+        loadingControler.dismiss();
+      });
+
+
   }
 
   formatearCategoria(): CategoriaInterface{
