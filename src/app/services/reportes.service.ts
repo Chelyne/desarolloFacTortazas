@@ -44,14 +44,13 @@ export class ReportesService {
       doc.addImage(this.LogoEmpresa, 'JPEG', 370, 20, 30, 15);
       doc.setLineWidth(0.5);
       doc.line(120, 35, 290, 35);
-      doc.rect(30, 40, 387, 115); // empty square
+      doc.rect(30, 40, 387, 123); // empty square
       doc.setFontSize(12);
       doc.text( 'Empresa: ' + this.nombreEmpresa + ' ,' + this.sede, 40, 55);
       doc.text( 'RUC: ' + this.RUC, 40, 70);
       doc.text( 'Fecha reporte: ' + dia, 300, 55);
       doc.text( 'Ingresos: ' + this.Ingresos.toFixed(2) , 40, 130);
       doc.text( 'Egresos: ' + this.Egresos.toFixed(2) , 180, 130);
-      doc.text( 'TOTAL CAJA: ' + (data.totalVentas + this.Ingresos - this.Egresos - data.totalTarjeta).toFixed(2) , 300, 145);
       doc.text( 'Total Venta: ' + data.totalVentas.toFixed(2), 40, 115);
       doc.text( 'Total Anulados: ' + data.totalAnulados.toFixed(2), 180, 115);
       doc.text( 'N° Facturas: ' + data.numFacturas, 40, 85);
@@ -60,15 +59,20 @@ export class ReportesService {
       doc.text( 'Total Facturas: ' + data.totalFacturas.toFixed(2), 40, 100);
       doc.text( 'Total Boletas: ' + data.totalBoletas.toFixed(2), 180, 100);
       doc.text( 'Total N. Venta: ' + data.totalNotas.toFixed(2), 300, 100);
+      doc.setFont('bolditalic', 'bold');
       doc.text( 'Total Efectivo: ' + data.totalEfectivo.toFixed(2) , 40, 145);
       doc.text( 'Total Tarjeta: ' + data.totalTarjeta.toFixed(2) , 180, 145);
+      doc.text( 'Total Yape: ' + (data.totalYape).toFixed(2) , 300, 145);
+      // tslint:disable-next-line:max-line-length
+      doc.text( 'TOTAL CAJA: ' + (data.totalVentas + this.Ingresos - this.Egresos - data.totalTarjeta - data.totalYape).toFixed(2) , 40, 160);
+
       if (isNullOrUndefined(data.formatoVentasGeneral)) {
-      doc.text( 'No se encontraron registros.', 40, 165);
+      doc.text( 'No se encontraron registros.', 40, 170);
       } else {
         doc.autoTable({
           head: [['#', 'Vend.', 'Tipo Doc.', 'Documento', 'Fecha emisión', 'Cliente' , 'N. Doc.', 'Estado', 'M pago', 'Total']],
           body: data.formatoVentasGeneral,
-          startY: 165,
+          startY: 170,
           theme: 'grid',
         });
       }
@@ -93,6 +97,7 @@ export class ReportesService {
     let totalNotas1 = 0;
     let totalEfectivo1 = 0;
     let totalETarjeta1 = 0;
+    let totalYape1 = 0;
     let boletasAnuladas1 = 0;
     let facturasAnuladas1 = 0;
     let notasAnuladas1 = 0;
@@ -117,6 +122,7 @@ export class ReportesService {
           totalNotas : totalNotas1,
           totalEfectivo : totalEfectivo1,
           totalTarjeta : totalETarjeta1,
+          totalYape : totalYape1,
           formatoVentasGeneral : null,
           formatoVentasTiked: null,
 
@@ -170,6 +176,9 @@ export class ReportesService {
             }
             if (datos.tipoPago === 'tarjeta') {
               totalETarjeta1 += datos.totalPagarVenta;
+            }
+            if (datos.tipoPago === 'yape') {
+              totalYape1 += datos.totalPagarVenta;
             }
           }
           if (datos.tipoComprobante === 'boleta'){
@@ -230,6 +239,7 @@ export class ReportesService {
             totalNotas : totalNotas1,
             totalEfectivo : totalEfectivo1,
             totalTarjeta : totalETarjeta1,
+            totalYape : totalYape1,
             formatoVentasGeneral: datosReporteVentaGeneral,
             formatoVentasTiked: arrayVendDatos,
 
@@ -313,17 +323,19 @@ export class ReportesService {
       doc.text( '' + data.totalEfectivo.toFixed(2), 43 , index + 22, {align: 'right'});
       doc.text('Total Tarjeta', 2, index + 24 , {align: 'left'});
       doc.text( '' + data.totalTarjeta.toFixed(2), 43 , index + 24, {align: 'right'});
-      doc.text('Total Ventas', 2, index + 26 , {align: 'left'});
-      doc.text( '' + data.totalVentas.toFixed(2), 43 , index + 26, {align: 'right'});
-      doc.text('Ingresos', 2, index + 28 , {align: 'left'});
-      doc.text( '' + this.Ingresos.toFixed(2), 43 , index + 28, {align: 'right'});
-      doc.text('Egresos', 2, index + 30 , {align: 'left'});
-      doc.text( '' + this.Egresos.toFixed(2), 43 , index + 30, {align: 'right'});
-      doc.text( '____________________________________', 22.5, index + 31, {align: 'center'});
+      doc.text('Total Yape', 2, index + 26 , {align: 'left'});
+      doc.text( '' + data.totalYape.toFixed(2), 43 , index + 26, {align: 'right'});
+      doc.text('Total Ventas', 2, index + 28 , {align: 'left'});
+      doc.text( '' + data.totalVentas.toFixed(2), 43 , index + 28, {align: 'right'});
+      doc.text('Ingresos', 2, index + 30 , {align: 'left'});
+      doc.text( '' + this.Ingresos.toFixed(2), 43 , index + 30, {align: 'right'});
+      doc.text('Egresos', 2, index + 32 , {align: 'left'});
+      doc.text( '' + this.Egresos.toFixed(2), 43 , index + 32, {align: 'right'});
+      doc.text( '____________________________________', 22.5, index + 33, {align: 'center'});
       doc.setFontSize(6.5);
-      doc.text('TOTAL CAJA: ' + ( data.totalVentas + this.Ingresos - this.Egresos).toFixed(2), 2, index + 34 , {align: 'left'});
+      doc.text('TOTAL CAJA: ' + ( data.totalVentas + this.Ingresos - this.Egresos).toFixed(2), 2, index + 36 , {align: 'left'});
 
-      index = index + 35;
+      index = index + 37;
 
       }
       else{

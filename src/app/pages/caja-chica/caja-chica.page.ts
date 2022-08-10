@@ -223,6 +223,7 @@ export class CajaChicaPage implements OnInit {
     this.totalEnCaja = 0;
     console.log('fecha consulta', datosCaja.FechaConsulta , ' dni', datosCaja.dniVendedor);
     await this.ConsultaPuntoVentaVendedor(datosCaja.FechaConsulta, datosCaja.id, 'ventas').then((data: any) => {
+      console.log('datos, formato ventas (REPORTE)', data);
       const doc = new jsPDF('portrait', 'px', 'a4') as jsPDFWithPlugin;
 
       doc.setFontSize(18);
@@ -258,6 +259,7 @@ export class CajaChicaPage implements OnInit {
       const metodoPago = [
         ['Efectivo', data.totalEfectivo.toFixed(2)],
         ['Tarjeta de credito o debito', data.totalTargeta.toFixed(2)],
+        ['Yape', data.totalYape.toFixed(2)],
         ['Total Ventas', data.totalGeneral.toFixed(2)],
       ];
       doc.autoTable({
@@ -287,6 +289,7 @@ export class CajaChicaPage implements OnInit {
     let datosReportePuntoVentaVendedor = [];
     let totalEfectivo1 = 0;
     let totalTargeta1 = 0;
+    let totalYape1 = 0;
     let totalGeneral1 = 0;
     let totalAnulado1 = 0;
     this.consultaIngresoEgresoCajaChica(dia, idVendedor);
@@ -296,6 +299,7 @@ export class CajaChicaPage implements OnInit {
           FormatoVentas: null,
           totalEfectivo: totalEfectivo1,
           totalTargeta: totalTargeta1,
+          totalYape: totalYape1,
           totalGeneral: totalGeneral1,
           totalAnulado: totalAnulado1
         };
@@ -316,6 +320,9 @@ export class CajaChicaPage implements OnInit {
             }
             if (doc.tipoPago === 'tarjeta') {
               totalTargeta1 =  totalTargeta1 + doc.totalPagarVenta;
+            }
+            if (doc.tipoPago === 'yape') {
+              totalYape1 =  totalYape1 + doc.totalPagarVenta;
             }
 
           }
@@ -356,6 +363,7 @@ export class CajaChicaPage implements OnInit {
           FormatoVentas: datosReportePuntoVentaVendedor,
           totalEfectivo: totalEfectivo1,
           totalTargeta: totalTargeta1,
+          totalYape: totalYape1,
           totalGeneral: totalGeneral1,
           totalAnulado: totalAnulado1
         };
@@ -368,6 +376,7 @@ export class CajaChicaPage implements OnInit {
 
   ReporteIngresoMetPagoVendedor(datosCaja: CajaChicaInterface) {
     this.ConsultaPuntoVentaVendedor(datosCaja.FechaConsulta, datosCaja.id, 'ventasMetodoPago').then(data => {
+      console.log(' tipo ventasMetodoPago, (R. Ingreso)');
       const doc = new jsPDF('portrait', 'px', 'a4') as jsPDFWithPlugin;
       doc.setFontSize(16);
       doc.setFont('bold');
@@ -392,11 +401,12 @@ export class CajaChicaPage implements OnInit {
       const metodoPago = [
         [1, 'Efectivo', data.totalEfectivo.toFixed(2)],
         [2, 'Tarjeta de credito o debito', data.totalTargeta.toFixed(2)],
-        [3, 'Total Anulados', data.totalAnulado.toFixed(2)],
-        [4, 'Ingresos', this.ingresoCaja.toFixed(2)],
-        [5, 'Egresos', this.egresoCaja.toFixed(2)],
-        [6, 'Saldo Inicial Caja', datosCaja.saldoInicial.toFixed(2)],
-        [7, 'TOTAL CAJA', (data.totalGeneral + datosCaja.saldoInicial + this.ingresoCaja - this.egresoCaja - data.totalTargeta).toFixed(2)],
+        [3, 'Yape', data.totalYape.toFixed(2)],
+        [4, 'Total Anulados', data.totalAnulado.toFixed(2)],
+        [5, 'Ingresos', this.ingresoCaja.toFixed(2)],
+        [6, 'Egresos', this.egresoCaja.toFixed(2)],
+        [7, 'Saldo Inicial Caja', datosCaja.saldoInicial.toFixed(2)],
+        [8, 'TOTAL CAJA', (data.totalGeneral + datosCaja.saldoInicial + this.ingresoCaja - this.egresoCaja - data.totalTargeta).toFixed(2)],
       ];
       doc.autoTable({
         head: [['#', 'Descripción', 'suma']],
@@ -496,6 +506,7 @@ export class CajaChicaPage implements OnInit {
     let descuento1 = 0;
     let totalEfectivo1 = 0;
     let totalETarjeta1 = 0;
+    let totalYape1 = 0;
 
     if (!isNullOrUndefined(ventas)){
       let contador = 0;
@@ -509,6 +520,9 @@ export class CajaChicaPage implements OnInit {
           }
           if (item.tipoPago === 'tarjeta') {
             totalETarjeta1 += item.totalPagarVenta;
+          }
+          if (item.tipoPago === 'yape') {
+            totalYape1 += item.totalPagarVenta;
           }
           if (item.descuentoVenta) {
             descuento1 += item.descuentoVenta;
@@ -534,6 +548,7 @@ export class CajaChicaPage implements OnInit {
         descuento: descuento1,
         totalEfectivo: totalEfectivo1,
         totalTarjeta: totalETarjeta1,
+        totalYape: totalYape1,
         FormatoProductos: datosReporteIngresoPagoVendedorDia,
         productosVenta: productos
       };
@@ -546,6 +561,7 @@ export class CajaChicaPage implements OnInit {
         descuento: descuento1,
         totalEfectivo: totalEfectivo1,
         totalTarjeta: totalETarjeta1,
+        totalYape: totalYape1,
         FormatoProductos: null,
         productosVenta: null
       };
@@ -566,7 +582,7 @@ export class CajaChicaPage implements OnInit {
       doc.addImage(this.LogoEmpresa, 'JPEG', 370, 20, 30, 15);
       doc.setLineWidth(0.5);
       doc.line(100, 35, 305, 35);
-      doc.rect(30, 50, 387, 80); // empty square
+      doc.rect(30, 50, 387, 85); // empty square
       doc.setFontSize(12);
       doc.text( 'Empresa: ' + this.nombreEmpresa, 40, 60);
       doc.text( 'RUC: ' + this.RUC, 40, 70);
@@ -589,7 +605,8 @@ export class CajaChicaPage implements OnInit {
       doc.text( 'Total Tarjeta: ' + DatosFormateados.totalTarjeta.toFixed(2) , 180, 120);
       // tslint:disable-next-line:max-line-length
       this.totalEnCaja = datosCaja.saldoInicial + DatosFormateados.totalVentas + (datosIngresos.ingresos - datosIngresos.egresos ) - DatosFormateados.totalTarjeta;
-      doc.text( 'TOTAL CAJA: ' + (this.totalEnCaja).toFixed(2) , 300, 120);
+      doc.text( 'Total Yape: ' + (DatosFormateados.totalYape).toFixed(2) , 300, 120);
+      doc.text( 'TOTAL CAJA: ' + (this.totalEnCaja).toFixed(2) , 40, 130);
 
       if (isNullOrUndefined(DatosFormateados.FormatoProductos)) {
         if (!isNullOrUndefined(datosIngresos.formateadoIngresosCaja)) {
@@ -709,19 +726,33 @@ export class CajaChicaPage implements OnInit {
   ventasTarjeta(fechaFormateada) {
     let formatoListaVentasTarjeta = [];
     let sumaTotal = 0;
+    let sumaTarjeta = 0;
+    let sumaYape = 0;
     return this.dataApi.obtenerVentasDiaTarjeta(this.sede, fechaFormateada).then(ventas => {
       console.log('ventas por tarjeta', ventas);
       if (ventas.length === 0){
           formatoListaVentasTarjeta = [];
           sumaTotal = 0;
-          return { suma: sumaTotal, ventasTarjeta: formatoListaVentasTarjeta};
+          return {
+            suma: sumaTotal,
+            totalTarjeta: 0,
+            totalYape: 0,
+            ventasTarjeta: formatoListaVentasTarjeta
+          };
       }
       else{
         let contador = 0;
         ventas.forEach(datos => {
+          console.log(datos);
           contador++ ;
           if (datos.estadoVenta !== 'anulado'){
             sumaTotal += datos.totalPagarVenta;
+            if (datos.tipoPago === 'tarjeta'){
+              sumaTarjeta += datos.totalPagarVenta;
+            }
+            if (datos.tipoPago === 'yape'){
+              sumaYape += datos.totalPagarVenta;
+            }
           }
           let formato: any;
           formato = [
@@ -740,7 +771,12 @@ export class CajaChicaPage implements OnInit {
           ];
           formatoListaVentasTarjeta.push(formato);
           });
-        return { suma: sumaTotal, ventasTarjeta: formatoListaVentasTarjeta};
+        return {
+          suma: sumaTotal,
+          totalTarjeta: sumaTarjeta,
+          totalYape: sumaYape,
+          ventasTarjeta: formatoListaVentasTarjeta
+        };
       }
 
     }).catch(err => console.log(err));
@@ -758,13 +794,16 @@ export class CajaChicaPage implements OnInit {
       doc.addImage(this.LogoEmpresa, 'JPEG', 370, 20, 30, 15);
       doc.setLineWidth(0.5);
       doc.line(100, 35, 305, 35);
-      doc.rect(30, 50, 387, 45); // empty square
+      doc.rect(30, 50, 387, 53); // empty square
       doc.setFontSize(12);
       doc.text( 'Empresa: ' + this.nombreEmpresa, 40, 60);
       doc.text( 'RUC: ' + this.RUC, 40, 70);
       doc.text( 'SEDE: ' + this.sede, 40, 80);
       doc.text( 'Fecha reporte: ' + fechaFormateada, 300, 60);
-      doc.text( 'TOTAL VENTAS: ' + sumaTotal.toFixed(2) , 300, 80);
+      doc.setFont('bolditalic', 'bold');
+      doc.text( 'TOTAL Tarjeta: ' + VentasFormateada.totalTarjeta.toFixed(2) , 40, 95);
+      doc.text( 'TOTAL Yape: ' + VentasFormateada.totalYape.toFixed(2) , 170, 95);
+      doc.text( 'TOTAL VENTAS: ' + sumaTotal.toFixed(2) , 300, 95);
       if ( ListaVentasTarjeta.length){
         doc.autoTable({
           head: [['#', 'Vend.', 'Tipo Doc.', 'Num Doc.', 'Fecha emisión', 'Cliente' , 'N. Doc.', 'Estado', 'M pago', 'Total']],

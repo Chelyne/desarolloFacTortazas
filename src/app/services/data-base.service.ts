@@ -81,6 +81,7 @@ export class DataBaseService {
 
   // GUARDAR CLIENTE
   guardarCliente(newCliente: ClienteInterface) {
+    newCliente.fechaRegistro = new Date();
     return this.afs.collection('clientes').ref.add(newCliente).then(data => {
       if (data.id) {
         return data.id;
@@ -404,7 +405,7 @@ export class DataBaseService {
 
   // CLIENTES
   obtenerListaDeClientes() {
-    return this.afs.collection('clientes') // ,  ref => ref.orderBy('fechaRegistro', 'desc'))
+    return this.afs.collection('clientes', ref => ref.orderBy('fechaRegistro', 'desc')) // ,  ref => ref.orderBy('fechaRegistro', 'desc'))
     .snapshotChanges().pipe(map(changes => {
     const datos: ClienteInterface[] = [];
     changes.map((action: any) => {
@@ -687,7 +688,7 @@ export class DataBaseService {
   }
   obtenerVentasDiaTarjeta(sede: string, fecha: string) {
     return this.afs.collection('sedes').doc(sede.toLocaleLowerCase()).collection('ventas').doc(fecha)
-    .collection('ventasDia').ref.where('tipoPago', '==', 'tarjeta').get()
+    .collection('ventasDia').ref.where('tipoPago', '>', 'efectivo').get()
     .then((querySnapshot) => {
       const datos: any [] = [];
       querySnapshot.forEach((doc) => {

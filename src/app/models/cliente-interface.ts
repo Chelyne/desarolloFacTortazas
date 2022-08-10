@@ -6,4 +6,5 @@ export interface ClienteInterface {
     direccion?: string;
     email?: string;
     celular?: string;
+    fechaRegistro?: any;
 }
