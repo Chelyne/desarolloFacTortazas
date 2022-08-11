@@ -514,6 +514,47 @@ export class HomePage implements OnInit {
       console.log(el);
     });
   }
+  async subirSeriePorDefecto(){
+    const series = [
+       {
+        correlacion:0,
+        disponible: true,
+        tipoComprobante: 'boleta',
+        serie: 'B001'
+        },
+       {
+        correlacion:0,
+        disponible: true,
+        tipoComprobante: 'factura',
+        serie: 'F001'
+        },
+       {
+        correlacion:0,
+        disponible: true,
+        tipoComprobante: 'nota de venta ',
+        serie: 'NV01'
+        },
+       {
+        correlacion:0,
+        disponible: true,
+        tipoComprobante: 'n.credito.boleta',
+        serie: 'BC01'
+        },
+       {
+        correlacion:0,
+        disponible: true,
+        tipoComprobante: 'n.credito.boleta',
+        serie: 'FC01'
+        },
+    ];
+    let contador = 0;
+    for (const serie of series) {
+        await this.afs.collection('sedes').doc('lampa').collection('serie').add(serie).then( resp => {
+            console.log(contador, 'Ingresado', resp);
+            contador++;
+          }).catch(error => {console.error('No se  pudo ingresar los datos', error); });
+    }
+  }
 
   // subirDatos() {
   //     // tslint:disable-next-line:prefer-const
