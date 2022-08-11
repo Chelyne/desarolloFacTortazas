@@ -62,7 +62,7 @@ export class ReportesService {
       doc.setFont('bolditalic', 'bold');
       doc.text( 'Total Efectivo: ' + data.totalEfectivo.toFixed(2) , 40, 145);
       doc.text( 'Total Tarjeta: ' + data.totalTarjeta.toFixed(2) , 180, 145);
-      doc.text( 'Total Yape: ' + (data.totalYape).toFixed(2) , 300, 145);
+      doc.text( 'Total App Digital: ' + (data.totalYape).toFixed(2) , 300, 145);
       // tslint:disable-next-line:max-line-length
       doc.text( 'TOTAL CAJA: ' + (data.totalVentas + this.Ingresos - this.Egresos - data.totalTarjeta - data.totalYape).toFixed(2) , 40, 160);
 
@@ -177,7 +177,7 @@ export class ReportesService {
             if (datos.tipoPago === 'tarjeta') {
               totalETarjeta1 += datos.totalPagarVenta;
             }
-            if (datos.tipoPago === 'yape') {
+            if (datos.tipoPago === 'appDigital') {
               totalYape1 += datos.totalPagarVenta;
             }
           }
@@ -323,7 +323,7 @@ export class ReportesService {
       doc.text( '' + data.totalEfectivo.toFixed(2), 43 , index + 22, {align: 'right'});
       doc.text('Total Tarjeta', 2, index + 24 , {align: 'left'});
       doc.text( '' + data.totalTarjeta.toFixed(2), 43 , index + 24, {align: 'right'});
-      doc.text('Total Yape', 2, index + 26 , {align: 'left'});
+      doc.text('Total App Digital', 2, index + 26 , {align: 'left'});
       doc.text( '' + data.totalYape.toFixed(2), 43 , index + 26, {align: 'right'});
       doc.text('Total Ventas', 2, index + 28 , {align: 'left'});
       doc.text( '' + data.totalVentas.toFixed(2), 43 , index + 28, {align: 'right'});
