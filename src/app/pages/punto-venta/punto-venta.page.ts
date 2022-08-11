@@ -1,5 +1,5 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
-import { MenuController, PopoverController, ModalController } from '@ionic/angular';
+import { MenuController, PopoverController, ModalController, AlertController } from '@ionic/angular';
 
 import { VentaInterface } from 'src/app/models/venta/venta';
 import { ItemDeVentaInterface } from 'src/app/models/venta/item-de-venta';
@@ -91,7 +91,8 @@ export class PuntoVentaPage implements OnInit {
     private router: Router,
     private modalCtlr: ModalController,
     private buscadorService: BuscadorService,
-    private servGlobal: GlobalService
+    private servGlobal: GlobalService,
+    private alertController: AlertController
   ) {
     this.menuCtrl.enable(true);
   }
@@ -131,8 +132,31 @@ export class PuntoVentaPage implements OnInit {
         this.datosCaja = data[0];
       } else {
         this.cajaChica = false;
+        this.mostrarAlertSinCaja()
       }
     });
+  }
+
+  async mostrarAlertSinCaja() {
+    console.log('NO HAY CAJA CHICA')
+    const alert = await this.alertController.create({
+      header: 'APERTURE SU CAJA CHICA',
+      mode: 'ios',
+      // subHeader: 'Important message',
+      message: 'Por favor aperture su caja chica para poder continuar',
+      backdropDismiss​: false,
+      buttons: [
+        {
+          text: 'Aceptar',
+          role: 'confirm',
+          handler: () => {
+            this.router.navigate(['/caja-chica']);
+          },
+        },
+      ],
+    });
+
+    await alert.present();
   }
 
   async abrirModalNuevoProducto(){
@@ -557,7 +581,7 @@ export class PuntoVentaPage implements OnInit {
     const { data } = await popover.onWillDismiss();
     console.log(data);
     if (data && data.cliente) {
-      this.cliente = data.cliente;
+      this.cliente = data.cliente.orderBy("fecha", "desc");
     }
   }
 

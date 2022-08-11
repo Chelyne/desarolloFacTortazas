@@ -487,7 +487,7 @@ export class DataBaseService {
   // ObtenerProductos por categoria
   ObtenerProductosCategoria(sede: string, subCategoria: string) {
     return this.afs.collection('sedes').doc(sede.toLocaleLowerCase())
-    .collection('productos' , ref => ref.where('subCategoria', '==', subCategoria).orderBy('fechaRegistro', 'desc'))
+    .collection('productos' , ref => ref.where('subCategoria', '==', subCategoria).orderBy('fechaRegistro', 'desc').limit(100)) // productos en punto de venta limitado a 100
     .snapshotChanges().pipe(map(changes => {
       const datos: ProductoInterface[] = [];
       changes.map(action => {

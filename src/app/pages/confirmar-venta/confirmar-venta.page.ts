@@ -204,7 +204,7 @@ export class ConfirmarVentaPage implements OnInit {
   ActualizarMontoEntrante(monto: number){
     console.log('%cMONTOOOOO', 'color:white; background-color:black', monto);
     this.formPago.setControl('montoIngreso',
-    new FormControl(monto.toFixed(2), [Validators.required, Validators.pattern(DECIMAL_REGEXP_PATTERN)]));
+    new FormControl('', [Validators.required, Validators.pattern(DECIMAL_REGEXP_PATTERN)])); // monto.toFixed(2) en ''
   }
 
   calcularVuelto(){
@@ -349,7 +349,7 @@ export class ConfirmarVentaPage implements OnInit {
 
   seleccionTipoPago(tipo: string) {
     this.tipoPago = tipo;
-    if (this.tipoPago === 'tarjeta' || this.tipoPago === 'yape') {
+    if (this.tipoPago === 'tarjeta' || this.tipoPago === 'appDigital') {
       this.ponerMontoExactoYCalularVuelto();
     }
   }
