@@ -65,10 +65,10 @@
               <ion-button color="primary" (click)="abrirModalMostrarDetalles(compra)">
                 <ion-icon slot="icon-only" name="caret-down-outline"></ion-icon>
               </ion-button>
-              <ion-button color="success" (click)="EditarCompra(compra)" routerLink="/compras">
+              <ion-button [attr.disabled]="compra.anulado? '' : null" color="success" (click)="EditarCompra(compra)" routerLink="/compras">
                 <ion-icon slot="icon-only" name="create-outline"></ion-icon>
               </ion-button>
-              <ion-button color="danger" (click)="bloquearCompra(compra)">
+              <ion-button  [attr.disabled]="compra.anulado? '' : null" color="danger" (click)="bloquearCompra(compra)">
                 <ion-icon slot="icon-only" name="ban-outline"></ion-icon>
               </ion-button>
             </ion-buttons>

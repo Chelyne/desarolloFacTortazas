@@ -13,7 +13,7 @@ import { MenuController } from '@ionic/angular';
 export class ProductosListaPage implements OnInit, OnDestroy {
 
   listaProductos = [];
-
+  
   categoria: string;
   sede: string;
   sinDatos;
@@ -30,6 +30,7 @@ export class ProductosListaPage implements OnInit, OnDestroy {
    }
 
   ngOnInit() {
+    console.log("datos >>>>>",this.listaProductos);
     // const propietario = this.storage.datosNegocio.correo;
     const sede1 = this.sede.toLocaleLowerCase();
     this.suscripcionProducto = this.pagination.getProductos(sede1, this.categoria, null).subscribe( data => {
