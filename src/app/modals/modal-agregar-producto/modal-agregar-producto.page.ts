@@ -9,6 +9,7 @@ import { GlobalService } from 'src/app/global/global.service';
 import { MEDIDAS } from 'src/config/medidasConfig';
 import { ProductoInterface, VariantesInterface } from 'src/app/models/ProductoInterface';
 import { DecimalOnlyValidation, DECIMAL_REGEXP_PATTERN } from 'src/app/global/validadores';
+import { GENERAL_CONFIG } from 'src/config/generalConfig';
 
 
 
@@ -43,7 +44,8 @@ export class ModalAgregarProductoPage implements OnInit {
   imagenBin64: string | ArrayBuffer = '';
   imagenTargetFile: any = '';
   imagenUrl = '';
-
+  AgregarTodoSedes =  false;
+  listaSedes = GENERAL_CONFIG.listaSedes;
   constructor(
     private dataApi: DataBaseService,
     private globalservice: GlobalService,
@@ -51,7 +53,7 @@ export class ModalAgregarProductoPage implements OnInit {
     private datePipe: DatePipe,
     private storage: StorageService,
   ) {
-    this.ObtenerCorrelacionProducto();
+    // this.ObtenerCorrelacionProducto();
     this.productoForm = this.createFormAgregarProducto();
     this.ObtenerCategorias();
   }
@@ -69,7 +71,7 @@ export class ModalAgregarProductoPage implements OnInit {
       codigoBarra: new FormControl('', [Validators.minLength(1), Validators.maxLength(15)]),
       precio: new FormControl('', [Validators.required]),
       cantStock: new FormControl(''),
-      fechaDeVencimiento: new FormControl(),
+      precioCompra: new FormControl(),
       img: new FormControl(''),
       fechaRegistro: new FormControl(''),
       sede: new FormControl(''),
@@ -89,7 +91,7 @@ export class ModalAgregarProductoPage implements OnInit {
   get codigoBarra() { return this.productoForm.get('codigoBarra'); }
   get precio() { return this.productoForm.get('precio'); }
   get cantStock() { return this.productoForm.get('cantStock'); }
-  get fechaDeVencimiento() { return this.productoForm.get('fechaDeVencimiento'); }
+  get precioCompra() { return this.productoForm.get('precioCompra'); }
 
   onResetForm() {
     this.productoForm.reset();
@@ -259,6 +261,7 @@ export class ModalAgregarProductoPage implements OnInit {
       nombre: refProdForm.nombre.toLowerCase(),
       cantidad: parseFloat(refProdForm.cantidad),
       precio: parseFloat(refProdForm.precio),
+      precioCompra: parseFloat(refProdForm.precioCompra),
       sede: this.sede,
       medida: refProdForm.medida.toLowerCase(),
       cantStock: parseFloat(refProdForm.cantStock) || 0,
@@ -269,7 +272,7 @@ export class ModalAgregarProductoPage implements OnInit {
       codigo: refProdForm.codigo,
       codigoBarra: refProdForm.codigoBarra,
       fechaRegistro: new Date(),
-      fechaDeVencimiento: refProdForm.fechaDeVencimiento,
+      // fechaDeVencimiento: refProdForm.fechaDeVencimiento,
       variantes: this.listaDeVariantes
     };
 
@@ -297,8 +300,38 @@ export class ModalAgregarProductoPage implements OnInit {
       /** formatear producto */
       const producto = this.formatearProducto();
 
-      /** guardar producto */
-      this.dataApi.guardarProductoIncrementaCodigo(producto, this.sede, this.correlacionActual)
+      if (this.AgregarTodoSedes) {  // comporbar si esta activos subir producto a todas las sedes
+        let idProducto: string;
+        for (const sede of GENERAL_CONFIG.listaSedes) {
+          console.log('Agregando en sede ', sede);
+          /** guardar producto */
+        producto.sede = sede.toLocaleLowerCase();
+        if (idProducto) {producto.id = idProducto};
+        await this.dataApi.guardarProductoIncrementaCodigo(producto, sede) // , this.correlacionActual
+        .then(res => {
+          console.log(res); // dar valor del id a idProducto
+          idProducto = res;
+          console.log('%c%s', 'color: #069230', 'que paso aquí', 'se guardo el producto con exito');
+          this.cerrarModal();
+          // this.loading.dismiss();
+          this.globalservice.presentToast('Se agregó correctamente.', { color: 'success', position: 'top' });
+          this.onResetForm();
+          loadController.dismiss();
+        })
+        .catch(err => {
+
+          console.log('%c%s', 'color: #b60d0d', 'hubo un error', err);
+          if (err === 'fail') {
+            this.globalservice.presentToast('No se pudo agregar el producto.', { color: 'danger', position: 'top' });
+          } else {
+            this.globalservice.presentToast('Se agrego el producto, pero no se incremento el codigo del producto.',
+              { color: 'Warning', position: 'top' });
+          }
+        });
+        }
+      } else {
+        /** guardar producto */
+        this.dataApi.guardarProductoIncrementaCodigo(producto, this.sede) // , this.correlacionActual
         .then(() => {
           console.log('%c%s', 'color: #069230', 'que paso aquí', 'se guardo el producto con exito');
           this.cerrarModal();
@@ -318,6 +351,7 @@ export class ModalAgregarProductoPage implements OnInit {
           }
           loadController.dismiss();
         });
+      }
 
     } else {
       this.mensaje = 'completa todos los campos';

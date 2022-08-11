@@ -104,8 +104,10 @@ export class AgregarEditarClientePage implements OnInit {
     }
   }
 
-  cerrarModal(){
-    this.modalCtlr.dismiss();
+  cerrarModal(data){
+    this.modalCtlr.dismiss({
+      data: data
+    });
   }
 
   /** CONSULTA RUC O DNI A SUNAT APIS */
@@ -136,8 +138,10 @@ export class AgregarEditarClientePage implements OnInit {
     } else {
       console.log('La función no existe');
     }
-
-    this.cerrarModal();
+    if(this.dataModal.evento === 'agregar') {
+      this.cerrarModal(clienteFormat);
+    }
+    this.cerrarModal(null);
 
     loadController.dismiss();
 

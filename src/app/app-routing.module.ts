@@ -174,6 +174,12 @@ const routes: Routes = [
     path: 'print/:sede/:fecha/:id',
     loadChildren: () => import('./pages/print/print.module').then( m => m.PrintPageModule)
   },
+  {
+    path: 'reporte-intentos-venta',
+    loadChildren: () => import('./pages/reporte-intentos-venta/reporte-intentos-venta.module').then( m => m.ReporteIntentosVentaPageModule),
+    canActivate: [AuthGuard, NoVendedorGuard]
+  },
+
   // {
   //   path: 'agregar-editar-producto',
   // tslint:disable-next-line: max-line-length

@@ -22,6 +22,7 @@ export class CategoriasPage implements OnInit {
 
   sinDatos: boolean;
   textoBuscar = '';
+  listaSedes = GENERAL_CONFIG.listaSedes;
 
   constructor(
     private menuCtrl: MenuController,
@@ -108,17 +109,19 @@ export class CategoriasPage implements OnInit {
 
   async eliminarCategoria(categoria: CategoriaInterface) {
     const newLoading =  await this.globalService.presentLoading('Eliminando Categoria...', {duracion: 10000});
+    for (const sede of this.listaSedes) {
+      if (categoria.img) {
+        await this.globalService.ElimarImagen(categoria.img);
+      }
 
-    if (categoria.img) {
-      await this.globalService.ElimarImagen(categoria.img);
+      await this.dataApi.eliminarCategoria(categoria.id, sede).then(res => {
+        console.log(res);
+        this.globalService.presentToast('Categoria eliminada de sede: ' + sede, {color: 'success', duracion: 2000});
+      }).catch(err => {
+        // tslint:disable-next-line:max-line-length
+        this.globalService.presentToast('No se pudo eliminar la categoria de sede: ' + sede + ', error: ' + err, {color: 'danger', duracion: 2000});
+      });
     }
-
-    await this.dataApi.eliminarCategoria(categoria.id, this.sede).then(res => {
-      console.log(res);
-      this.globalService.presentToast('Categoria eliminada', {color: 'success', duracion: 2000});
-    }).catch(err => {
-      this.globalService.presentToast('No se pudo eliminar la categoria, error: ' + err, {color: 'danger', duracion: 2000});
-    });
 
     newLoading.dismiss();
   }

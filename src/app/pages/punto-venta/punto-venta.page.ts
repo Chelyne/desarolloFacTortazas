@@ -1,5 +1,5 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
-import { MenuController, PopoverController, ModalController } from '@ionic/angular';
+import { MenuController, PopoverController, ModalController, AlertController } from '@ionic/angular';
 
 import { VentaInterface } from 'src/app/models/venta/venta';
 import { ItemDeVentaInterface } from 'src/app/models/venta/item-de-venta';
@@ -91,7 +91,8 @@ export class PuntoVentaPage implements OnInit {
     private router: Router,
     private modalCtlr: ModalController,
     private buscadorService: BuscadorService,
-    private servGlobal: GlobalService
+    private servGlobal: GlobalService,
+    private alertController: AlertController
   ) {
     this.menuCtrl.enable(true);
   }
@@ -131,8 +132,31 @@ export class PuntoVentaPage implements OnInit {
         this.datosCaja = data[0];
       } else {
         this.cajaChica = false;
+        this.mostrarAlertSinCaja()
       }
     });
+  }
+
+  async mostrarAlertSinCaja() {
+    console.log('NO HAY CAJA CHICA')
+    const alert = await this.alertController.create({
+      header: 'APERTURE SU CAJA CHICA',
+      mode: 'ios',
+      // subHeader: 'Important message',
+      message: 'Por favor aperture su caja chica para poder continuar',
+      backdropDismiss​: false,
+      buttons: [
+        {
+          text: 'Aceptar',
+          role: 'confirm',
+          handler: () => {
+            this.router.navigate(['/caja-chica']);
+          },
+        },
+      ],
+    });
+
+    await alert.present();
   }
 
   async abrirModalNuevoProducto(){
@@ -217,6 +241,7 @@ export class PuntoVentaPage implements OnInit {
         const productoCreado = this.CrearItemDeVenta(productoSelect, varianteSelected);
         if (productoCreado){
           this.listaItemsDeVenta.unshift(productoCreado);
+          this.guardarRegistroAgregarQuitaritemsDeVenta(productoCreado, 'agregado');// guardar registro de agregar a lista de venta
         }
       }
 
@@ -228,6 +253,26 @@ export class PuntoVentaPage implements OnInit {
       console.log('%cOCURRIO UN ERROR', 'color:white;background-color:red' , error);
       this.servGlobal.presentToast(error, {color: 'danger'});
     }
+  }
+
+
+ // LOG DE LOS PRODUCTOS AGREGADOS Y QUITADOS DE LA LISTA DE VENTA
+  guardarRegistroAgregarQuitaritemsDeVenta (item: any, tipo: string) {
+    item.vendedor = {
+      nombre: this.storage.datosAdmi.nombre,
+      dni: this.storage.datosAdmi.dni,
+      id: this.storage.datosAdmi.id,
+      rol: this.storage.datosAdmi.rol,
+      sede: this.storage.datosAdmi.sede,
+    };
+    item.tipo = tipo;
+    this.dataApi.guardarLOGListaVentas(item, this.sede).then(res => {
+      if (res) {
+        console.log('Guardado el registro...');
+      } else {
+        this.servGlobal.presentToast('Ocurrio un error al guardar registro.')
+      }
+    })
   }
 
   async presentPopoverVariantes(productoSelect: ProductoInterface) {
@@ -325,6 +370,7 @@ export class PuntoVentaPage implements OnInit {
 
       for (const itemDeVenta of this.listaItemsDeVenta) {
         if (idProdItem === itemDeVenta.idProducto){
+          this.guardarRegistroAgregarQuitaritemsDeVenta(itemDeVenta, 'quitado'); // guardar registro de agregar a lista de venta
             // console.log('quitar producto', index);
             this.listaItemsDeVenta.splice(index, 1);
             break;
@@ -411,6 +457,9 @@ export class PuntoVentaPage implements OnInit {
   }
 
   QuitarListaDeVenta(){
+    for (const venta of this.listaItemsDeVenta) {
+      this.guardarRegistroAgregarQuitaritemsDeVenta(venta, 'quitado'); // guardar registro de agregar a lista de venta
+    }
     this.listaItemsDeVenta = [];
     this.importeTotalPagar = 0;
   }
@@ -573,14 +622,15 @@ export class PuntoVentaPage implements OnInit {
     });
     await modal.present();
 
-    // const {data} = await modal.onWillDismiss();
-    // console.log(data);
-    // if (data && data.data) {
-    //   if (data.evento === 'agregar') {
-    //     console.log('agregar', data.data);
-    //     this.agregar(data.data);
-    //   }
-    // }
+    const {data} = await modal.onWillDismiss();
+    console.log(data);
+    if (data && data.data) {
+      this.cliente = data.data;
+      // if (data.evento === 'agregar') {
+      //   console.log('agregar', data.data);
+      //   this.agregar(data.data);
+      // }
+    }
   }
 
   // agregar(cliente: ClienteInterface){

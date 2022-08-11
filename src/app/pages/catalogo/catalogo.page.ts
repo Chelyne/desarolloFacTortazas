@@ -8,6 +8,7 @@ import { EditarProductoPage } from '../../modals/editar-producto/editar-producto
 import { DataBaseService } from '../../services/data-base.service';
 import { BuscadorService } from 'src/app/services/buscador.service';
 import { GlobalService } from 'src/app/global/global.service';
+import { GENERAL_CONFIG } from 'src/config/generalConfig';
 
 
 @Component({
@@ -23,7 +24,7 @@ export class CatalogoPage implements OnInit {
   buscando = false;
   ordenarStock =  false;
   sinDatos: boolean;
-
+  listaSedes = GENERAL_CONFIG.listaSedes;
   constructor(
     private dataApi2: DataBaseService,
     private buscadorService: BuscadorService,
@@ -143,16 +144,19 @@ export class CatalogoPage implements OnInit {
 
   async eliminarProducto(producto: ProductoInterface) {
     const newLoading =  await this.srvGlobal.presentLoading('Eliminando producto...', {duracion: 10000});
-
-    if (producto.img){
-      await this.srvGlobal.ElimarImagen(producto.img);
+    let contador = 0;
+    for (const sede of this.listaSedes) {
+      contador ++;
+      console.log(producto , producto.id, sede, contador);
+      if (producto.img ){
+        await this.srvGlobal.ElimarImagen(producto.img);
+      }
+      await this.dataApi2.eliminarProducto(producto.id, sede).then(() => {
+        this.srvGlobal.presentToast('El producto fue eliminado exitosamente de sede: ' + sede, {position: 'top', color: 'success'} );
+      }).catch(() => {
+        this.srvGlobal.presentToast('El producto no se pudo eliminar de sede' + sede, {position: 'top', color: 'danger'} );
+      });
     }
-
-    await this.dataApi2.eliminarProducto(producto.id, producto.sede).then(() => {
-      this.srvGlobal.presentToast('El producto fue eliminado exitosamente', {position: 'top', color: 'success'} );
-    }).catch(() => {
-      this.srvGlobal.presentToast('El producto no se pudo eliminar', {position: 'top', color: 'danger'} );
-    });
     newLoading.dismiss();
   }
 

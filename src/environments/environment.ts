@@ -16,8 +16,7 @@
 //   }
 // };
 
-
-/** FACTURACION MIMARKET *///
+/** FACTURACION MIMARKET */
 export const environment = {
   production: false,
   firebaseConfig: {

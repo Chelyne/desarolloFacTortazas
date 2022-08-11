@@ -150,15 +150,15 @@
         <ion-card style="text-align: center;">
           <ion-grid>
             <ion-row>
-              <ion-col size="6">
+              <ion-col size="4">
                 <ion-card-header>
                   <ion-card-subtitle>TOTAL</ion-card-subtitle>
                   <ion-card-title>S/. {{importeNeto | number: '1.2'}}</ion-card-title>
                 </ion-card-header>
               </ion-col>
-              <ion-col size="6">
+              <ion-col size="8">
                 <ion-row style="height: 100%;">
-                  <ion-col size="6" style="height: 100%;">
+                  <ion-col size="4" style="height: 100%;">
                     <ion-button (click)="seleccionTipoPago('efectivo')" *ngIf="tipoPago!=='efectivo'" fill="outline" expand="block" style="height: 90%;">
                       <ion-icon name="cash-outline" color="primary"></ion-icon>&nbsp;
                       <ion-label color="primary">Efectivo</ion-label>
@@ -168,7 +168,7 @@
                       <ion-label color="light">Efectivo</ion-label>
                     </ion-button>
                   </ion-col>
-                  <ion-col size="6" style="height: 100%;">
+                  <ion-col size="4" style="height: 100%;">
                     <ion-button (click)="seleccionTipoPago('tarjeta')" *ngIf="tipoPago!=='tarjeta'" fill="outline" expand="block" style="height: 90%;">
                       <ion-icon name="card-outline" color="primary"></ion-icon>&nbsp;
                       <ion-label color="primary">Tarjeta</ion-label>
@@ -176,6 +176,16 @@
                     <ion-button *ngIf="tipoPago==='tarjeta'" expand="block" style="height: 90%;">
                       <ion-icon name="card-outline" color="light"></ion-icon>&nbsp;
                       <ion-label color="light">Tarjeta</ion-label>
+                    </ion-button>
+                  </ion-col>
+                  <ion-col size="4" style="height: 100%;">
+                    <ion-button (click)="seleccionTipoPago('appDigital')" *ngIf="tipoPago!=='appDigital'" fill="outline" expand="block" style="height: 90%;">
+                      <ion-icon name="phone-portrait-outline" color="primary"></ion-icon>&nbsp;
+                      <ion-label color="primary">App Digital</ion-label>
+                    </ion-button>
+                    <ion-button *ngIf="tipoPago==='appDigital'" expand="block" style="height: 90%;">
+                      <ion-icon name="phone-portrait-outline" color="light"></ion-icon>&nbsp;
+                      <ion-label color="light">App Digital</ion-label>
                     </ion-button>
                   </ion-col>
                 </ion-row>
@@ -280,7 +290,7 @@
                 <form [formGroup]="formPago">
                   <ion-card-subtitle color="primary">Ingrese Monto</ion-card-subtitle>
                   <ion-card-title>
-                    <ion-input [disabled]="tipoPago==='tarjeta'" type="text" formControlName="montoIngreso" placeholder="00.00" (keyup)="calcularVuelto()"></ion-input>
+                    <ion-input (click)="focuss($event)" #focus [disabled]="tipoPago==='tarjeta' || tipoPago==='appDigital'" type="text" formControlName="montoIngreso" placeholder="00.00" (keyup)="calcularVuelto()"></ion-input>
                   </ion-card-title>
                   <div class="alertDanger" *ngIf="montoIngreso.invalid && (montoIngreso.dirty || montoIngreso.touched)">
                     <div class="mensajeError" *ngIf="montoIngreso.errors.required">

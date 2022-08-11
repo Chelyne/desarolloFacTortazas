@@ -261,8 +261,10 @@ export class ModalVentasPage implements OnInit {
           doc.text('Descuento: S/ ', 35, index + 5, {align: 'right'});
           doc.text(venta.descuentoVenta ? venta.descuentoVenta.toFixed(2) : '0.00', 43, index + 5, {align: 'right'});
           index = index + 4;
+          if ( venta.cantidadBolsa > 0 ) {
           doc.text('ICBP(' +  (GLOBAL_FACTOR_ICBPER).toFixed(2) + '): S/ ', 35, index + 3, {align: 'right'});
           doc.text(venta.cantidadBolsa ? (venta.cantidadBolsa * GLOBAL_FACTOR_ICBPER).toFixed(2) : '0.00', 43, index + 3, {align: 'right'});
+          }
           doc.text('Importe Total: S/ ', 35, index + 5, {align: 'right'});
           doc.text(venta.totalPagarVenta.toFixed(2), 43, index + 5, {align: 'right'});
           doc.text('Vuelto: S/ ', 35, index + 7, {align: 'right'});
@@ -377,11 +379,13 @@ export class ModalVentasPage implements OnInit {
           doc.text(venta.descuentoVenta ? (venta.descuentoVenta).toFixed(2) : '0.00', 43, index + 13, {align: 'right'});
           doc.text('I.G.V. (18%)', 2, index + 15, {align: 'left'});
           doc.text( (this.calcularIGVincluido(venta.totalPagarVenta)).toFixed(2), 43, index + 15, {align: 'right'});
-          doc.text('ICBP('  +  (GLOBAL_FACTOR_ICBPER).toFixed(2) + ')', 2, index + 17, {align: 'left'});
+          doc.text('I.S.C.', 2, index + 17, {align: 'left'});
+          doc.text( (0).toFixed(2), 43, index + 17, {align: 'right'});
+          if ( venta.cantidadBolsa > 0 ) {
+          doc.text('ICBP('  +  (GLOBAL_FACTOR_ICBPER).toFixed(2) + ')', 2, index + 19, {align: 'left'});
           // tslint:disable-next-line:max-line-length
-          doc.text(venta.cantidadBolsa ? (venta.cantidadBolsa * GLOBAL_FACTOR_ICBPER).toFixed(2) : '0.00', 43, index + 17, {align: 'right'});
-          doc.text('I.S.C.', 2, index + 19, {align: 'left'});
-          doc.text( (0).toFixed(2), 43, index + 19, {align: 'right'});
+          doc.text(venta.cantidadBolsa ? (venta.cantidadBolsa * GLOBAL_FACTOR_ICBPER).toFixed(2) : '0.00', 43, index + 19, {align: 'right'});
+          }
           doc.text( '__________________________________________', 22.5, index + 19, {align: 'center'});
           index = index + 19;
           doc.text('TOTAL IMPORTE:', 2, index + 3, {align: 'left'});

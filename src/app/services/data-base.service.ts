@@ -22,6 +22,40 @@ export class DataBaseService {
 
   constructor(private afs: AngularFirestore) { }
 
+
+  guardarLOGListaVentas(item: any, sede: string) {
+    // const sede1 =  sede.toLocaleLowerCase();
+    const fecha = formatearDateTime('DD-MM-YYYY');
+    item.fecha = new Date();
+    return this.afs.collection('sedes').doc(sede.toLowerCase()).collection('registroListaVentas').doc(fecha).collection('registro').ref.add(item).then(data => {
+      if (data.id) {
+        return data.id;
+      } else {
+        return '';
+      }
+    }).catch(err => {
+      throw String('fail');
+    });
+  }
+
+  obtenerReporteRegistroListaVentas(fecha: string, sede: string) {
+    return this.afs.collection('sedes').doc(sede).collection('registroListaVentas').doc(fecha).collection('registro', ref => ref.orderBy('fecha', 'desc'))
+    .snapshotChanges().pipe(map(changes => {
+      const datos: ProductoInterface[] = [];
+
+      changes.map(action => {
+        datos.push({
+          id: action.payload.doc.id,
+          ...action.payload.doc.data() as ProductoInterface
+        });
+      });
+
+      return datos;
+
+    }));
+
+  }
+
   // ----------------------------------------------------------- */
   //                          ANCHOR GUARDAR                            */
   // ----------------------------------------------------------- */
@@ -34,6 +68,13 @@ export class DataBaseService {
         return '';
       }
     }).catch(err => {
+      throw String('fail');
+    });
+  }
+  guardarCategoriaconID(newCategoria: CategoriaInterface, sede: string, id: string) {
+    // const sede1 =  sede.toLocaleLowerCase();
+    return this.afs.collection('sedes').doc(sede.toLowerCase()).collection('categorias').doc(id).set(newCategoria)
+    .then(() => 'exito').catch(err => {
       throw String('fail');
     });
   }
@@ -51,29 +92,20 @@ export class DataBaseService {
     });
   }
 
-  async guardarProductoIncrementaCodigo(newProducto: ProductoInterface, sede: string, correlacionActual: number) {
+  async guardarProductoIncrementaCodigo(newProducto: ProductoInterface, sede: string) { // , correlacionActual: number
     console.log('%c%s', 'color: #aa00ff', newProducto);
     console.log( newProducto);
 
 
-    const correlacion = parseInt(newProducto.codigo, 10);
+    // const correlacion = parseInt(newProducto.codigo, 10);
     const arrayNombre = newProducto.nombre.toLowerCase().split(' ');
     newProducto.arrayNombre = arrayNombre;
     console.log('GYARDAR: ', newProducto);
-    this.guardarProducto(newProducto, sede).then(async (idProducto) => {
-      if (idProducto) {
-        if (correlacionActual === correlacion ){
-          // Incrementa la correlacion
-          const resp = await this.incrementarCorrelacion(correlacionActual + 1, sede.toLocaleLowerCase());
-          if (resp === 'exito'){
-            return 'exito';
-          }else {
-            throw String('no se pudo incrementar la correlacion');
-          }
-        }
-        throw String('fail');
-      }
-    });
+    if (newProducto.id) {
+      this.guardarProductoID(newProducto, sede, newProducto.id);
+    } else {
+      return this.guardarProducto(newProducto, sede).then(async (idProducto) => idProducto);
+    }
   }
 
   guardarProducto(newProducto: ProductoInterface, sede: string) {
@@ -85,6 +117,16 @@ export class DataBaseService {
       } else {
         return '';
       }
+    }).catch(err => {
+      throw String('fail');
+    });
+  }
+
+  guardarProductoID(newProducto: ProductoInterface, sede: string, id: string) {
+    const arrayNombre = newProducto.nombre.toLocaleLowerCase().split(' ');
+    newProducto.arrayNombre = arrayNombre;
+    return this.afs.collection('sedes').doc(sede.toLocaleLowerCase()).collection('productos').doc(id).set(newProducto).then(data => {
+      return data;
     }).catch(err => {
       throw String('fail');
     });
@@ -444,7 +486,7 @@ export class DataBaseService {
   // ObtenerProductos por categoria
   ObtenerProductosCategoria(sede: string, subCategoria: string) {
     return this.afs.collection('sedes').doc(sede.toLocaleLowerCase())
-    .collection('productos' , ref => ref.where('subCategoria', '==', subCategoria).orderBy('fechaRegistro', 'desc'))
+    .collection('productos' , ref => ref.where('subCategoria', '==', subCategoria).orderBy('fechaRegistro', 'desc').limit(100)) // productos en punto de venta limitado a 100
     .snapshotChanges().pipe(map(changes => {
       const datos: ProductoInterface[] = [];
       changes.map(action => {

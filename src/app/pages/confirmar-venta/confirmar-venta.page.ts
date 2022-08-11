@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { VentaInterface } from 'src/app/models/venta/venta';
 import { ConfirmarVentaService } from 'src/app/services/confirmar-venta.service';
@@ -18,6 +18,7 @@ import { GlobalService } from '../../global/global.service';
 import { DataBaseService } from '../../services/data-base.service';
 import { GLOBAL_FACTOR_ICBPER } from 'src/config/otherConfig';
 import { DECIMAL_REGEXP_PATTERN } from 'src/app/global/validadores';
+import { Observable, timer } from 'rxjs';
 
 
 @Component({
@@ -72,6 +73,8 @@ export class ConfirmarVentaPage implements OnInit {
 
   numeroWhatsapp: string;
   imprimir = true;
+  @ViewChild('focus', {static: false}) search: any;
+
   constructor(
     private confirmarVentaServ: ConfirmarVentaService,
     private menuCtrl: MenuController,
@@ -82,6 +85,18 @@ export class ConfirmarVentaPage implements OnInit {
     private servGlobal: GlobalService
   ) {
     this.formPago = this.createFormPago();
+  }
+
+  ionViewDidEnter() {
+    timer(500).subscribe(() => {
+      console.log('Set Focus', this.search);
+      this.search.setFocus();
+    });
+  }
+
+  focuss(ev){
+    console.log(ev);
+    ev.target.select();
   }
 
   ionViewWillEnter() {
@@ -189,7 +204,7 @@ export class ConfirmarVentaPage implements OnInit {
   ActualizarMontoEntrante(monto: number){
     console.log('%cMONTOOOOO', 'color:white; background-color:black', monto);
     this.formPago.setControl('montoIngreso',
-    new FormControl(monto.toFixed(2), [Validators.required, Validators.pattern(DECIMAL_REGEXP_PATTERN)]));
+    new FormControl('', [Validators.required, Validators.pattern(DECIMAL_REGEXP_PATTERN)])); // monto.toFixed(2) en ''
   }
 
   calcularVuelto(){
@@ -334,7 +349,7 @@ export class ConfirmarVentaPage implements OnInit {
 
   seleccionTipoPago(tipo: string) {
     this.tipoPago = tipo;
-    if (this.tipoPago === 'tarjeta') {
+    if (this.tipoPago === 'tarjeta' || this.tipoPago === 'appDigital') {
       this.ponerMontoExactoYCalularVuelto();
     }
   }
@@ -436,8 +451,10 @@ export class ConfirmarVentaPage implements OnInit {
         doc.text('Descuento: S/ ', 35, index + 5, {align: 'right'});
         doc.text(this.venta.descuentoVenta.toFixed(2), 43, index + 5, {align: 'right'});
         index = index + 4;
-        doc.text(`ICBP(${this.ICBP_PER.toFixed(2)}): S/`, 35, index + 3, {align: 'right'});
-        doc.text((this.venta.cantidadBolsa * this.ICBP_PER).toFixed(2), 43, index + 3, {align: 'right'});
+        if ( this.venta.cantidadBolsa > 0){
+          doc.text(`ICBP(${this.ICBP_PER.toFixed(2)}): S/`, 35, index + 3, {align: 'right'});
+          doc.text((this.venta.cantidadBolsa * this.ICBP_PER).toFixed(2), 43, index + 3, {align: 'right'});
+        }
         doc.text('Importe Total: S/ ', 35, index + 5, {align: 'right'});
         doc.text(this.venta.totalPagarVenta.toFixed(2), 43, index + 5, {align: 'right'});
         doc.text('Vuelto: S/ ', 35, index + 7, {align: 'right'});
@@ -565,10 +582,12 @@ export class ConfirmarVentaPage implements OnInit {
         doc.text( (this.venta.descuentoVenta).toFixed(2), 43, index + 13, {align: 'right'});
         doc.text('I.G.V. (18%)', 2, index + 15, {align: 'left'});
         doc.text( (this.calcularIGVincluido(this.venta.totalPagarVenta)).toFixed(2), 43, index + 15, {align: 'right'});
-        doc.text(`ICBP(${this.ICBP_PER.toFixed(2)}): S/`, 2, index + 17, {align: 'left'});
-        doc.text( (this.venta.cantidadBolsa * this.ICBP_PER).toFixed(2), 43, index + 17, {align: 'right'});
-        doc.text('I.S.C.', 2, index + 19, {align: 'left'});
-        doc.text( (0).toFixed(2), 43, index + 19, {align: 'right'});
+        doc.text('I.S.C.', 2, index + 17, {align: 'left'});
+        doc.text( (0).toFixed(2), 43, index + 17, {align: 'right'});
+        if (this.venta.cantidadBolsa > 0){
+          doc.text(`ICBP(${this.ICBP_PER.toFixed(2)}): S/`, 2, index + 19, {align: 'left'});
+          doc.text( (this.venta.cantidadBolsa * this.ICBP_PER).toFixed(2), 43, index + 19, {align: 'right'});
+        }
         doc.text( '__________________________________________', 22.5, index + 19, {align: 'center'});
 
         index = index + 19;
@@ -617,7 +636,7 @@ export class ConfirmarVentaPage implements OnInit {
         // tslint:disable-next-line:no-shadowed-variable
         let index = 41;
         // tslint:disable-next-line:no-shadowed-variable
-        const doc = new jsPDF( 'p', 'mm', [45, index  + (this.venta.listaItemsDeVenta.length * 7) + 9 + 20 + 12]);
+        const doc = new jsPDF( 'p', 'mm', [45, index  + (this.venta.listaItemsDeVenta.length * 7) + 9 + 22]);
         doc.addImage(this.LogoEmpresa, 'JPEG', 11, 1, 22, 8);
         doc.setFontSize(5.5);
         doc.setFont('helvetica');
@@ -723,10 +742,10 @@ export class ConfirmarVentaPage implements OnInit {
         doc.text('RECLAME SU COMPROBANTE', 22.5, index + 19, {align: 'center'});
         doc.text( '__________________________________________', 22.5, index + 20, {align: 'center'});
         index = index + 20;
-        doc.text('EL VETERINARIO TE RECUERDA:', 2, index + 3, {align: 'left'});
-        doc.text('-Desparasitar a tu mascota cada 2 meses', 2, index + 6, {align: 'left'});
-        doc.text('-Completar todas sus vacunas', 2, index + 8, {align: 'left'});
-        doc.text('-Cuida el aseo e higiene de tu engreido', 2, index + 10, {align: 'left'});
+        // doc.text('EL VETERINARIO TE RECUERDA:', 2, index + 3, {align: 'left'});
+        // doc.text('-Desparasitar a tu mascota cada 2 meses', 2, index + 6, {align: 'left'});
+        // doc.text('-Completar todas sus vacunas', 2, index + 8, {align: 'left'});
+        // doc.text('-Cuida el aseo e higiene de tu engreido', 2, index + 10, {align: 'left'});
 
         doc.autoPrint();
         // window.open(doc.output('bloburl').toString(), '_blank');

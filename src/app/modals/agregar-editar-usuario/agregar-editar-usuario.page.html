@@ -105,6 +105,7 @@
           <ion-select formControlName="rol" value="admin" mode="ios" interface="popover">
             <ion-select-option value="administrador">Administrador</ion-select-option>
             <ion-select-option value="vendedor">Vendedor</ion-select-option>
+            <ion-select-option value="contador">Contador</ion-select-option>
           </ion-select>
         </ion-item>
         <div class="alertDanger" *ngIf="rol.invalid && (rol.dirty || rol.touched)">
