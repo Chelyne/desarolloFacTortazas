@@ -581,7 +581,7 @@ export class PuntoVentaPage implements OnInit {
     const { data } = await popover.onWillDismiss();
     console.log(data);
     if (data && data.cliente) {
-      this.cliente = data.cliente.orderBy("fecha", "desc");
+      this.cliente = data.cliente;
     }
   }
 

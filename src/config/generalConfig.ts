@@ -12,38 +12,38 @@ export const GENERAL_CONFIG = {
         apisPeruId: 1991,
         url: 'https://facturacionmimarket.web.app'
     },
-    listaSedes: ['andahuaylas', 'lampa'],
+    listaSedes: ['lampa', 'plaza'],
     sedes: {
-        andahuaylas: {
+        lampa: {
             direccion: {
-                ubigueo: '030216',
-                direccion : 'JR. LIMA NRO. 401 APURIMAC ANDAHUAYLAS TALAVERA',
-                direccionCorta: 'Jr. Lima 401 Talavera Apurimac',
-                referencia: 'Frente a la plaza de Andahuaylas',
+                ubigueo: '030201',
+                direccion : 'Av. Perú 238 APURIMAC ANDAHUAYLAS',
+                direccionCorta: 'Av. Perú 238 401 Andahuaylas Apurimac',
+                referencia: 'Frente a lampa de oro',
                 codigoPais: 'PE',
                 departamento: 'APURIMAC',
                 provincia: 'ANDAHUAYLAS',
-                distrito: 'TALAVERA'
+                distrito: 'ANDAHUAYLAS'
             },
-            telefono: '983905066',
+            telefono: '970066625',
             caja1: {
                 boleta: 'B001',
                 factura: 'F001',
                 notaVenta: 'NV01'
             }
         },
-        lampa: {
+        plaza: {
             direccion: {
-                ubigueo: '030216',
-                direccion : 'JR. LIMA NRO. 401 APURIMAC ANDAHUAYLAS TALAVERA',
-                direccionCorta: 'Jr. Lima 401 Talavera Apurimac',
-                referencia: 'Frente a la plaza de Andahuaylas',
+                ubigueo: '030201',
+                direccion : 'Jr. Bolívar 115  APURIMAC ANDAHUAYLAS',
+                direccionCorta: 'Jr. Bolívar 115  Andahuaylas Apurimac',
+                referencia: 'Frente Plaza andahuaylas',
                 codigoPais: 'PE',
                 departamento: 'APURIMAC',
                 provincia: 'ANDAHUAYLAS',
-                distrito: 'TALAVERA'
+                distrito: 'ANDAHUAYLAS'
             },
-            telefono: '983905066',
+            telefono: '948138272',
             caja1: {
                 boleta: 'B002',
                 factura: 'F002',
