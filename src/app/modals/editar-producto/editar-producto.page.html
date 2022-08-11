@@ -197,16 +197,16 @@
           </div>
           <ion-col size="12 " size-xs="12" size-sm="12" size-md="12" size-lg="12">
             <ion-item lines="none">
-              <ion-label color="primary" position="stacked">Fecha de vencimiento:</ion-label>
-              <ion-input type="date" formControlName="fechaDeVencimiento" class="form-control"
-                value="{{dataProducto.fechaDeVencimiento}}"></ion-input>
+              <ion-label color="primary" position="stacked">Precio de compra:</ion-label>
+              <ion-input type="text" formControlName="precioCompra" class="form-control"
+                value="{{dataProducto.precioCompra}}"></ion-input>
             </ion-item>
-            <div class="alertDanger"
+            <!-- <div class="alertDanger"
               *ngIf="fechaDeVencimiento && fechaDeVencimiento.invalid && (fechaDeVencimiento.dirty || fechaDeVencimiento.touched)">
               <div class="mensajeError" *ngIf="  fechaDeVencimiento.errors.required">
                 Ingrese fecha de vencimiento
               </div>
-            </div>
+            </div> -->
           </ion-col>
           <ion-col>
             <ion-item lines="none" size="12 " size-xs="12" size-sm="12" size-md="12" size-lg="12">

@@ -71,7 +71,7 @@ export class ModalAgregarProductoPage implements OnInit {
       codigoBarra: new FormControl('', [Validators.minLength(1), Validators.maxLength(15)]),
       precio: new FormControl('', [Validators.required]),
       cantStock: new FormControl(''),
-      fechaDeVencimiento: new FormControl(),
+      precioCompra: new FormControl(),
       img: new FormControl(''),
       fechaRegistro: new FormControl(''),
       sede: new FormControl(''),
@@ -91,7 +91,7 @@ export class ModalAgregarProductoPage implements OnInit {
   get codigoBarra() { return this.productoForm.get('codigoBarra'); }
   get precio() { return this.productoForm.get('precio'); }
   get cantStock() { return this.productoForm.get('cantStock'); }
-  get fechaDeVencimiento() { return this.productoForm.get('fechaDeVencimiento'); }
+  get precioCompra() { return this.productoForm.get('precioCompra'); }
 
   onResetForm() {
     this.productoForm.reset();
@@ -261,6 +261,7 @@ export class ModalAgregarProductoPage implements OnInit {
       nombre: refProdForm.nombre.toLowerCase(),
       cantidad: parseFloat(refProdForm.cantidad),
       precio: parseFloat(refProdForm.precio),
+      precioCompra: parseFloat(refProdForm.precioCompra),
       sede: this.sede,
       medida: refProdForm.medida.toLowerCase(),
       cantStock: parseFloat(refProdForm.cantStock) || 0,
@@ -271,7 +272,7 @@ export class ModalAgregarProductoPage implements OnInit {
       codigo: refProdForm.codigo,
       codigoBarra: refProdForm.codigoBarra,
       fechaRegistro: new Date(),
-      fechaDeVencimiento: refProdForm.fechaDeVencimiento,
+      // fechaDeVencimiento: refProdForm.fechaDeVencimiento,
       variantes: this.listaDeVariantes
     };
 

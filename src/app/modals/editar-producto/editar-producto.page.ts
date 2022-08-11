@@ -222,7 +222,7 @@ export class EditarProductoPage implements OnInit {
       codigoBarra: new FormControl(this.dataProducto.codigoBarra, [Validators.minLength(1), Validators.maxLength(15)]),
       precio: new FormControl(this.dataProducto.precio, [Validators.required]),
       cantStock: new FormControl(this.dataProducto.cantStock),
-      fechaDeVencimiento: new FormControl(this.dataProducto.fechaDeVencimiento),
+      precioCompra: new FormControl(this.dataProducto.precioCompra),
       img: new FormControl(this.dataProducto.img),
       sede: new FormControl(this.dataProducto.sede),
       categoria: new FormControl(),
@@ -239,7 +239,7 @@ export class EditarProductoPage implements OnInit {
   get codigoBarra() {return this.updateForm.get('codigoBarra'); }
   get precio() {return this.updateForm.get('precio'); }
   get cantStock() {return this.updateForm.get('cantStock'); }
-  get fechaDeVencimiento() {return this.updateForm.get('fechaDeVencimiento'); }
+  get precioCompra() {return this.updateForm.get('precioCompra'); }
   get subCategoria() {return this.updateForm.get('subCategoria'); }
 
 
@@ -356,6 +356,7 @@ export class EditarProductoPage implements OnInit {
       nombre: refProdForm.nombre.toLowerCase(),
       cantidad: parseFloat(refProdForm.cantidad),
       precio: parseFloat(refProdForm.precio),
+      precioCompra: parseFloat(refProdForm.precioCompra),
       sede: this.dataProducto.sede,
       medida: refProdForm.medida.toLowerCase(),
       cantStock: parseFloat(refProdForm.cantStock) || 0,
@@ -365,7 +366,7 @@ export class EditarProductoPage implements OnInit {
       marca: refProdForm.marca ? refProdForm.marca.toLowerCase() : null,
       codigo: refProdForm.codigo,
       codigoBarra: refProdForm.codigoBarra,
-      fechaDeVencimiento: refProdForm.fechaDeVencimiento,
+      // fechaDeVencimiento: refProdForm.fechaDeVencimiento,
       variantes: this.listaDeVariantes
     };
 
