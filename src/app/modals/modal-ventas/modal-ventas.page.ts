@@ -76,7 +76,7 @@ export class ModalVentasPage implements OnInit {
     const { data } = await popover.onWillDismiss();
     console.log(data);
     if (data && data.data.numero) {
-      this.enviarWhatsapp(venta, data.numero);
+      this.enviarWhatsapp(venta, data.data.numero);
     } else {
       this.servGlobal.presentToast('Complete el numero de whatsapp', {color: 'danger'});
     }
