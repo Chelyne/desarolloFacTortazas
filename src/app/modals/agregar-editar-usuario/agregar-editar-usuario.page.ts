@@ -6,6 +6,7 @@ import { StorageService } from '../../services/storage.service';
 import { DataBaseService } from '../../services/data-base.service';
 import { GlobalService } from '../../global/global.service';
 import { EMAIL_REGEXP_PATTERN, StringOnlyValidation, NumberOnlyValidation} from 'src/app/global/validadores';
+import { GENERAL_CONFIG } from 'src/config/generalConfig';
 
 
 @Component({
@@ -27,6 +28,8 @@ export class AgregarEditarUsuarioPage implements OnInit {
     evento: 'actualizar' | 'agregar',
     usuario?: AdmiInterface
   };
+  sedeLocal = this.storage.datosAdmi.sede;
+  listaSede = GENERAL_CONFIG.listaSedes;
 
   constructor(
     private dataApi: DataBaseService,
@@ -53,7 +56,7 @@ export class AgregarEditarUsuarioPage implements OnInit {
       correo: new FormControl('', [Validators.required, Validators.minLength(3), Validators.pattern(EMAIL_REGEXP_PATTERN)]),
       password: new FormControl('', [Validators.required, Validators.minLength(6)]),
       rol: new FormControl('', Validators.required),
-      sede: new FormControl('')
+      sede: new FormControl(this.sedeLocal, Validators.required)
     });
   }
 
@@ -67,7 +70,7 @@ export class AgregarEditarUsuarioPage implements OnInit {
       correo: new FormControl(this.dataModal.usuario.correo, [Validators.required, Validators.minLength(3), Validators.pattern(EMAIL_REGEXP_PATTERN)]),
       password: new FormControl(this.dataModal.usuario.password, [Validators.required, Validators.minLength(6)]),
       rol: new FormControl(this.dataModal.usuario.rol, Validators.required),
-      sede: new FormControl(this.dataModal.usuario.sede)
+      sede: new FormControl(this.dataModal.usuario.sede, Validators.required)
     });
   }
 
@@ -77,6 +80,7 @@ export class AgregarEditarUsuarioPage implements OnInit {
   get correo() { return this.usuarioModalForm.get('correo'); }
   get password() { return this.usuarioModalForm.get('password'); }
   get rol() { return this.usuarioModalForm.get('rol'); }
+  get sede() { return this.usuarioModalForm.get('sede'); }
 
   execFun(){
     if (this.dataModal.evento === 'agregar'){
@@ -94,7 +98,7 @@ export class AgregarEditarUsuarioPage implements OnInit {
   guardarUsuario(){
     this.usuarioModalForm.value.nombre = this.nombre.value.toLowerCase();
     this.usuarioModalForm.value.apellidos = this.apellidos.value.toLowerCase();
-    this.usuarioModalForm.value.sede = this.storage.datosAdmi.sede;
+    this.usuarioModalForm.value.sede = this.sede.value.toLowerCase();
 
     this.dataApi.guardarUsuario(this.usuarioModalForm.value).then(() => {
       // console.log('Se ingreso Correctamente');
@@ -110,6 +114,7 @@ export class AgregarEditarUsuarioPage implements OnInit {
   actualizarUsuario(){
     this.usuarioModalForm.value.nombre = this.nombre.value.toLowerCase();
     this.usuarioModalForm.value.apellidos = this.apellidos.value.toLowerCase();
+    this.usuarioModalForm.value.sede = this.sede.value.toLowerCase();
     this.dataApi.actualizarUsuario(this.dataModal.usuario.correo, this.usuarioModalForm.value).then(
       () => {
         this.servGlobal.presentToast('Datos actualizados correctamente');

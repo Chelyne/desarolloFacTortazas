@@ -308,7 +308,7 @@ export class ConfirmarVentaPage implements OnInit {
               this.generarComprobante();
             }
             if (this.numeroWhatsapp) {
-              const url = GENERAL_CONFIG.datosEmpresa.url + 'print/' + this.sede.toLocaleLowerCase() + '/'
+              const url = GENERAL_CONFIG.datosEmpresa.url + '/print/' + this.sede.toLocaleLowerCase() + '/'
               + fecha.split(' ', 1) + '/' + data;
               window.open('https://api.whatsapp.com/send/?phone=51' + this.numeroWhatsapp + '&text=%20Hola,%20puedes%20visualizar%20tu%20comprobante%20electronico%20aqui:%20' + url  + '&app_absent=0', '_blank');
             }
