@@ -33,7 +33,7 @@
       <ion-col size-lg="1.5"><ion-label>S/. {{venta.totalPagarVenta | number:'1.2'}}</ion-label></ion-col>
       <ion-col size-lg="3">
         <ion-item lines="none">
-          <ion-button color="danger" (click)="generarComprobante(venta, 'anular')" [disabled]="venta.estadoVenta == 'anulado'">
+          <ion-button color="danger" (click)="AlertaAnularVenta(venta)" [disabled]="venta.estadoVenta == 'anulado'">
             <ion-label>Anular</ion-label>
           </ion-button>
           <ion-button (click)="generarComprobante(venta, 'copia')" color="success">
