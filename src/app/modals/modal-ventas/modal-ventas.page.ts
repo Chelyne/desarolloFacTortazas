@@ -190,12 +190,9 @@ export class ModalVentasPage implements OnInit {
     return '';
   }
 
-  AlertaAnularVenta(venta: VentaInterface){
-    this.servGlobal.crearAlertController(
-      `¿Está seguro que desea anular este comprobante?`,
-      'Anular',
-    () => this.generarComprobante(venta, 'anular')
-  );
+  alertaAnularVenta(venta: VentaInterface, accion: string){
+    this.servGlobal.crearAlertController('¿Está seguro que desea anular este comprobante?', 'Aceptar',
+    () => this.generarComprobante(venta, accion))
   }
 
   generarComprobante(venta: VentaInterface, typoAccion: string) {
