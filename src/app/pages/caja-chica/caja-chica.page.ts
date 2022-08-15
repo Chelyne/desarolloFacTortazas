@@ -82,6 +82,23 @@ export class CajaChicaPage implements OnInit {
     });
   }
 
+  toggleMenu() {
+    const splitPane = document.querySelector('ion-split-pane');
+    const windowWidth = window.innerWidth;
+    const splitPaneShownAt = 992;
+    const when = `(min-width: ${splitPaneShownAt}px)`;
+    if (windowWidth >= splitPaneShownAt) {
+      // split pane view is visible
+      const open = splitPane.when === when;
+      splitPane.when = open ? false : when;
+    } else {
+      // split pane view is not visible
+      // toggle menu open
+      const menu = splitPane.querySelector('ion-menu');
+      return menu.open();
+    }
+  }
+
   convertirFecha(lista) {
     lista.forEach(element => {
       element.FechaConsulta = new Date(moment.unix(element.FechaApertura.seconds).format('D MMM YYYY H:mm'));

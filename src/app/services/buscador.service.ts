@@ -52,8 +52,7 @@ export class BuscadorService {
 
       }
       else if (flagFullStrOrNum === 'allNumber'){
-        if (target.length <= 5){
-          await this.busquedaPorCodigoProductoExactoP(target).then( data => listaResultante = data);
+        await this.busquedaPorCodigoProductoExactoP(target).then( data => listaResultante = data);
 
           if (!listaResultante.length){
             // si no se encontro productos, buscar por codigo de producto o Barra similares
@@ -64,13 +63,25 @@ export class BuscadorService {
               this.busquedaPorCodigoBarraP(target).then( data => b = data)
             );
             listaResultante = a.concat(b);
-
-
           }
+        // VERSINO ANTERIOR
+        // if (target.length <= 5){
+        //   await this.busquedaPorCodigoProductoExactoP(target).then( data => listaResultante = data);
 
-        } else {
-          await this.busquedaPorCodigoBarraP(target).then(data => listaResultante = data);
-        }
+        //   if (!listaResultante.length){
+        //     // si no se encontro productos, buscar por codigo de producto o Barra similares
+        //     let a: any[] = [];
+        //     let b: any[] = [];
+        //     await (
+        //       this.busquedaPorCodigoProductoP(target).then(data => a = data),
+        //       this.busquedaPorCodigoBarraP(target).then( data => b = data)
+        //     );
+        //     listaResultante = a.concat(b);
+        //   }
+
+        // } else {
+        //   await this.busquedaPorCodigoBarraP(target).then(data => listaResultante = data);
+        // }
 
       }
       else{

@@ -1,9 +1,14 @@
 <ion-header>
   <ion-toolbar>
     <ion-buttons slot="start">
+      <ion-button color="primary" (click)="toggleMenu()">
+        <ion-icon name="menu" slot="icon-only"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+    <!-- <ion-buttons slot="start">
       <ion-menu-button menu="primerMenu">
       </ion-menu-button>
-    </ion-buttons>
+    </ion-buttons> -->
     <ion-title color="primary">Punto de Venta</ion-title>
     <ion-item lines="none" slot="end">
       <ion-button (click)="modalIngresoEgreso('Ingreso')" size="small" fill="outline">
@@ -83,7 +88,8 @@
                 </ion-col>
                 <ion-col size-xs="5" class="colDatos">
                   <ion-label style="font-size: 17px; font-weight: bold;">{{prod.nombre | titlecase}}</ion-label><br>
-                  <ion-label>{{prod.cantidad}} {{prod.medida}}</ion-label><br>
+                  <ion-badge color="secondary">{{prod.codigoBarra || prod.codigo}}</ion-badge><br>
+                  <!-- <ion-label>{{prod.cantidad}} {{prod.medida}}</ion-label><br> -->
                   <ion-badge>
                     <ion-label color="light">{{prod.subCategoria | titlecase}}</ion-label>
                   </ion-badge>
@@ -154,7 +160,8 @@
                     <img *ngIf="!producto.img" src="../../../assets/img/producto_default.png" alt="">
                   </div>
                   <ion-card-title>{{producto.nombre | titlecase}}</ion-card-title>
-                  <ion-card-subtitle>{{producto.cantidad}} {{producto.medida}}</ion-card-subtitle>
+                  <ion-badge color="secondary">{{producto.codigoBarra || producto.codigo}}</ion-badge>
+                  <!-- <ion-card-subtitle>{{producto.cantidad}} {{producto.medida}}</ion-card-subtitle> -->
                   <ion-card-subtitle class="precio">S/. {{producto.precio | number: '1.2'}}
                   </ion-card-subtitle>
                 </ion-card>
@@ -168,10 +175,10 @@
           <ion-toolbar color="light">
             <ion-buttons slot="start">
               <ion-button [disabled]="listaItemsDeVenta.length===0" (click)="AgregaraListaDeEspera()" color="primary">
-                <ion-icon slot="icon-only" name="snow-outline"></ion-icon>
+                <ion-icon color="secondary" slot="icon-only" name="snow-outline"></ion-icon>
               </ion-button>
               <ion-button (click)="modalCongelados()" color="danger">
-                <ion-icon slot="icon-only" name="flame-outline"></ion-icon>
+                <ion-icon color="warning" slot="icon-only" name="flame-outline"></ion-icon>
               </ion-button>
             </ion-buttons>
             <ion-buttons slot="end">

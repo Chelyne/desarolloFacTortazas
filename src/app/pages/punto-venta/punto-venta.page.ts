@@ -135,6 +135,33 @@ export class PuntoVentaPage implements OnInit {
         this.mostrarAlertSinCaja()
       }
     });
+
+    this.cliente = {
+      celular: '999999999',
+      direccion: 'jr. prueba',
+      email: 'cliente@gmail.com',
+      id: '5FwjPZ7ClHegWoQqOQzN',
+      nombre: 'cliente varios',
+      numDoc: '00000000',
+      tipoDoc: 'dni'
+    }
+  }
+
+  toggleMenu() {
+    const splitPane = document.querySelector('ion-split-pane');
+    const windowWidth = window.innerWidth;
+    const splitPaneShownAt = 992;
+    const when = `(min-width: ${splitPaneShownAt}px)`;
+    if (windowWidth >= splitPaneShownAt) {
+      // split pane view is visible
+      const open = splitPane.when === when;
+      splitPane.when = open ? false : when;
+    } else {
+      // split pane view is not visible
+      // toggle menu open
+      const menu = splitPane.querySelector('ion-menu');
+      return menu.open();
+    }
   }
 
   async mostrarAlertSinCaja() {
@@ -513,7 +540,7 @@ export class PuntoVentaPage implements OnInit {
 
           /** si todo es buscado por codigo de barra agregar */
           if (this.productos){
-            if (this.productos.length === 1 && this.buscadorService.isFullStringoOrNamber(target) === 'allNumber' && target.length >= 5 ){
+            if (this.productos.length === 1){ //  && this.buscadorService.isFullStringoOrNamber(target) === 'allNumber' && target.length >= 5 
               console.log('sssssssssssssssssssssssssssssssssssssssssssssssssssssss');
               this.AgregarItemDeVenta(this.productos[0]);
               this.focusLimpio();
