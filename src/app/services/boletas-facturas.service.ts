@@ -384,10 +384,10 @@ export class BoletasFacturasService {
             doc.text('RECLAME SU COMPROBANTE', 22.5, index + 23, {align: 'center'});
             doc.text( '__________________________________________', 22.5, index + 24, {align: 'center'});
             index = index + 24;
-            doc.text('EL VETERINARIO TE RECUERDA:', 2, index + 3, {align: 'left'});
-            doc.text('-Desparasitar a tu mascota cada 2 meses', 2, index + 6, {align: 'left'});
-            doc.text('-Completar todas sus vacunas', 2, index + 8, {align: 'left'});
-            doc.text('-Cuida el aseo e higiene de tu engreido', 2, index + 10, {align: 'left'});
+            // doc.text('EL VETERINARIO TE RECUERDA:', 2, index + 3, {align: 'left'});
+            // doc.text('-Desparasitar a tu mascota cada 2 meses', 2, index + 6, {align: 'left'});
+            // doc.text('-Completar todas sus vacunas', 2, index + 8, {align: 'left'});
+            // doc.text('-Cuida el aseo e higiene de tu engreido', 2, index + 10, {align: 'left'});
 
             doc.autoPrint();
             // doc.output('datauristring');
