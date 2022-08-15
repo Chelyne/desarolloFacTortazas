@@ -68,7 +68,7 @@
 
         <ion-item>
           <ion-label color="primary" position="floating">Correo</ion-label>
-          <ion-input maxlength="50" type="text" formControlName="correo" placeholder="Correo de usuario"></ion-input>
+          <ion-input maxlength="50" type="text" formControlName="correo" placeholder="Correo de usuario" [disabled]=" dataModal.evento =='actualizar'"></ion-input>
         </ion-item>
         <div class="alertDanger"*ngIf="correo.invalid && (correo.dirty || correo.touched)">
           <div class="mensajeError" *ngIf="correo.errors.required">
@@ -84,7 +84,7 @@
         <ion-item>
           <ion-label color="primary" position="floating">Contraseña</ion-label>
           <ion-input maxlength="24" #passwordEyeRegister  [type]="passwordTypeInput" formControlName="password"
-           placeholder="Contraseña" clearOnEdit="false">
+           placeholder="Contraseña" clearOnEdit="false" [disabled]=" dataModal.evento =='actualizar'">
           </ion-input>
           <ion-buttons slot="end">
             <ion-button (click)="togglePasswordMode()">
@@ -111,6 +111,17 @@
         <div class="alertDanger" *ngIf="rol.invalid && (rol.dirty || rol.touched)">
           <div class="mensajeError" *ngIf="rol.errors.required">
             *Debe seleccionar un rol
+          </div>
+        </div>
+        <ion-item>
+          <ion-label color="primary">Sede</ion-label>
+          <ion-select formControlName="sede" value="{{sedeLocal}}" mode="ios" interface="popover">
+            <ion-select-option  *ngFor="let sucursal of listaSede"or [value]="sucursal">{{sucursal | titlecase}}</ion-select-option>
+          </ion-select>
+        </ion-item>
+        <div class="alertDanger" *ngIf="sede.invalid && (sede.dirty || sede.touched)">
+          <div class="mensajeError" *ngIf="rol.errors.required">
+            *Debe seleccionar una sede
           </div>
         </div>
       </form>

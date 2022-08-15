@@ -60,7 +60,7 @@ export class ModalVentasPage implements OnInit {
     //   numero = venta.cliente.celular;
     // }
     // tslint:disable-next-line:max-line-length
-    const url = GENERAL_CONFIG.datosEmpresa.url + 'print/' + venta.vendedor.sede.toLocaleLowerCase() + '/'
+    const url = GENERAL_CONFIG.datosEmpresa.url + '/print/' + venta.vendedor.sede.toLocaleLowerCase() + '/'
     + venta.fechaEmision.split(' ', 1) + '/' + venta.idVenta;
     window.open('https://api.whatsapp.com/send/?phone=51' + numero + '&text=%20Hola,%20puedes%20visualizar%20tu%20comprobante%20electronico%20aqui:%20' + url  + '&app_absent=0', '_blank');
   }
@@ -188,6 +188,14 @@ export class ModalVentasPage implements OnInit {
       return '===== COMPROBANTE ANULADO  =====';
     }
     return '';
+  }
+
+  AlertaAnularVenta(venta: VentaInterface){
+    this.servGlobal.crearAlertController(
+      `¿Está seguro que desea anular este comprobante?`,
+      'Anular',
+    () => this.generarComprobante(venta, 'anular')
+  );
   }
 
   generarComprobante(venta: VentaInterface, typoAccion: string) {
