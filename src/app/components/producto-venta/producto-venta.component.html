@@ -1,7 +1,8 @@
 <form [formGroup]="formVenta" autocomplete="off">
   <ion-row class="ion-justify-content-center ion-align-items-center">
-    <ion-col size="1.5">
-      <ion-input type="number" formControlName="cantidad" placeholder="Cantidad"
+    <ion-col size="1.5"> 
+      <!-- type="number" // CAMBIADO EL 18/08/2022 a text-->
+      <ion-input type="text" formControlName="cantidad" placeholder="Cantidad"
       [value]="itemDeVenta.cantidad==0?'':itemDeVenta.cantidad" maxlength="5" (keyup)="cambioCantidad()"
       (change)="cantChange()">
       </ion-input>

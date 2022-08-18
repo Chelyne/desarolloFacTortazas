@@ -52,7 +52,7 @@ export class ModalEditarItemCompraPage implements OnInit {
       nombre: new FormControl(this.dataModal.itemCompra.producto.nombre, [Validators.required]),
       descripcion: new FormControl('', []),
       cantidad: new FormControl(this.dataModal.itemCompra.cantidad, [Validators.required, Validators.pattern(DECIMAL_REGEXP_PATTERN)]),
-      pu_compra: new FormControl(this.dataModal.itemCompra.pu_compra, [Validators.required, Validators.pattern(DECIMAL_REGEXP_PATTERN)]),
+      pu_compra: new FormControl(this.dataModal.itemCompra.pu_compra || this.dataModal.itemCompra.producto.precioCompra , [Validators.required, Validators.pattern(DECIMAL_REGEXP_PATTERN)]),
       descuento: new FormControl('', [Validators.pattern('^[0-9]*\.?[0-9]*$')])
     });
   }

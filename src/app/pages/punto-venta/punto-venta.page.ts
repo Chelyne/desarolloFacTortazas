@@ -547,6 +547,7 @@ export class PuntoVentaPage implements OnInit {
             }
           }
         } else {
+          this.focusLimpio();
           this.productos = null;
           this.servGlobal.presentToast('No se encontro el producto', {color: 'danger'});
         }
