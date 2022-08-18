@@ -54,9 +54,9 @@ export function assertString(testName: string, valor1: string, valor2: string) {
 }
 
 // tslint:disable-next-line: max-line-length
-export const activarToProduction = functions.runWith(runtimeOpts).pubsub.schedule('30 22 * * *').timeZone('America/Lima').onRun( async (context: any) => {
+export const activarToProduction = functions.runWith(runtimeOpts).pubsub.schedule('50 22 * * *').timeZone('America/Lima').onRun( async (context: any) => {
   const apiPeruService = new ApiPeruService();
-  apiPeruService.setSede('andahuaylas');
+  apiPeruService.setSede('lampa');
 
   /* obtener enviroment de empresa */
   const enviroment = await apiPeruService.obtenerEnviromentFromApisPeru();
@@ -78,9 +78,9 @@ export const activarToProduction = functions.runWith(runtimeOpts).pubsub.schedul
 });
 
 // tslint:disable-next-line: max-line-length
-export const dectiveToProduction = functions.runWith(runtimeOpts).pubsub.schedule('10 23 * * *').timeZone('America/Lima').onRun( async (context: any) => {
+export const dectiveToProduction = functions.runWith(runtimeOpts).pubsub.schedule('55 23 * * *').timeZone('America/Lima').onRun( async (context: any) => {
   const apiPeruService = new ApiPeruService();
-  apiPeruService.setSede('andahuaylas');
+  apiPeruService.setSede('lampa');
 
   /* obtener enviroment de empresa */
   const enviroment = await apiPeruService.obtenerEnviromentFromApisPeru();
@@ -107,14 +107,14 @@ export const dectiveToProduction = functions.runWith(runtimeOpts).pubsub.schedul
 
 
 // tslint:disable-next-line:max-line-length
-export const sender =  functions.runWith(runtimeOpts).pubsub.schedule('31 22 * * *').timeZone('America/Lima').onRun( async (context: any) => {
+export const sender =  functions.runWith(runtimeOpts).pubsub.schedule('51 22 * * *').timeZone('America/Lima').onRun( async (context: any) => {
 
 // export const sender = functions.runWith(runtimeOpts).https.onRequest(async (request, response) => {
 
   console.log('===================================START SEND TO SUNAT==========================================');
 
   const apiPeruService = new ApiPeruService();
-  apiPeruService.setSede('andahuaylas');
+  apiPeruService.setSede('lampa');
 
   /* obtener enviroment de empresa */
   const enviroment = await apiPeruService.obtenerEnviromentFromApisPeru();
@@ -243,112 +243,55 @@ export const GENERAL_CONFIG = {
   },
   datosEmpresa: {
       logo: '../../../assets/img/logo_app.png',
-      ruc: '20601831032',
-      razon_social: 'CLÍNICA VETERINARIA TOOBY E.I.R.L',
-      nombreComercial: 'VETERINARIAS TOBBY',
-      token: 'eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJpYXQiOjE2MDk2MTUzMDAsInVzZXJuYW1lIjoiZnJpZW5kc2NvZGUiLCJjb21wYW55IjoiMjA2MDE4MzEwMzIiLCJleHAiOjQ3NjMyMTUzMDB9.JIikuy-l6I74EB5-DNMlFjdqtIhIwR4CDDc10LLuiUuwt3AdxSbpQlgZbIHsGA7cMFAGkhP0trdZVFp40Z35Ayr9fL-JA4NX6Scd6VdnlIBkf2FT32irpGwkY71bEUnjDxGARWGtFnZwhK3MMLWAdjemGrTP25AqtGK8IjkiFZSKQ90toFxpd1Ije6zigRxrkFl0vS6WsFWwHXG-vmCyBqw_i_qE8MVT1zVemas1RZxaDH3UIhCB7mXxZqEUO8QqcmUB8L9OY6tCFOYm_whDjOdkz4GrxdfWMoAQHwDhEhI85k4fwrdynbGyonH1Invcv5xejz0u99geEJmTns9TdqV0dDjhvE4Prqtb53PwRSpJ6Bpo9lIq_YFoMcJk9duXqS2iVNgFDEc3oa35OeM75x0xfrv5i7uIr_JajjQ1-LLz36hJpc1lt9dwAEPrtGoEoSwImGByBZA7yU19cw_3r429-bHMAjnvdF9tPBPJCfVFfW0SYsLfR_UVXoZNzWk1gYDLUvvQw5PtLh6GVGtphy4sSTElZ1-fZ1Q2lmf8Jh8XSdeE4qDfXhW9YHIBUwn99K_9H80Hd8mi2rqJzig4ftudNZtAU0YqLHq6WohTXWNwf9Fob7b66vlwXHawQ6HGoN046kAebuWKBQeYwJFYzfQJOznEtkw5aiJ2wo9hcaU',
-      apisPeruId: 401,
+      ruc: '20609458403',
+      razon_social: 'SUPERMERCADOS IMPORTACIONES Y DISTRIBUCIONES SELECTO E.I.R.L.',
+      nombreComercial: 'MIMARKET TODO SELECTO',
+      token: 'eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJpYXQiOjE2NTg1MzAwNDIsImV4cCI6NDgxMjEzMDA0MiwidXNlcm5hbWUiOiJmcmllbmRzY29kZSIsImNvbXBhbnkiOiIyMDYwOTQ1ODQwMyJ9.dfmNlFBBHk3hktHmCgSlG3_hkGNeBZP15Pwjocb8cmtH-aGLsbdeat4DNT20Gj4q5Ir5LmiRoMkZ3s0JRJOxJm51YuHeQAJOZdZSU6_DAguRGgXxyjWSwF1db2-IKLzxN4SphzHt-XJyLWfObG6Ybem1_EIFUzHoGzGxserOoL46d7FEs91H51sH90RpG2TjFSCqJU1rgVG2cIFtslSD0jLLoQfcBq8VhE-icfEXsIntE3uAKPqVhi73YhieEog98od9eoKpimc7hMy9zBLv165N24afeMaJYAkr7U4p-a6L4-8p06AmpuYcD9u0Ci-A-XRm48zdqflYYmH-7eKDyvGvkQeW53d5tX6HIv9cNHm5ritfHZJJphWtlY4HczdYGCb7LH4vzo2AH5PuSaF0B9fFwxUmiAv5T-aPm4Rwe8aQ6zp-_CpkEpWs1a537o7xB2LBUZif7b_saTqsb7CljzZlCgwOqZaEyJZaGYMlDFLQB9oBkMCqbY3NcHxa8dWQd7wAzsD288EvqnSIGkBcpPWYm57ZMIDQ0a_QEFhQFk0Z-4s6fSrYAw8hGUZJVo8sHXIHn4tTKmQL_aFtRNGaMkWrRBc-an-KY03QpXUYeTDQ9Vf7ZhhIC7HB2EBFah_VE0EeNj_IHKdMK19jK1OS2dwackJvKwZha5Hib7yJWCQ',
+      apisPeruId: 1991,
+      url: 'https://facturacionmimarket.web.app'
   },
+  listaSedes: ['lampa', 'plaza'],
   sedes: {
-      andahuaylas: {
+      lampa: {
           direccion: {
               ubigueo: '030201',
-              direccion : 'AV. PERU NRO. 236 (FRENTE Al PARQUE LAMPA DE ORO) APURIMAC - ANDAHUAYLAS - ANDAHUAYLAS',
-              direccionCorta: 'Av. Peru 236 Andahuaylas Apurimac',
-              referencia: 'Parque Lampa de Oro',
+              direccion : 'Av. Perú 238 APURIMAC ANDAHUAYLAS',
+              direccionCorta: 'Av. Perú 238 401 Andahuaylas Apurimac',
+              referencia: 'Frente a lampa de oro',
               codigoPais: 'PE',
               departamento: 'APURIMAC',
               provincia: 'ANDAHUAYLAS',
               distrito: 'ANDAHUAYLAS'
           },
-          telefono: '983905066',
+          telefono: '970066625',
           caja1: {
               boleta: 'B001',
               factura: 'F001',
               notaVenta: 'NV01'
           }
       },
-      abancay: {
+      plaza: {
           direccion: {
-              ubigueo: '030101',
-              direccion : 'AV. SEOANE NRO. 100 (PARQUE EL OLIVO) APURIMAC - ABANCAY - ABANCAY',
-              direccionCorta: 'Av. Seoane 100 Abancay Apurimac',
-              referencia: 'Parque el Olivo',
+              ubigueo: '030201',
+              direccion : 'Jr. Bolívar 115  APURIMAC ANDAHUAYLAS',
+              direccionCorta: 'Jr. Bolívar 115  Andahuaylas Apurimac',
+              referencia: 'Frente Plaza andahuaylas',
               codigoPais: 'PE',
               departamento: 'APURIMAC',
-              provincia: 'ABANCAY',
-              distrito: 'ABANCAY'
+              provincia: 'ANDAHUAYLAS',
+              distrito: 'ANDAHUAYLAS'
           },
-          telefono: '988907777',
+          telefono: '948138272',
           caja1: {
               boleta: 'B002',
               factura: 'F002',
               notaVenta: 'NV02'
           }
       },
-      talavera: {
-          direccion: {
-              ubigueo: '030216',
-              direccion : 'AV. MANCO CAPAC NRO. 305 APURIMAC - ANDAHUAYLAS - TALAVERA',
-              direccionCorta: 'Av. Manco Capac 305 Talavera Apurimac',
-              referencia: 'A 1 cuadra de la plaza de Talavera',
-              codigoPais: 'PE',
-              departamento: 'APURIMAC',
-              provincia: 'ANDAHUAYLAS',
-              distrito: 'TALAVERA'
-          },
-          telefono: '970066627',
-          caja1: {
-              boleta: 'B003',
-              factura: 'F003',
-              notaVenta: 'NV03'
-          }
-      }
   }
 };
 
-
-// export const GENERAL_CONFIG = {
-//   datosApiPeru: {
-//     usuario: 'hz',
-//     password: '123456'
-//   },
-//   datosEmpresa: {
-//     ruc: '20722440881',
-//     razon_social: 'EMPRESA DE EJEMPLO E.I.R.L',
-//     nombreComercial: 'EMPRESA DE EJEMPLO',
-// tslint:disable-next-line:max-line-length
-//     token: 'eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJpYXQiOjE2MDkxNzE3NDQsInVzZXJuYW1lIjoiaHoiLCJjb21wYW55IjoiMjA3MjI0NDA4ODEiLCJleHAiOjQ3NjI3NzE3NDR9.DfrmovRyJGC0UR3FZblxmeUMKDGA5M9_FfFm9SIqCj-JvjTkIz8IqIWNmTnC7nZN2WiXg_yik4rv3vDi29g5d9b-YdKGL05QeSLDLgenD-W9AL3YiE_U0uSrGtPv9PvETwCcn3RoaGG3R9atB28geSPFzkcEccjyJRckyMNYRgZHuq9KLdu6mhKHdCOMhmxcMIt9OIO577QQpQkYljFiY0WC7cSlRjJyTSH2QxDAOfbz-PKOrs2fBJBi2X5cE4JmH0JeHhDikUY1cUcmo3_HOrV-IZk2hn9lcAZ-tfzvIvLeReTpA_quh9UiOs4Xy5Fwo93dj4fbSvRetN5RqylfHpnETzAKSZrj_AhdTmdTPWFZkNkoIB6eazqE7CKmh8URc_xQM3N3WEB-myZPyX8LRQ25xkE1DJKV9zxzuLDiUgi7ggGTQW_pC67uHi0ykeWD2D0KrY4eQanRdecBYfJyZ7LktOe1fUy-vMeBeYsniigVOY2u2s5e1ZG37gOmdDJJX_TC6GCRRfolor1M3z6B1a4UAiSpwGUcYxvKIMl9OgbmO1slCKnyx-S9KccF6PlapEPRkee_blEc4Gq39_sx2Eo6HxSyo27BQ80DpSTj2AsRTFtKVWc5mDvt7CnQLPc8rMJvtqwtrhdNxrVC-FHgItRHsWQ7mTUUYOWo2AcBH3c',
-//     apisPeruId: 354
-//   },
-//   sedes: {
-//     andahuaylas: {
-//       direccion: {
-//         ubigueo: '030201',
-//         direccion: 'AV. PERU NRO. 236 (FRENTE Al PARQUE LAMPA DE ORO) APURIMAC - ANDAHUAYLAS - ANDAHUAYLAS',
-//         codigoPais: 'PE',
-//         departamento: 'APURIMAC',
-//         provincia: 'ANDAHUAYLAS',
-//         distrito: 'ANDAHUAYLAS'
-//       }
-//     },
-//     abancay: {
-//       direccion: {
-//         ubigueo: '030101',
-//         direccion: 'AV.SEOANE NRO. 100 (PARQUE EL OLIVO) APURIMAC - ABANCAY - ABANCAY',
-//         codigoPais: 'PE',
-//         departamento: 'APURIMAC',
-//         provincia: 'ABANCAY',
-//         distrito: 'ABANCAY'
-//       }
-//     }
-//   }
-// };
-
-
-
-const LISTA_SEDE = ['talavera', 'abancay', 'andahuaylas'];
-// const LISTA_SEDE = ['andahuaylas'];
+const LISTA_SEDE = ['lampa', 'plaza'];
 /* -------------------------------------------------------------------------- */
 /* -------------------------------------------------------------------------- */
 /* -------------------------------------------------------------------------- */
