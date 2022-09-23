@@ -273,7 +273,7 @@ export class CajaChicaPage implements OnInit {
       doc.text( 'TOTAL CAJA: ' + 'S./ ' + (this.totalEnCaja ).toFixed(2), 40, 145);
 
       const metodoPago = [
-        ['Efectivo', data.totalEfectivo.toFixed(2)],
+        ['Efectivo (solo ventas)', data.totalEfectivo.toFixed(2)],
         ['Tarjeta de credito o debito', data.totalTargeta.toFixed(2)],
         ['App Digital', data.totalYape.toFixed(2)],
         ['Total Ventas', data.totalGeneral.toFixed(2)],
@@ -415,7 +415,7 @@ export class CajaChicaPage implements OnInit {
       // tslint:disable-next-line:max-line-length
       doc.text( 'Total Caja: ' + (data.totalGeneral + datosCaja.saldoInicial + this.ingresoCaja - this.egresoCaja - data.totalTargeta).toFixed(2), 320, 90);
       const metodoPago = [
-        [1, 'Efectivo', data.totalEfectivo.toFixed(2)],
+        [1, 'Efectivo (solo ventas)', data.totalEfectivo.toFixed(2)],
         [2, 'Tarjeta de credito o debito', data.totalTargeta.toFixed(2)],
         [3, 'App Digital', data.totalYape.toFixed(2)],
         [4, 'Total Anulados', data.totalAnulado.toFixed(2)],

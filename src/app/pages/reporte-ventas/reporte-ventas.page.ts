@@ -17,6 +17,7 @@ import { GlobalService } from 'src/app/global/global.service';
 import { BoletasFacturasService } from '../../services/boletas-facturas.service';
 import { formatearDateTime } from 'src/app/global/funciones-globales';
 import { CategoriaInterface } from '../../models/CategoriaInterface';
+import { GLOBAL_FACTOR_ICBPER } from 'src/config/otherConfig';
 
 @Component({
   selector: 'app-reporte-ventas',
@@ -260,10 +261,14 @@ export class ReporteVentasPage implements OnInit {
           'Num. Comprobante': datos.numeroComprobante,
           // tslint:disable-next-line:max-line-length
           'Serie con Numero': datos.serieComprobante + '-' + this.digitosFaltantes('0', (8 - datos.numeroComprobante.length)) + datos.numeroComprobante,
+          'Grabada: ': (datos.montoBase).toFixed(2),
+          'Exonerada: ': '0.00',
+          'Inafecta: ': '0.00',
+          'Igv: ': (datos.igv).toFixed(2),
+          'Imp. bolsa': (datos.cantidadBolsa * GLOBAL_FACTOR_ICBPER).toFixed(2),
           'Monto Pagado': datos.totalPagarVenta,
           'Metodo Pago': datos.tipoPago.toUpperCase(),
           'Fecha Emision': formatDate(FechaConsulta, 'dd-MM-yyyy', 'en'),
-          'Cant. bolsa': datos.cantidadBolsa,
           'Sede: ': datos.vendedor.sede,
           'Estado Comprobante': datos.estadoVenta,
           'Descuento ': datos.descuentoVenta ? datos.descuentoVenta : null ,
