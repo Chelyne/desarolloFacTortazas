@@ -16,4 +16,8 @@ export class MarcasPage implements OnInit {
     this.menuCtrl.enable(true);
   }
 
+  agregarMarca() {
+    
+  }
+
 }

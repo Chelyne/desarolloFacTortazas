@@ -114,7 +114,9 @@ export class EditarProductoPage implements OnInit {
       for (const sede of this.listaSedes) {
         await this.dataApi.obtenerProductoPorId(this.dataProducto.id, sede).then(res => {
           console.log('PRODUCTO: ', res);
-          this.sedesDisponible.push(res.sede);
+          if (res.sede) { 
+            this.sedesDisponible.push(res.sede);
+          }
         })
       }
       console.log(this.sedesDisponible);
