@@ -1,6 +1,6 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { ProveedorInterface } from '../../models/proveedor';
-import { ModalController } from '@ionic/angular';
+import { IonSearchbar, ModalController } from '@ionic/angular';
 import { DataBaseService } from 'src/app/services/data-base.service';
 
 @Component({
@@ -9,8 +9,11 @@ import { DataBaseService } from 'src/app/services/data-base.service';
   styleUrls: ['./modal-proveedores.page.scss'],
 })
 export class ModalProveedoresPage implements OnInit {
+  @ViewChild('mainSearchbar') searchBar: IonSearchbar;
+
   listaDeProveedores: ProveedorInterface[];
   hayDatos = false;
+  textoBuscar = "";
 
   constructor(
     private dataApi: DataBaseService,
@@ -21,6 +24,17 @@ export class ModalProveedoresPage implements OnInit {
 
   ngOnInit() {
     this.ObtenerProveedores();
+  }
+  ionViewDidEnter() {
+    setTimeout(() => {
+      this.searchBar.setFocus();
+    }, 150);
+  }
+
+  buscarProveedor(event) {
+    // console.log(event);
+    const texto = event.target.value;
+    this.textoBuscar = texto;
   }
 
   ObtenerProveedores(){

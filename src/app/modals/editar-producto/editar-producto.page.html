@@ -101,10 +101,11 @@
             <ion-col>
               <ion-item lines="none">
                 <ion-label color="primary" position="stacked">Categoria (*)</ion-label>
-                <ion-select class="custom-options" interface="popover" formControlName="subCategoria" placeholder="categorias" cancelText="Cancelar"
+                <ion-input type="text" placeholder="Seleccionar categoria" formControlName="subCategoria" (click)="abrirPoppoverCategorias($event)"></ion-input>
+                <!-- <ion-select class="custom-options" interface="popover" formControlName="subCategoria" placeholder="categorias" cancelText="Cancelar"
                 okText="Aceptar" value="{{dataProducto.subCategoria}}" mode="ios">
                   <ion-select-option *ngFor="let item of listaDeCategorias" [value]="item.categoria">{{item.categoria}}</ion-select-option>
-                </ion-select>
+                </ion-select> -->
               </ion-item>
               <div class="alertDanger" *ngIf="subCategoria.invalid && (subCategoria.dirty || subCategoria.touched)">
                 <div class="mensajeError" *ngIf="subCategoria.errors.required">
@@ -197,7 +198,7 @@
           </div>
           <ion-col size="12 " size-xs="12" size-sm="12" size-md="12" size-lg="12">
             <ion-item lines="none">
-              <ion-label color="primary" position="stacked">Precio de compra:</ion-label>
+              <ion-label color="primary" position="stacked">Precio de compra: <ion-badge *ngIf="updateForm.value.precio && updateForm.value.precioCompra" color="success" mode="ios">Margen: {{(updateForm.value.precio/updateForm.value.precioCompra).toFixed(2)}}</ion-badge></ion-label>
               <ion-input type="text" formControlName="precioCompra" class="form-control"
                 value="{{dataProducto.precioCompra}}"></ion-input>
             </ion-item>

@@ -7,9 +7,11 @@ import { IonicModule } from '@ionic/angular';
 import { EditarProductoPageRoutingModule } from './editar-producto-routing.module';
 
 import { EditarProductoPage } from './editar-producto.page';
+import { PipesModule } from 'src/app/pipes/pipes.module';
 
 @NgModule({
   imports: [
+    PipesModule,
     CommonModule,
     FormsModule,
     ReactiveFormsModule,

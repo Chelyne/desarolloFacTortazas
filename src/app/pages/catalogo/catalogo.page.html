@@ -83,7 +83,7 @@
         <ion-col size-lg="1.5">
           <ion-item lines="none">
             <ion-label color="primary" position="stacked">Margen</ion-label>
-            <ion-input readonly value="{{item.precio / item.precioCompra}}"></ion-input>
+            <ion-input readonly value="{{(item.precio / item.precioCompra).toFixed(2)}}"></ion-input>
           </ion-item>
         </ion-col>
         <ion-col size-lg="1.5">

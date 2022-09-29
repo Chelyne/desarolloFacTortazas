@@ -10,6 +10,9 @@
 </ion-header>
 
 <ion-content>
+  <div class="buscador">
+    <ion-searchbar #mainSearchbar mode="ios" placeholder="Buscar Proveedor" type="text" (ionChange)="buscarProveedor($event)" [debounce]="250"></ion-searchbar>
+  </div>
   <div class="sinDatos" *ngIf="!hayDatos">
     <div class="textoSindatos">
       <ion-icon class="icono" name="people-outline" color="medium"></ion-icon> <br><br>
@@ -28,7 +31,7 @@
       <ion-col><ion-label color="light">Telefono</ion-label></ion-col>
       <ion-col><ion-label color="light">Direccion</ion-label></ion-col>
     </ion-row>
-    <ion-row class="contentProveedores" (click)="SeleccionarProveedor(provedor)" *ngFor="let provedor of listaDeProveedores">
+    <ion-row class="contentProveedores" (click)="SeleccionarProveedor(provedor)" *ngFor="let provedor of listaDeProveedores | buscarProveedor:textoBuscar">
       <ion-col><ion-label>{{provedor.nombre | titlecase}}</ion-label></ion-col>
       <ion-col><ion-label>{{provedor.numeroDocumento}}</ion-label></ion-col>
       <ion-col><ion-label>{{provedor.telefono}}</ion-label></ion-col>

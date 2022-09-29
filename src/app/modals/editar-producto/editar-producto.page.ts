@@ -1,5 +1,5 @@
 import { Component, OnInit, Input } from '@angular/core';
-import { ModalController, LoadingController } from '@ionic/angular';
+import { ModalController, LoadingController, PopoverController } from '@ionic/angular';
 import { FormGroup, Validators, FormControl } from '@angular/forms';
 import { AngularFireStorage } from '@angular/fire/storage';
 import { DatePipe } from '@angular/common';
@@ -14,6 +14,7 @@ import { CategoriaInterface } from 'src/app/models/CategoriaInterface';
 import { StorageService } from 'src/app/services/storage.service';
 import { finalize } from 'rxjs/operators';
 import { GENERAL_CONFIG } from 'src/config/generalConfig';
+import { PoppoverCategoriasComponent } from 'src/app/components/poppover-categorias/poppover-categorias.component';
 
 
 @Component({
@@ -60,10 +61,33 @@ export class EditarProductoPage implements OnInit {
     private loadingController: LoadingController,
     private globalservice: GlobalService,
     private dataApi: DataBaseService,
-    private storage: StorageService
+    private storage: StorageService,
+    private popoverController: PopoverController
   ) {
     this.ObtenerCategorias();
   }
+
+    // POPOVER CON BUSCADOR DE CATEGORIAS
+    async abrirPoppoverCategorias(ev: any) {
+      console.log(ev);
+      const popover = await this.popoverController.create({
+        component: PoppoverCategoriasComponent,
+        cssClass: 'poppoverCliente',
+        event: ev,
+        translucent: true,
+        mode: 'ios',
+        componentProps: {
+          categoriaSeleccionada: this.updateForm.value.subCategoria
+        }
+      })
+      await popover.present();
+  
+      const { data } = await popover.onWillDismiss();
+      console.log(data);
+      if (data && data.categoriaSeleccionada) {
+        this.updateForm.setControl('subCategoria', new FormControl(data.categoriaSeleccionada.categoria, [Validators.required]));
+      }
+    }
 
   ngOnInit() {
     this.updateForm = this.createFormGroup();

@@ -1,0 +1,13 @@
+<ion-content>
+  <ion-searchbar #search (ionChange)="buscarCategoria($event)" placeholder="Buscar categoria"></ion-searchbar>
+  <ion-list *ngIf="listaCategorias">
+    <!-- | buscarCategoria:textoBuscar -->
+    <ion-item (click)="popAction(categoria)" *ngFor="let categoria of listaCategorias| buscarCategoria:textoBuscar" lines="none">
+      <!-- <ion-icon slot="start" name="create-outline" color="primary"></ion-icon> -->
+      <ion-label [ngClass]="{'seleccionar': categoriaSeleccionada && categoriaSeleccionada.categoria === categoria.categoria}">{{categoria.categoria | titlecase}}</ion-label>
+    </ion-item>
+  </ion-list>
+  <div class="cargando" *ngIf="listaCategorias.length===0">
+    <ion-spinner color="primary" name="bubbles"></ion-spinner>
+  </div>
+</ion-content>

@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { ModalController, LoadingController } from '@ionic/angular';
+import { ModalController, LoadingController, PopoverController } from '@ionic/angular';
 import { DatePipe } from '@angular/common';
 import { FormGroup, FormControl, Validators } from '@angular/forms';
 import { CategoriaInterface } from '../../models/CategoriaInterface';
@@ -10,6 +10,7 @@ import { MEDIDAS } from 'src/config/medidasConfig';
 import { ProductoInterface, VariantesInterface } from 'src/app/models/ProductoInterface';
 import { DecimalOnlyValidation, DECIMAL_REGEXP_PATTERN } from 'src/app/global/validadores';
 import { GENERAL_CONFIG } from 'src/config/generalConfig';
+import { PoppoverCategoriasComponent } from 'src/app/components/poppover-categorias/poppover-categorias.component';
 
 
 
@@ -52,6 +53,7 @@ export class ModalAgregarProductoPage implements OnInit {
     private modalController: ModalController,
     private datePipe: DatePipe,
     private storage: StorageService,
+    private popoverController: PopoverController
   ) {
     // this.ObtenerCorrelacionProducto();
     this.productoForm = this.createFormAgregarProducto();
@@ -97,6 +99,28 @@ export class ModalAgregarProductoPage implements OnInit {
     this.productoForm.reset();
     // this.progress = 0;
     this.removePic(); /** resetea datos de imagen */
+  }
+
+  // POPOVER CON BUSCADOR DE CATEGORIAS
+  async abrirPoppoverCategorias(ev: any) {
+    console.log(ev);
+    const popover = await this.popoverController.create({
+      component: PoppoverCategoriasComponent,
+      cssClass: 'poppoverCliente',
+      event: ev,
+      translucent: true,
+      mode: 'ios',
+      componentProps: {
+        categoriaSeleccionada: this.productoForm.value.subCategoria
+      }
+    })
+    await popover.present();
+
+    const { data } = await popover.onWillDismiss();
+    console.log(data);
+    if (data && data.categoriaSeleccionada) {
+      this.productoForm.setControl('subCategoria', new FormControl(data.categoriaSeleccionada.categoria, [Validators.required]));
+    }
   }
 
   /** obtener lista de categorias */
