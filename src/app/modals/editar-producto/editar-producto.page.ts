@@ -53,6 +53,7 @@ export class EditarProductoPage implements OnInit {
   sede = this.storage.datosAdmi.sede;
   EditarTodoSedes =  false;
   listaSedes = GENERAL_CONFIG.listaSedes;
+  sedesDisponible = [];
 
   constructor(
     private modalCtrl: ModalController,
@@ -105,6 +106,19 @@ export class EditarProductoPage implements OnInit {
 
   ionViewWillEnter(){
 
+  }
+
+  async comprobarProductoEnSedes(event) {
+    console.log(event);
+    if (event.detail.checked) {
+      for (const sede of this.listaSedes) {
+        await this.dataApi.obtenerProductoPorId(this.dataProducto.id, sede).then(res => {
+          console.log('PRODUCTO: ', res);
+          this.sedesDisponible.push(res.sede);
+        })
+      }
+      console.log(this.sedesDisponible);
+    }
   }
 
 

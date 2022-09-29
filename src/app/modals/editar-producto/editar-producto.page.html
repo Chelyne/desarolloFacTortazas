@@ -191,10 +191,10 @@
           </ion-item-divider> -->
           <ion-item lines="none" color="light">
             <ion-label class="ion-text-wrap">Editar producto para todas las sedes</ion-label>
-            <ion-checkbox slot="end" color="success" [(ngModel)]="EditarTodoSedes" [ngModelOptions]="{standalone: true}"></ion-checkbox>
+            <ion-checkbox (ionChange)="comprobarProductoEnSedes($event)" slot="end" color="success" [(ngModel)]="EditarTodoSedes" [ngModelOptions]="{standalone: true}"></ion-checkbox>
           </ion-item>
           <div class="sedes" *ngIf="EditarTodoSedes">
-            <ion-badge *ngFor="let sede of listaSedes">{{sede | titlecase}}</ion-badge> &nbsp;
+            <ion-button color="success" mode="ios" size="small" shape="round" *ngFor="let sede of sedesDisponible">{{sede | titlecase}}</ion-button> &nbsp;
           </div>
           <ion-col size="12 " size-xs="12" size-sm="12" size-md="12" size-lg="12">
             <ion-item lines="none">

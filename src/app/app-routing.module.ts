@@ -179,6 +179,12 @@ const routes: Routes = [
     loadChildren: () => import('./pages/reporte-intentos-venta/reporte-intentos-venta.module').then( m => m.ReporteIntentosVentaPageModule),
     canActivate: [AuthGuard, NoVendedorGuard]
   },
+  {
+    path: 'marcas',
+    loadChildren: () => import('./pages/marcas/marcas.module').then( m => m.MarcasPageModule),
+    canActivate: [AuthGuard, NoVendedorGuard]
+  },
+
 
   // {
   //   path: 'agregar-editar-producto',
