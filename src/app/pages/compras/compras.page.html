@@ -162,20 +162,22 @@
         </ion-item>
         <ion-row class="headerPROD">
           <ion-col size="1"><ion-label color="light">#</ion-label></ion-col>
-          <ion-col size="3"><ion-label color="light">Nombre</ion-label></ion-col>
-          <ion-col size="2"><ion-label color="light">Cant. Stock</ion-label></ion-col>
-          <ion-col size="2"><ion-label color="light">PU Venta</ion-label></ion-col>
-          <ion-col size="2"><ion-label color="light">Medida</ion-label></ion-col>
+          <ion-col size="4"><ion-label color="light">Nombre</ion-label></ion-col>
+          <ion-col size="1"><ion-label color="light">Cant. Stock</ion-label></ion-col>
+          <ion-col size="1"><ion-label color="light">PU Venta</ion-label></ion-col>
+          <ion-col size="1"><ion-label color="light">Medida</ion-label></ion-col>
+          <ion-col size="2"><ion-label color="light">Margen</ion-label></ion-col>
           <ion-col size="2"><ion-label color="light">Accion</ion-label></ion-col>
         </ion-row>
         <ion-row class="contentPROD"   *ngFor="let prod of listaDeProductos; let i = index">
           <!-- <ion-col size="10" class="contentPROD" (click)="modalAgregarItemDeCompra(prod)">
           </ion-col> -->
           <ion-col (click)="modalAgregarItemDeCompra(prod)" size="1"><ion-label>{{i+1}}</ion-label></ion-col>
-          <ion-col (click)="modalAgregarItemDeCompra(prod)" size="3"><ion-label>{{prod.nombre | titlecase}}</ion-label></ion-col>
-          <ion-col (click)="modalAgregarItemDeCompra(prod)" size="2"><ion-label>{{prod.cantStock}}</ion-label></ion-col>
-          <ion-col (click)="modalAgregarItemDeCompra(prod)" size="2"><ion-label>{{prod.precio | number:'1.2'}}</ion-label></ion-col>
-          <ion-col (click)="modalAgregarItemDeCompra(prod)" size="2"><ion-label>{{prod.medida | titlecase}}</ion-label></ion-col>
+          <ion-col (click)="modalAgregarItemDeCompra(prod)" size="4"><ion-label>{{prod.nombre | titlecase}}</ion-label></ion-col>
+          <ion-col (click)="modalAgregarItemDeCompra(prod)" size="1"><ion-label>{{prod.cantStock}}</ion-label></ion-col>
+          <ion-col (click)="modalAgregarItemDeCompra(prod)" size="1"><ion-label>{{prod.precio | number:'1.2'}}</ion-label></ion-col>
+          <ion-col (click)="modalAgregarItemDeCompra(prod)" size="1"><ion-label>{{prod.medida | titlecase}}</ion-label></ion-col>
+          <ion-col (click)="modalAgregarItemDeCompra(prod)" size="2"><ion-label>{{(prod.precio / prod.precioCompra).toFixed(2)}}</ion-label></ion-col>
           <ion-col size="2">
             <ion-button size="small" color="success" (click)="modalEditarProducto(prod)">
               <ion-icon color="light" name="create-outline" ></ion-icon>

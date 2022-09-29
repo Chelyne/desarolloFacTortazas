@@ -144,3 +144,17 @@
   align-items: center;
   align-content: center;
 }
+//diseño lista
+.headerPROD {
+  text-align: center;
+  background-color: var(--ion-color-primary);
+}
+.contentPROD {
+  text-align: center;
+  background-color: var(--ion-color-light);
+  cursor: pointer;
+}
+
+.contentPROD:hover {
+  background-color: var(--ion-color-medium);
+}
