@@ -14,7 +14,8 @@
     <ion-row *ngIf="listaVentas" class="headerVentas">
       <ion-col size-lg="1"><ion-label>Serie</ion-label></ion-col>
       <ion-col size-lg="1"><ion-label>Num.</ion-label></ion-col>
-      <ion-col size-lg="3"><ion-label>Cliente</ion-label></ion-col>
+      <ion-col size-lg="2"><ion-label>Cliente</ion-label></ion-col>
+      <ion-col size-lg="1"><ion-label>Vendedor</ion-label></ion-col>
       <ion-col size-lg="2"><ion-label>Tip. Pago</ion-label></ion-col>
       <ion-col size-lg="1"><ion-label>Monto</ion-label></ion-col>
       <ion-col size-lg="4"><ion-label>Acciones</ion-label></ion-col>
@@ -28,7 +29,8 @@
     <ion-row class="ion-justify-content-center ion-align-items-center" *ngFor="let venta of listaVentas" [class]="venta.estadoVenta == 'anulado'? 'red' : 'green'">
       <ion-col size-lg="1"><ion-label>{{venta.serieComprobante}}</ion-label></ion-col>
       <ion-col size-lg="1"><ion-label>{{venta.numeroComprobante}}</ion-label></ion-col>
-      <ion-col size-lg="3"><ion-label>{{venta.cliente.nombre | titlecase}}</ion-label></ion-col>
+      <ion-col size-lg="2"><ion-label>{{venta.cliente.nombre | titlecase}}</ion-label></ion-col>
+      <ion-col size-lg="1"><ion-label>{{(venta.vendedor.nombre + ' ' + venta.vendedor.apellidos) | titlecase}}</ion-label></ion-col>
       <ion-col size-lg="1.5"><ion-label>{{venta.tipoPago | titlecase}}</ion-label></ion-col>
       <ion-col size-lg="1.5"><ion-label>S/. {{venta.totalPagarVenta | number:'1.2'}}</ion-label></ion-col>
       <ion-col size-lg="4">

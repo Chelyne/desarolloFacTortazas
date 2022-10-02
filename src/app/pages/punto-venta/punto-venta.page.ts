@@ -81,7 +81,7 @@ export class PuntoVentaPage implements OnInit {
 
   categoriaObservador;
   datosCaja: CajaChicaInterface;
-
+  buscarCodigoBarra = false;
   constructor(
     private menuCtrl: MenuController,
     private dataApi: DataBaseService,
