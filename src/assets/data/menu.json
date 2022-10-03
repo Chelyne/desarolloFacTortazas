@@ -72,6 +72,11 @@
                 "icon": "receipt-outline",
                 "name": "Clientes",
                 "redirecTo": "/lista-de-clientes"
+            },
+            {
+                "icon": "receipt-outline",
+                "name": "Marcas",
+                "redirecTo": "/marcas"
             }
         ]
     },
