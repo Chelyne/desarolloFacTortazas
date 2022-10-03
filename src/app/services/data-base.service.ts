@@ -62,7 +62,7 @@ export class DataBaseService {
   // ----------------------------------------------------------- */
   guardarMarca(newMarca: string) {
     // const sede1 =  sede.toLocaleLowerCase();
-    return this.afs.collection('marcas').ref.add({nombreMarca: newMarca.toLocaleLowerCase()}).then(data => {
+    return this.afs.collection('marcas').ref.add({nombreMarca: newMarca.toLocaleLowerCase(), fecha: new Date()}).then(data => {
       if (data.id) {
         return data.id;
       } else {
@@ -814,7 +814,7 @@ export class DataBaseService {
   }
 //---------------Obtener  marca------------------//
   obtenerMarcas() {
-    return this.afs.collection('marcas')
+    return this.afs.collection('marcas', ref => ref.orderBy('fecha', 'desc'))
     .snapshotChanges().pipe(map(changes => {
       const datos: MarcaInterface[] = [];
 

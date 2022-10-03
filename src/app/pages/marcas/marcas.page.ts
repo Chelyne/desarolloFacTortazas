@@ -38,6 +38,7 @@ export class MarcasPage implements OnInit {
         this.listaDeMarcas = data;
         this.sinDatos = false;
       } else {
+        this.listaDeMarcas = [];
         this.sinDatos = true;
       }
     });
@@ -46,14 +47,15 @@ export class MarcasPage implements OnInit {
   async  EliminarMarca(marcaSelect: MarcaInterface) {
     const alert = await this.alertController.create({
       header: 'Eliminar Marca',
-      message: `Desea eliminar esta Marca ${marcaSelect.nombreMarca}`,
+      message: `Desea eliminar la marca: ${marcaSelect.nombreMarca}`,
+      mode: 'ios',
       buttons: [
         {
           text: 'No, Conservar Marca',
           role: 'Cancel',
         },
         {
-          text: 'Si, deseo eliminar.',
+          text: 'Si, Deseo eliminar.',
           handler: () => {
             this.dataApi.eliminarMarca(marcaSelect.id)
             .then(() => {

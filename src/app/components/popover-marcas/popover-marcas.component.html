@@ -1,0 +1,13 @@
+<ion-content>
+  <ion-searchbar #search (ionChange)="buscarMarca($event)" placeholder="Buscar marca"></ion-searchbar>
+  <ion-list *ngIf="listaMarcas">
+    <!-- | buscarCategoria:textoBuscar -->
+    <ion-item (click)="popAction(marca)" *ngFor="let marca of listaMarcas| buscarMarca:textoBuscar" lines="none">
+      <!-- <ion-icon slot="start" name="create-outline" color="primary"></ion-icon> -->
+      <ion-label [ngClass]="{'seleccionar': marcaSeleccionada && marcaSeleccionada.nombreMarca === marca.nombreMarca}">{{marca.nombreMarca | titlecase}}</ion-label>
+    </ion-item>
+  </ion-list>
+  <div class="cargando" *ngIf="listaMarcas.length===0">
+    <ion-spinner color="primary" name="bubbles"></ion-spinner>
+  </div>
+</ion-content>

@@ -9,6 +9,7 @@ import { ModalAgregarProductoPageRoutingModule } from './modal-agregar-producto-
 import { ModalAgregarProductoPage } from './modal-agregar-producto.page';
 import { PoppoverCategoriasComponent } from 'src/app/components/poppover-categorias/poppover-categorias.component';
 import { PipesModule } from 'src/app/pipes/pipes.module';
+import { PopoverMarcasComponent } from 'src/app/components/popover-marcas/popover-marcas.component';
 
 @NgModule({
   imports: [
@@ -19,6 +20,6 @@ import { PipesModule } from 'src/app/pipes/pipes.module';
     IonicModule,
     ModalAgregarProductoPageRoutingModule
   ],
-  declarations: [ModalAgregarProductoPage, PoppoverCategoriasComponent]
+  declarations: [ModalAgregarProductoPage, PoppoverCategoriasComponent, PopoverMarcasComponent]
 })
 export class ModalAgregarProductoPageModule {}

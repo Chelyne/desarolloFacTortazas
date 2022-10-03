@@ -15,6 +15,7 @@ import { StorageService } from 'src/app/services/storage.service';
 import { finalize } from 'rxjs/operators';
 import { GENERAL_CONFIG } from 'src/config/generalConfig';
 import { PoppoverCategoriasComponent } from 'src/app/components/poppover-categorias/poppover-categorias.component';
+import { PopoverMarcasComponent } from 'src/app/components/popover-marcas/popover-marcas.component';
 
 
 @Component({
@@ -67,6 +68,28 @@ export class EditarProductoPage implements OnInit {
   ) {
     this.ObtenerCategorias();
   }
+
+      // POPOVER CON BUSCADOR DE MARCAS
+      async abrirPoppoverMarcas(ev: any) {
+        console.log(ev);
+        const popover = await this.popoverController.create({
+          component: PopoverMarcasComponent,
+          cssClass: 'poppoverCliente',
+          event: ev,
+          translucent: true,
+          mode: 'ios',
+          componentProps: {
+            marcaSeleccionada: this.updateForm.value.subCategoria
+          }
+        })
+        await popover.present();
+    
+        const { data } = await popover.onWillDismiss();
+        console.log(data);
+        if (data && data.marcaSeleccionada) {
+          this.updateForm.setControl('marca', new FormControl(data.marcaSeleccionada.nombreMarca));
+        }
+      }
 
     // POPOVER CON BUSCADOR DE CATEGORIAS
     async abrirPoppoverCategorias(ev: any) {

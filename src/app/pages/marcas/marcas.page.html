@@ -26,7 +26,7 @@
     <ion-col size="6" *ngFor="let item of listaDeMarcas; let i = index">
       <ion-card mode="ios" >
         <ion-item lines="none">
-          <ion-label>{{item.nombreMarca}}</ion-label>
+          <ion-label>{{item.nombreMarca | titlecase}}</ion-label>
           <ion-button (click)="actualizarMarca(item)" size="small" slot="end" color="success" shape="outline">
             <ion-label>Editar</ion-label>
             <ion-icon slot="start" name="create-outline"></ion-icon>

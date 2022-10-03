@@ -213,7 +213,7 @@
             <ion-item lines="none" size="12 " size-xs="12" size-sm="12" size-md="12" size-lg="12">
               <ion-label color="primary" position="floating">Ingrese la marca</ion-label>
               <ion-input maxLength="35" formControlName="marca" class="marca" placeholder="Ingrese marca del producto"
-                value="{{dataProducto.marca}}"></ion-input>
+                value="{{dataProducto.marca}}" (click)="abrirPoppoverMarcas($event)"></ion-input>
             </ion-item>
             <div class="alertDanger" *ngIf="marca.invalid && (marca.dirty || marca.touched)">
               <div class="mensajeError" *ngIf="marca.errors.minlength">
