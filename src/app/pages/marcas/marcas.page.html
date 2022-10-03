@@ -13,7 +13,7 @@
     <ion-card-content>
       <ion-item lines="none">
         <ion-label color="primary">Lista de marcas</ion-label>
-        <ion-button slot="end" size="small" fill="outline" (click)="AgregarNuevoCliente()">
+        <ion-button slot="end" size="small" fill="outline" (click)="agregarMarca()">
           <ion-icon name="add-circle-outline" color="primary"></ion-icon> &nbsp;
           <ion-label color="primary">Agregar Marca</ion-label>
         </ion-button>
@@ -23,30 +23,15 @@
 
 <ion-grid>
   <ion-row>
-    <ion-col size="6">
-      <ion-card mode="ios">
+    <ion-col size="6" *ngFor="let item of listaDeMarcas; let i = index">
+      <ion-card mode="ios" >
         <ion-item lines="none">
-          <ion-label>marca 1</ion-label>
-          <ion-button (click)="onClick()" size="small" slot="end" color="success" shape="outline">
+          <ion-label>{{item.nombreMarca}}</ion-label>
+          <ion-button (click)="actualizarMarca(item)" size="small" slot="end" color="success" shape="outline">
             <ion-label>Editar</ion-label>
             <ion-icon slot="start" name="create-outline"></ion-icon>
           </ion-button>
-          <ion-button (click)="onClick()" size="small" slot="end" color="danger" shape="outline">
-            <ion-label>Eliminar</ion-label>
-            <ion-icon slot="start" name="trash-outline"></ion-icon>
-          </ion-button>
-        </ion-item>
-      </ion-card>
-    </ion-col>
-    <ion-col size="6">
-      <ion-card mode="ios">
-        <ion-item lines="none">
-          <ion-label>marca 2</ion-label>
-          <ion-button (click)="onClick()" size="small" slot="end" color="success" shape="outline">
-            <ion-label>Editar</ion-label>
-            <ion-icon slot="start" name="create-outline"></ion-icon>
-          </ion-button>
-          <ion-button (click)="onClick()" size="small" slot="end" color="danger" shape="outline">
+          <ion-button (click)="EliminarMarca(item)" size="small" slot="end" color="danger" shape="outline">
             <ion-label>Eliminar</ion-label>
             <ion-icon slot="start" name="trash-outline"></ion-icon>
           </ion-button>

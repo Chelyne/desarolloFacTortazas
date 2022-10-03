@@ -14,6 +14,7 @@ import { EmpresaInterface } from 'src/app/models/api-peru/empresa';
 import { CDRInterface } from 'src/app/models/api-peru/cdr-interface';
 import { ContadorDeSerieInterface } from 'src/app/models/serie';
 import { ItemDeVentaInterface } from '../models/venta/item-de-venta';
+import { MarcaInterface } from "src/app/models/MarcaInterface";
 
 @Injectable({
   providedIn: 'root'
@@ -59,6 +60,19 @@ export class DataBaseService {
   // ----------------------------------------------------------- */
   //                          ANCHOR GUARDAR                            */
   // ----------------------------------------------------------- */
+  guardarMarca(newMarca: string) {
+    // const sede1 =  sede.toLocaleLowerCase();
+    return this.afs.collection('marcas').ref.add({nombreMarca: newMarca.toLocaleLowerCase()}).then(data => {
+      if (data.id) {
+        return data.id;
+      } else {
+        return '';
+      }
+    }).catch(err => {
+      throw String('fail');
+    });
+  }
+
   guardarCategoria(newCategoria: CategoriaInterface, sede: string) {
     // const sede1 =  sede.toLocaleLowerCase();
     return this.afs.collection('sedes').doc(sede.toLowerCase()).collection('categorias').ref.add(newCategoria).then(data => {
@@ -798,6 +812,24 @@ export class DataBaseService {
     }));
 
   }
+//---------------Obtener  marca------------------//
+  obtenerMarcas() {
+    return this.afs.collection('marcas')
+    .snapshotChanges().pipe(map(changes => {
+      const datos: MarcaInterface[] = [];
+
+      changes.map(action => {
+        datos.push({
+          id: action.payload.doc.id,
+          ...action.payload.doc.data() as MarcaInterface
+        });
+      });
+
+      return datos;
+
+    }));
+
+  }
 
   obtenerComprasPorSede(sede: string) {
     return this.afs.collection('sedes').doc(sede.toLocaleLowerCase())
@@ -1108,6 +1140,14 @@ export class DataBaseService {
       throw String('fail');
     });
   }
+//--------------actualizarmarca--------------//
+  actualizarMarca(idMarca: string, newMarca: MarcaInterface) {
+    return this.afs.collection('marcas').doc(idMarca).ref.update({nombreMarca: newMarca})
+    .then(() => 'exito').catch(err => {
+      console.log(err);
+      throw String('fail');
+    });
+  }
 
   actualizarUsuario(idUser: string, newUser: AdmiInterface) {
     return this.afs.collection('Roles').doc(idUser).ref.update(newUser)
@@ -1198,6 +1238,14 @@ export class DataBaseService {
   // -----------------------------LIBIO------------------------------ */
   eliminarProveedor(idProveedor: string) {
     return this.afs.doc<ProductoInterface>(`proveedores/${idProveedor}`).ref.delete()
+    .then(() => 'exito').catch(err => {
+      console.log('error', err);
+      throw String('fail');
+    });
+  }
+//-------------------eliminar Marca---------------------------------*/
+  eliminarMarca(idMarca: string) {
+    return this.afs.doc<MarcaInterface>(`marcas/${idMarca}`).ref.delete()
     .then(() => 'exito').catch(err => {
       console.log('error', err);
       throw String('fail');
