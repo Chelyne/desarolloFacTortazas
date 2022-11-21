@@ -19,6 +19,7 @@ export interface ItemDeCompraInterface {
     id?: string;
     producto?: ProductoInterface;
     pu_compra?: number;
+    pu_venta?: number;
     cantidad?: number; // ?NOTE - representa el numero de unidades que se compra;
     descuento?: number;
     totalCompraxProducto?: number;

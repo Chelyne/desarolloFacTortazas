@@ -97,7 +97,8 @@
           <ion-col><ion-label color="light">Nombre</ion-label></ion-col>
           <ion-col><ion-label color="light">Medida</ion-label></ion-col>
           <ion-col><ion-label color="light">Cantidad</ion-label></ion-col>
-          <ion-col><ion-label color="light">PU compra</ion-label></ion-col>
+          <ion-col><ion-label color="light">PU Compra</ion-label></ion-col>
+          <ion-col><ion-label color="light">PU Venta</ion-label></ion-col>
           <ion-col><ion-label color="light">Total</ion-label></ion-col>
           <ion-col><ion-label color="light">Acciones</ion-label></ion-col>
         </ion-row>
@@ -108,6 +109,7 @@
           <ion-col>{{itemCompra.producto.medida!=null?itemCompra.producto.medida:'NaN'}}</ion-col>
           <ion-col>{{itemCompra.cantidad}}</ion-col>
           <ion-col>{{itemCompra.pu_compra}}</ion-col>
+          <ion-col>{{itemCompra.pu_venta}}</ion-col>
           <ion-col>{{itemCompra.totalCompraxProducto}}</ion-col>
           <ion-col>
             <ion-button size="small" color="success" (click)="modalEditarItemDeCompra(itemCompra)">
@@ -165,8 +167,9 @@
           <ion-col size="4"><ion-label color="light">Nombre</ion-label></ion-col>
           <ion-col size="1"><ion-label color="light">Cant. Stock</ion-label></ion-col>
           <ion-col size="1"><ion-label color="light">PU Venta</ion-label></ion-col>
+          <ion-col size="1"><ion-label color="light">PU Compra</ion-label></ion-col>
+          <ion-col size="1"><ion-label color="light">Margen</ion-label></ion-col>
           <ion-col size="1"><ion-label color="light">Medida</ion-label></ion-col>
-          <ion-col size="2"><ion-label color="light">Margen</ion-label></ion-col>
           <ion-col size="2"><ion-label color="light">Accion</ion-label></ion-col>
         </ion-row>
         <ion-row class="contentPROD"   *ngFor="let prod of listaDeProductos; let i = index">
@@ -176,8 +179,9 @@
           <ion-col (click)="modalAgregarItemDeCompra(prod)" size="4"><ion-label>{{prod.nombre | titlecase}}</ion-label></ion-col>
           <ion-col (click)="modalAgregarItemDeCompra(prod)" size="1"><ion-label>{{prod.cantStock}}</ion-label></ion-col>
           <ion-col (click)="modalAgregarItemDeCompra(prod)" size="1"><ion-label>{{prod.precio | number:'1.2'}}</ion-label></ion-col>
+          <ion-col (click)="modalAgregarItemDeCompra(prod)" size="1"><ion-label>{{prod.precioCompra | number:'1.2'}}</ion-label></ion-col>
+          <ion-col (click)="modalAgregarItemDeCompra(prod)" size="1"><ion-label>{{(prod.precio / prod.precioCompra).toFixed(2)}}</ion-label></ion-col>
           <ion-col (click)="modalAgregarItemDeCompra(prod)" size="1"><ion-label>{{prod.medida | titlecase}}</ion-label></ion-col>
-          <ion-col (click)="modalAgregarItemDeCompra(prod)" size="2"><ion-label>{{(prod.precio / prod.precioCompra).toFixed(2)}}</ion-label></ion-col>
           <ion-col size="2">
             <ion-button size="small" color="success" (click)="modalEditarProducto(prod)">
               <ion-icon color="light" name="create-outline" ></ion-icon>

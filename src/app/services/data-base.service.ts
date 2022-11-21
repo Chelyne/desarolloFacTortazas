@@ -118,8 +118,15 @@ export class DataBaseService {
     console.log('GYARDAR: ', newProducto);
     if (newProducto.id) {
       this.guardarProductoID(newProducto, sede, newProducto.id);
+      this.agregarProductoBusqueda(newProducto, newProducto.id);
     } else {
-      return this.guardarProducto(newProducto, sede).then(async (idProducto) => idProducto);
+      const id =  this.guardarProducto(newProducto, sede).then(async (idProducto) => idProducto);
+      let idP;
+      await id.then(ii => {
+        idP = ii;
+      });
+      await this.agregarProductoBusqueda(newProducto, idP);
+      return id;
     }
   }
 
@@ -621,7 +628,7 @@ export class DataBaseService {
   }
     // CAJA CHICA
     obtenerListaCajaChica(sede: string) {
-      return this.afs.collection('CajaChica', ref => ref.where('sede', '==', sede ).orderBy('FechaApertura', 'desc').limit(10) )
+      return this.afs.collection('CajaChica', ref => ref.where('sede', '==', sede ).orderBy('estado', 'asc').orderBy('FechaApertura', 'desc').limit(10) )
       .snapshotChanges().pipe(map(changes => {
         const datos: any[] = [];
 
@@ -1029,6 +1036,38 @@ export class DataBaseService {
     });
   }
 
+  actualizarProductoSinStock(productoObtenido: ProductoInterface) {
+    console.log('Actualizar producto SIN STOCK');
+    const producto: ProductoInterface = {
+      img: productoObtenido.img ? productoObtenido.img : null,
+      nombre: productoObtenido.nombre,
+      arrayNombre: productoObtenido.nombre.toLowerCase().split(' '),
+      cantidad: productoObtenido.cantidad,
+      precio: productoObtenido.precio,
+      precioCompra: productoObtenido.precioCompra,
+      sede: productoObtenido.sede,
+      medida: productoObtenido.medida,
+      subCategoria: productoObtenido.subCategoria,
+      descripcionProducto: productoObtenido.descripcionProducto,
+      marca: productoObtenido.marca,
+      codigo: productoObtenido.codigo,
+      codigoBarra: productoObtenido.codigoBarra,
+      variantes: productoObtenido.variantes,
+    };
+    console.log('%c%s', 'color: #3e2066', productoObtenido);
+
+    console.log('producto obtenido', productoObtenido);
+
+    this.actualizarProductoBuscador(productoObtenido);
+    
+    return this.afs.collection('sedes').doc(productoObtenido.sede.toLowerCase()).collection('productos')
+    .doc(productoObtenido.id).ref.update(producto)
+    .then(() => 'exito').catch(err => {
+      console.log('error', err);
+      throw String('fail');
+    });
+  }
+
   actualizarProducto(productoObtenido: ProductoInterface) {
     console.log('Actualizar producto');
     // const producto: ProductoInterface = {
@@ -1054,8 +1093,8 @@ export class DataBaseService {
 
     console.log('producto obtenido', productoObtenido);
 
-
-
+    this.actualizarProductoBuscador(productoObtenido);
+    
     return this.afs.collection('sedes').doc(productoObtenido.sede.toLowerCase()).collection('productos')
     .doc(productoObtenido.id).ref.update(productoObtenido)
     .then(() => 'exito').catch(err => {
@@ -1197,6 +1236,15 @@ export class DataBaseService {
       throw String('fail');
     });
   }
+  // ACTUALIZAR PRECIO DE VENTA
+  actualizarPrecioVentaProducto(idProducto: string, sede: string, precioDeVenta: number) {
+    return this.afs.collection('sedes').doc(sede.toLocaleLowerCase()).collection('productos')
+    .doc(idProducto).ref.update({precio: precioDeVenta})
+    .then(() => 'exito').catch(err => {
+      console.log('error', err);
+      throw String('fail');
+    });
+  }
 
 
   // ----------------------------------------------------------- */
@@ -1212,6 +1260,7 @@ export class DataBaseService {
 
   eliminarProducto(idProducto: string, sede: string) {
     const sede1 = sede.toLocaleLowerCase();
+    this.eliminarProductoBuscador(idProducto, sede);
     return this.afs.doc<ProductoInterface>(`sedes/${sede1}/productos/${idProducto}`).ref.delete()
     .then(() => 'exito').catch(err => {
       console.log('error', err);
@@ -1263,4 +1312,55 @@ export class DataBaseService {
   // ----------------------------------------------------------- */
 
 
+  // ----------------------------------------------------------- */
+  // --------- FUNCIONES PRODUCTOS BUSQUEDA - ALGOLIA ---------- */
+  // ----------------------------------------------------------- */
+
+  agregarProductoBusqueda(newProducto: ProductoInterface, id: string) {
+    const producto = {
+      id: id,
+      nombre: newProducto.nombre,
+      marca: newProducto.marca,
+      sede: newProducto.sede,
+      codigo: newProducto.codigo,
+      codigoBarra: newProducto.codigoBarra
+    }
+    return this.afs.collection('productosBuscador').doc(producto.id + producto.sede).ref.set(producto).then(() => 'exito')
+    .catch(err => {
+      throw String('fail');
+    });
+  }
+
+  async actualizarProductoBuscador(productoObtenido: ProductoInterface) {
+    let idP = productoObtenido.id + productoObtenido.sede;
+    console.log("VAMOS A ACTULIZAR ID: ", idP);
+    return this.afs.collection('productosBuscador')
+    .doc(idP).ref.update({nombre: productoObtenido.nombre, marca: productoObtenido.marca, codigo: productoObtenido.codigo, codigoBarra: productoObtenido.codigoBarra})
+    .then(() => 'exito').catch(err => {
+      console.log('error', err);
+      throw String('fail');
+    });
+  }
+
+  // obtenerIdProductoBuscador(producto: ProductoInterface) {
+  //   return this.afs.collection('productosBuscador').ref.where('id', '==', producto.id).where('sede', '==', producto.sede).get()
+  //   .then((querySnapshot) => {
+  //     const datos: any[] = [];
+  //     querySnapshot.forEach((doc) => {
+  //       datos.push( {...doc.data(), id: doc.id});
+  //     });
+  //     return datos;
+  //   }).catch(err => {
+  //     console.log('no se pudo obtener los productos bsucador', err);
+  //     throw String ('fail');
+  //   });
+  // }
+
+  eliminarProductoBuscador(id: string, sede: string) {
+    return this.afs.doc<MarcaInterface>(`productosBuscador/${id+sede}`).ref.delete()
+    .then(() => 'exito').catch(err => {
+      console.log('error', err);
+      throw String('fail');
+    });
+  }
 }

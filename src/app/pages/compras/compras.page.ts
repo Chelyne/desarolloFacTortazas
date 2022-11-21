@@ -17,6 +17,7 @@ import { EditarProductoPage } from 'src/app/modals/editar-producto/editar-produc
 import { AgregarEditarProveedorPage } from 'src/app/modals/agregar-editar-proveedor/agregar-editar-proveedor.page';
 import { isNullOrUndefined } from 'util';
 import { Router } from '@angular/router';
+import { GENERAL_CONFIG } from 'src/config/generalConfig';
 
 @Component({
   selector: 'app-compras',
@@ -26,6 +27,7 @@ import { Router } from '@angular/router';
 export class ComprasPage implements OnInit {
 
   sede = this.storage.datosAdmi.sede;
+  listaSedes = GENERAL_CONFIG.listaSedes;
 
   listaDeProductosObservada: ProductoInterface[] = [];
   listaDeProductos: ProductoInterface[] = [];
@@ -51,6 +53,7 @@ export class ComprasPage implements OnInit {
   loading;
 
   comprando = false;
+  palabraBuscar: string;
   constructor(
     private dataApi: DataBaseService,
     private storage: StorageService,
@@ -107,6 +110,7 @@ export class ComprasPage implements OnInit {
     this.buscando = true;
 
     const target = ev.detail.value;
+    this.palabraBuscar =  target;
 
     if (target.length) {
       this.buscadorService.Buscar(target).then( data => this.listaDeProductos = data);
@@ -391,13 +395,15 @@ export class ComprasPage implements OnInit {
         numeroComprobante: this.formComprobante.value.numeroComp,
         fechaDeEmision: this.formComprobante.value.fechaEmisionComp,
         fechaRegistro: new Date()
-
       };
 
       /** actualizar Stock de productos */
       for (const itemCompra of compra.listaItemsDeCompra) {
         await this.dataApi.incrementarStockProducto(itemCompra.producto.id, this.sede, itemCompra.cantidad);
-        await this.dataApi.actualizarPrecioCompraProducto(itemCompra.producto.id, this.sede, itemCompra.pu_compra);
+        for (const sede of this.listaSedes) {
+          await this.dataApi.actualizarPrecioCompraProducto(itemCompra.producto.id, sede, itemCompra.pu_compra);
+          await this.dataApi.actualizarPrecioVentaProducto(itemCompra.producto.id, sede, itemCompra.pu_venta);
+        }
       }
 
       this.dataApi.guardarCompra(compra, this.sede).then((ventaId) => {
@@ -501,9 +507,9 @@ export class ComprasPage implements OnInit {
   }
 
   actualizarStockProductos2(compraActual: CompraInterface){
-    const interseccion: {id: string, cantidad: number, pu_compra?: number}[] = [];
-    const soloActual: {id: string, cantidad: number, pu_compra?: number}[] = [];
-    const soloAnterior: {id: string, cantidad: number, pu_compra?: number}[] = [];
+    const interseccion: {id: string, cantidad: number, pu_compra?: number, pu_venta?: number}[] = [];
+    const soloActual: {id: string, cantidad: number, pu_compra?: number, pu_venta?: number}[] = [];
+    const soloAnterior: {id: string, cantidad: number, pu_compra?: number, pu_venta?: number}[] = [];
 
     for (const itemCompra of compraActual.listaItemsDeCompra) {
       let itemCompraEstaEnAmbos = false;
@@ -514,13 +520,16 @@ export class ComprasPage implements OnInit {
           if (itemCompra.producto.precioCompra !== itemAnterior.pu_compra){
             format.pu_compra = itemCompra.pu_compra;
           }
+          if (itemCompra.producto.precio !== itemAnterior.pu_venta){
+            format.pu_venta = itemCompra.pu_venta;
+          }
           interseccion.push(format);
           itemCompraEstaEnAmbos = true;
           break;
         }
       }
       if (!itemCompraEstaEnAmbos){
-        soloActual.push({id: itemCompra.producto.id, cantidad: itemCompra.cantidad, pu_compra: itemCompra.pu_compra});
+        soloActual.push({id: itemCompra.producto.id, cantidad: itemCompra.cantidad, pu_compra: itemCompra.pu_compra, pu_venta: itemCompra.pu_venta});
       }
     }
 
@@ -534,14 +543,17 @@ export class ComprasPage implements OnInit {
       }
 
       if (!itemCompraEstaEnAmbos){
-        soloAnterior.push({id: itemAnterior.producto.id, cantidad: -itemAnterior.cantidad, pu_compra: itemAnterior.pu_compra});
+        soloAnterior.push({id: itemAnterior.producto.id, cantidad: -itemAnterior.cantidad, pu_compra: itemAnterior.pu_compra, pu_venta: itemAnterior.pu_venta});
       }
     }
 
 
     console.log('LISTA FILTRADA', interseccion, soloAnterior, soloActual);
+    console.log('LISTA INTERSECICION', interseccion);
+    console.log('LISTA ANTERIOR', soloAnterior, );
+    console.log('LISTA ACTUAL', soloActual);
 
-    const actulizarStock = async (listaProductos: {id: string, cantidad: number, pu_compra?: number}[]) => {
+    const actulizarStock = async (listaProductos: {id: string, cantidad: number, pu_compra?: number, pu_venta?: number}[]) => {
       for (const producto of listaProductos) {
         if (producto.cantidad > 0){
           await this.dataApi.incrementarStockProducto(producto.id, this.sede, producto.cantidad);
@@ -549,10 +561,14 @@ export class ComprasPage implements OnInit {
           await this.dataApi.decrementarStockProducto(producto.id, this.sede, -producto.cantidad);
         }
 
-        if (producto.pu_compra){
-          await this.dataApi.actualizarPrecioCompraProducto(producto.id, this.sede, producto.pu_compra);
+        for (const sede of this.listaSedes) {
+          if (producto.pu_compra){
+            await this.dataApi.actualizarPrecioCompraProducto(producto.id, sede, producto.pu_compra);
+          }
+          if (producto.pu_venta){
+            await this.dataApi.actualizarPrecioVentaProducto(producto.id, sede, producto.pu_venta);
+          }
         }
-
       }
     };
 
@@ -630,14 +646,24 @@ export class ComprasPage implements OnInit {
     await modal.present();
 
     const { data } =  await modal.onWillDismiss();
+    console.log('BUSCAMOSSSS: ', data);
     if (data) {
-      this.dataApi.actualizarProducto(data.producto).then(() => {
-        this.globalService.presentToast('Producto se actualizó correctamente', {color: 'success'});
-      }).catch(() => {
-        this.globalService.presentToast('Producto no se actualizó', {color: 'danger'});
-
-      });
+      const ev = {
+        detail: { value: this.palabraBuscar}
+      }
+      this.buscador(ev);
     }
+    // if (data) {
+    //   this.dataApi.actualizarProducto(data.producto).then(() => {
+    //     this.globalService.presentToast('Producto se actualizó correctamente', {color: 'success'});
+    //     const ev = {
+    //       detail: { value: this.palabraBuscar}
+    //     }
+    //     this.buscador(ev);
+    //     }).catch(() => {
+    //     this.globalService.presentToast('Producto no se actualizó', {color: 'danger'});
+    //   });
+    // }
   }
 
   /* -------------------------------------------------------------------------- */

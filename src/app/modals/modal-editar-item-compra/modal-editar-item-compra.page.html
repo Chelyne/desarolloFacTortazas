@@ -55,9 +55,17 @@
         </ion-col>
         <ion-col size="6">
           <ion-item lines="none">
-            <ion-label position="floating" color="primary">Precio de Venta<ion-text color="danger">*</ion-text></ion-label>
-            <ion-input type="number" value="{{dataModal.itemCompra.producto.precio.toFixed(2)}}" readonly></ion-input>
+            <ion-label position="floating" color="primary">Precio Unitario de Venta(s/.)<ion-text color="danger">*</ion-text></ion-label>
+            <ion-input type="number" formControlName="pu_venta" placeholder="Precio de venta" placeholder="00.00" required (keypress)="decimalOnlyValidation($event)"></ion-input>
           </ion-item>
+          <div class="alertDanger" *ngIf="pu_venta.invalid && (pu_venta.dirty || pu_venta.touched)">
+            <div class="mensajeError" *ngIf="pu_venta.errors.required">
+              *Ingrese precio unitario venta: 00.00
+            </div>
+            <div class="mensajeError" *ngIf="pu_venta.errors.pattern">
+              *solo formato de moneda 00.00
+            </div>
+          </div>
         </ion-col>
       </ion-row>
     </ion-grid>

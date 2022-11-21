@@ -1,6 +1,8 @@
 import { Injectable } from '@angular/core';
 import { AngularFirestore } from '@angular/fire/firestore';
+import algoliasearch from 'algoliasearch';
 import { ProductoInterface } from '../models/ProductoInterface';
+import { DataBaseService } from './data-base.service';
 import { StorageService } from './storage.service';
 
 
@@ -15,7 +17,8 @@ export class BuscadorService {
 
   constructor(
     private afs: AngularFirestore,
-    private storage: StorageService
+    private storage: StorageService,
+    private dataApi: DataBaseService
   ) {
   }
 
@@ -31,7 +34,7 @@ export class BuscadorService {
   /* -------------------------------------------------------------------------- */
   /*                              función principal                             */
   /* -------------------------------------------------------------------------- */
-  async Buscar(target: string){
+  async BuscarV1(target: string){
 
     if (!target.length){
       return [];
@@ -120,6 +123,27 @@ export class BuscadorService {
 
     return listaResultante;
 
+  }
+
+
+  // BUSCADOR CON ALGOLIA
+  async Buscar(palabra) {
+    let listaResultante: ProductoInterface[] = [];
+    const cliente = algoliasearch('DJPS8EKAPC','9309b597608b3ddd1b683a58146c9971');
+    const index = cliente.initIndex('productosBuscador');
+    let resultados: any = (await index.search(palabra)).hits;
+    for (const item of resultados) {
+      if (item.sede === this.sede) {
+        await this.dataApi.obtenerProductoPorId(item.id, item.sede).then(res => {
+          if (res) {
+            listaResultante.push(res);
+          }
+        });
+      }
+    }
+    console.log('RESULTADO> ', resultados);
+    console.log('LISTA RESULTADO> ', listaResultante);
+    return listaResultante;
   }
 
   /* -------------------------------------------------------------------------- */

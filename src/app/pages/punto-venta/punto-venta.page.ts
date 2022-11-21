@@ -533,26 +533,49 @@ export class PuntoVentaPage implements OnInit {
     const target = ev.detail.value;
 
     if (target.length) {
-      this.buscadorService.Buscar(target).then( data => {
-        console.log(data);
-        if (data.length){
-          this.productos = data;
-
-          /** si todo es buscado por codigo de barra agregar */
-          if (this.productos){
-            if (this.productos.length === 1){ //  && this.buscadorService.isFullStringoOrNamber(target) === 'allNumber' && target.length >= 5 
-              console.log('sssssssssssssssssssssssssssssssssssssssssssssssssssssss');
-              this.AgregarItemDeVenta(this.productos[0]);
-              this.focusLimpio();
+      if (this.buscarCodigoBarra) {
+        this.buscadorService.BuscarV1(target).then( data => {
+          console.log(data);
+          if (data.length){
+            this.productos = data;
+  
+            /** si todo es buscado por codigo de barra agregar */
+            if (this.productos){
+              if (this.productos.length === 1){ //  && this.buscadorService.isFullStringoOrNamber(target) === 'allNumber' && target.length >= 5 
+                console.log('sssssssssssssssssssssssssssssssssssssssssssssssssssssss');
+                this.AgregarItemDeVenta(this.productos[0]);
+                this.focusLimpio();
+              }
             }
+          } else {
+            this.focusLimpio();
+            this.productos = null;
+            this.servGlobal.presentToast('No se encontro el producto', {color: 'danger'});
           }
-        } else {
-          this.focusLimpio();
-          this.productos = null;
-          this.servGlobal.presentToast('No se encontro el producto', {color: 'danger'});
-        }
-        this.buscando = false;
-      });
+          this.buscando = false;
+        });
+      } else {
+        this.buscadorService.Buscar(target).then( data => {
+          console.log(data);
+          if (data.length){
+            this.productos = data;
+  
+            /** si todo es buscado por codigo de barra agregar */
+            if (this.productos){
+              if (this.productos.length === 1){ //  && this.buscadorService.isFullStringoOrNamber(target) === 'allNumber' && target.length >= 5 
+                console.log('sssssssssssssssssssssssssssssssssssssssssssssssssssssss');
+                this.AgregarItemDeVenta(this.productos[0]);
+                this.focusLimpio();
+              }
+            }
+          } else {
+            this.focusLimpio();
+            this.productos = null;
+            this.servGlobal.presentToast('No se encontro el producto', {color: 'danger'});
+          }
+          this.buscando = false;
+        });
+      }
     } else {
       this.productos = null;
       this.buscando = null;

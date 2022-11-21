@@ -69,27 +69,29 @@ export class EditarProductoPage implements OnInit {
     this.ObtenerCategorias();
   }
 
-      // POPOVER CON BUSCADOR DE MARCAS
-      async abrirPoppoverMarcas(ev: any) {
-        console.log(ev);
-        const popover = await this.popoverController.create({
-          component: PopoverMarcasComponent,
-          cssClass: 'poppoverCliente',
-          event: ev,
-          translucent: true,
-          mode: 'ios',
-          componentProps: {
-            marcaSeleccionada: this.updateForm.value.subCategoria
-          }
-        })
-        await popover.present();
-    
-        const { data } = await popover.onWillDismiss();
-        console.log(data);
-        if (data && data.marcaSeleccionada) {
-          this.updateForm.setControl('marca', new FormControl(data.marcaSeleccionada.nombreMarca));
+
+
+    // POPOVER CON BUSCADOR DE MARCAS
+    async abrirPoppoverMarcas(ev: any) {
+      console.log(ev);
+      const popover = await this.popoverController.create({
+        component: PopoverMarcasComponent,
+        cssClass: 'poppoverCliente',
+        event: ev,
+        translucent: true,
+        mode: 'ios',
+        componentProps: {
+          marcaSeleccionada: this.updateForm.value.subCategoria
         }
+      })
+      await popover.present();
+  
+      const { data } = await popover.onWillDismiss();
+      console.log(data);
+      if (data && data.marcaSeleccionada) {
+        this.updateForm.setControl('marca', new FormControl(data.marcaSeleccionada.nombreMarca));
       }
+    }
 
     // POPOVER CON BUSCADOR DE CATEGORIAS
     async abrirPoppoverCategorias(ev: any) {
@@ -348,17 +350,31 @@ export class EditarProductoPage implements OnInit {
         for (const sede of this.listaSedes) {
           /** guardar producto */
           producto.sede = sede.toLocaleLowerCase();
-          await this.dataApi.actualizarProducto(producto).then(() => {
-            this.cerrarModal();
-            this.globalservice.presentToast('Producto se actualizó correctamente', {color: 'success', position: 'top'});
-            this.onResetForm();
-            // this.loading.dismiss();
-            newLoading.dismiss();
-  
-          }).catch(() => {
-            this.globalservice.presentToast('Producto no se actualizó', {color: 'danger', position: 'top'});
-            newLoading.dismiss();
-          });
+          if (sede === this.sede) {
+            await this.dataApi.actualizarProducto(producto).then(() => {
+              this.cerrarModal();
+              this.globalservice.presentToast('Producto se actualizó correctamente', {color: 'success', position: 'top'});
+              this.onResetForm();
+              // this.loading.dismiss();
+              newLoading.dismiss();
+    
+            }).catch(() => {
+              this.globalservice.presentToast('Producto no se actualizó', {color: 'danger', position: 'top'});
+              newLoading.dismiss();
+            });
+          } else {
+            await this.dataApi.actualizarProductoSinStock(producto).then(() => {
+              this.cerrarModal();
+              this.globalservice.presentToast('Producto se actualizó correctamente sin modificar Stock en ' + sede, {color: 'success', position: 'top'});
+              this.onResetForm();
+              // this.loading.dismiss();
+              newLoading.dismiss();
+    
+            }).catch(() => {
+              this.globalservice.presentToast('Producto no se actualizó', {color: 'danger', position: 'top'});
+              newLoading.dismiss();
+            });
+          }
         }
       } else {
         /** guardar producto */
@@ -521,7 +537,7 @@ export class EditarProductoPage implements OnInit {
   }
 
   cerrarModal() {
-    this.modalCtrl.dismiss();
+    this.modalCtrl.dismiss({data: true});
   }
 
   // async presentLoading() {
