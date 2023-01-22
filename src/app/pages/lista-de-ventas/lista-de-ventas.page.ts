@@ -102,7 +102,8 @@ export class ListaDeVentasPage implements OnInit {
     // console.log(this.fechaventaDDMMYYYY, this.fechaventaYYYYMMDD);
 
     const fecha = event.detail.value.split('-').reverse().join('-');
-    this.dataApi.obtenerVentasPorDiaBoletaFacturaObs(this.sede, fecha).subscribe(data => {
+    const datata = this.dataApi.obtenerVentasPorDiaBoletaFacturaObs(this.sede, fecha).subscribe(data => {
+      datata.unsubscribe(); //no se debe suscribir
       if (data.length > 0) {
         this.listaDeVentas = data;
         console.log(this.listaDeVentas);
