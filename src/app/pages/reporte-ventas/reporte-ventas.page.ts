@@ -183,28 +183,29 @@ export class ReporteVentasPage implements OnInit {
           // tslint:disable-next-line:no-shadowed-variable
           let contador = 0;
           console.log('total ', this.arrayMes);
+          this.exelVentas(this.arrayMes, mes, anio);
 
 
-          for (const venta of this.arrayMes) {
-            contador++;
-            await this.dataApi.obtenerProductosDeVenta(venta.idListaProductos, this.sede ).then( productoVenta => {
-              let  nombres = '';
-              console.log('producto venta', productoVenta);
-              for (const item2 of productoVenta) {
-                // if (item2.subCategoria === 'cortes' || item2.subCategoria === 'servicio') {
-                  nombres = nombres + item2.producto.nombre.toUpperCase()  + '( s/. ' + (item2.totalxprod ) + ')' + ', ';
-                  venta.productos = nombres;
-                  console.log('item:' ,  item2.producto.nombre + '(' + item2.producto.precio  + ')');
+          // for (const venta of this.arrayMes) {
+          //   contador++;
+          //   await this.dataApi.obtenerProductosDeVenta(venta.idListaProductos, this.sede ).then( productoVenta => {
+          //     let  nombres = '';
+          //     console.log('producto venta', productoVenta);
+          //     for (const item2 of productoVenta) {
+          //       // if (item2.subCategoria === 'cortes' || item2.subCategoria === 'servicio') {
+          //         nombres = nombres + item2.producto.nombre.toUpperCase()  + '( s/. ' + (item2.totalxprod ) + ')' + ', ';
+          //         venta.productos = nombres;
+          //         console.log('item:' ,  item2.producto.nombre + '(' + item2.producto.precio  + ')');
 
-                // }
-              }
-              if (contador === this.arrayMes.length) {
-              console.log(this.arrayMes);
-              this.exelVentas(this.arrayMes, mes, anio);
+          //       // }
+          //     }
+          //     if (contador === this.arrayMes.length) {
+          //     console.log(this.arrayMes);
+          //     this.exelVentas(this.arrayMes, mes, anio);
 
-              }
-            });
-          }
+          //     }
+          //   });
+          // }
         }
         }
       });
