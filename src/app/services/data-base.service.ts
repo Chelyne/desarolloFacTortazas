@@ -628,7 +628,7 @@ export class DataBaseService {
   }
     // CAJA CHICA
     obtenerListaCajaChica(sede: string) {
-      return this.afs.collection('CajaChica', ref => ref.where('sede', '==', sede ).orderBy('estado', 'asc').orderBy('FechaApertura', 'desc').limit(10) )
+      return this.afs.collection('CajaChica', ref => ref.where('sede', '==', sede ).orderBy('estado', 'asc').orderBy('FechaApertura', 'desc').limit(20) )
       .snapshotChanges().pipe(map(changes => {
         const datos: any[] = [];
 
