@@ -31,6 +31,9 @@
 * {
     font-family: Nunito;
 }
+ion-popover [popover]:not(:popover-open):not(dialog[open]) {
+  display: contents;
+}
 
 .popover-whatsapp {
   --width: 250px;
