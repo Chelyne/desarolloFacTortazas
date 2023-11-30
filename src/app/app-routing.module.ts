@@ -183,7 +183,11 @@ const routes: Routes = [
     path: 'marcas',
     loadChildren: () => import('./pages/marcas/marcas.module').then( m => m.MarcasPageModule),
     canActivate: [AuthGuard, NoVendedorGuard]
+  },  {
+    path: 'atencion-cliente',
+    loadChildren: () => import('./pages/atencion-cliente/atencion-cliente.module').then( m => m.AtencionClientePageModule)
   },
+
 
 
   // {

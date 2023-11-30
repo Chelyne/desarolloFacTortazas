@@ -15,6 +15,11 @@
                 "redirecTo": "/punto-venta"
             },
             {
+                "icon": "user-outline",
+                "name": "Atención al cliente",
+                "redirecTo": "/atencion-cliente"
+            },
+            {
                 "icon": "receipt-outline",
                 "name": "Caja chica POS",
                 "redirecTo": "/caja-chica"
